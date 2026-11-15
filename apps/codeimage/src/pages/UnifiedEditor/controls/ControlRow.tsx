@@ -21,6 +21,7 @@ import {
   SignaturePositionChoice,
   SignatureStyleChoice,
 } from './SignatureFields';
+import {SurfaceTiles} from './WindowStyleTiles';
 
 interface Look {
   readonly label?: LocaleKeys<AppLocaleEntries>;
@@ -75,6 +76,11 @@ export function ControlRow(props: ControlRowProps): JSX.Element {
         labelFor: id,
       };
     if (control.kind === 'segmented') {
+      if (control.id === 'window.surface')
+        return {
+          element: <SurfaceTiles control={control} id={id} />,
+          labelFor: id,
+        };
       if (control.id === 'signature.style')
         return {
           element: (

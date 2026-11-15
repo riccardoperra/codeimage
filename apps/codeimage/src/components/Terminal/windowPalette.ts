@@ -76,11 +76,12 @@ export function createWindowPalette({
   const accentAt = (alpha: number) => (tint ? rgba(tint, alpha) : text);
   // On a light window an accent-tinted band reads as an error or a deleted
   // diff line (GitHub Light's red), so it stays neutral and the accent lives
-  // in its mark.
+  // in its mark. The tint is translucent so that it sits on whatever the
+  // window shows, including a translucent background.
   const status = () => {
     if (!paper || !tint) return text;
-    if (ink && lightness(paper) > lightness(ink)) return mix(paper, ink, 0.04);
-    return mix(paper, tint, 0.16);
+    if (ink && lightness(paper) > lightness(ink)) return inkAt(0.04);
+    return accentAt(0.16);
   };
   return {
     ink04: inkAt(0.04),

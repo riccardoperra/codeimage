@@ -272,7 +272,13 @@ export default function Inspector(props: VariantProps) {
         value: summary(props.model.control('frame.padding')),
       }),
     signature: () => signatureSummary(),
-    window: () => summary(props.model.control('window.shadow')),
+    // The style is what changes the window most, while it has a title bar.
+    window: () => {
+      const style = props.model.control('window.style');
+      return summary(
+        style?.visible() ? style : props.model.control('window.shadow'),
+      );
+    },
     editor: () => summary(props.model.control('editor.language')),
     font: () => summary(props.model.control('font.weight')),
   };

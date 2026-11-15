@@ -8,7 +8,7 @@ Mock GitHub login, New, autosave, project URL, dashboard reopening; card Menu of
 
 ## How to get to it (user POV)
 
-Click Sign in with GitHub. Authenticated `/` is Dashboard; `/dashboard` redirects there. New opens `/<id>` in the classic editor.
+Click Sign in with GitHub. Authenticated `/` is Dashboard; `/dashboard` redirects there, and `/login` signs in (with the mock, straight to Dashboard). New opens `/<id>` in the classic editor. Dashboard search filters only after more than two characters. Unknown paths redirect to `/404`.
 
 ## Driving it with Playwright
 

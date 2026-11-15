@@ -54,6 +54,8 @@ The helper's `finally` closes its browser/context and terminates only its own Vi
 
 The audit helper `scripts/audit.mjs` is invoked by the main helper when `VERIFY_AUDIT=1`; it is not a standalone server command. It resolves fflate from the app workspace for ZIP checks. All dependencies come from this workspace. Chromium clipboard permissions are granted for real paste journeys; no browser APIs are faked. Keep feature files aligned using `/maintain-verification-skill`.
 
+`node .agents/skills/verify-codeimage/scripts/capture-design.mjs <base URL>` refreshes the six reference screenshots in `docs/design/screenshots/` that `DESIGN.md` shows. Start the app yourself first, on a port you own, and pass its URL. It opens a fresh context per view, saves the layout preference before load, and moves the pointer off the theme list, because a hovered theme card previews on the canvas. These six files are the only screenshots kept in the checkout. Run it in the pull request that changes the look, and look at each image before committing.
+
 ## Scope and maintenance
 
 The feature map follows this checkout, not proposals or unmerged branches. Source readers must check recent commits for new user-facing paths before claiming completeness. Current animation core does not expose an animation editor and there is no CLI package in this checkout. Live runs use the real local web app with its existing MSW/Auth0 boundary; production OAuth, PostgreSQL and platform-native sharing remain separate integration checks. Audit assertions prove selected journeys, not every format, control, language or viewport.

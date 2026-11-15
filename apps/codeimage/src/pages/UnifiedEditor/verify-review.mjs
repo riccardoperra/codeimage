@@ -5,6 +5,8 @@ import {chromium} from 'playwright';
 const base = process.argv[2] ?? 'http://localhost:4345';
 const out = process.argv[3] ?? '/tmp/codeimage-review-fixes';
 mkdirSync(out, {recursive: true});
+const platform = process.env.REVIEW_PLATFORM ?? 'MacIntel';
+const isApple = /Mac|iPhone|iPad/.test(platform);
 const results = [];
 const check = (ok, message) => {
   assert(ok, message);
@@ -44,9 +46,12 @@ try {
         width !== Number(process.env.REVIEW_WIDTH)
       )
         continue;
-      const tag = `${layout}-${width}`;
+      const tag = `${platform}-${layout}-${width}`;
       const ctx = await browser.newContext({
         viewport: {width, height: width === 390 ? 844 : 900},
+        userAgent: isApple
+          ? 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36'
+          : 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36',
         permissions: ['clipboard-read', 'clipboard-write'],
       });
       const page = await ctx.newPage();
@@ -58,37 +63,49 @@ try {
         outputs++;
         void popup.close();
       });
-      await page.addInitScript(layout => {
-        localStorage.setItem(
-          'codeimage:editor-settings',
-          JSON.stringify({layout}),
-        );
-        localStorage.setItem(
-          '@store/ui',
-          JSON.stringify({themeMode: 'dark', locale: 'en'}),
-        );
-        window.__focus = [];
-        document.addEventListener('focusin', event =>
-          window.__focus.push({
-            time: performance.now(),
-            html: event.target.outerHTML?.slice(0, 400),
-          }),
-        );
-        window.__events = [];
-        window.umami = {
-          track: (name, data) => window.__events.push({name, data}),
-        };
-        Object.defineProperty(navigator, 'share', {
-          configurable: true,
-          value: async () => {
-            window.__shared = true;
-          },
-        });
-        Object.defineProperty(navigator, 'canShare', {
-          configurable: true,
-          value: () => true,
-        });
-      }, layout);
+      await page.addInitScript(
+        ({layout, platform}) => {
+          Object.defineProperty(navigator, 'platform', {value: platform});
+          window.__keyResults = [];
+          window.addEventListener(
+            'keydown',
+            event => {
+              window.__keyResults.push(event);
+            },
+            true,
+          );
+          localStorage.setItem(
+            'codeimage:editor-settings',
+            JSON.stringify({layout}),
+          );
+          localStorage.setItem(
+            '@store/ui',
+            JSON.stringify({themeMode: 'dark', locale: 'en'}),
+          );
+          window.__focus = [];
+          document.addEventListener('focusin', event =>
+            window.__focus.push({
+              time: performance.now(),
+              html: event.target.outerHTML?.slice(0, 400),
+            }),
+          );
+          window.__events = [];
+          window.umami = {
+            track: (name, data) => window.__events.push({name, data}),
+          };
+          Object.defineProperty(navigator, 'share', {
+            configurable: true,
+            value: async () => {
+              window.__shared = true;
+            },
+          });
+          Object.defineProperty(navigator, 'canShare', {
+            configurable: true,
+            value: () => true,
+          });
+        },
+        {layout, platform},
+      );
       await page.goto(`${base}/`);
       await page.reload();
       await page.waitForSelector('[data-fit-scale] .cm-content');
@@ -143,7 +160,7 @@ try {
         await page.getByRole('menu').waitFor();
       };
       const command = async query => {
-        await page.keyboard.press('Meta+k');
+        await page.keyboard.press(isApple ? 'Meta+k' : 'Control+k');
         const input = page.getByRole('combobox', {
           name: 'Search themes and options',
         });
@@ -223,9 +240,35 @@ try {
         });
         await review(`command ${label}`, () => command(label));
       }
-      if (width === 1440)
-        for (const shortcut of ['Control+s', 'Control+o', 'Control+c'])
-          await review(shortcut, () => page.keyboard.press(shortcut));
+      const exportCombos = [
+        'Control+s',
+        'Control+o',
+        'Control+c',
+        ...(isApple ? ['Meta+s', 'Meta+o', 'Meta+Shift+c'] : []),
+      ];
+      if (width === 1440) {
+        await page.evaluate(() =>
+          navigator.clipboard.writeText('review sentinel'),
+        );
+        for (const shortcut of exportCombos) {
+          await review(shortcut, async () => {
+            if (shortcut !== 'Control+c')
+              await page.locator('.cm-content[contenteditable=true]').click();
+            await page.keyboard.press(shortcut);
+          });
+          check(
+            await page.evaluate(
+              () => window.__keyResults.at(-1)?.defaultPrevented,
+            ),
+            `${tag}: ${shortcut} prevents the browser default`,
+          );
+          check(
+            (await page.evaluate(() => navigator.clipboard.readText())) ===
+              'review sentinel',
+            `${tag}: cancelling ${shortcut} leaves the clipboard unchanged`,
+          );
+        }
+      }
       check(
         (await page
           .getByRole('button', {name: 'Copy to clipboard', exact: true})
@@ -392,6 +435,31 @@ try {
         count >= 15 && (await help.innerText()).includes('Focus code editor'),
         `4 ${tag}: help renders production shortcut definitions`,
       );
+      const helpKeys = async label =>
+        help
+          .locator('dt')
+          .filter({hasText: new RegExp(`^${label}$`)})
+          .locator('xpath=following-sibling::dd[1]')
+          .locator('kbd')
+          .allTextContents();
+      for (const [label, keys] of [
+        ['Export', [isApple ? '⌘' : 'Ctrl', 'S']],
+        ['Export in a new tab', [isApple ? '⌘' : 'Ctrl', 'O']],
+        ['Copy snippet', isApple ? ['⌘', 'Shift', 'C'] : ['Ctrl', 'C']],
+      ]) {
+        assert.deepEqual(await helpKeys(label), keys);
+        check(true, `${tag}: help shows ${keys.join('+')} for ${label}`);
+      }
+      check(
+        !(await help
+          .locator('dt')
+          .filter({hasText: /^Copy link$/})
+          .count()) &&
+          (await help.locator('kbd').allTextContents()).includes(
+            isApple ? '⌥' : 'Alt',
+          ),
+        `${tag}: help has no stale Copy link row and uses platform line-mark modifiers`,
+      );
       await page.keyboard.press('Escape');
       await help.waitFor({state: 'detached'});
       await page.waitForTimeout(80);
@@ -441,6 +509,139 @@ try {
         errors.filter(error => !error.includes("reading 'url'")).length === 0,
         `${tag}: no unexpected page errors: ${errors.join('; ')}`,
       );
+      if (width === 1440) {
+        // Clear the inactive tab's secret fixture; drive the active editor through its UI.
+        await page.evaluate(() => {
+          window.__editor.state.editors.forEach((_, index) => {
+            window.__editor.actions.setEditors(
+              index,
+              'code',
+              'const secondary = 2;',
+            );
+          });
+        });
+        const editor = page.locator('.cm-content[contenteditable=true]');
+        await editor.fill('const shortcut = "text copy";');
+        await page.keyboard.press('End');
+        await page.keyboard.type('soc');
+        check(
+          (await editor.innerText()).endsWith('soc'),
+          `${tag}: typing s, o and c in CodeMirror stays text`,
+        );
+        if (isApple) {
+          await page.keyboard.press('Meta+a');
+          await page.keyboard.press('Meta+c');
+          check(
+            (await page.evaluate(() => navigator.clipboard.readText())) ===
+              (await editor.innerText()),
+            `${tag}: Cmd+C copies the selected code as text`,
+          );
+        }
+        await page.evaluate(() =>
+          navigator.clipboard.writeText('field copy sentinel'),
+        );
+        await page.keyboard.press('Control+c');
+        check(
+          !(await page.evaluate(
+            () => window.__keyResults.at(-1)?.defaultPrevented,
+          )) && !(await warning.count()),
+          `${tag}: Control+C in CodeMirror is not taken by image export`,
+        );
+        for (const shortcut of exportCombos) {
+          if (shortcut === 'Control+c') {
+            await page.keyboard.press('Escape');
+            await page.locator('[data-export-image]').focus();
+            await page.waitForFunction(
+              () => !window.__editor.state.options.focused,
+            );
+          } else {
+            await editor.click();
+          }
+          if (shortcut.endsWith('+s')) {
+            const download = page.waitForEvent('download');
+            await page.keyboard.press(shortcut);
+            const file = await download;
+            check(
+              file.suggestedFilename().endsWith('.png') &&
+                !(await file.failure()),
+              `${tag}: ${shortcut} downloads the image`,
+            );
+          } else if (shortcut.endsWith('+o')) {
+            const popup = page.waitForEvent('popup');
+            await page.keyboard.press(shortcut);
+            await popup;
+            check(true, `${tag}: ${shortcut} opens an image tab`);
+          } else {
+            await page.evaluate(() =>
+              navigator.clipboard.writeText('image copy sentinel'),
+            );
+            await page.keyboard.press(shortcut);
+            let imageSize = 0;
+            for (let attempt = 0; attempt < 100 && !imageSize; attempt++) {
+              imageSize = await page.evaluate(async () => {
+                const items = await navigator.clipboard.read();
+                const item = items.find(item =>
+                  item.types.includes('image/png'),
+                );
+                return item ? (await item.getType('image/png')).size : 0;
+              });
+              if (!imageSize) await page.waitForTimeout(100);
+            }
+            if (!imageSize)
+              console.log(
+                'CLIPBOARD FAILURE',
+                await page.evaluate(() => ({
+                  active: document.activeElement?.outerHTML.slice(0, 300),
+                  focused: window.__editor.state.options.focused,
+                  documentFocused: document.hasFocus(),
+                  prevented: window.__keyResults.at(-1)?.defaultPrevented,
+                  loading: document
+                    .querySelector('[data-export-image]')
+                    ?.hasAttribute('data-loading'),
+                  text: document.body.innerText.slice(-1000),
+                })),
+              );
+            check(
+              imageSize > 0,
+              `${tag}: ${shortcut} writes a PNG to the clipboard`,
+            );
+          }
+          check(
+            !(await warning.count()),
+            `${tag}: ${shortcut} exports without a secrets review when code is safe`,
+          );
+          await page
+            .getByRole('button', {name: 'Copy alt text', exact: true})
+            .last()
+            .waitFor();
+          // Copy uses a separate loading signal; wait for the user-visible spinner to finish.
+          await page.waitForFunction(
+            () => !document.querySelector('[data-export-image][data-loading]'),
+          );
+        }
+        if (!isApple) {
+          await page.locator('[data-export-image]').focus();
+          const count = outputs;
+          await page.evaluate(() =>
+            navigator.clipboard.writeText('non-Mac sentinel'),
+          );
+          for (const shortcut of ['Meta+s', 'Meta+o', 'Meta+Shift+c']) {
+            await page.keyboard.press(shortcut);
+            check(
+              !(await page.evaluate(
+                () => window.__keyResults.at(-1)?.defaultPrevented,
+              )),
+              `${tag}: ${shortcut} is not bound outside Apple platforms`,
+            );
+          }
+          check(
+            outputs === count &&
+              (await page.evaluate(() => navigator.clipboard.readText())) ===
+                'non-Mac sentinel',
+            `${tag}: Meta combos produce no export on the non-Mac branch`,
+          );
+        }
+      }
       await page.waitForTimeout(350);
       await page.reload();
       await page.waitForSelector('[data-fit-scale] .cm-content');

@@ -37,19 +37,19 @@ The retained P2 live-lane reference is `scripts/fixtures/p2/trunk-off.png`. It p
 
 Additional renderer controls from the retired reports:
 
-| Option | Use |
-| --- | --- |
-| `P2_LIVE=1` | Run the live lanes after the matrix. |
-| `P2_MATRIX` | Read a previously captured matrix directory. |
-| `P2_BASELINE` | Read a reviewed baseline PNG, such as `scripts/fixtures/p2/trunk-off.png`. |
-| `P2_PATH=/classic` | Target the classic editor instead of `/`. |
-| `P2_WEB_FONTS` | Select the comma-separated web-font families for local-font review. |
-| `P2_SYSTEM_FONTS` | Select the comma-separated system-font families available on this machine. |
-| `P2_FONT_WEIGHT` | Set the font weight under test. |
-| `P2_DISPLAY_DPR` | Set the display pixel ratio for the renderer checks. |
-| `CHROMIUM_PATH` | Use a specific Chromium executable. |
-| `SIGNATURE_ALL_ICONS=1` | Check every platform icon. |
-| `SIGNATURE_QUICK=1` | Restrict the signature background and position combinations. |
+| Option                  | Use                                                                        |
+| ----------------------- | -------------------------------------------------------------------------- |
+| `P2_LIVE=1`             | Run the live lanes after the matrix.                                       |
+| `P2_MATRIX`             | Read a previously captured matrix directory.                               |
+| `P2_BASELINE`           | Read a reviewed baseline PNG, such as `scripts/fixtures/p2/trunk-off.png`. |
+| `P2_PATH=/classic`      | Target the classic editor instead of `/`.                                  |
+| `P2_WEB_FONTS`          | Select the comma-separated web-font families for local-font review.        |
+| `P2_SYSTEM_FONTS`       | Select the comma-separated system-font families available on this machine. |
+| `P2_FONT_WEIGHT`        | Set the font weight under test.                                            |
+| `P2_DISPLAY_DPR`        | Set the display pixel ratio for the renderer checks.                       |
+| `CHROMIUM_PATH`         | Use a specific Chromium executable.                                        |
+| `SIGNATURE_ALL_ICONS=1` | Check every platform icon.                                                 |
+| `SIGNATURE_QUICK=1`     | Restrict the signature background and position combinations.               |
 
 For head/base matrices and the additional export cases, follow `scripts/parity/README.md`. Preserve every nonzero diff for inspection. Keep benchmark results separate from functional results; `scripts/verify-p5-exports.cjs` measures interleaved head/trunk exports and is not replaced by a downloaded PNG. It accepts `P5_TRUNK_URL`, `P5_HEAD_URL`, `P5_OUT` and `P5_CHROMIUM`; it also accepts `P5_TOOLS_ROOT` when Playwright is installed outside the workspace. Preserve both server revisions and follow the benchmark checklist before interpreting its timings.
 
