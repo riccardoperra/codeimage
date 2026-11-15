@@ -95,6 +95,17 @@ const install = mode => context =>
   });
 
 const modelRow = page => page.locator('[data-setting="local-ai-model"]');
+const requirements = row => row.getByRole('list', {name: 'What Chrome needs'});
+const statusOf = (row, id) =>
+  row.locator(`[data-requirement="${id}"]`).getAttribute('data-status');
+
+// A device whose page-readable facts are fixed: 8 cores, 4 GB of RAM.
+function fixDevice() {
+  Object.defineProperty(Navigator.prototype, 'hardwareConcurrency', {
+    get: () => 8,
+  });
+  Object.defineProperty(Navigator.prototype, 'deviceMemory', {get: () => 4});
+}
 const modelGroup = page =>
   page.locator('section', {has: page.locator('[data-setting="local-ai"]')});
 
@@ -147,6 +158,12 @@ function verifyDownload({fresh, out}) {
       const row = modelRow(page);
       const group = modelGroup(page);
       await row.getByText('Chrome downloads it once').waitFor();
+      await requirements(row).waitFor();
+      assert.equal(
+        await requirements(row).getByRole('listitem').count(),
+        6,
+        'every requirement is listed while the model is downloadable',
+      );
       await group.screenshot({
         path: resolve(out, 'local-ai-row-downloadable.png'),
       });
@@ -157,7 +174,22 @@ function verifyDownload({fresh, out}) {
       );
       await row.getByRole('button', {name: 'Download model'}).click();
       await row.locator('progress:not([value])').waitFor({timeout: 1000});
-      assert.match(await row.innerText(), /Starting download…/);
+      assert.match(
+        await row.innerText(),
+        /Downloading… Chrome doesn't report progress yet\./,
+      );
+      assert.equal(
+        await requirements(row).count(),
+        0,
+        'no list once downloading',
+      );
+      assert.deepEqual(
+        await row
+          .locator('[data-address]')
+          .evaluateAll(chips => chips.map(chip => chip.dataset.address)),
+        ['chrome://on-device-internals'],
+        'only the internals page, for the live download status',
+      );
       await group.screenshot({
         path: resolve(out, 'local-ai-row-downloading-indeterminate.png'),
       });
@@ -169,6 +201,11 @@ function verifyDownload({fresh, out}) {
         'the bar shows real progress once Chrome reports it',
       );
       assert.match(await row.innerText(), /50%/);
+      assert.equal(
+        await row.locator('[data-address]').count(),
+        0,
+        'real progress needs no pointer to Chrome',
+      );
       await group.screenshot({
         path: resolve(out, 'local-ai-row-downloading.png'),
       });
@@ -353,7 +390,10 @@ function verifyFailedDownload({fresh, out}) {
       name: 'local-ai-failed',
       layout: 'inspector',
       viewport: {width: 1440, height: 1000},
-      initialize: install('fail'),
+      initialize: async context => {
+        await install('fail')(context);
+        await context.addInitScript(fixDevice);
+      },
     },
     async ({page, doctor, settings, closeSettings}) => {
       await doctor();
@@ -372,10 +412,29 @@ function verifyFailedDownload({fresh, out}) {
       await page.evaluate(() => (window.__localAi.forced = 'unavailable'));
       await settings('experiments');
       await row
-        .getByText(
-          'Not available. Turn on On-device AI in chrome://settings/ai.',
-        )
+        .getByText('Chrome says it cannot run on this device.')
         .waitFor();
+      await requirements(row).waitFor();
+      assert.equal(await statusOf(row, 'cpu'), 'met', '8 cores are enough');
+      assert.equal(
+        await statusOf(row, 'memory'),
+        'unmet',
+        '4 GB is too little',
+      );
+      assert.equal(await statusOf(row, 'disk'), 'unknown');
+      assert.equal(await statusOf(row, 'setting'), 'unknown');
+      const internals = row.locator(
+        '[data-address="chrome://on-device-internals"]',
+      );
+      await internals
+        .getByRole('button', {name: 'Copy chrome://on-device-internals'})
+        .click();
+      await internals.getByRole('button', {name: 'Copied'}).waitFor();
+      assert.equal(
+        await page.evaluate(() => navigator.clipboard.readText()),
+        'chrome://on-device-internals',
+        'the chip copies the address',
+      );
       assert.equal(
         await page.locator('#settings-local-ai').isDisabled(),
         true,

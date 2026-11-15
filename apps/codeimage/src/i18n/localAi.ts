@@ -21,17 +21,44 @@ export const localAi = {
       experimentSwitch: 'Use local AI',
       model: 'On-device model',
       modelReady: 'Ready on this device.',
-      modelDownloadable:
-        'Chrome downloads it once: a few GB, and it wants at least 22 GB of free disk space.',
+      modelDownloadable: 'Chrome downloads it once, a few GB.',
       modelDownloading:
         'Downloading. You can keep editing, the progress shows here.',
-      modelStarting: 'Starting download…',
-      modelUnavailable:
-        'Not available. Turn on On-device AI in chrome://settings/ai.',
+      modelNoProgress: "Downloading… Chrome doesn't report progress yet.",
+      modelUnavailable: 'Chrome says it cannot run on this device.',
       checkAgain: 'Check again',
       modelFailed: 'The download failed ({{message}}).',
-      modelDetails:
-        'Chrome shows its own status at chrome://on-device-internals.',
+      requirementsTitle: 'What Chrome needs',
+      status: {met: 'Met', unmet: 'Not met', unknown: 'Check yourself'},
+      requirement: {
+        browser: 'Chrome 148 or later, on a computer',
+        os: 'Windows 10 or 11, macOS 13 or later, Linux, or ChromeOS on a Chromebook Plus',
+        cpu: '4 CPU cores or more',
+        memory: '16 GB of RAM, or a GPU with more than 4 GB of VRAM',
+        disk: 'About 20 GB free on the disk with your Chrome profile',
+        setting: 'On-device AI turned on in Chrome settings',
+      },
+      found: {
+        browser: 'Chrome {{version}}',
+        cpu: '{{cores}} cores',
+        memory: 'Only {{gb}} GB of RAM, so it needs the GPU',
+      },
+      unknown: {
+        browser: 'The page cannot read the version',
+        os: 'The page cannot read the system',
+        cpu: 'The page cannot read the cores',
+        memory: 'The page cannot read RAM above 8 GB, or the GPU',
+        disk: 'On-device internals shows the free space',
+        setting: 'Chrome settings show it',
+      },
+      settingsAddress: 'Turn on On-device AI',
+      internalsAddress: 'Why Chrome says it cannot run, such as disk space',
+      downloadAddress: 'Shows the live download status',
+      pasteHint:
+        'Chrome does not open these addresses from a page. Copy one and paste it in the address bar.',
+      copy: 'Copy',
+      copyAddress: 'Copy {{address}}',
+      copied: 'Copied',
       download: 'Download model',
       retry: 'Retry',
       notReady:
@@ -61,17 +88,51 @@ export const localAi = {
       experimentSwitch: "Usa l'AI locale",
       model: 'Modello on-device',
       modelReady: 'Pronto su questo dispositivo.',
-      modelDownloadable:
-        'Chrome lo scarica una volta: qualche GB, e servono almeno 22 GB liberi su disco.',
+      modelDownloadable: 'Chrome lo scarica una volta, qualche GB.',
       modelDownloading:
         "Download in corso. Puoi continuare a modificare, l'avanzamento è qui.",
-      modelStarting: 'Avvio del download…',
+      modelNoProgress:
+        "Download in corso… Chrome non riporta ancora l'avanzamento.",
       modelUnavailable:
-        'Non disponibile. Attiva On-device AI in chrome://settings/ai.',
+        'Chrome dice che non può funzionare su questo dispositivo.',
       checkAgain: 'Controlla di nuovo',
       modelFailed: 'Il download non è riuscito ({{message}}).',
-      modelDetails:
-        'Chrome mostra il suo stato in chrome://on-device-internals.',
+      requirementsTitle: 'Cosa serve a Chrome',
+      status: {
+        met: 'Soddisfatto',
+        unmet: 'Non soddisfatto',
+        unknown: 'Da verificare',
+      },
+      requirement: {
+        browser: 'Chrome 148 o successivo, su un computer',
+        os: 'Windows 10 o 11, macOS 13 o successivo, Linux, o ChromeOS su un Chromebook Plus',
+        cpu: 'Almeno 4 core di CPU',
+        memory: '16 GB di RAM, o una GPU con più di 4 GB di VRAM',
+        disk: 'Circa 20 GB liberi sul disco del profilo di Chrome',
+        setting: 'On-device AI attivo nelle impostazioni di Chrome',
+      },
+      found: {
+        browser: 'Chrome {{version}}',
+        cpu: '{{cores}} core',
+        memory: 'Solo {{gb}} GB di RAM, quindi serve la GPU',
+      },
+      unknown: {
+        browser: 'La pagina non può leggere la versione',
+        os: 'La pagina non può leggere il sistema',
+        cpu: 'La pagina non può leggere i core',
+        memory: 'La pagina non legge la RAM oltre 8 GB, né la GPU',
+        disk: 'On-device internals mostra lo spazio libero',
+        setting: 'Lo mostrano le impostazioni di Chrome',
+      },
+      settingsAddress: 'Attiva On-device AI',
+      internalsAddress:
+        'Perché Chrome dice che non può funzionare, ad esempio lo spazio su disco',
+      downloadAddress: 'Mostra lo stato del download in tempo reale',
+      pasteHint:
+        'Chrome non apre questi indirizzi da una pagina. Copiane uno e incollalo nella barra degli indirizzi.',
+      copy: 'Copia',
+      copyAddress: 'Copia {{address}}',
+      copied: 'Copiato',
       download: 'Scarica il modello',
       retry: 'Riprova',
       notReady:
@@ -101,17 +162,50 @@ export const localAi = {
       experimentSwitch: 'Lokale KI verwenden',
       model: 'On-Device-Modell',
       modelReady: 'Bereit auf diesem Gerät.',
-      modelDownloadable:
-        'Chrome lädt es einmal herunter: einige GB, und es braucht mindestens 22 GB freien Speicherplatz.',
+      modelDownloadable: 'Chrome lädt es einmal herunter, einige GB.',
       modelDownloading:
         'Wird heruntergeladen. Du kannst weiter bearbeiten, der Fortschritt steht hier.',
-      modelStarting: 'Download wird gestartet…',
-      modelUnavailable:
-        'Nicht verfügbar. Aktiviere On-device AI unter chrome://settings/ai.',
+      modelNoProgress:
+        'Wird heruntergeladen… Chrome meldet noch keinen Fortschritt.',
+      modelUnavailable: 'Laut Chrome kann es auf diesem Gerät nicht laufen.',
       checkAgain: 'Erneut prüfen',
       modelFailed: 'Der Download ist fehlgeschlagen ({{message}}).',
-      modelDetails:
-        'Chrome zeigt seinen Status unter chrome://on-device-internals.',
+      requirementsTitle: 'Was Chrome braucht',
+      status: {
+        met: 'Erfüllt',
+        unmet: 'Nicht erfüllt',
+        unknown: 'Selbst prüfen',
+      },
+      requirement: {
+        browser: 'Chrome 148 oder neuer, auf einem Computer',
+        os: 'Windows 10 oder 11, macOS 13 oder neuer, Linux, oder ChromeOS auf einem Chromebook Plus',
+        cpu: 'Mindestens 4 CPU-Kerne',
+        memory: '16 GB RAM, oder eine GPU mit mehr als 4 GB VRAM',
+        disk: 'Etwa 20 GB frei auf dem Laufwerk deines Chrome-Profils',
+        setting: 'On-device AI in den Chrome-Einstellungen aktiviert',
+      },
+      found: {
+        browser: 'Chrome {{version}}',
+        cpu: '{{cores}} Kerne',
+        memory: 'Nur {{gb}} GB RAM, also braucht es die GPU',
+      },
+      unknown: {
+        browser: 'Die Seite kann die Version nicht lesen',
+        os: 'Die Seite kann das System nicht lesen',
+        cpu: 'Die Seite kann die Kerne nicht lesen',
+        memory: 'Die Seite liest RAM nur bis 8 GB und die GPU gar nicht',
+        disk: 'On-device internals zeigt den freien Speicher',
+        setting: 'Die Chrome-Einstellungen zeigen es',
+      },
+      settingsAddress: 'On-device AI aktivieren',
+      internalsAddress:
+        'Warum Chrome es nicht ausführen kann, etwa wegen Speicherplatz',
+      downloadAddress: 'Zeigt den Download-Status live',
+      pasteHint:
+        'Chrome öffnet diese Adressen nicht aus einer Seite. Kopiere eine und füge sie in die Adressleiste ein.',
+      copy: 'Kopieren',
+      copyAddress: '{{address}} kopieren',
+      copied: 'Kopiert',
       download: 'Modell herunterladen',
       retry: 'Erneut versuchen',
       notReady:
@@ -141,16 +235,50 @@ export const localAi = {
       experimentSwitch: 'Usar la IA local',
       model: 'Modelo en el dispositivo',
       modelReady: 'Listo en este dispositivo.',
-      modelDownloadable:
-        'Chrome lo descarga una vez: unos pocos GB, y necesita al menos 22 GB libres en disco.',
+      modelDownloadable: 'Chrome lo descarga una vez, unos pocos GB.',
       modelDownloading:
         'Descargando. Puedes seguir editando, el progreso se ve aquí.',
-      modelStarting: 'Iniciando la descarga…',
+      modelNoProgress: 'Descargando… Chrome aún no informa del progreso.',
       modelUnavailable:
-        'No disponible. Activa On-device AI en chrome://settings/ai.',
+        'Chrome dice que no puede funcionar en este dispositivo.',
       checkAgain: 'Comprobar de nuevo',
       modelFailed: 'La descarga falló ({{message}}).',
-      modelDetails: 'Chrome muestra su estado en chrome://on-device-internals.',
+      requirementsTitle: 'Lo que Chrome necesita',
+      status: {
+        met: 'Cumplido',
+        unmet: 'No cumplido',
+        unknown: 'Compruébalo tú',
+      },
+      requirement: {
+        browser: 'Chrome 148 o posterior, en un ordenador',
+        os: 'Windows 10 u 11, macOS 13 o posterior, Linux, o ChromeOS en un Chromebook Plus',
+        cpu: '4 núcleos de CPU o más',
+        memory: '16 GB de RAM, o una GPU con más de 4 GB de VRAM',
+        disk: 'Unos 20 GB libres en el disco de tu perfil de Chrome',
+        setting: 'On-device AI activado en los ajustes de Chrome',
+      },
+      found: {
+        browser: 'Chrome {{version}}',
+        cpu: '{{cores}} núcleos',
+        memory: 'Solo {{gb}} GB de RAM, así que necesita la GPU',
+      },
+      unknown: {
+        browser: 'La página no puede leer la versión',
+        os: 'La página no puede leer el sistema',
+        cpu: 'La página no puede leer los núcleos',
+        memory: 'La página no lee la RAM por encima de 8 GB, ni la GPU',
+        disk: 'On-device internals muestra el espacio libre',
+        setting: 'Lo muestran los ajustes de Chrome',
+      },
+      settingsAddress: 'Activa On-device AI',
+      internalsAddress:
+        'Por qué Chrome dice que no puede funcionar, como el espacio en disco',
+      downloadAddress: 'Muestra el estado de la descarga en directo',
+      pasteHint:
+        'Chrome no abre estas direcciones desde una página. Copia una y pégala en la barra de direcciones.',
+      copy: 'Copiar',
+      copyAddress: 'Copiar {{address}}',
+      copied: 'Copiado',
       download: 'Descargar el modelo',
       retry: 'Reintentar',
       notReady:
