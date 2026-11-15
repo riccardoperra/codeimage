@@ -166,5 +166,7 @@ export async function exportImage(
     }
   }
 
+  const {prepareWatermarks} = await import('../core/watermark/browser');
+  await prepareWatermarks(previewNode);
   return exportByMode(previewNode);
 }

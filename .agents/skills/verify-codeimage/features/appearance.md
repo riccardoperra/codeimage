@@ -21,3 +21,9 @@ The surface choice asserts the checked radio. Modern window controls and exact Z
 ## Gotchas
 
 The old Syntax highlight button applies to `/classic`. Turning `window.header` off hides the style and tab-accent controls. Baseline does not cover appearance; audit covers theme commit and surface. Hover cancellation, every window style, fonts and social dimensions remain targeted follow-ups.
+
+## Watermark placement
+
+The `watermark` journey checks the existing logo without changing its style. It stays at home when clear of code. When code overlaps it, frame padding and the content's top-right corner are tried before the title bar's right and left ends. Every target clears measured text, tabs, controls and the signature mark. With no eligible space, the original mark remains visible in its original position.
+
+Run `VERIFY_AUDIT=1 VERIFY_CASES=watermark node .agents/skills/verify-codeimage/scripts/verify.mjs`. The journey records `watermark.json`, checks live/export placements across the seven window styles, drives padding and signature positions, and downloads actual DOM and Takumi PNGs. It also covers a social target and per-tab ZIP export. `core/watermark/placement.ts` owns the pure geometry policy; `components/Watermark/Watermark.tsx` owns measurement and rendering.
