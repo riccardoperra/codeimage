@@ -143,6 +143,10 @@ export async function audit({page, context, base, out, server}) {
     await surface.screenshot({path: resolve(out, 'appearance-wash.png')});
     PNG.sync.read(await download('wash.png'));
   });
+  await feature('watermark', async () => {
+    const {verifyWatermark} = await import('./watermark.mjs');
+    await verifyWatermark({page, out, download, section});
+  });
   await feature('tabs', async () => {
     await section('window');
     await page

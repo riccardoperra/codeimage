@@ -1,12 +1,10 @@
-import {Box, FadeInOutTransition} from '@codeimage/ui';
 import {AVAILABLE_TERMINAL_THEMES} from '@core/configuration/terminal-themes';
 
 import type {JSXElement, ParentComponent} from 'solid-js';
 import {children, createMemo} from 'solid-js';
 import {Dynamic} from 'solid-js/web';
 import {omitProps} from 'solid-use/props';
-import {CodeImageLogoV2} from '../../Icons/CodeImageLogoV2';
-import * as styles from '../terminal.css';
+import {Watermark} from '../../Watermark/Watermark';
 import type {BaseTerminalProps} from '../TerminalHost';
 import {createTabTheme} from '../Tabs/createTabTheme';
 
@@ -37,15 +35,7 @@ export const DynamicTerminal: ParentComponent<DynamicTerminalProps> = (
     <Dynamic component={terminal()} {...omitProps(props, ['type'])}>
       {resolvedChildren()}
 
-      <FadeInOutTransition show={props.showWatermark}>
-        <Box class={styles.watermark}>
-          <CodeImageLogoV2
-            width={125}
-            withGradient={false}
-            data-theme-mode={tabTheme().darkMode ? 'dark' : 'light'}
-          />
-        </Box>
-      </FadeInOutTransition>
+      <Watermark enabled={props.showWatermark} darkMode={tabTheme().darkMode} />
     </Dynamic>
   );
 };
