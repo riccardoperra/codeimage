@@ -2,15 +2,7 @@ import {NewDot} from '../../../../components/WhatsNew/NewDot';
 import {commandAnchor} from '../../../../components/WhatsNew/whats-new.css';
 import {themeVars} from '@codeimage/ui';
 import {Button} from '@codeui/kit';
-import {
-  For,
-  Show,
-  createEffect,
-  createSignal,
-  on,
-  onCleanup,
-  onMount,
-} from 'solid-js';
+import {For, Show, createEffect, createSignal, on, onCleanup} from 'solid-js';
 import type {JSX, ParentProps} from 'solid-js';
 import {commandMenu} from '../../command-menu/state';
 import type {VariantMeta, VariantProps} from '../../contract';
@@ -171,9 +163,7 @@ export default function Inspector(props: VariantProps) {
   // may grow. The page's header is above the root.
   const [rootHeight, setRootHeight] = createSignal(innerHeight);
   const tallSheet = () => Math.min(560, rootHeight() - 284);
-  const [mobile, setMobile] = createSignal(
-    matchMedia('(max-width: 768px)').matches,
-  );
+  const mobile = props.stage.compact;
   let panel: HTMLElement | undefined;
   let canvas: HTMLElement | undefined;
   let scroll: HTMLDivElement | undefined;
@@ -210,12 +200,6 @@ export default function Inspector(props: VariantProps) {
   let skipHandleClick = false;
   // An open section changes the island padding the theme section leaves room for.
   createEffect(on([openSection, mobile], () => queueMicrotask(measureFill)));
-  onMount(() => {
-    const media = matchMedia('(max-width: 768px)');
-    const update = () => setMobile(media.matches);
-    media.addEventListener('change', update);
-    onCleanup(() => media.removeEventListener('change', update));
-  });
   const toggleSection = (id: PanelId, open: boolean) =>
     setOpenSection(current => (open ? id : current === id ? null : current));
   const selectedTheme = () =>

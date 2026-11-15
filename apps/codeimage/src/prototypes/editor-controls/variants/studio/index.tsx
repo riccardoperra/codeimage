@@ -1,7 +1,6 @@
 import {NewDot} from '../../../../components/WhatsNew/NewDot';
 import {commandAnchor} from '../../../../components/WhatsNew/whats-new.css';
 import {Button, IconButton} from '@codeui/kit';
-import {useModality} from '@core/hooks/isMobile';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 import {
   createMemo,
@@ -72,7 +71,6 @@ function RailSettings() {
 
 export default function Studio(props: VariantProps) {
   // The production header and buttons pick their layout once, at load.
-  const modality = useModality();
   const compactQuery = matchMedia(styles.COMPACT_QUERY);
   const [isPhone, setIsPhone] = createSignal(compactQuery.matches);
   const [openId, setOpenId] = createSignal<PanelId | null>(
@@ -378,7 +376,7 @@ export default function Studio(props: VariantProps) {
             <props.stage.Canvas />
           </div>
           <Show
-            when={modality === 'full'}
+            when={!props.stage.compact()}
             fallback={
               <div class={styles.compactActions}>
                 <ShareButton showLabel={false} />

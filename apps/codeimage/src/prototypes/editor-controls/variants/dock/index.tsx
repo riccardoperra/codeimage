@@ -1,7 +1,6 @@
 import {NewDot} from '../../../../components/WhatsNew/NewDot';
 import {commandAnchor} from '../../../../components/WhatsNew/whats-new.css';
 import {Button, IconButton} from '@codeui/kit';
-import {useModality} from '@core/hooks/isMobile';
 import {Popover} from '@kobalte/core/popover';
 import type {JSX} from 'solid-js';
 import {createSignal, For, onCleanup, onMount, Show} from 'solid-js';
@@ -199,9 +198,6 @@ function BarSettings() {
 
 export default function Dock(props: VariantProps) {
   const fields = createFields(props.model);
-  // The production header shows Export only when the page loaded on a wide
-  // window, so the bar offers it in exactly the other case.
-  const exportInBar = useModality() === 'mobile';
   const compact = createMediaQuery('(max-width: 767px)');
   const canHover = createMediaQuery('(hover: hover) and (pointer: fine)');
 
@@ -438,7 +434,7 @@ export default function Dock(props: VariantProps) {
                 </span>
                 <BarSettings />
               </Show>
-              <Show when={exportInBar}>
+              <Show when={props.stage.compact()}>
                 <div class="dock-bar-export" onClick={close}>
                   <props.stage.ExportButton />
                 </div>
