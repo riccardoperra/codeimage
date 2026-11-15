@@ -1,3 +1,7 @@
+import {getExportTarget} from '@codeimage/config';
+import type {FrameState} from '@codeimage/store/frame/model';
+import type {FittedPlacement} from './FittedWindow';
+import {frameBottomPadding} from './signatureLayout';
 import {FittedWindow} from './FittedWindow';
 import {FrameSignature, framePadding, signatureScale} from './FrameSignature';
 import {isAssetUrl} from '@codeimage/store/assets/assetIds';
@@ -21,13 +25,14 @@ export interface FrameViewProps {
   tab?: EditorState;
   language: Language | null;
   media: FrameMedia;
+  windowPlacement?: FittedPlacement;
   showOnlyActiveTab?: boolean;
 }
 
 export function FrameView(props: VoidProps<FrameViewProps>) {
   const frame = getFrameState().store;
-  const target = () => getFrameState().exportTarget();
-  const scale = () => signatureScale(target()?.resolution[0] ?? frame.width);
+  const target = () => getExportTarget(frame.exportTarget);
+  const scale = () => frameSignatureScale(frame, target());
   const terminal = getTerminalState().state;
   const editor = getRootEditorStore();
   const tab = () => props.tab ?? getActiveEditorStore().editor();
@@ -95,46 +100,44 @@ export function FrameView(props: VoidProps<FrameViewProps>) {
           </Show>
         </div>
 
-        <div data-snapshot-window style={{display: 'contents'}}>
-          <FittedWindow active={!!target()}>
-            <DynamicTerminal
-              type={terminal.type}
-              activeTabId={props.tab?.id}
-              readonlyTab={true}
-              showTab={true}
-              showOnlyActiveTab={props.showOnlyActiveTab}
-              shadow={terminal.shadow}
-              background={terminal.background}
-              accentVisible={terminal.accentVisible}
-              textColor={terminal.textColor}
-              showHeader={terminal.showHeader}
-              showGlassReflection={terminal.showGlassReflection}
-              showWatermark={terminal.showWatermark}
-              opacity={terminal.opacity}
-              alternativeTheme={terminal.alternativeTheme}
-              borderType={terminal.borderType}
-              surface={terminal.surface}
-              themeId={editor.state.options.themeId}
-            >
-              <Show when={tab()}>
-                {active => (
-                  <StaticCodeView
-                    code={active().code}
-                    marks={active().marks}
-                    languageId={active().languageId}
-                    language={props.language}
-                    theme={theme()!}
-                    showLineNumbers={editor.state.options.showLineNumbers}
-                    lineNumberStart={active().lineNumberStart ?? 1}
-                    fontFamily={editor.computed.selectedFont().name}
-                    fontWeight={editor.state.options.fontWeight}
-                    enableLigatures={editor.state.options.enableLigatures}
-                  />
-                )}
-              </Show>
-            </DynamicTerminal>
-          </FittedWindow>
-        </div>
+        <FittedWindow active={!!target()} placement={props.windowPlacement}>
+          <DynamicTerminal
+            type={terminal.type}
+            activeTabId={props.tab?.id}
+            readonlyTab={true}
+            showTab={true}
+            showOnlyActiveTab={props.showOnlyActiveTab}
+            shadow={terminal.shadow}
+            background={terminal.background}
+            accentVisible={terminal.accentVisible}
+            textColor={terminal.textColor}
+            showHeader={terminal.showHeader}
+            showGlassReflection={terminal.showGlassReflection}
+            showWatermark={terminal.showWatermark}
+            opacity={terminal.opacity}
+            alternativeTheme={terminal.alternativeTheme}
+            borderType={terminal.borderType}
+            surface={terminal.surface}
+            themeId={editor.state.options.themeId}
+          >
+            <Show when={tab()}>
+              {active => (
+                <StaticCodeView
+                  code={active().code}
+                  marks={active().marks}
+                  languageId={active().languageId}
+                  language={props.language}
+                  theme={theme()!}
+                  showLineNumbers={editor.state.options.showLineNumbers}
+                  lineNumberStart={active().lineNumberStart ?? 1}
+                  fontFamily={editor.computed.selectedFont().name}
+                  fontWeight={editor.state.options.fontWeight}
+                  enableLigatures={editor.state.options.enableLigatures}
+                />
+              )}
+            </Show>
+          </DynamicTerminal>
+        </FittedWindow>
         <FrameSignature
           signature={frame.signature}
           media={props.media}
@@ -144,4 +147,28 @@ export function FrameView(props: VoidProps<FrameViewProps>) {
       </div>
     </div>
   );
+}
+
+export function frameSignatureScale(
+  frame: Pick<FrameState, 'width'>,
+  target:
+    | Pick<NonNullable<ReturnType<typeof getExportTarget>>, 'resolution'>
+    | undefined,
+): number {
+  return signatureScale(target?.resolution[0] ?? frame.width);
+}
+
+export function targetViewport(
+  resolution: readonly [number, number],
+  padding: number,
+  signature: FrameState['signature'],
+  scale: number,
+) {
+  return {
+    width: Math.max(0, resolution[0] - 2 * padding),
+    height: Math.max(
+      0,
+      resolution[1] - padding - frameBottomPadding(padding, signature, scale),
+    ),
+  };
 }

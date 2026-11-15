@@ -9,43 +9,70 @@ import {
 
 export const FITTED_WINDOW_MIN_WIDTH = 480;
 
-interface Size {
+export interface Size {
   width: number;
   height: number;
 }
 
 // The window shrinks to fit the frame but never grows past its natural size.
 export const fitScale = (viewport: Size, content: Size) =>
-  Math.min(1, viewport.width / content.width, viewport.height / content.height);
-
-function fitFrameWindow(frame: HTMLElement) {
-  const content = frame.querySelector<HTMLElement>('[data-fitted-window]');
-  const viewport = content?.parentElement;
-  if (!content || !viewport || !viewport.hasAttribute('data-fit-window'))
-    return;
-  const scale = fitScale(
-    {width: viewport.clientWidth, height: viewport.clientHeight},
-    {
-      width: Math.max(content.offsetWidth, content.scrollWidth),
-      height: Math.max(content.offsetHeight, content.scrollHeight),
-    },
+  Math.max(
+    0,
+    Math.min(
+      1,
+      viewport.width / content.width,
+      viewport.height / content.height,
+    ),
   );
-  const transform = `translate(-50%, -50%) scale(${scale})`;
-  if (content.style.transform !== transform)
-    content.style.transform = transform;
+
+export interface FittedPlacement {
+  readonly left: number;
+  readonly top: number;
+  readonly scale: number;
 }
 
-export function FittedWindow(props: ParentProps<{active: boolean}>) {
+export function fittedPlacement(
+  viewport: Size,
+  content: Size,
+): FittedPlacement {
+  const scale = fitScale(viewport, content);
+  return {
+    left: Math.round((viewport.width - content.width * scale) / 2),
+    top: Math.round((viewport.height - content.height * scale) / 2),
+    scale,
+  };
+}
+
+export function FittedWindow(
+  props: ParentProps<{active: boolean; placement?: FittedPlacement}>,
+) {
   const [viewport, setViewport] = createSignal<HTMLDivElement>();
   const [content, setContent] = createSignal<HTMLDivElement>();
+  const [measured, setMeasured] = createSignal<FittedPlacement>({
+    left: 0,
+    top: 0,
+    scale: 1,
+  });
+  const placement = () => props.placement ?? measured();
   const fit = () => {
     const element = viewport();
-    if (element && props.active) fitFrameWindow(element);
+    const window = content();
+    if (!element || !window || !props.active || props.placement) return;
+    setMeasured(
+      fittedPlacement(
+        {width: element.clientWidth, height: element.clientHeight},
+        {
+          width: Math.max(window.offsetWidth, window.scrollWidth),
+          height: Math.max(window.offsetHeight, window.scrollHeight),
+        },
+      ),
+    );
   };
   createResizeObserver(viewport, fit);
   createResizeObserver(content, fit);
   createEffect(fit);
   onMount(() => {
+    if (props.placement) return;
     const observer = new MutationObserver(fit);
     observer.observe(content()!, {
       subtree: true,
@@ -78,11 +105,12 @@ export function FittedWindow(props: ParentProps<{active: boolean}>) {
           props.active
             ? {
                 position: 'absolute',
-                left: '50%',
-                top: '50%',
+                left: `${placement().left}px`,
+                top: `${placement().top}px`,
+                transform: `scale(${placement().scale})`,
                 width: 'max-content',
                 'min-width': `${FITTED_WINDOW_MIN_WIDTH}px`,
-                'transform-origin': 'center',
+                'transform-origin': '0 0',
               }
             : {display: 'contents', transform: 'none'}
         }

@@ -1,3 +1,4 @@
+import type {ImageBytes} from '../../render/contract';
 import {getAssetsStore} from '@codeimage/store/assets/assets';
 import {isAssetLinkUrl, isAssetUrl} from '@codeimage/store/assets/assetIds';
 import type {AssetId, AssetLinkId} from '@codeimage/store/assets/assetIds';
@@ -26,11 +27,6 @@ export interface FrameMediaRequest {
   readonly avatar: AvatarSource | null;
   readonly avatarAsset: AssetId | null;
   readonly tone: SignatureTone | null;
-}
-
-export interface ImageBytes {
-  readonly src: string;
-  readonly data: ArrayBuffer;
 }
 
 export function frameMediaRequest(

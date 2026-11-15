@@ -1,34 +1,38 @@
+import '../assets/styles/app.scss';
+import '../theme/global.css';
+import {getExportTarget} from '@codeimage/config';
+import type {CommentTokens} from '@codemirror/commands';
+import {EditorState} from '@codemirror/state';
+import type {
+  RenderSnapshot,
+  ComposedFrame,
+  FrameHost,
+  FrameMarkup,
+  FrameSize,
+} from './contract';
+import {parseAnnotations} from '../core/diff/parseAnnotations';
+import {
+  FITTED_WINDOW_MIN_WIDTH,
+  fittedPlacement,
+} from '../components/Frame/FittedWindow';
+import type {FittedPlacement} from '../components/Frame/FittedWindow';
+import {
+  FrameView,
+  frameSignatureScale,
+  targetViewport,
+} from '../components/Frame/FrameView';
 import {
   frameMediaRequest,
   resolveFrameMedia,
 } from '../components/Frame/frameMedia';
-import type {ImageBytes} from '../components/Frame/frameMedia';
-import '../assets/styles/app.scss';
-import {getExportTarget} from '@codeimage/config';
-import type {CommentTokens} from '@codemirror/commands';
-import {EditorState} from '@codemirror/state';
-import {parseAnnotations} from '../core/diff/parseAnnotations';
-import {
-  FITTED_WINDOW_MIN_WIDTH,
-  fitScale,
-} from '../components/Frame/FittedWindow';
-import {
-  frameBottomPadding,
-  signatureScale,
-} from '../components/Frame/FrameSignature';
-
-import '../theme/global.css';
-import {isAssetLinkUrl, isAssetUrl} from '@codeimage/store/assets/assets';
+import {TONE_SAMPLE_SIZE} from '../components/Frame/signatureTone';
 import {getEditorStore} from '@codeimage/store/editor';
-import type {ProjectEditorPersistedState} from '@codeimage/store/editor/model';
-import {parseSignature} from '@codeimage/store/frame/model';
 import {getThemeStore} from '@codeimage/store/theme/theme.store';
 import {THEME_REGISTRY} from '@codeimage/store/theme/themeRegistry';
 import {SUPPORTED_FONTS} from '@core/configuration/font';
 import {loadLanguage} from '@core/snapshot/tokenize';
 import {renderToStringAsync} from 'solid-js/web';
 import {StateProvider} from 'statebuilder';
-import {FrameView} from '../components/Frame/FrameView';
 import {staticThemeCss} from '../components/CustomEditor/staticTheme';
 import * as styles from '../components/Frame/Frame.css';
 
@@ -51,36 +55,15 @@ export async function annotateCode(
 export const SUPPORTED_FONT_IDS = SUPPORTED_FONTS.map(font => font.id);
 export const SUPPORTED_THEME_IDS = THEME_REGISTRY.map(theme => theme.id);
 
-export interface FrameSize {
-  width: number;
-  height: number;
-}
-
-export interface FrameMarkup {
-  html: string;
-  css: string;
-  fontFamily: string;
-  images: ImageBytes[];
-}
-
-type RenderSnapshot = ProjectEditorPersistedState & {width?: number};
-
-// Solid's client typings, which the app type-checks against, omit this
-// server-only option.
+// Solid's client typings omit this server-only option.
 const SSR_OPTIONS = {timeoutMs: 30_000, noScripts: true};
-
 const EXPORT_EXCLUDE_CSS =
   '[data-export-exclude="true"]{display:none!important}';
 
-// The editor, frame and theme stores are app-wide singletons, so renders run
-// one at a time and each one sees only its own snapshot.
+// Only store initialization and JSX serialization share singleton app state.
 let queue: Promise<unknown> = Promise.resolve();
-
-export function renderFrame(
-  snapshot: RenderSnapshot,
-  sample: (image: ImageBytes) => Promise<Uint8Array>,
-): Promise<FrameMarkup> {
-  const result = queue.then(() => render(snapshot, sample));
+function serialize(pass: () => Promise<FrameMarkup>): Promise<FrameMarkup> {
+  const result = queue.then(pass);
   queue = result.catch(() => undefined);
   return result;
 }
@@ -92,7 +75,7 @@ const cssVar = (variable: string) =>
 // past its max-width, rather than wrap a line. Takumi ignores that min-width.
 // Without a size this lets the frame take its content width for measuring;
 // with one it pins the frame to the size the renderer derived from it.
-export function frameSizeCss(size?: FrameSize): string {
+function frameSizeCss(size?: FrameSize): string {
   const declarations = size
     ? [
         [styles.frameVars.width, `${size.width}px`],
@@ -108,123 +91,129 @@ export function frameSizeCss(size?: FrameSize): string {
     .join(';')}}`;
 }
 
-// Matches the web Frame for export targets. A snapshot carries no frame
-// width, so a free-size frame draws the signature at scale 1.
-function snapshotSignatureScale(frame: RenderSnapshot['frame']) {
-  return signatureScale(getExportTarget(frame.exportTarget)?.resolution[0]);
-}
-
-// The web FittedWindow centers the window in a named target's content box and
-// scales it down to fit. Takumi cannot run that DOM measurement, so the
-// renderer measures the natural frame first and this places the window.
-export function targetLayout(
-  frame: RenderSnapshot['frame'],
-  natural: FrameSize,
-): {size: FrameSize; css: string} | undefined {
-  const target = getExportTarget(frame.exportTarget);
-  if (!target) return undefined;
-  const [width, height] = target.resolution;
-  const {padding} = frame;
-  const bottom = frameBottomPadding(
-    padding,
-    parseSignature(frame.signature),
-    snapshotSignatureScale(frame),
-  );
-  const window = {
-    width: Math.max(1, Math.ceil(natural.width) - 2 * padding),
-    height: Math.max(1, Math.ceil(natural.height) - padding - bottom),
-  };
-  const viewport = {
-    width: Math.max(1, width - 2 * padding),
-    height: Math.max(1, height - padding - bottom),
-  };
-  const scale = fitScale(viewport, window);
-  const left = padding + (viewport.width - window.width * scale) / 2;
-  const top = padding + (viewport.height - window.height * scale) / 2;
-  return {
-    size: {width, height},
-    css: `[data-snapshot-frame]{padding:0!important;min-width:0!important;max-width:none!important}[data-snapshot-window]{position:absolute;left:${left}px;top:${top}px;width:${window.width}px;height:${window.height}px;transform-origin:top left;transform:scale(${scale})}`,
-  };
-}
-
-async function render(
+export async function composeFrame(
   snapshot: RenderSnapshot,
-  sample: (image: ImageBytes) => Promise<Uint8Array>,
-): Promise<FrameMarkup> {
+  host: FrameHost,
+): Promise<ComposedFrame> {
   const {frame, terminal, editor} = snapshot;
   const {themeId, fontId} = editor.options;
-  const activeEditor = editor.editors[0];
+  const active = editor.editors[0];
   const themeDefinition = THEME_REGISTRY.find(theme => theme.id === themeId);
   if (!themeDefinition) throw new Error(`Unknown theme "${themeId}"`);
   const font = SUPPORTED_FONTS.find(font => font.id === fontId);
   if (!font) throw new Error(`Unknown font "${fontId}"`);
-  if (isAssetUrl(frame.background) && !isAssetLinkUrl(frame.background)) {
-    throw new Error(
-      `Frame background "${frame.background}" is a browser asset; the snapshot does not carry its image`,
-    );
-  }
   const [theme, language] = await Promise.all([
     themeDefinition.load(),
-    loadLanguage(activeEditor.languageId, activeEditor.tabName),
+    loadLanguage(active.languageId, active.tabName),
   ]);
-  const background = frame.background ?? theme.properties.previewBackground;
-  const {media, images} = await resolveFrameMedia(
-    frameMediaRequest({
-      ...frame,
-      background,
-      signature: parseSignature(frame.signature),
-    }),
-    sample,
-  );
-
-  const SnapshotFrame = () => {
-    const store = getEditorStore();
-    store.editor.actions.setFromPersistedState(editor);
-    store.frame.setFromPersistedState({...frame, exportTarget: null});
-    store.terminal.setFromPersistedState(terminal);
-    getThemeStore().getThemeResource(theme.id)[1].mutate(theme);
-
-    store.frame.setWidth(
-      snapshot.width ?? getExportTarget(frame.exportTarget)?.resolution[0] ?? 0,
-    );
-    store.frame.setHeight(0);
-    store.frame.setBackground(background);
-    store.terminal.setState(state => ({
-      ...state,
-      background: terminal.background || theme.properties.terminal.main,
-      textColor: terminal.textColor || theme.properties.terminal.text,
-    }));
-    return (
-      <FrameView
-        tab={store.editor.state.editors[0]}
-        language={language}
-        media={media}
-        showOnlyActiveTab={false}
-      />
-    );
+  const normalized = {
+    ...frame,
+    exportTarget: frame.exportTarget ?? null,
+    aspectRatio: frame.aspectRatio ?? null,
+    background: frame.background ?? theme.properties.previewBackground,
   };
-
-  const body = await renderToStringAsync(
-    () => (
-      <StateProvider>
-        <SnapshotFrame />
-      </StateProvider>
-    ),
-    SSR_OPTIONS,
+  const {media, images} = await resolveFrameMedia(
+    frameMediaRequest(normalized),
+    image =>
+      host.pixels(
+        {
+          html: '<img src="sample" style="display:block;width:24px;height:24px"/>',
+          css: [],
+          images: [{...image, src: 'sample'}],
+          fontFamily: font.name,
+        },
+        TONE_SAMPLE_SIZE,
+      ),
   );
+  const target = getExportTarget(frame.exportTarget);
+  const renderPass = (
+    appearance: typeof normalized,
+    placement?: FittedPlacement,
+  ) =>
+    serialize(async () => {
+      const SnapshotFrame = () => {
+        const store = getEditorStore();
+        store.editor.actions.setFromPersistedState(editor);
+        store.frame.setFromPersistedState(appearance);
+        store.frame.setWidth(snapshot.width ?? 0);
+        store.frame.setHeight(0);
+        store.terminal.setFromPersistedState({
+          ...terminal,
+          background: terminal.background || theme.properties.terminal.main,
+          textColor: terminal.textColor || theme.properties.terminal.text,
+        });
+        getThemeStore().getThemeResource(theme.id)[1].mutate(theme);
+        return (
+          <FrameView
+            tab={store.editor.state.editors[0]}
+            language={language}
+            media={media}
+            windowPlacement={placement}
+            showOnlyActiveTab={false}
+          />
+        );
+      };
+      const body = await renderToStringAsync(
+        () => (
+          <StateProvider>
+            <SnapshotFrame />
+          </StateProvider>
+        ),
+        SSR_OPTIONS,
+      );
+      return {
+        html: `<html><body>${body}</body></html>`,
+        css: [staticThemeCss(theme), EXPORT_EXCLUDE_CSS],
+        fontFamily: font.name,
+        images,
+      };
+    });
+  if (target) {
+    const bare = await renderPass({
+      ...normalized,
+      exportTarget: null,
+      signature: null,
+    });
+    const natural = await host.measure({
+      ...bare,
+      css: [...bare.css, frameSizeCss()],
+    });
+    const content = {
+      width: Math.max(
+        FITTED_WINDOW_MIN_WIDTH,
+        Math.round(natural.width - frame.padding * 2),
+      ),
+      height: Math.max(1, Math.round(natural.height - frame.padding * 2)),
+    };
+    const viewport = targetViewport(
+      target.resolution,
+      frame.padding,
+      frame.signature,
+      frameSignatureScale({width: snapshot.width ?? 0}, target),
+    );
+    const markup = await renderPass(
+      normalized,
+      fittedPlacement(viewport, content),
+    );
+    return {
+      ...markup,
+      browserCss: markup.css,
+      size: {width: target.resolution[0], height: target.resolution[1]},
+    };
+  }
+  const markup = await renderPass(normalized);
+  const natural = await host.measure({
+    ...markup,
+    css: [...markup.css, frameSizeCss()],
+  });
+  const size = {
+    width: Math.max(snapshot.width ?? 0, natural.width),
+    height: natural.height,
+  };
   return {
-    html: `<html><body>${body}</body></html>`,
-    css: [
-      staticThemeCss(theme),
-      EXPORT_EXCLUDE_CSS,
-      `[data-snapshot-frame]{${cssVar(styles.frameVars.width)}:${
-        snapshot.width === undefined ? 'max-content' : `${snapshot.width}px`
-      }}`,
-      frame.exportTarget
-        ? `[data-snapshot-window]{display:block!important;min-width:${FITTED_WINDOW_MIN_WIDTH}px;width:max-content}`
-        : '',
-    ].join('\n'),
-    fontFamily: font.name,
-    images,
+    ...markup,
+    css: [...markup.css, frameSizeCss(size)],
+    browserCss: markup.css,
+    size: {width: Math.round(size.width), height: Math.round(size.height)},
   };
 }

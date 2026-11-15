@@ -94,7 +94,12 @@ for (const [width, height, resolution] of [
     exportState.resolution = resolution;
     const expectedWidth = resolution?.[0] ?? width;
     const expectedHeight = resolution?.[1] ?? height;
-    Object.assign(frame, {width, height});
+    Object.assign(frame, {
+      width,
+      height,
+      exportTarget:
+        resolution?.[0] === 1200 ? 'open-graph' : resolution ? 'square' : null,
+    });
     for (const selectedTab of [undefined, tab]) {
       const html = renderToString(() =>
         createComponent(PreviewFrame, {

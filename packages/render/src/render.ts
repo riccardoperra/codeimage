@@ -1,3 +1,7 @@
+import type {
+  FrameSize,
+  RenderEntry,
+} from '../../../apps/codeimage/src/render/contract';
 import {readFile} from 'node:fs/promises';
 import {fileURLToPath} from 'node:url';
 import {Renderer} from '@takumi-rs/core';
@@ -22,37 +26,6 @@ export async function annotateCode(
   tabName: string,
 ): Promise<AnnotatedCode> {
   return (await getRuntime()).entry.annotateCode(code, languageId, tabName);
-}
-
-interface FrameMarkup {
-  html: string;
-  css: string;
-  fontFamily: string;
-  images: ImageSource[];
-}
-
-interface FrameSize {
-  width: number;
-  height: number;
-}
-
-interface RenderEntry {
-  SUPPORTED_FONT_IDS: string[];
-  SUPPORTED_THEME_IDS: string[];
-  renderFrame(
-    snapshot: ProjectSnapshot,
-    sample: (image: ImageSource) => Promise<Uint8Array>,
-  ): Promise<FrameMarkup>;
-  annotateCode(
-    code: string,
-    languageId: string,
-    tabName: string,
-  ): Promise<AnnotatedCode>;
-  frameSizeCss(size?: FrameSize): string;
-  targetLayout(
-    frame: SnapshotDocument['frame'],
-    natural: FrameSize,
-  ): {size: FrameSize; css: string} | undefined;
 }
 
 interface FontFile {
@@ -192,50 +165,39 @@ export async function snapshotMarkup(
     registerAppFont,
     fontFamilies,
   } = await getRuntime();
-  const frame = await entry.renderFrame(document, async image =>
-    renderer.render(
-      '<img src="sample" style="display:block;width:24px;height:24px"/>',
-      {
-        width: 24,
-        height: 24,
+  const {fontId} = document.editor.options;
+  const scale = document.format === 'svg' ? 1 : document.scale;
+  const frame = await entry.composeFrame(document, {
+    async measure(markup) {
+      await registerAppFont(fontId, markup.fontFamily);
+      const content = await renderer.measure(
+        normalizeStyleAttributes(markup.html),
+        {
+          css: [...markup.css, stylesheet].map(normalizeGradients),
+          images: markup.images,
+          fontFamilies,
+          devicePixelRatio: scale,
+        },
+      );
+      return {width: content.width / scale, height: content.height / scale};
+    },
+    async pixels(markup, size) {
+      return renderer.render(markup.html, {
+        css: markup.css,
+        images: markup.images,
+        width: size,
+        height: size,
         format: 'raw',
         devicePixelRatio: 1,
-        images: [{...image, src: 'sample'}],
-      },
-    ),
-  );
-  const html = normalizeStyleAttributes(frame.html);
-  const css = [frame.css, stylesheet].map(normalizeGradients);
-  const {fontId} = document.editor.options;
-  await registerAppFont(fontId, frame.fontFamily);
-  // Like the web frame, the frame is at least as wide as its code, so no line
-  // wraps. The borderless frame's clientWidth/clientHeight round to the nearest
-  // CSS pixel before the web exporter applies the scale.
-  const scale = document.format === 'svg' ? 1 : document.scale;
-  const content = await renderer.measure(html, {
-    css: [...css, entry.frameSizeCss()],
-    fontFamilies,
-    devicePixelRatio: scale,
-    images: frame.images,
+      });
+    },
   });
-  const natural = {
-    width: content.width / scale,
-    height: content.height / scale,
-  };
-  const target = entry.targetLayout(document.frame, natural);
-  const layoutSize = target?.size ?? {
-    width: Math.max(document.width ?? 0, natural.width),
-    height: natural.height,
-  };
   return {
     document,
-    html,
-    css: [...css, entry.frameSizeCss(layoutSize), target?.css ?? ''],
-    naturalCss: css,
-    size: {
-      width: Math.round(layoutSize.width),
-      height: Math.round(layoutSize.height),
-    },
+    html: normalizeStyleAttributes(frame.html),
+    css: [...frame.css, stylesheet].map(normalizeGradients),
+    naturalCss: [...frame.browserCss, stylesheet].map(normalizeGradients),
+    size: frame.size,
     fonts: [...uiFonts, ...fontsFor(fontId, frame.fontFamily)],
     fontFamilies,
     images: frame.images,

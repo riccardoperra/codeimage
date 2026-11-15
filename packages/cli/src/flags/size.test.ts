@@ -43,7 +43,7 @@ describe('size flag', () => {
       const markup = await snapshotMarkup(snapshot);
       expect(markup.html).toContain(`data-frame-signature="${position}"`);
       expect(markup.html).toContain('@me');
-      expect(markup.css.join('')).toMatch(/transform:scale\(0\./);
+      expect(markup.html).toMatch(/transform:scale\(0\./);
     },
   );
   it.each([
