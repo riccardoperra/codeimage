@@ -187,7 +187,9 @@ function AnimationStage(props: {plan: PreviewPlan; visible: boolean}) {
     const view = editor.activeEditorView();
     if (!view) return;
     view.focus();
-    if (text) view.dispatch(view.state.replaceSelection(text));
+    if (text && !view.state.readOnly) {
+      view.dispatch(view.state.replaceSelection(text));
+    }
   };
 
   const onKeyDown = (event: KeyboardEvent) => {
