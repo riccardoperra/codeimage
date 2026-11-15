@@ -1,3 +1,5 @@
+import {ShortcutHelp} from './controls/ShortcutHelp';
+import * as shortcutStyles from './controls/shortcut-help.css';
 import {getExportCanvasStore} from '@codeimage/store/canvas';
 import {getActiveEditorStore} from '@codeimage/store/editor/activeEditor';
 import {getFrameState} from '@codeimage/store/editor/frame';
@@ -12,6 +14,7 @@ import {
   onCleanup,
   onMount,
   Suspense,
+  Show,
 } from 'solid-js';
 import type {Accessor, Component} from 'solid-js';
 import {untrackCommand} from 'statebuilder/commands';
@@ -165,18 +168,24 @@ export function createStage(): Stage {
   return {
     compact,
     Canvas: () => {
+      let canvas: HTMLDivElement | undefined;
       onMount(() => getExportCanvasStore().initCanvas(exportRef));
       // Every placeholder sits inside FitFrame, where the frame will be. The
       // export copy renders into a portal, so its place in the tree is free.
       return (
-        <FitFrame onScaleChange={setScale}>
-          <SuspenseEditorItem fallback={null}>
-            <Suspense fallback={<FramePlaceholder frame={exportRef} />}>
-              <ManagedFrame />
-            </Suspense>
-            <PreviewFrame ref={setExportRef} />
-          </SuspenseEditorItem>
-        </FitFrame>
+        <div ref={canvas} class={shortcutStyles.canvas}>
+          <FitFrame onScaleChange={setScale}>
+            <SuspenseEditorItem fallback={null}>
+              <Suspense fallback={<FramePlaceholder frame={exportRef} />}>
+                <ManagedFrame />
+              </Suspense>
+              <PreviewFrame ref={setExportRef} />
+            </SuspenseEditorItem>
+          </FitFrame>
+          <Show when={!compact()}>
+            <ShortcutHelp canvas={() => canvas} />
+          </Show>
+        </div>
       );
     },
     exportRef,

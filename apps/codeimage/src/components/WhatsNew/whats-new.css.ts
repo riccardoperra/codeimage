@@ -166,6 +166,17 @@ export const dotAnchor = style({
   alignItems: 'center',
   verticalAlign: 'middle',
 });
+const dotMark = {
+  width: '7px',
+  height: '7px',
+  borderRadius: '50%',
+  background: 'currentColor',
+  boxShadow: '0 0 0 3px color-mix(in srgb, currentColor 12%, transparent)',
+} as const;
+
+/** Still indicator for the header, independent of feature-dot slots. */
+export const unreadDot = style(dotMark);
+
 export const dot = style({
   display: 'inline-flex',
   alignItems: 'center',
@@ -189,11 +200,7 @@ export const dot = style({
     '&:active': {transform: 'scale(.97)'},
     '&::after': {
       content: '""',
-      width: '7px',
-      height: '7px',
-      borderRadius: '50%',
-      background: 'currentColor',
-      boxShadow: '0 0 0 3px color-mix(in srgb, currentColor 12%, transparent)',
+      ...dotMark,
       // The dot fades as its coachmark grows out of it.
       transition: `opacity ${ms(duration.coachmarkIn)} ${ease}`,
     },
@@ -294,9 +301,12 @@ export const sheet = style({
     },
   },
 });
-globalStyle(`[role="dialog"][data-expanded]:has(> ${sheet})`, {
-  animation: `${fadeIn} ${ms(showcaseFor.sheet)} ${ease}`,
-});
+globalStyle(
+  `[data-expanded]:is([role="dialog"], [role="alertdialog"]):has(> ${sheet})`,
+  {
+    animation: `${fadeIn} ${ms(showcaseFor.sheet)} ${ease}`,
+  },
+);
 export const hero = style({textAlign: 'center', padding: '28px 0 32px'});
 export const heroTitle = style({
   fontSize: '34px',

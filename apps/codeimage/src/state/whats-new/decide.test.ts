@@ -89,7 +89,12 @@ describe('decide', () => {
     const lastDay = decide([latest], NO_FACTS, day('2026-12-29') - 1);
     const expired = decide([latest], NO_FACTS, day('2026-12-29'));
     expect(lastDay.announcement).not.toBeNull();
-    expect(expired).toEqual({announcement: null, dots: [], fresh: new Set()});
+    expect(expired).toEqual({
+      announcement: null,
+      headerEntry: false,
+      dots: [],
+      fresh: new Set(),
+    });
   });
 
   it('expires each release on its own date', () => {
@@ -100,6 +105,23 @@ describe('decide', () => {
 
   it('has nothing to show with an empty registry', () => {
     expect(decide([], NO_FACTS, 0).announcement).toBeNull();
+  });
+
+  it.each([
+    ['inside the window', releases, NO_FACTS, day('2026-12-29') - 1, true],
+    ['at expiry', releases, NO_FACTS, day('2026-12-29'), false],
+    ['after expiry', releases, NO_FACTS, day('2026-12-30'), false],
+    ['empty registry', [], NO_FACTS, day('2026-11-15'), false],
+    ['dismissed release', releases, facts([], ['r2']), day('2026-11-15'), true],
+    [
+      'all highlights seen',
+      releases,
+      facts(['a', 'b', 'c', 'd', 'e']),
+      day('2026-11-15'),
+      true,
+    ],
+  ])('offers the header entry: %s', (_, registry, stored, now, offered) => {
+    expect(decide(registry, stored, now).headerEntry).toBe(offered);
   });
 
   it('ignores stored ids this bundle does not know', () => {

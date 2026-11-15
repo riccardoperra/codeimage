@@ -46,11 +46,20 @@ describe('release discovery across visits', () => {
     });
     await settle();
     expect(app.announcement()).toBeNull();
+    expect(app.store.interaction()).toBeNull();
     app.setQuiet(true);
     expect(app.announcement()?.surface).toBe('showcase');
+    expect(app.store.headerEntry()).toBe(false);
     app.setQuiet(false);
     expect(app.announcement()?.surface).toBe('showcase');
     app.store.dismiss();
+    expect(app.store.headerEntry()).toBe(true);
+    expect(app.store.interaction()).toBe('pointer');
+    app.store.reopen();
+    expect(app.store.headerEntry()).toBe(false);
+    app.store.dismiss(true);
+    expect(app.store.headerEntry()).toBe(true);
+    expect(app.store.interaction()).toBe('keyboard');
     await settle();
     const next = createRoot(dispose => {
       const store = createWhatsNew(db, () => Date.parse('2026-11-14'));
@@ -61,6 +70,171 @@ describe('release discovery across visits', () => {
     expect(await db.get('version')).toBeUndefined();
     app.dispose();
     next.dispose();
+  });
+
+  it('reopens for this session without rewriting facts, and dismisses again', async () => {
+    const db = database();
+    await db.update('whats-new', () => ({
+      v: 1,
+      seen: ['future-id', 'layouts'],
+      dismissed: ['2.0', 'future-release'],
+      minimized: [],
+    }));
+    const update = vi.spyOn(db, 'update');
+    const track = vi.fn();
+    Object.assign(window, {umami: {track}});
+    const app = createRoot(dispose => {
+      const store = createWhatsNew(db, () => Date.parse('2026-11-15'));
+      return {store, announcement: store.announce(() => () => true), dispose};
+    });
+    try {
+      await settle();
+      const stored = await db.get('whats-new');
+      expect(app.announcement()).toBeNull();
+      expect(app.store.headerEntry()).toBe(true);
+      expect(app.store.headerUnread()).toBe(true);
+      app.store.reopen(true);
+      expect(app.announcement()).toMatchObject({
+        surface: 'nudge',
+        release: {id: '2.0'},
+        entry: 'keyboard',
+      });
+      expect(app.store.headerEntry()).toBe(false);
+      expect(app.store.interaction()).toBe('keyboard');
+      expect(update).not.toHaveBeenCalled();
+      expect(await db.get('whats-new')).toEqual(stored);
+      app.store.reopen();
+      expect(
+        track.mock.calls.filter(([event]) => event === 'whats-new-reopened'),
+      ).toEqual([['whats-new-reopened', {surface: 'nudge', release: '2.0'}]]);
+      window.dispatchEvent(new Event('focus'));
+      await settle();
+      expect(app.announcement()).not.toBeNull();
+      app.store.dismiss();
+      await settle();
+      expect(app.announcement()).toBeNull();
+      expect(await db.get('whats-new')).toEqual(stored);
+      const next = createRoot(dispose => {
+        const store = createWhatsNew(db, () => Date.parse('2026-11-15'));
+        return {announcement: store.announce(() => () => true), dispose};
+      });
+      await settle();
+      expect(next.announcement()).toBeNull();
+      next.dispose();
+    } finally {
+      app.dispose();
+      Reflect.deleteProperty(window, 'umami');
+    }
+  });
+
+  it('can reopen after every highlight has been seen, without an unread dot', async () => {
+    const db = database();
+    const app = boot(db);
+    await settle();
+    for (const {id} of RELEASES[0].highlights) app.store.seen(id);
+    expect(app.store.headerEntry()).toBe(true);
+    expect(app.store.headerUnread()).toBe(false);
+    app.store.reopen();
+    expect(app.store.current()).toMatchObject({
+      entry: 'pointer',
+      surface: 'nudge',
+    });
+    app.store.dismiss();
+    expect(app.store.current()).toBeNull();
+    app.dispose();
+  });
+
+  it('does not offer or reopen an expired release', async () => {
+    const app = createRoot(dispose => ({
+      store: createWhatsNew(database(), () => Date.parse('2026-12-29')),
+      dispose,
+    }));
+    await settle();
+    expect(app.store.headerEntry()).toBe(false);
+    app.store.reopen();
+    expect(app.store.current()).toBeNull();
+    app.store.dismiss();
+    expect(app.store.headerEntry()).toBe(false);
+    app.dispose();
+  });
+
+  it('hides the header entry while the Showcase is open', async () => {
+    const app = createRoot(dispose => {
+      const store = createWhatsNew(database(), () => Date.parse('2026-11-15'));
+      store.announce(() => () => true, 'showcase');
+      return {store, dispose};
+    });
+    await settle();
+    expect(app.store.headerEntry()).toBe(false);
+    app.store.dismiss();
+    expect(app.store.headerEntry()).toBe(true);
+    expect(app.store.interaction()).toBe('pointer');
+    app.store.reopen();
+    expect(app.store.current()?.surface).toBe('nudge');
+    app.dispose();
+  });
+
+  it.each([false, true])(
+    'dismisses the major release and reopens only a session Nudge (minimized=%s)',
+    async minimized => {
+      const db = database();
+      const visit = () =>
+        createRoot(dispose => {
+          const store = createWhatsNew(db, () => Date.parse('2026-11-15'));
+          return {store, current: store.announce(() => () => true), dispose};
+        });
+      const first = visit();
+      await settle();
+      expect(first.current()?.surface).toBe('showcase');
+      expect(first.store.headerEntry()).toBe(false);
+      if (minimized) {
+        first.store.minimize('2.0');
+        expect(first.current()?.surface).toBe('nudge');
+        expect(first.store.headerEntry()).toBe(false);
+      }
+      first.store.dismiss(true);
+      await settle();
+      expect(first.store.headerEntry()).toBe(true);
+      const stored = await db.get('whats-new');
+      const update = vi.spyOn(db, 'update');
+      first.store.reopen(true);
+      expect(first.current()).toMatchObject({
+        surface: 'nudge',
+        entry: 'keyboard',
+      });
+      expect(first.store.headerEntry()).toBe(false);
+      window.dispatchEvent(new Event('focus'));
+      await settle();
+      expect(first.current()?.surface).toBe('nudge');
+      expect(update).not.toHaveBeenCalled();
+      expect(await db.get('whats-new')).toEqual(stored);
+      first.dispose();
+      const reloaded = visit();
+      await settle();
+      expect(reloaded.current()).toBeNull();
+      expect(reloaded.store.headerEntry()).toBe(true);
+      reloaded.dispose();
+    },
+  );
+
+  it('keeps an explicit Showcase preview while stored minimization loads', async () => {
+    const db = database();
+    await db.update('whats-new', () => ({v: 1, minimized: ['2.0']}));
+    const app = createRoot(dispose => {
+      const store = createWhatsNew(db, () => Date.parse('2026-11-15'));
+      return {
+        store,
+        current: store.announce(() => () => true, 'showcase'),
+        dispose,
+      };
+    });
+    await settle();
+    expect(app.current()).toMatchObject({
+      surface: 'showcase',
+      entry: 'preview',
+    });
+    expect(app.store.headerEntry()).toBe(false);
+    app.dispose();
   });
 
   it('watches for a quiet moment only while a release waits to be shown', async () => {
@@ -455,6 +629,8 @@ it('persists minimizing once, keeps every highlight fresh, and changes an alread
     reloaded = visit();
     await settle();
     expect(reloaded.announcement()?.surface).toBe('nudge');
+    expect(reloaded.store.headerEntry()).toBe(false);
+    expect(a.store.headerEntry()).toBe(false);
     a.store.dismiss();
     await settle();
     window.dispatchEvent(new Event('focus'));

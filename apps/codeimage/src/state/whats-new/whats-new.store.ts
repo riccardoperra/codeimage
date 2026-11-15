@@ -28,7 +28,11 @@ import type {
 import {RELEASES} from './registry';
 
 export type Surface = 'nudge' | 'showcase' | 'coachmark' | 'library';
-type Announcement = Decision<(typeof RELEASES)[number]>['announcement'];
+type Announcement =
+  | (NonNullable<Decision<(typeof RELEASES)[number]>['announcement']> & {
+      readonly entry: 'automatic' | 'pointer' | 'keyboard' | 'preview';
+    })
+  | null;
 
 export interface WhatsNew {
   /**
@@ -36,8 +40,18 @@ export interface WhatsNew {
    * disposed as soon as the release shows or stops waiting, so whatever it
    * observes costs nothing on a visit with nothing to announce.
    */
-  announce(watchQuiet: () => Accessor<boolean>): Accessor<Announcement>;
-  dismiss(): void;
+  announce(
+    watchQuiet: () => Accessor<boolean>,
+    preview?: 'nudge' | 'showcase',
+  ): Accessor<Announcement>;
+  readonly current: Accessor<Announcement>;
+  readonly headerEntry: Accessor<boolean>;
+  readonly headerUnread: Accessor<boolean>;
+  /** Last explicit announcement/header interaction; null on a fresh page load. */
+  readonly interaction: Accessor<'pointer' | 'keyboard' | null>;
+  /** Reopens the newest release for this session without changing facts. */
+  reopen(keyboard?: boolean): void;
+  dismiss(keyboard?: boolean): void;
   minimize(id: ReleaseId): void;
   dotAt(at: Where): LocatedHighlightId | undefined;
   isNew(id: HighlightId): boolean;
@@ -67,7 +81,13 @@ interface Storage {
 }
 
 function track(
-  event: 'shown' | 'dismissed' | 'minimized' | 'opened' | 'show-me',
+  event:
+    | 'shown'
+    | 'dismissed'
+    | 'opened'
+    | 'show-me'
+    | 'reopened'
+    | 'minimized',
   data:
     | {surface: Surface; release: string}
     | {surface: Surface; highlight: HighlightId},
@@ -85,6 +105,9 @@ export function createWhatsNew(
   const [facts, setFacts] = createSignal<Facts>(NO_FACTS);
   const [loaded, setLoaded] = createSignal(false);
   const [announcement, setAnnouncement] = createSignal<Announcement>(null);
+  const [interaction, setInteraction] = createSignal<
+    'pointer' | 'keyboard' | null
+  >(null);
   const [locations, setLocations] = createSignal<
     ReadonlyMap<
       Place | Where,
@@ -93,6 +116,9 @@ export function createWhatsNew(
   >(new Map());
   const decision = createMemo(() =>
     decide(loaded() ? RELEASES : [], facts(), now()),
+  );
+  const headerEntry = createMemo(
+    () => decision().headerEntry && !announcement(),
   );
   const pending = createMemo(() => decision().announcement, null, {
     equals: (a, b) =>
@@ -125,9 +151,15 @@ export function createWhatsNew(
       const raw = await attempt(() => storage.get('whats-new'));
       setFacts(current => mergeFacts(current, parseFacts(raw)));
       const current = announcement();
-      if (current && facts().dismissed.has(current.release.id)) {
+      if (
+        current?.entry === 'automatic' &&
+        facts().dismissed.has(current.release.id)
+      ) {
         setAnnouncement(null);
-      } else if (current && facts().minimized.has(current.release.id)) {
+      } else if (
+        current?.entry === 'automatic' &&
+        facts().minimized.has(current.release.id)
+      ) {
         setAnnouncement({...current, surface: 'nudge'});
       }
     } catch {
@@ -153,14 +185,40 @@ export function createWhatsNew(
   onCleanup(() => window.removeEventListener('focus', load));
 
   return {
-    announce(watchQuiet) {
+    current: announcement,
+    headerEntry,
+    interaction,
+    headerUnread: () =>
+      RELEASES[0].highlights.some(highlight =>
+        decision().fresh.has(highlight.id),
+      ),
+    reopen(keyboard = false) {
+      if (!decision().headerEntry || announcement()) return;
+      const release = RELEASES[0];
+      setInteraction(keyboard ? 'keyboard' : 'pointer');
+      setAnnouncement({
+        surface: 'nudge',
+        release,
+        entry: keyboard ? 'keyboard' : 'pointer',
+      });
+      track('reopened', {surface: 'nudge', release: release.id});
+    },
+    announce(watchQuiet, preview) {
+      if (preview) {
+        setAnnouncement({
+          surface: preview,
+          release: RELEASES[0],
+          entry: 'preview',
+        });
+        return announcement;
+      }
       createEffect(() => {
         const release = pending();
         if (!release || announcement()) return;
         const quiet = watchQuiet();
         createEffect(() => {
           if (!quiet()) return;
-          setAnnouncement(release);
+          setAnnouncement({...release, entry: 'automatic'});
           track('shown', {
             surface: release.surface,
             release: release.release.id,
@@ -169,9 +227,10 @@ export function createWhatsNew(
       });
       return announcement;
     },
-    dismiss() {
+    dismiss(keyboard = false) {
       const current = announcement();
       if (!current) return;
+      setInteraction(keyboard ? 'keyboard' : 'pointer');
       record({...NO_FACTS, dismissed: new Set([current.release.id])});
       setAnnouncement(null);
       track('dismissed', {
@@ -180,11 +239,11 @@ export function createWhatsNew(
       });
     },
     minimize(id) {
+      const current = announcement();
+      if (current?.release.id === id && current.surface === 'showcase')
+        setAnnouncement({...current, surface: 'nudge'});
       if (facts().minimized.has(id)) return;
       record({...NO_FACTS, minimized: new Set([id])});
-      const current = announcement();
-      if (current?.release.id === id)
-        setAnnouncement({...current, surface: 'nudge'});
       track('minimized', {surface: 'showcase', release: id});
     },
     revealedAt: at => {

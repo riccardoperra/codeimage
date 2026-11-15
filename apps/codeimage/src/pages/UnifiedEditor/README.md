@@ -76,18 +76,30 @@ Each layout renders `Canvas` once inside a container with a definite size.
 `controls/fields.tsx` supplies shared fields.
 `ControlOverlay.tsx` opens pickers without changing the frame's rectangle or zoom.
 `WindowStyleTiles.tsx` renders window previews.
-`ShortcutHelp.tsx` uses the definitions in `controls/shortcuts.ts`.
-`CanvasToolbar.tsx` is the one island under the canvas in every layout: Format code, Copy image, and the shortcut help where the layout has no other place for it.
-Randomize has no button. It stays in the command menu and its shortcut.
+`ShortcutHelp.tsx` uses the definitions in `controls/shortcuts.ts`, including the `?` opening key.
+The shared stage places its labelled desktop trigger at the top left of the canvas, outside the export frame.
+It opens an anchored overlay without a backdrop and leaves the frame rectangle and zoom unchanged.
+A resize observer hides the trigger if it would overlap the frame or extend beyond the canvas.
+The keyboard shortcut and command-menu entry still open help when the trigger is hidden.
+Phones keep their existing help trigger, placement, and dialog.
+
+`CanvasToolbar.tsx` contains Format code and Copy image on desktop in all three layouts.
+Shortcut help has its own trigger. Randomize stays in the command menu and its shortcut, without a button.
 
 `shell/Header.tsx` contains the logo, account controls, Share, and Export.
-In Inspector on a wide window it also has the command menu's Search button, left of the settings button.
-The settings trigger moves into Dock or Studio when that layout has room for it.
-`claimSettingsEntry()` keeps exactly one trigger visible.
+`shell/header-actions.ts` lets mounted layout entries claim Commands, Settings, or Experiments.
+The header renders only unclaimed actions, and cleanup returns ownership when an entry unmounts.
+Inspector keeps Commands before Experiments and Settings in the header.
+Dock claims Commands and Settings; Studio claims all three in its desktop rail.
+Studio groups Commands, Settings, Experiments, and GitHub at the bottom, retaining `CommandMenuButton` and its announcement dot.
+Phones claim no header actions and keep the existing header.
 
 `shell/SettingsDialog.tsx` stays mounted while layouts change.
 `shell/sections.tsx` defines the sections, groups, and rows.
 Search reads those same rows.
+About contains the repository, Bugs and feedback, Releases, and Better Comments for GitHub links.
+`shell/links.ts` shares their destinations with the existing external-link commands and Studio's repository button.
+Better Comments retains its Umami event. Dock and Studio have no footer.
 `shell/settings-state.ts` controls the open section and restores focus when the dialog closes.
 Dialogs opened by a settings row live in `SettingsDialog`, so closing the row's panel cannot dispose them.
 
@@ -152,6 +164,24 @@ Dock and Studio read the panel from their placement maps, which also drive rende
 A highlight whose row is not rendered, such as window style with the title bar off, has no dot and no Show me.
 The Showcase has a minimise button that stores the release in `minimized`, after which it announces through the Nudge.
 `UPCOMING` in the registry holds prepared highlights that nothing renders.
+
+The shell offers a permanent Experiments button that opens Settings on that section.
+Studio hosts it beside Settings in the desktop rail; Inspector and Dock keep it in the header.
+Its labelled, secondary ghost What's new button is available for `NEW_FOR_DAYS` (45 days)
+from the newest release's date, only while neither Nudge nor Showcase is on screen.
+It reopens the newest release expanded for this session, without resetting stored facts.
+Keyboard dismissal focuses the header entry when visible; keyboard reopening focuses the Nudge.
+Pointer dismissal restores nearby non-text-field focus and, after the Nudge's exit, fades and
+scales the header entry from 0.96. Reopening fades it out as the Nudge enters.
+The entry is first in the right-aligned action row, retaining its width through its exit and
+reserving nothing afterwards, so the later header actions keep their positions throughout.
+Page-load entries and keyboard handovers are instant; reduced motion uses opacity only.
+Reloading respects the stored dismissal. A still unread dot on the sparkle icon appears with
+unseen highlights, outside the three feature-dot slots.
+Both extra buttons hide at widths of 768px and below; the mobile header stays unchanged.
+After expiry, the Settings archive remains available.
+Closing the Showcase dismisses the release and hands over to the header with the same pointer or keyboard behavior.
+The header always reopens an expanded Nudge, even for a major release that was never minimized.
 
 `components/WhatsNew/motion.ts` defines curves, durations, and stagger delays for announcements.
 The announcement styles and exit timers read those constants.

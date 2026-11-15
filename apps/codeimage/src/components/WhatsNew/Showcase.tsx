@@ -31,7 +31,7 @@ const cardAt = (index: number, count: number) => {
 
 export function Showcase(props: {
   release: (typeof RELEASES)[number];
-  dismiss: () => void;
+  dismiss: (keyboard: boolean) => void;
   minimize: (keyboard: boolean) => void;
 }) {
   const news = getWhatsNew();
@@ -40,29 +40,62 @@ export function Showcase(props: {
   let title!: HTMLDivElement;
   let exit: Animation | undefined;
   let minimizing = false;
+  let closing = false;
   let disposed = false;
+  const close = (keyboard: boolean, after?: () => void) => {
+    if (closing) return;
+    closing = true;
+    exit?.cancel();
+    const finish = () => {
+      if (disposed) return;
+      props.dismiss(keyboard);
+      queueMicrotask(() => {
+        if (after) return after();
+        if (!keyboard) return;
+        const trigger = document.querySelector<HTMLElement>(
+          '[data-whats-new-trigger]',
+        );
+        if (trigger?.checkVisibility()) trigger.focus({preventScroll: true});
+      });
+    };
+    const panel = title.closest<HTMLElement>(
+      '[role="dialog"], [role="alertdialog"]',
+    );
+    if (keyboard || !panel) return finish();
+    const reduced = matchMedia(reduceMotion).matches;
+    exit = panel.animate(
+      reduced
+        ? [{opacity: 1}, {opacity: 0}]
+        : [
+            {opacity: 1, transform: getComputedStyle(panel).transform},
+            {opacity: 0, transform: 'scale(.96)'},
+          ],
+      {duration: duration.nudgeOut, easing: curve.out, fill: 'forwards'},
+    );
+    void exit.finished.then(finish).catch(() => {});
+  };
   onMount(() => {
-    const panel = title.closest('[role="dialog"]');
-    // During the exit, Escape must reach dismissal before a tooltip consumes it.
+    const panel = title.closest('[role="dialog"], [role="alertdialog"]');
+    // Escape belongs to the sheet, including while a tooltip or exit is active.
     const interrupt = (event: Event) => {
-      if (
-        !minimizing ||
-        !(event instanceof KeyboardEvent) ||
-        event.key !== 'Escape'
-      )
-        return;
+      if (!(event instanceof KeyboardEvent) || event.key !== 'Escape') return;
       event.preventDefault();
       event.stopPropagation();
-      props.dismiss();
+      if (closing) {
+        closing = false;
+      }
+      close(true);
     };
     panel?.addEventListener('keydown', interrupt, true);
     onCleanup(() => panel?.removeEventListener('keydown', interrupt, true));
   });
   const minimize = (event: MouseEvent) => {
-    if (minimizing) return;
+    if (minimizing || closing) return;
     const keyboard = fromKeyboard(event);
     if (keyboard) return props.minimize(true);
-    const panel = title.closest<HTMLElement>('[role="dialog"]');
+    const panel = title.closest<HTMLElement>(
+      '[role="dialog"], [role="alertdialog"]',
+    );
     if (!panel) return props.minimize(false);
     minimizing = true;
     const box = panel.getBoundingClientRect();
@@ -121,7 +154,7 @@ export function Showcase(props: {
       size="xl"
       open
       onOpenChange={open => {
-        if (!open) props.dismiss();
+        if (!open) close(false);
       }}
     >
       <div ref={title} class={styles.sheetTitle}>
@@ -150,14 +183,14 @@ export function Showcase(props: {
               </svg>
             </IconButton>
           </Tooltip>
-          <KDialog.CloseButton
-            as={IconButton}
+          <IconButton
+            onClick={event => close(fromKeyboard(event))}
             aria-label={t('common.close')}
             size="xs"
             theme="secondary"
           >
             <icons.CloseIcon />
-          </KDialog.CloseButton>
+          </IconButton>
         </div>
       </div>
       <div class={styles.sheet} data-whats-new="showcase">
@@ -212,12 +245,11 @@ export function Showcase(props: {
                           <Button
                             size="sm"
                             theme="secondary"
-                            onClick={() => {
-                              props.dismiss();
-                              requestAnimationFrame(() =>
+                            onClick={event =>
+                              close(fromKeyboard(event), () =>
                                 news.showMe(located().id, 'showcase'),
-                              );
-                            }}
+                              )
+                            }
                           >
                             {t('whatsNew.showMe')}
                           </Button>
@@ -263,12 +295,11 @@ export function Showcase(props: {
                   <Button
                     size="sm"
                     theme="secondary"
-                    onClick={() => {
-                      props.dismiss();
-                      requestAnimationFrame(() =>
+                    onClick={event =>
+                      close(fromKeyboard(event), () =>
                         news.showMe(highlight.id, 'showcase'),
-                      );
-                    }}
+                      )
+                    }
                   >
                     {t('whatsNew.showMe')}
                   </Button>
@@ -281,7 +312,7 @@ export function Showcase(props: {
           class={`${styles.sheetFooter} ${styles.fade}`}
           style={at(showcaseAt.footer)}
         >
-          <Button theme="primary" onClick={props.dismiss}>
+          <Button theme="primary" onClick={event => close(fromKeyboard(event))}>
             {t('whatsNew.start')}
           </Button>
           <a
