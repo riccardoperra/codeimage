@@ -107,9 +107,10 @@ it('places the release controls and the shared line-marks UI in registry order',
   await new Promise(resolve => setTimeout(resolve, 0));
   expect(app.store.dotAt('control:frame.aspectRatio')).toBe('social');
   expect(app.store.dotAt('control:signature.saved')).toBe('signature');
-  expect(app.store.dotAt('editor:line-marks')).toBeUndefined();
-  app.store.seen('tabs');
   expect(app.store.dotAt('editor:line-marks')).toBe('marks');
+  expect(app.store.dotAt('control:window.style')).toBeUndefined();
+  app.store.seen('marks');
+  expect(app.store.dotAt('control:window.style')).toBe('window-styles');
   expect(app.store.dotAt('editor:line-mark')).toBeUndefined();
   app.dispose();
 });

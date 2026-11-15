@@ -181,3 +181,29 @@ it('announces 2.0 as a Showcase and advances all located highlights within three
     seen.add(highlight.id);
   }
 });
+
+it('prioritizes the editorial order and keeps accessory highlights after the headlines', () => {
+  expect(RELEASES[0].highlights.map(highlight => highlight.id)).toEqual([
+    'marks',
+    'social',
+    'signature',
+    'redact',
+    'window-styles',
+    'tabs',
+    'alt',
+    'command-menu',
+    'takumi',
+    'layouts',
+    'theme-cards',
+  ]);
+  expect(decide(RELEASES, NO_FACTS, day('2026-11-15')).dots).toEqual([
+    'marks',
+    'social',
+    'signature',
+  ]);
+  expect(
+    RELEASES[0].highlights
+      .filter(highlight => 'accessory' in highlight)
+      .map(highlight => highlight.id),
+  ).toEqual(['alt', 'command-menu', 'takumi', 'layouts', 'theme-cards']);
+});

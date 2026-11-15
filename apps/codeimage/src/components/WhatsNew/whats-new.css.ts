@@ -339,3 +339,33 @@ globalStyle(
   `${nudge} button:active, ${coachmark} button:active, ${sheet} button:active`,
   {'@media': {[reduce]: {transform: 'none'}}},
 );
+
+export const accessories = style({paddingTop: '24px'});
+export const alsoTitle = style({
+  margin: '0 0 12px',
+  fontSize: '13px',
+  fontWeight: 600,
+  color: c.descriptionTextColor,
+});
+export const accessory = style({
+  display: 'flex',
+  alignItems: 'center',
+  gap: '12px',
+  padding: '12px 0',
+  borderBottom: `1px solid ${c.input.backgroundColor}`,
+});
+export const accessoryThumb = style({
+  width: '64px',
+  height: '44px',
+  flexShrink: 0,
+});
+export const accessoryCopy = style({flex: 1, minWidth: 0});
+export const accessoryTitle = style({
+  margin: '0 0 4px',
+  fontSize: '13px',
+  fontWeight: 600,
+});
+export const accessoryBody = style([
+  body,
+  {whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis'},
+]);

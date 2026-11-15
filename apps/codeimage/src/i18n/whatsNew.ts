@@ -9,6 +9,7 @@ type WhatsNewMessages = Record<
 };
 
 const en = {
+  alsoNew: 'Also new',
   newOne: '1 new thing',
   newMany: '{{count}} new things',
   see: 'See',
@@ -77,6 +78,7 @@ const en = {
 };
 
 const it = {
+  alsoNew: 'Altre novità',
   newOne: '1 novità',
   newMany: '{{count}} novità',
   see: 'Vedi',
@@ -145,6 +147,7 @@ const it = {
 } satisfies WhatsNewMessages;
 
 const de = {
+  alsoNew: 'Außerdem neu',
   newOne: '1 Neuerung',
   newMany: '{{count}} Neuerungen',
   see: 'Ansehen',
@@ -213,6 +216,7 @@ const de = {
 } satisfies WhatsNewMessages;
 
 const es = {
+  alsoNew: 'Más novedades',
   newOne: '1 novedad',
   newMany: '{{count}} novedades',
   see: 'Ver',

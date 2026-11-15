@@ -173,7 +173,7 @@ describe('release discovery across visits', () => {
     try {
       await settle();
       expect(app.store.isNew('tabs')).toBe(true);
-      expect(app.store.dotAt('export:tabs')).toBe('tabs');
+      expect(app.store.dotAt('editor:line-marks')).toBe('marks');
       now.mockReturnValue(Date.parse('2026-12-29T00:00:00Z'));
       window.dispatchEvent(new Event('focus'));
       await settle();

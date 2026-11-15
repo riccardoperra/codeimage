@@ -86,9 +86,17 @@ export function Showcase(props: {
           </p>
         </header>
         <div class={styles.grid}>
-          <For each={props.release.highlights}>
+          <For
+            each={props.release.highlights.filter(
+              highlight => !('accessory' in highlight),
+            )}
+          >
             {(highlight, index) => (
-              <article class={styles.card} style={cardAt(index())}>
+              <article
+                class={styles.card}
+                style={cardAt(index())}
+                data-highlight={highlight.id}
+              >
                 <Dynamic component={illustrations[highlight.id]} mode="play" />
                 <div class={styles.copy}>
                   <span class={styles.tag}>
@@ -129,6 +137,53 @@ export function Showcase(props: {
             )}
           </For>
         </div>
+        <section class={styles.accessories} aria-labelledby="whats-new-also">
+          <h3 id="whats-new-also" class={styles.alsoTitle}>
+            {t('whatsNew.alsoNew')}
+          </h3>
+          <For
+            each={props.release.highlights.filter(
+              highlight => 'accessory' in highlight,
+            )}
+          >
+            {highlight => (
+              <article class={styles.accessory} data-highlight={highlight.id}>
+                <div class={styles.accessoryThumb}>
+                  <Dynamic
+                    component={illustrations[highlight.id]}
+                    mode="thumb"
+                  />
+                </div>
+                <div class={styles.accessoryCopy}>
+                  <h4 class={styles.accessoryTitle}>
+                    {t(`whatsNew.highlights.${highlight.id}.title`)}
+                  </h4>
+                  <p class={styles.accessoryBody}>
+                    {t(`whatsNew.highlights.${highlight.id}.body`)}
+                  </p>
+                </div>
+                <Show
+                  when={
+                    highlight.where !== null && news.canShowMe(highlight.id)
+                  }
+                >
+                  <Button
+                    size="sm"
+                    theme="secondary"
+                    onClick={() => {
+                      props.dismiss();
+                      requestAnimationFrame(() =>
+                        news.showMe(highlight.id, 'showcase'),
+                      );
+                    }}
+                  >
+                    {t('whatsNew.showMe')}
+                  </Button>
+                </Show>
+              </article>
+            )}
+          </For>
+        </section>
         <footer
           class={`${styles.sheetFooter} ${styles.fade}`}
           style={at(showcaseAt.footer)}

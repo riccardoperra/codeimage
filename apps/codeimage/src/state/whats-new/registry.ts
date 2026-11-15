@@ -24,6 +24,7 @@ export interface Highlight {
   /** `null` means no location to point to: no dot and no "Show me". */
   readonly where: Where | null;
   readonly experimental?: true;
+  readonly accessory?: true;
   readonly learnMore?: `https://${string}`;
 }
 
@@ -49,37 +50,31 @@ export const RELEASES = [
     date: '2026-11-14',
     major: true,
     highlights: [
-      {
-        id: 'redact',
-        where: null,
-      },
-      {
-        id: 'tabs',
-        where: 'export:tabs',
-      },
+      {id: 'marks', where: 'editor:line-marks'},
       {id: 'social', where: 'control:frame.aspectRatio'},
       {id: 'signature', where: 'control:signature.saved'},
-      {id: 'marks', where: 'editor:line-marks'},
-      {id: 'alt', where: 'export:alt'},
+      {id: 'redact', where: null},
       {id: 'window-styles', where: 'control:window.style'},
-      {
-        id: 'command-menu',
-        where: 'command-menu',
-      },
+      {id: 'tabs', where: 'export:tabs'},
+      {id: 'alt', where: 'export:alt', accessory: true},
+      {id: 'command-menu', where: 'command-menu', accessory: true},
       {
         id: 'takumi',
         where: 'setting:rendering-engine',
         experimental: true,
+        accessory: true,
       },
       {
         id: 'layouts',
         where: 'setting:layout',
         experimental: true,
+        accessory: true,
       },
       {
         id: 'theme-cards',
         where: 'setting:theme-cards',
         experimental: true,
+        accessory: true,
       },
     ],
   },
