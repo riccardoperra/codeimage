@@ -7,6 +7,7 @@ import {
   createRoot,
   createSignal,
   onCleanup,
+  onMount,
 } from 'solid-js';
 import type {Decision, Facts} from './decide';
 import {
@@ -38,7 +39,11 @@ export interface WhatsNew {
   /** True while the component that owns the highlight's place is mounted. */
   canShowMe(id: LocatedHighlightId): boolean;
   showMe(id: LocatedHighlightId, from: Surface): void;
-  /** Unbinds when the calling owner is disposed. */
+  /**
+   * Binds once the caller is mounted and unbinds when it is disposed. A
+   * placement or route that replaces another is created before the old one
+   * is disposed, and mounted after.
+   */
   bindLocation(
     place: Place | Where,
     reveal: (item: string | undefined) => void,
@@ -179,12 +184,14 @@ export function createWhatsNew(
       location?.reveal(location.item);
     },
     bindLocation(where, reveal) {
-      if (locations().has(where)) {
-        if (import.meta.env.DEV)
-          throw new Error(`What's new place "${where}" already has an owner`);
-        return;
-      }
-      setLocations(current => new Map(current).set(where, reveal));
+      onMount(() => {
+        if (locations().has(where)) {
+          if (import.meta.env.DEV)
+            throw new Error(`What's new place "${where}" already has an owner`);
+          return;
+        }
+        setLocations(current => new Map(current).set(where, reveal));
+      });
       onCleanup(() =>
         setLocations(current => {
           if (current.get(where) !== reveal) return current;

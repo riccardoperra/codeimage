@@ -1,5 +1,5 @@
 import type * as solid from 'solid-js';
-import {createRoot, createSignal, onCleanup} from 'solid-js';
+import {createMemo, createRoot, createSignal, onCleanup} from 'solid-js';
 import {describe, expect, expectTypeOf, it, vi} from 'vitest';
 import type {LocatedHighlightId} from './registry';
 import {createWhatsNew, type WhatsNew} from './whats-new.store';
@@ -244,11 +244,11 @@ it('resolves items by their most specific owner and rejects duplicate owners', a
   const unbind = createRoot(dispose => {
     app.store.bindLocation('setting', reveal);
     app.store.bindLocation('setting:layout', exact);
-    expect(() => app.store.bindLocation('setting', vi.fn())).toThrow(
-      'already has an owner',
-    );
     return dispose;
   });
+  expect(() =>
+    createRoot(() => app.store.bindLocation('setting', vi.fn())),
+  ).toThrow('already has an owner');
   app.store.showMe('layouts', 'library');
   expect(exact).toHaveBeenCalledWith(undefined);
   expect(reveal).not.toHaveBeenCalled();
@@ -257,5 +257,32 @@ it('resolves items by their most specific owner and rejects duplicate owners', a
   expect(app.store.isNew('layouts')).toBe(true);
   unbind();
   expect(app.store.canShowMe('layouts')).toBe(false);
+  app.dispose();
+});
+
+it('hands a place to the owner that replaces another in the same update', async () => {
+  const app = boot(database());
+  await settle();
+  const [placement, setPlacement] = createSignal<'header' | 'layout'>('header');
+  const header = vi.fn();
+  const layout = vi.fn();
+  const dispose = createRoot(dispose => {
+    // The new placement is created before the old one is disposed.
+    createMemo(
+      () =>
+        placement() === 'layout' && app.store.bindLocation('export', layout),
+    );
+    createMemo(
+      () =>
+        placement() === 'header' && app.store.bindLocation('export', header),
+    );
+    return dispose;
+  });
+  setPlacement('layout');
+  app.store.showMe('tabs', 'library');
+  expect(layout).toHaveBeenCalled();
+  expect(header).not.toHaveBeenCalled();
+  dispose();
+  expect(app.store.canShowMe('tabs')).toBe(false);
   app.dispose();
 });
