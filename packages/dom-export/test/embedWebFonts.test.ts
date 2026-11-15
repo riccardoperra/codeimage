@@ -1,5 +1,5 @@
 import {Window} from 'happy-dom';
-import {describe, expect, it} from 'vitest';
+import {describe, expect, it, vi} from 'vitest';
 import {
   getCSSRules,
   getFontsMap,
@@ -33,6 +33,34 @@ describe('embedWebFonts', () => {
     expect(result.font2).toHaveProperty('400-normal');
   });
 
+  it('keeps variable faces and defaults an omitted font style to normal', async () => {
+    const documentEl = await buildDocument(`
+      @font-face { font-family: 'Signature'; src: url('signature.woff2'); font-weight: 100 900; }
+      @font-face { font-family: 'Other'; src: url('other.woff2'); font-weight: 400; }
+    `);
+    const cssRules = await getCSSRules(
+      documentEl.styleSheets as unknown as CSSStyleSheet[],
+      {},
+    );
+    // happy-dom drops variable ranges, which Chrome exposes on the descriptor.
+    const face = cssRules.find(rule => rule.style.fontFamily === 'Signature');
+    if (!face) throw new Error('Missing signature face');
+    vi.spyOn(face.style, 'fontWeight', 'get').mockReturnValue('100 900');
+    const node = documentEl.querySelector(
+      '.container',
+    ) as unknown as HTMLElement;
+    node.style.fontFamily = 'Signature';
+    node.style.fontWeight = '650';
+    node.style.fontStyle = 'normal';
+    const result = getUsedFontFamiliesByNode(
+      getFontsMap(cssRules),
+      node,
+      cssRules,
+      [],
+    );
+    expect(result).toHaveLength(1);
+    expect(result[0].cssText).toContain('signature.woff2');
+  });
   describe('getUsedFontFamiliesByNode', async () => {
     const documentEl = await buildDocument(
       `
@@ -58,7 +86,7 @@ describe('embedWebFonts', () => {
     ) as unknown as HTMLElement;
 
     it('should no return fonts', function () {
-      const result = getUsedFontFamiliesByNode(fontMap, node, cssRules);
+      const result = getUsedFontFamiliesByNode(fontMap, node, cssRules, []);
       expect(result.length).toBe(0);
     });
 
@@ -73,7 +101,7 @@ describe('embedWebFonts', () => {
       el1.style.fontWeight = '400';
       el1.style.fontStyle = 'normal';
 
-      const result = getUsedFontFamiliesByNode(fontMap, node, cssRules);
+      const result = getUsedFontFamiliesByNode(fontMap, node, cssRules, []);
       expect(result.length).toBe(1);
     });
   });
