@@ -10,12 +10,21 @@ import * as styles from './AnimatePanel.css';
 export function AnimatePanel() {
   const {animation, editor} = getEditorStore();
   const [t] = useI18n<AppLocaleEntries>();
+  let island!: HTMLElement;
   const keyDown = (event: KeyboardEvent) => {
     if (event.key !== 'Escape') return;
     event.stopPropagation();
     event.preventDefault();
-    if (animation.selection()) animation.actions.select(null);
-    else {
+    const selected = animation.selection();
+    if (selected) {
+      // Clearing the selection removes the details row, which may hold focus.
+      island
+        .querySelector<HTMLElement>(
+          `[data-animation-segment][data-step-id="${CSS.escape(selected.stepId)}"][data-kind="${selected.kind}"]`,
+        )
+        ?.focus();
+      animation.actions.select(null);
+    } else {
       animation.actions.edit();
       editor.activeEditorView()?.focus();
     }
@@ -23,6 +32,7 @@ export function AnimatePanel() {
   return (
     <Show when={animation.open()}>
       <section
+        ref={island}
         class={styles.island}
         aria-label={t('animation.panel')}
         data-animate-panel

@@ -500,6 +500,16 @@ async function nudge(page: Page) {
   assert.equal(await segment.getAttribute('aria-valuenow'), '790');
   await input.press('Enter');
   assert.equal(await segment.getAttribute('aria-valuenow'), '1350');
+  await input.click();
+  await input.press('Escape');
+  assert.ok(
+    await segment.evaluate(element => element === document.activeElement),
+    'Esc in the details row returns focus to the segment',
+  );
+  assert.equal(
+    await page.evaluate(() => window.editorStore.animation.selection()),
+    null,
+  );
 }
 
 async function easing(page: Page) {
