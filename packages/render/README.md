@@ -16,15 +16,36 @@ const png = await renderSnapshot(project); // Uint8Array, or a string for SVG
 2. The CSS is the build's vanilla-extract output plus the stylesheet a CodeMirror editor with the theme would mount, CodeMirror's base theme included.
 3. Takumi measures the frame, the frame is sized to whole CSS pixels as the web export is, and Takumi rasterizes it at `scale`.
 
-Fonts come from `dist/fonts`: the app's own font files and the fontsource packages for the families the app loads from Google Fonts. The renderer never reads host fonts. Glyphs the snapshot's fonts lack fall back to bundled fonts, tried in this order:
+Only Inter and JetBrains Mono ship in `dist/fonts`. Other fonts come from a
+build-generated catalog of immutable URLs, sizes, cmap-narrowed Unicode ranges
+and SHA-256 hashes. Takumi selects the needed subsets. Each request owns its
+native renderer and verified buffers, so concurrent or earlier requests cannot
+change its font selection. The selected code font's Latin/default face loads
+before selection because its metrics affect CJK-only line boxes.
 
-| Family                        | Covers                         | License                                                      | Size                  |
-| ----------------------------- | ------------------------------ | ------------------------------------------------------------ | --------------------- |
-| Twemoji (`twemoji-colr-font`) | Emoji and flags                | Font OFL 1.1, art CC-BY 4.0 by Twitter, Inc and contributors | 0.5 MB                |
-| Noto Sans SC Variable         | Chinese, kana, Latin, Cyrillic | OFL 1.1                                                      | 4.5 MB in 101 subsets |
-| Noto Sans KR Variable         | Hangul                         | OFL 1.1                                                      | 3.5 MB in 124 subsets |
+The fallback order is Twemoji, Noto Sans SC, then Noto Sans KR. Japanese text
+uses Noto Sans SC glyph shapes. Characters absent from these fonts retain the
+renderer’s missing-glyph behavior. Bundled notices are in `dist/fonts/licenses`.
 
-They and the UI font register once when the renderer starts, and every render uses the same fallback chain, so an image never depends on what rendered before it. Japanese text draws with Noto Sans SC glyph shapes, and rare kanji outside its subsets are missing. License texts are in `dist/fonts/licenses`.
+```ts
+import {createRenderer, openFontCache} from '@codeimage/render';
+
+const renderer = createRenderer({
+  offline: true,
+  cacheDir: '/tmp/codeimage-cache',
+});
+const png = await renderer.render(project);
+const markup = await renderer.markup(project);
+// markup.fonts contains verified data buffers, including required fallbacks.
+const cache = openFontCache();
+await cache.install(['fira-code']);
+const inventory = await cache.list();
+await cache.clean();
+```
+
+`createRenderer` also accepts `codeFontFile`, an abort `signal` and an `onEvent`
+callback. `snapshotMarkup` and `renderSnapshot` retain their online defaults.
+Cache policy and CLI commands are documented in [the CLI README](../cli/README.md#fonts-and-offline-rendering).
 
 ## Develop
 
@@ -34,3 +55,9 @@ They and the UI font register once when the renderer starts, and every render us
 - `pnpm exec tsx scripts/perf.ts` from this package times a 300-line render.
 - `pnpm exec tsx scripts/parity/takumi-vs-chrome.ts` from the repository root compares every theme and terminal against Chrome.
 - `pnpm exec tsx scripts/parity/live-p3.ts` from the repository root runs the renderer's live checks.
+
+Font source recipes live in `build-fonts.mjs`. Package versions must match exact
+`devDependencies` pins. The generator derives every hash and Unicode range.
+`node packages/render/scripts/verify-font-urls.mjs` checks all remote artifacts.
+`node packages/render/scripts/verify-font-parity.mjs <P10-dist/index.mjs>` compares
+all font families and weights against a P10 build using the shared cache.

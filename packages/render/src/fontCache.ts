@@ -11,6 +11,7 @@ import {
 } from 'node:fs/promises';
 import {homedir} from 'node:os';
 import {join, resolve} from 'node:path';
+import {fileURLToPath} from 'node:url';
 import {setTimeout as delay} from 'node:timers/promises';
 import type {FontLoader} from '@takumi-rs/core';
 import {findFont, fontsDir, loadFontCatalog} from './fontManifest';
@@ -404,7 +405,7 @@ export function createFontStore(
                 family: font.family,
                 path: file.url
                   ? pathOf(file)
-                  : new URL(file.file, fontsDir).pathname,
+                  : fileURLToPath(new URL(file.file, fontsDir)),
                 file: file.file,
                 data: await data(font, file),
                 weight: file.weight,
