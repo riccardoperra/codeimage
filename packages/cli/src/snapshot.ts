@@ -2,6 +2,7 @@ import {inferLanguageFromPath} from '@codeimage/config';
 import {basename} from 'node:path';
 import {z} from 'zod';
 import {resolveTheme, UsageError} from './args';
+import {formatIssues} from './errors';
 import type {RenderArgs} from './args';
 import {
   projectSnapshotSchema,
@@ -19,14 +20,6 @@ const presetSchema = z.looseObject({
 });
 
 export type Preset = z.output<typeof presetSchema>;
-
-export function formatIssues(issues: z.core.$ZodIssue[]) {
-  const shown = issues
-    .slice(0, 3)
-    .map(issue => `${issue.path.join('.')}: ${issue.message}`);
-  if (issues.length > 3) shown.push(`and ${issues.length - 3} more`);
-  return shown.join('; ');
-}
 
 export function parsePreset(text: string): Preset {
   let preset: Preset;

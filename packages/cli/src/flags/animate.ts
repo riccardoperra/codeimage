@@ -10,8 +10,7 @@ import type {
   AnimationSettings,
   SnapshotDocument,
 } from '@codeimage/render';
-import {UsageError} from '../errors';
-import {formatIssues} from '../snapshot';
+import {formatIssues, UsageError} from '../errors';
 import type {Preset} from '../snapshot';
 import type {Flag, FlagValues} from './index';
 

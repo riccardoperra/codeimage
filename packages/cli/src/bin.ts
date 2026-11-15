@@ -1,9 +1,12 @@
 #!/usr/bin/env node
-import {readFile, writeFile} from 'node:fs/promises';
+import {rmSync} from 'node:fs';
+import {readFile, rename, rm, writeFile} from 'node:fs/promises';
 import {renderUsage} from 'citty';
 import {COMMAND, parseArgs, UsageError} from './args';
 import {FLAGS} from './flags';
 import {createRenderer} from '@codeimage/render';
+import type {SnapshotDocument} from '@codeimage/render';
+import {planAnimation} from './flags/animate';
 import {runFontCommand} from './commands/fonts';
 import {planImages} from './images';
 import {parsePreset} from './snapshot';
@@ -73,10 +76,17 @@ async function main() {
     );
   }
   const outputs = await planImages(args, inputs, preset);
+  const render = (snapshot: SnapshotDocument) => {
+    if (!args.animation) return renderer.render(snapshot);
+    const {document, notes} = planAnimation(snapshot, args.animation, preset);
+    for (const note of notes) ui.warn(note);
+    return renderer.renderAnimation(document);
+  };
   for (const output of outputs) {
     const started = performance.now();
-    const image = await ui.run('Rendering', () =>
-      renderer.render(output.snapshot),
+    const image = await ui.run(
+      args.animation ? 'Rendering the animation' : 'Rendering',
+      () => render(output.snapshot),
     );
     if (output.path === '-') {
       await new Promise<void>((resolve, reject) => {
@@ -85,7 +95,7 @@ async function main() {
         );
       });
     } else {
-      await writeFile(output.path, image);
+      await writeAtomically(output.path, image);
     }
     ui.rendered({
       path: output.path,
@@ -101,6 +111,33 @@ async function main() {
     }
   }
 }
+
+let partial: string | undefined;
+
+// An interrupted write leaves the previous file, or none, never a cut one.
+async function writeAtomically(path: string, data: string | Uint8Array) {
+  partial = `${path}.${process.pid}.partial`;
+  try {
+    await writeFile(partial, data);
+    await rename(partial, path);
+  } catch (error) {
+    await rm(partial, {force: true});
+    throw error;
+  } finally {
+    partial = undefined;
+  }
+}
+
+// process.exit waits for the running native render, so the handler re-raises
+// the signal with the default action instead.
+function removePartialAndStop(signal: NodeJS.Signals) {
+  if (partial) rmSync(partial, {force: true});
+  process.removeAllListeners(signal);
+  process.kill(process.pid, signal);
+}
+
+process.on('SIGINT', removePartialAndStop);
+process.on('SIGTERM', removePartialAndStop);
 
 let reported: unknown;
 function report(error: unknown) {

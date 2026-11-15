@@ -1,5 +1,5 @@
 import {spawn} from 'node:child_process';
-import {mkdtemp, readdir, rm, readFile} from 'node:fs/promises';
+import {mkdtemp, readdir, rm, readFile, writeFile} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
 import {join, resolve} from 'node:path';
 import {fileURLToPath} from 'node:url';
@@ -118,6 +118,34 @@ describe('CLI streams', {timeout: 30_000}, () => {
       expect(result.status, result.stderr).toBe(2);
       expect(result.stdout.length).toBe(0);
     }
+  });
+  it('writes an animation to a file or to stdout, with notes only on stderr', async () => {
+    const files = [join(dir, 'a.ts'), join(dir, 'b.ts')];
+    await writeFile(files[0], 'const a = 1;\n');
+    await writeFile(files[1], 'const a = 1;\nconst b = [a, a];\n');
+    const timing = ['--animate', '--hold', '100', '--transition', '200'];
+    const path = join(dir, 'out.gif');
+    const gif = await run([
+      ...files,
+      '--offline',
+      ...timing,
+      '--fps',
+      '30',
+      '-o',
+      path,
+    ]);
+    expect(gif.status, gif.stderr).toBe(0);
+    expect(gif.stdout.length).toBe(0);
+    expect((await readFile(path)).subarray(0, 6).toString()).toBe('GIF89a');
+    expect(gif.stderr).toContain('so this one plays at 25 instead of 30');
+    expect(gif.stderr).toContain(path);
+    const piped = await run([...files, '--offline', ...timing, '-o', '-']);
+    expect(piped.status, piped.stderr).toBe(0);
+    expect(piped.stdout.subarray(8, 12).toString()).toBe('WEBP');
+    expect(piped.stderr).not.toContain('\x1b');
+    expect(
+      (await readdir(dir)).filter(file => file.endsWith('.partial')),
+    ).toEqual([]);
   });
   it('renders a local font without touching the cache', async () => {
     const path = projectPath(

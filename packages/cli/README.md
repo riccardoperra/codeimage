@@ -141,6 +141,8 @@ codeimage step1.ts step2.ts --animate --hold 1200 --transition 600 -o demo.gif
 ```
 
 The format comes from `--format`, else from the `-o` extension, else WebP.
+Without `-o` the file is `codeimage.webp`, or stdout when it is redirected, as
+for a still image. Progress and notes go to stderr.
 
 | Extension       | Format                  |
 | --------------- | ----------------------- |
@@ -184,9 +186,9 @@ node packages/cli/dist/bin.js README.md -o /tmp/readme.png
 ```
 
 `src/args.ts` parses options. `src/snapshot.ts` builds the snapshot and reads
-presets using the schema exported by `@codeimage/render`. `src/bin.ts` calls
-`renderSnapshot`, or `renderAnimation` with `--animate`, and owns files,
-streams, and exit codes. Feature flags live in `src/flags/`, one file each.
+presets using the schema exported by `@codeimage/render`. `src/bin.ts` renders
+through `createRenderer`, with `renderAnimation` for `--animate`, and owns
+files, streams, and exit codes. `src/ui.ts` writes everything else to stderr. Feature flags live in `src/flags/`, one file each.
 
 With the mock web app running on port 4434, check CLI parity with:
 
