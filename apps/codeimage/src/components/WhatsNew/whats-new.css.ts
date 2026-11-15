@@ -3,8 +3,6 @@ import {globalStyle, keyframes, style} from '@vanilla-extract/css';
 import {
   curve,
   duration,
-  illustrationAt,
-  illustrationFor,
   ms,
   reduceMotion as reduce,
   showcaseFor,
@@ -156,138 +154,6 @@ export const tag = style({
   fontSize: '11px',
   fontWeight: 500,
 });
-export const illustration = style({
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  gap: '10px',
-  height: '140px',
-  borderRadius: '10px',
-  background: c.panel.background,
-  color: c.primary,
-  overflow: 'hidden',
-  selectors: {
-    '&[data-mode="thumb"]': {
-      height: '100%',
-      padding: '4px',
-      borderRadius: '8px',
-    },
-  },
-});
-// A thumbnail draws its picture at the size of its box.
-globalStyle(`${illustration}[data-mode="thumb"] svg`, {
-  width: '100%',
-  height: '100%',
-});
-export const thumbWindow = style({fill: c.background});
-export const miniWindow = style({
-  width: '180px',
-  color: c.baseText,
-  lineHeight: 1.8,
-  padding: '12px',
-  borderRadius: '10px',
-  background: c.background,
-  boxShadow: '0 4px 16px rgba(0,0,0,.08)',
-  fontSize: '11px',
-});
-export const redacted = style({color: c.primary, fontWeight: 600});
-export const wireCanvas = style({fill: 'currentColor', opacity: 0.1});
-export const wireFrame = style({fill: 'currentColor', opacity: 0.3});
-
-/*
- * A picture in a Nudge step or a Showcase card explains its feature once,
- * when it appears. Each part ends where the still picture has it, so the
- * archive's thumbnails and reduced motion show the last frame. A Showcase
- * card sets `--whats-new-play-at` to start its picture after it lands.
- */
-const playAt = (offset: number) =>
-  `calc(var(--whats-new-play-at, ${ms(duration.playAt)}) + ${ms(offset)})`;
-const plays = (
-  name: string,
-  length: number,
-  offset: number,
-  easing: string = ease,
-) => {
-  const playing = `${illustration}[data-mode="play"] &`;
-  return style({
-    selectors: {
-      [playing]: {
-        animation: `${name} ${ms(length)} ${easing} ${playAt(offset)} both`,
-      },
-    },
-    '@media': {[reduce]: {selectors: {[playing]: {animation: 'none'}}}},
-  });
-};
-const rise = keyframes({from: {opacity: 0, transform: 'translateY(6px)'}});
-const fromLeft = keyframes({
-  from: {opacity: 0, transform: 'translateX(-10px)'},
-});
-const fromRight = keyframes({from: {opacity: 0, transform: 'translateX(8px)'}});
-const press = keyframes({'40%': {transform: 'scale(.9)'}});
-const down = keyframes({from: {transform: 'translateY(-200%)'}});
-const wipeIn = keyframes({from: {clipPath: 'inset(0 100% 0 0)'}});
-const wipeOut = keyframes({from: {clipPath: 'inset(0)'}});
-
-// Redact: the secret is read first, then dots replace it from the left.
-export const secret = style({display: 'inline-grid'});
-globalStyle(`${secret} > *`, {gridArea: '1 / 1'});
-export const plain = style([
-  plays(wipeOut, illustrationFor.redact, illustrationAt.redact, curve.inOut),
-  {clipPath: 'inset(0 0 0 100%)'},
-]);
-export const dots = plays(
-  wipeIn,
-  illustrationFor.redact,
-  illustrationAt.redact,
-  curve.inOut,
-);
-// Tabs: one image per tab leaves the arrow, one after the other.
-export const tabOut = illustrationAt.tabs.map(at =>
-  plays(fromLeft, illustrationFor.tabs, at),
-);
-// Command menu: the shortcut is pressed, then a row is picked.
-export const keycap = plays(
-  press,
-  illustrationFor.shortcut,
-  illustrationAt.shortcut,
-);
-export const commandList = style({position: 'relative'});
-export const commandPick = style([
-  plays(
-    down,
-    illustrationFor.commandPick,
-    illustrationAt.commandPick,
-    curve.inOut,
-  ),
-  {
-    position: 'absolute',
-    insetInline: '-6px',
-    top: 'calc(2 * 1.8em)',
-    height: '1.8em',
-    borderRadius: '5px',
-    background: `color-mix(in srgb, ${c.primary} 16%, transparent)`,
-  },
-]);
-// Layouts: each layout's panel docks from its own edge.
-export const dockRight = plays(
-  fromRight,
-  illustrationFor.layout,
-  illustrationAt.layout[0],
-);
-export const dockBottom = plays(
-  rise,
-  illustrationFor.layout,
-  illustrationAt.layout[1],
-);
-export const dockLeft = plays(
-  fromLeft,
-  illustrationFor.layout,
-  illustrationAt.layout[2],
-);
-// Theme cards: the three styles arrive in reading order.
-export const themeStyle = illustrationAt.theme.map(at =>
-  plays(rise, illustrationFor.theme, at),
-);
 export const commandAnchor = style({
   position: 'relative',
   display: 'inline-flex',
@@ -472,20 +338,4 @@ export const link = style({
 globalStyle(
   `${nudge} button:active, ${coachmark} button:active, ${sheet} button:active`,
   {'@media': {[reduce]: {transform: 'none'}}},
-);
-
-export const engineSwitch = plays(
-  press,
-  illustrationFor.engine,
-  illustrationAt.engine[0],
-);
-export const engineRoute = plays(
-  wipeIn,
-  illustrationFor.engine,
-  illustrationAt.engine[1],
-);
-export const engineImage = plays(
-  fromLeft,
-  illustrationFor.engine,
-  illustrationAt.engine[2],
 );
