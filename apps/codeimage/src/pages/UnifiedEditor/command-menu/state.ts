@@ -1,6 +1,6 @@
 import {createSignal} from 'solid-js';
 
-const isApple = /Mac|iPhone|iPad/.test(navigator.platform);
+import {isApple} from '../../../core/constants/platform';
 
 const [isOpen, setOpen] = createSignal(false);
 let opener: HTMLElement | undefined;
