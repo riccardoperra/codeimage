@@ -98,7 +98,14 @@ function stepLayout(host: HTMLElement): StepLayout {
   const {width, height} = frame.getBoundingClientRect();
   const viewport = frame.querySelector<HTMLElement>('[data-fit-window]');
   const content = frame.querySelector<HTMLElement>('[data-fitted-window]');
-  if (!viewport || !content) return {size: {width, height}, window: null};
+  if (!viewport || !content)
+    return {
+      size: {
+        width: Math.max(width, frame.scrollWidth),
+        height: Math.max(height, frame.scrollHeight),
+      },
+      window: null,
+    };
   const natural = {
     width: Math.max(content.offsetWidth, content.scrollWidth),
     height: Math.max(content.offsetHeight, content.scrollHeight),
