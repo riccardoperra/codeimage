@@ -6,7 +6,6 @@ import {
   Match,
   Switch,
   createSignal,
-  createUniqueId,
   onCleanup,
   onMount,
   Show,
@@ -50,21 +49,13 @@ function Frame(props: IllustrationProps & {children: JSX.Element}) {
 }
 
 function Canvas(props: {thumb: boolean; children: JSX.Element}) {
-  const gradient = createUniqueId();
   return (
     <svg
       width={props.thumb ? 64 : 280}
       height={props.thumb ? 44 : 120}
       viewBox={props.thumb ? '0 0 64 44' : '0 0 280 120'}
       fill="none"
-      style={{'--picture-wash': `url(#${gradient})`}}
     >
-      <defs>
-        <linearGradient id={gradient} x1="0" y1="0" x2="1" y2="1">
-          <stop stop-color="var(--picture-amber)" />
-          <stop offset="1" stop-color="var(--picture-keyword)" />
-        </linearGradient>
-      </defs>
       {props.children}
     </svg>
   );

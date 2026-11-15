@@ -41,8 +41,7 @@ export const glass = style({
   strokeWidth: 2,
 });
 export const wash = style({
-  fill: 'var(--picture-wash)',
-  opacity: 0.35,
+  fill: `color-mix(in srgb, var(--picture-keyword) 18%, ${c.panel.background})`,
 });
 export const ink = style({fill: c.baseText});
 export const label = style({
