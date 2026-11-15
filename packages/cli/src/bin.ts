@@ -37,7 +37,7 @@ async function readStdin() {
 async function main() {
   const args = parseArgs(process.argv.slice(2), !!process.stdout.isTTY);
   if (args.kind === 'help') {
-    ui.text(await renderUsage(COMMAND));
+    ui.usage(await renderUsage(COMMAND));
     ui.text(
       'Fonts: codeimage fonts install [ids...] [--all] [--offline] | list [--json] | clean [-y]',
     );
@@ -56,7 +56,7 @@ async function main() {
         : undefined,
   });
   if (!args.files.length && process.stdin.isTTY) {
-    ui.text(await renderUsage(COMMAND));
+    ui.usage(await renderUsage(COMMAND));
     process.exitCode = 2;
     return;
   }

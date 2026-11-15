@@ -67,26 +67,33 @@ describe('CLI streams', {timeout: 30_000}, () => {
       expect(await readdir(dir)).toEqual([]);
     },
   );
-  it('keeps file output, sidecars, help and inventory off stdout', async () => {
+  it('keeps file output, sidecars, help and human inventory off stdout', async () => {
     const path = join(dir, 'out.png');
     const image = await run(['--offline', '-o', path, '--alt', '--quiet']);
     expect(image.status, image.stderr).toBe(0);
     expect(image.stdout.length).toBe(0);
     expect(PNG.sync.read(await readFile(path)).width).toBeGreaterThan(0);
     expect(image.stderr).toContain(path);
-    for (const args of [['--help'], ['fonts', 'list', '--json']]) {
+    for (const args of [['--help'], ['fonts', 'list']]) {
       const result = await run(args);
       expect(result.status, result.stderr).toBe(0);
       expect(result.stdout.length).toBe(0);
       expect(result.stderr).not.toContain('\x1b');
-      if (args[0] === 'fonts')
-        expect(JSON.parse(result.stderr)).toEqual(
-          expect.arrayContaining([
-            expect.objectContaining({id: 'ui', state: 'bundled'}),
-          ]),
-        );
     }
   });
+  it.each([false, true])(
+    'writes JSON inventory only to stdout, packed=%s',
+    async packed => {
+      const result = await run(['fonts', 'list', '--json'], {packed});
+      expect(result.status, result.stderr).toBe(0);
+      expect(result.stderr).toBe('');
+      expect(JSON.parse(result.stdout.toString())).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({id: 'ui', state: 'bundled'}),
+        ]),
+      );
+    },
+  );
   it('packs only the same allowlisted Inter/JB font files', async () => {
     const fonts = (
       await readdir(projectPath('packages/cli/publish/dist/fonts'))

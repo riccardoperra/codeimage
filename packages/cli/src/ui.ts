@@ -1,6 +1,17 @@
+import {stripVTControlCharacters} from 'node:util';
 import {confirm, isCancel, log, multiselect, spinner} from '@clack/prompts';
 import type {FontEvent} from '@codeimage/render';
 import type {ErrorReport} from './errors';
+
+export function formatUsage(
+  message: string,
+  stdoutTTY = !!process.stdout.isTTY,
+  env = process.env,
+) {
+  return !stdoutTTY || env.NO_COLOR !== undefined
+    ? stripVTControlCharacters(message)
+    : message;
+}
 
 export function uiMode(
   quiet: boolean,
@@ -66,6 +77,7 @@ export function createUi(quiet = false) {
           }
         : undefined,
     text,
+    usage: (message: string) => text(formatUsage(message)),
     success,
     async run<T>(label: string, work: () => Promise<T>): Promise<T> {
       phase = status = label;

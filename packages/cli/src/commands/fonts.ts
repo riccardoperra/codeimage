@@ -70,11 +70,13 @@ export async function runFontCommand(args: FontCommand, ui: Ui) {
     ui.success('cleared font cache');
   } else if (args.kind === 'fonts-list') {
     const inventory = await cache.list();
-    ui.text(
-      args.json
-        ? `${JSON.stringify(inventory, null, 2)}\n`
-        : `${inventory.map(font => `${font.id.padEnd(20)} ${font.label.padEnd(20)} ${font.state.padEnd(8)} ${font.filesLocal}/${font.files} files ${font.bytesLocal}/${font.bytes} B  ${font.source}`).join('\n')}\nCache: ${cache.dir}\n`,
-    );
+    if (args.json) {
+      process.stdout.write(`${JSON.stringify(inventory, null, 2)}\n`);
+    } else {
+      ui.text(
+        `${inventory.map(font => `${font.id.padEnd(20)} ${font.label.padEnd(20)} ${font.state.padEnd(8)} ${font.filesLocal}/${font.files} files ${font.bytesLocal}/${font.bytes} B  ${font.source}`).join('\n')}\nCache: ${cache.dir}\n`,
+      );
+    }
   } else {
     const inventory = await cache.list();
     let names = args.ids;
