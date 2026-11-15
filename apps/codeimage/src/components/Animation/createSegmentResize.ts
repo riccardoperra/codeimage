@@ -58,7 +58,7 @@ export function createSegmentResize(options: {
     const {segment, value} = drag;
     drag = undefined;
     detach();
-    options.update(segment, value, true);
+    options.update(segment, value, value !== segment.durationMs);
     options.end();
   };
   const cancel = () => {
@@ -74,10 +74,14 @@ export function createSegmentResize(options: {
     if (event.button !== 0 || drag) return;
     event.preventDefault();
     event.stopPropagation();
-    if (event.currentTarget instanceof HTMLElement)
+    if (event.currentTarget instanceof HTMLElement) {
+      // Keeps the resize cursor and the events on the handle while the
+      // pointer crosses other segments or leaves the window.
+      event.currentTarget.setPointerCapture(event.pointerId);
       event.currentTarget
         .closest<HTMLElement>('[data-animation-segment]')
         ?.focus();
+    }
     const total = options.total();
     drag = {
       segment,
