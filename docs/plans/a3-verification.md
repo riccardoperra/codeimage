@@ -1,5 +1,7 @@
 # A3 verification
 
+The `media/` files this report names were retired from the checkout with the rest of `docs/plans/media/` on main; they remain in history at `27bd4751`.
+
 > `scripts/parity/animation-preview.ts` imports `packages/render`, which is not on `main` or #734, so it runs from a checkout of #707 plus A3. `scripts/parity/live-a3.ts` needs only the web app and also runs on this branch. Neither is part of any gate here.
 
 A3 of `docs/plans/2026-code-animation.md` adds the Animate panel and a live preview of the tab-to-tab morph in the editor. This file records the unit, parity, and live evidence. The base is A1 at `29521428`, which did not move during the work. The lanes, the parity run, and the video ran at `546bd8f0`. The head adds `45f6d606`, which changes types only, and lane 1, lane 2, and lane 9 ran again there.

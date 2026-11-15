@@ -69,7 +69,9 @@ phone bar and took the click meant for the Animate toggle.
 | oxlint                                       | No errors; existing layout reactivity warnings remain       |
 
 Firefox and WebKit were skipped as requested. Chrome ran at 1440×900 and
-390×844 with Inspector `?v=2`, Dock `?v=3` and Studio `?v=4`.
+390×844 in Inspector, Dock and Studio. Since #740 the scripts open `/` with
+the layout saved in `codeimage:editor-settings`; the first run used the
+retired `?v=2`, `?v=3` and `?v=4` parameters.
 
 The UI lanes are Placement, Playback, Scrub, Resize, Nudge, Easing, Pill,
 Header, Steps, Persistence and Hotkeys. They cover frozen-axis geometry and
@@ -101,8 +103,8 @@ From the repository root:
 ```sh
 fnm exec --using=v24.14.0 node scripts/parity/live-animate.ts --video
 fnm exec --using=v24.14.0 node scripts/parity/animation-defaults.ts
-fnm exec --using=v24.14.0 node apps/codeimage/src/prototypes/editor-controls/verify-locale-parity.mjs
-fnm exec --using=v24.14.0 node apps/codeimage/src/prototypes/editor-controls/verify-i18n.mjs http://localhost:4377
+fnm exec --using=v24.14.0 node apps/codeimage/src/pages/UnifiedEditor/verify-locale-parity.mjs
+fnm exec --using=v24.14.0 node apps/codeimage/src/pages/UnifiedEditor/verify-i18n.mjs http://localhost:4377
 ```
 
 API integration uses the local Docker test database on port 5433, the deployed
@@ -180,11 +182,11 @@ Why it is not this branch:
 `scripts/parity/animation-preview-live.ts` now writes a doctype and renders
 the reference in a Chrome with a real device scale. Free size at 1× stays a
 known Takumi limit, not a gate. Reproduce with the preview command above plus
-`--free-size --scale 1` (or `--scale 2`, with or without `--free-size`). Results:
-[free-size-parity.json](media/animate/free-size-parity.json), and the worst
-frame's [Chrome](media/animate/free-size-chrome.png),
-[Takumi](media/animate/free-size-takumi.png) and
-[diff](media/animate/free-size-diff.png) images.
+`--free-size --scale 1` (or `--scale 2`, with or without `--free-size`). Results (kept in history at `27bd4751`):
+[free-size-parity.json](https://github.com/riccardoperra/codeimage/blob/27bd4751/docs/plans/media/animate/free-size-parity.json), and the worst
+frame's [Chrome](https://github.com/riccardoperra/codeimage/blob/27bd4751/docs/plans/media/animate/free-size-chrome.png),
+[Takumi](https://github.com/riccardoperra/codeimage/blob/27bd4751/docs/plans/media/animate/free-size-takumi.png) and
+[diff](https://github.com/riccardoperra/codeimage/blob/27bd4751/docs/plans/media/animate/free-size-diff.png) images.
 
 The CLI's independent SSR export integration remains owned by #726, as the
 plan specifies. This verification does not claim that its unre-based renderer
@@ -194,11 +196,14 @@ visibility behavior.
 
 ## Review media
 
+Main keeps per-run evidence out of the checkout (`/docs/plans/media/` is
+ignored), so these files live in the branch history at `27bd4751`.
+
 | Layout    | Desktop                                       | Phone                                        | Video                                       |
 | --------- | --------------------------------------------- | -------------------------------------------- | ------------------------------------------- |
-| Inspector | [Screenshot](media/animate/layout-2-1440.png) | [Screenshot](media/animate/layout-2-390.png) | [8.28 s video](media/animate/layout-2.webm) |
-| Dock      | [Screenshot](media/animate/layout-3-1440.png) | [Screenshot](media/animate/layout-3-390.png) | [6.56 s video](media/animate/layout-3.webm) |
-| Studio    | [Screenshot](media/animate/layout-4-1440.png) | [Screenshot](media/animate/layout-4-390.png) | [7.80 s video](media/animate/layout-4.webm) |
+| Inspector | [Screenshot](https://github.com/riccardoperra/codeimage/blob/27bd4751/docs/plans/media/animate/layout-2-1440.png) | [Screenshot](https://github.com/riccardoperra/codeimage/blob/27bd4751/docs/plans/media/animate/layout-2-390.png) | [8.28 s video](https://github.com/riccardoperra/codeimage/blob/27bd4751/docs/plans/media/animate/layout-2.webm) |
+| Dock      | [Screenshot](https://github.com/riccardoperra/codeimage/blob/27bd4751/docs/plans/media/animate/layout-3-1440.png) | [Screenshot](https://github.com/riccardoperra/codeimage/blob/27bd4751/docs/plans/media/animate/layout-3-390.png) | [6.56 s video](https://github.com/riccardoperra/codeimage/blob/27bd4751/docs/plans/media/animate/layout-3.webm) |
+| Studio    | [Screenshot](https://github.com/riccardoperra/codeimage/blob/27bd4751/docs/plans/media/animate/layout-4-1440.png) | [Screenshot](https://github.com/riccardoperra/codeimage/blob/27bd4751/docs/plans/media/animate/layout-4-390.png) | [7.80 s video](https://github.com/riccardoperra/codeimage/blob/27bd4751/docs/plans/media/animate/layout-4.webm) |
 
 The recordings show playback, pausing, selecting a transition, changing its
 easing and returning to editing through the pill.

@@ -57,7 +57,13 @@ export async function runPreviewParity(options: {
   let comparisons = 0;
   const results: {mode: string; ms: number; diff: number}[] = [];
   try {
-    await app.goto(`${options.url}?v=2`, {waitUntil: 'domcontentloaded'});
+    await app.addInitScript(() =>
+      localStorage.setItem(
+        'codeimage:editor-settings',
+        JSON.stringify({layout: 'inspector'}),
+      ),
+    );
+    await app.goto(options.url, {waitUntil: 'domcontentloaded'});
     await app
       .locator('.cm-content[contenteditable=true]')
       .first()

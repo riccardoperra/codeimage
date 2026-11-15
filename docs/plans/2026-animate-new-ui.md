@@ -2,6 +2,8 @@
 
 The production plan for the Animate panel of the unified editor (#711). A Codex agent builds it slice by slice on `feat/animate-new-ui`. Each slice ends with its acceptance checks green and one or more commits; nothing merges without the operator's go.
 
+> Since #740 (main `33294176`) the unified editor lives in `apps/codeimage/src/pages/UnifiedEditor/`, the `/prototypes/editor-controls` route and the `v`/`t` URL parameters are gone, and the layout comes only from the saved preference (`codeimage:editor-settings`). Paths below under `prototypes/editor-controls/` now sit under `pages/UnifiedEditor/`.
+
 ## Starting point
 
 | Ref                                             | SHA        | What it holds                                                                                        |

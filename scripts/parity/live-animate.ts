@@ -1,7 +1,7 @@
 import type {getEditorStore} from '../../apps/codeimage/src/state/editor/index';
 import assert from 'node:assert/strict';
 import {parseArgs} from 'node:util';
-import {chromium, type Page} from 'playwright';
+import {chromium, type BrowserContext, type Page} from 'playwright';
 import {mkdir} from 'node:fs/promises';
 
 const {values: args} = parseArgs({
@@ -10,7 +10,7 @@ const {values: args} = parseArgs({
     lane: {type: 'string', multiple: true},
     out: {type: 'string', default: '/tmp/codeimage-animate'},
     video: {type: 'boolean', default: false},
-    variant: {type: 'string'},
+    layout: {type: 'string'},
   },
 });
 const out = args.out!;
@@ -232,7 +232,7 @@ async function placement(page: Page) {
     `frame above island: ${JSON.stringify({code, box, frame})}`,
   );
   await page.screenshot({
-    path: `${out}/layout-${new URL(page.url()).searchParams.get('v')}-${page.viewportSize()!.width}.png`,
+    path: `${out}/layout-${await page.locator('[data-layout]').first().getAttribute('data-layout')}-${page.viewportSize()!.width}.png`,
   });
   await toggle.click();
   assert.equal(await island.count(), 0);
@@ -594,13 +594,25 @@ const lanes = {
   Pill: pill,
   Header: header,
 };
-async function recordLayout(layout: number) {
+type Layout = 'inspector' | 'dock' | 'studio';
+const layouts: Layout[] = ['inspector', 'dock', 'studio'];
+// The page reads its layout only from the saved preference.
+async function openEditor(context: BrowserContext, layout: Layout) {
+  await context.addInitScript(layout => {
+    const key = 'codeimage:editor-settings';
+    const stored = JSON.parse(localStorage.getItem(key) ?? '{}');
+    localStorage.setItem(key, JSON.stringify({...stored, layout}));
+  }, layout);
+  const page = await context.newPage();
+  await page.goto(args.url!, {waitUntil: 'domcontentloaded'});
+  return page;
+}
+async function recordLayout(layout: Layout) {
   const context = await browser.newContext({
     viewport: {width: 1440, height: 900},
     recordVideo: {dir: `${out}/videos`, size: {width: 1440, height: 900}},
   });
-  const page = await context.newPage();
-  await page.goto(`${args.url}?v=${layout}`, {waitUntil: 'domcontentloaded'});
+  const page = await openEditor(context, layout);
   await load(page);
   await seed(page);
   await page.getByRole('button', {name: 'Play animation', exact: true}).click();
@@ -622,28 +634,25 @@ async function recordLayout(layout: number) {
 let passed = 0;
 const failures: string[] = [];
 try {
-  for (const layout of [2, 3, 4].filter(
-    layout => !args.variant || layout === Number(args.variant),
+  for (const layout of layouts.filter(
+    layout => !args.layout || layout === args.layout,
   ))
     for (const viewport of [
       {width: 1440, height: 900},
       {width: 390, height: 844},
     ]) {
       const context = await browser.newContext({viewport});
-      const page = await context.newPage();
+      const page = await openEditor(context, layout);
       page.setDefaultTimeout(10000);
       page.setDefaultNavigationTimeout(120000);
       page.on('pageerror', error =>
         console.error(`PAGE ${layout}`, error.message),
       );
       try {
-        await page.goto(`${args.url}?v=${layout}`, {
-          waitUntil: 'domcontentloaded',
-        });
         await load(page);
         for (const [name, run] of Object.entries(lanes)) {
           if (args.lane && !args.lane.includes(name)) continue;
-          const label = `${name} v${layout} ${viewport.width}`;
+          const label = `${name} ${layout} ${viewport.width}`;
           try {
             await seed(page);
             await run(page);
@@ -663,7 +672,7 @@ try {
         if (video) await video.saveAs(`${out}/layout-${layout}.webm`);
       }
     }
-  if (args.video) for (const layout of [2, 3, 4]) await recordLayout(layout);
+  if (args.video) for (const layout of layouts) await recordLayout(layout);
 } finally {
   await browser.close();
 }
