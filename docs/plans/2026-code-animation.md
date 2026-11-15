@@ -527,7 +527,7 @@ Every engine tested encodes H.264. Each cell comes from `VideoEncoder.isConfigSu
 | Chromium 156, Playwright       | Yes                                                 | No           | Not checked                                                |
 | Firefox 158, branded, macOS    | Yes                                                 | Not checked  | Not checked                                                |
 | Firefox 144, Playwright, Linux | Yes                                                 | Not checked  | Not checked                                                |
-| WebKit 27.2, Playwright        | Yes, Baseline unless the codec string asks for High | Yes          | VP9 dropped frames, with counts of 178 of 180 and 89 of 90 |
+| WebKit 27.2, Playwright        | Yes, Baseline unless the codec string asks for High | Yes          | VP9 dropped frames: 178 of 180 and 89 of 90 frames written |
 | Safari 27                      | Not measured                                        | Not measured | Not measured                                               |
 
 Real Safari is missing because `safaridriver` could not start it.
