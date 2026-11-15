@@ -1,5 +1,5 @@
 import {describe, expect, it} from 'vitest';
-import {decodeGif} from '../../../../../scripts/parity/gif-decoder';
+import {decodeGif} from './decode.test-utils';
 import {
   createGifEncoder,
   gifFps,

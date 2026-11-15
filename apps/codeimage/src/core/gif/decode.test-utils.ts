@@ -91,7 +91,7 @@ export function* decodeGif(bytes: Uint8Array): Generator<ShownFrame> {
         w: number;
         h: number;
         disposal: number;
-        saved?: Uint8Array;
+        saved?: Uint8Array<ArrayBuffer>;
       }
     | undefined;
   let startMs = 0;

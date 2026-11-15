@@ -251,7 +251,7 @@ export const videoFormatItem = style({
   display: 'flex',
   alignItems: 'center',
   gap: themeVars.spacing['2'],
-  minHeight: themeVars.spacing['9'],
+  minHeight: themeVars.spacing['10'],
   selectors: {'&[data-disabled]': {opacity: 0.5}},
 });
 export const videoFormatRadio = style({
