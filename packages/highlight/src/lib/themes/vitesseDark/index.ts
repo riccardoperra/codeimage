@@ -9,6 +9,7 @@ export const vitesseDarkTheme = createTheme({
     label: 'Vitesse Dark',
     previewBackground: `linear-gradient(0deg, #6394bf, #a1b567)`,
     terminal: {
+      accent: '#4d9375',
       main: palette.foreground,
       text: palette.string,
     },

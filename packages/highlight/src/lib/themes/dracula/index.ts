@@ -9,6 +9,7 @@ export const draculaTheme = createTheme({
     label: 'Dracula',
     previewBackground: `linear-gradient(135deg,  rgba(171,73,222,1) 0%,rgba(73,84,222,1) 100%)`,
     terminal: {
+      accent: '#FF79C6',
       main: palette.background,
       text: palette.purple,
     },

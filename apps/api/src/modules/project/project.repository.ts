@@ -1,4 +1,9 @@
-import {readFrameExportProperties, parseTabMarks} from './project.model.js';
+import {
+  parseTabMarks,
+  readFrameExportProperties,
+  readTerminalSurface,
+  writeFrameSignature,
+} from './project.model.js';
 import type * as repository from './project.repository.js';
 import type {
   Project as ProjectRow,
@@ -79,14 +84,7 @@ export async function createProject(
         create: {
           exportTarget: draft.frame.exportTarget,
           aspectRatio: draft.frame.aspectRatio,
-          signatureHandle:
-            draft.frame.signature === undefined
-              ? undefined
-              : (draft.frame.signature?.handle ?? null),
-          signaturePosition:
-            draft.frame.signature === undefined
-              ? undefined
-              : (draft.frame.signature?.position ?? null),
+          ...writeFrameSignature(draft.frame.signature),
           background: draft.frame.background,
           opacity: draft.frame.opacity,
           radius: draft.frame.radius,
@@ -107,6 +105,7 @@ export async function createProject(
           textColor: draft.terminal.textColor,
           type: draft.terminal.type,
           borderType: draft.terminal.borderType,
+          surface: draft.terminal.surface,
         },
       },
     },
@@ -155,14 +154,7 @@ export async function updateProject(
           update: {
             exportTarget: changes.frame.exportTarget,
             aspectRatio: changes.frame.aspectRatio,
-            signatureHandle:
-              changes.frame.signature === undefined
-                ? undefined
-                : (changes.frame.signature?.handle ?? null),
-            signaturePosition:
-              changes.frame.signature === undefined
-                ? undefined
-                : (changes.frame.signature?.position ?? null),
+            ...writeFrameSignature(changes.frame.signature),
             background: changes.frame.background,
             opacity: changes.frame.opacity,
             radius: changes.frame.radius,
@@ -183,6 +175,7 @@ export async function updateProject(
             textColor: changes.terminal.textColor,
             type: changes.terminal.type,
             borderType: changes.terminal.borderType,
+            surface: changes.terminal.surface,
           },
         },
       },
@@ -276,6 +269,7 @@ function toProject(
       opacity: row.terminal.opacity,
       alternativeTheme: row.terminal.alternativeTheme,
       borderType: row.terminal.borderType,
+      surface: readTerminalSurface(row.terminal.surface),
     },
     editorOptions: {
       id: row.editorOptions.id,

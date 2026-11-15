@@ -9,6 +9,7 @@ export const oneDarkTheme = createTheme({
     label: 'One dark',
     previewBackground: '#814CE2',
     terminal: {
+      accent: '#c678dd',
       main: '#282c34',
       text: '#e5c07b',
     },

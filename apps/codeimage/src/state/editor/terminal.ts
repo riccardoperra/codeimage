@@ -27,6 +27,7 @@ export function getInitialTerminalState(): TerminalState {
     showWatermark: true,
     showGlassReflection: false,
     borderType: 'glass',
+    surface: 'solid',
     opacity: 100,
     alternativeTheme: false,
   };
@@ -37,6 +38,7 @@ export function createTerminalState() {
     withProxyCommands<{
       setShadow: string | null;
       setType: string;
+      setSurface: TerminalState['surface'];
       setAccentVisible: boolean;
       setShowHeader: boolean;
       setShowGlassReflection: boolean;
@@ -48,12 +50,16 @@ export function createTerminalState() {
       setFromPersistedState: PersistedTerminalState;
       setFromPreset: PresetData['terminal'];
       // eslint-disable-next-line @typescript-eslint/ban-types
-      setBorder: ('glass' | (string & {})) | null;
+      setBorder: ('glass' | 'hairline' | (string & {})) | null;
     }>(),
   );
   const store = provideAppState(config);
   store
     .hold(store.commands.setShadow, (shadow, {state}) => ({...state, shadow}))
+    .hold(store.commands.setSurface, (surface, {state}) => ({
+      ...state,
+      surface,
+    }))
     .hold(store.commands.setType, (type, {state}) => ({...state, type}))
     .hold(store.commands.setAccentVisible, (accentVisible, {state}) => ({
       ...state,
@@ -90,14 +96,22 @@ export function createTerminalState() {
       showWatermark: !state.showWatermark,
     }))
     .hold(store.commands.setFromPreset, presetData => {
-      store.set(state => ({...state, ...presetData}));
+      store.set(state => ({
+        ...state,
+        ...presetData,
+        surface: presetData.surface ?? 'solid',
+      }));
     })
     .hold(store.commands.setFromPersistedState, (persistedState, {state}) => {
       const shadows = TERMINAL_SHADOWS;
       if (!Object.values<string | null>(shadows).includes(state.shadow)) {
         state.shadow = shadows.bottom;
       }
-      return {...state, ...persistedState};
+      return {
+        ...state,
+        ...persistedState,
+        surface: persistedState.surface ?? 'solid',
+      };
     })
     .hold(store.commands.setBorder, (value, {set}) => {
       set('borderType', value);
@@ -118,6 +132,7 @@ export function createTerminalState() {
       type: state.type,
       accentVisible: state.accentVisible,
       borderType: state.borderType,
+      surface: state.surface,
     };
   };
 
@@ -128,6 +143,7 @@ export function createTerminalState() {
       store.commands.setAlternativeTheme,
       store.commands.setShadow,
       store.commands.setType,
+      store.commands.setSurface,
       store.commands.setShowGlassReflection,
       store.commands.setShowHeader,
       store.commands.setShowWatermark,

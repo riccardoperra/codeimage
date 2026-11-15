@@ -1,3 +1,4 @@
+import {windowVars} from './windowPalette.css';
 import {themeVars} from '@codeimage/ui';
 import {createTheme, createVar, fallbackVar, style} from '@vanilla-extract/css';
 
@@ -49,6 +50,12 @@ export const wrapper = style([
           [glassBorderVar]: glassBorderDark,
           [terminalVars.headerColor]: `0, 0, 0`,
         },
+      },
+      '&[data-surface=wash]': {
+        backgroundImage: `radial-gradient(120% 90% at 0% 0%, ${windowVars.accent22} 0%, rgba(0, 0, 0, 0) 55%), radial-gradient(90% 80% at 100% 100%, ${windowVars.accent14} 0%, rgba(0, 0, 0, 0) 60%)`,
+      },
+      '&[data-custom-border=hairline]': {
+        boxShadow: `0 0 0 1px ${windowVars.ink14}, inset 0 1px 0 ${windowVars.ink08}, ${terminalVars.boxShadow}`,
       },
       '&[data-custom-border=glass]': {
         vars: {'--codeimage-line-border': '1.5px'},

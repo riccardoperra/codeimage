@@ -26,6 +26,11 @@ export const ConfigSchema = Type.Object({
     description:
       'Presets per account. 0 disables the check. See preset.model.ts exceedsPresetLimit.',
   }),
+  SIGNATURES_LIMIT: Type.Number({
+    default: 3,
+    description:
+      'Saved signatures per account. 0 disables the check. See signature.model.ts reachesSignatureLimit.',
+  }),
 });
 
 export type Config = Static<typeof ConfigSchema>;

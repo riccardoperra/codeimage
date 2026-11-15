@@ -26,6 +26,7 @@ export function ManagedFrame() {
       aspectRatio={frame.aspectRatio}
       exportTarget={getFrameState().exportTarget()}
       signature={frame.signature}
+      measuredWidth={frame.width}
       onWidthChange={getFrameState().setWidth}
       onHeightChange={getFrameState().setHeight}
     >
@@ -43,6 +44,7 @@ export function ManagedFrame() {
         opacity={terminal.opacity}
         alternativeTheme={terminal.alternativeTheme}
         borderType={terminal.borderType}
+        surface={terminal.surface}
         themeId={editor.state.options.themeId}
       >
         <Show when={getActiveEditorStore().editor()}>

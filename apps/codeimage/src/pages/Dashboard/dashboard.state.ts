@@ -2,6 +2,7 @@ import type * as ApiTypes from '@codeimage/api/api-types';
 import {getAuth0State} from '@codeimage/store/auth/auth0';
 import {getInitialEditorUiOptions} from '@codeimage/store/editor/editor';
 import {getInitialFrameState} from '@codeimage/store/editor/frame';
+import {loadDefaultSignature} from '@codeimage/store/signatures/signatures';
 import {getInitialTerminalState} from '@codeimage/store/editor/terminal';
 import {getThemeStore} from '@codeimage/store/theme/theme.store';
 import {createPagedData} from '@codeimage/ui';
@@ -51,6 +52,8 @@ function makeDashboardState(authState = getAuth0State()) {
     const theme = await getThemeStore().getThemeDef('fleetDark')?.load();
 
     const frame = getInitialFrameState();
+    // A new snippet starts with the default saved signature, as its own copy.
+    const signature = await loadDefaultSignature().catch(() => null);
 
     const data: ApiTypes.CreateProjectApi['request'] = {
       body: {
@@ -68,6 +71,7 @@ function makeDashboardState(authState = getAuth0State()) {
           background:
             theme?.properties.previewBackground ?? frame.background ?? '#000',
           opacity: frame.opacity ?? 1,
+          ...(signature ? {signature} : {}),
         },
         editors: [
           {

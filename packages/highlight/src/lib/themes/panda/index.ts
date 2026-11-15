@@ -9,6 +9,7 @@ export const pandaTheme = createTheme({
     label: 'Panda',
     previewBackground: `#1a1a1a`,
     terminal: {
+      accent: '#FFB86C',
       main: palette.background,
       text: palette.text,
     },
