@@ -1,5 +1,6 @@
 import {themeVars} from '@codeimage/ui';
 import {globalStyle, style} from '@vanilla-extract/css';
+import {curve, duration, ms} from '../../../components/WhatsNew/motion';
 
 const c = themeVars.dynamicColors;
 
@@ -80,6 +81,36 @@ export const actions = style({
   alignItems: 'center',
   gap: themeVars.spacing['2'],
   marginLeft: 'auto',
+});
+
+// Mobile chrome is redesigned separately; keep the existing phone header.
+export const extraButton = style({
+  position: 'relative',
+  flexShrink: 0,
+  whiteSpace: 'nowrap',
+  transition: `transform ${ms(duration.press)} ${curve.out}`,
+  selectors: {'&:active': {transform: 'scale(.97)'}},
+  '@media': {
+    [phone]: {display: 'none'},
+    '(prefers-reduced-motion: reduce)': {
+      transition: 'none',
+      selectors: {'&:active': {transform: 'none'}},
+    },
+  },
+});
+
+export const newsIcon = style({
+  position: 'relative',
+  display: 'flex',
+});
+
+export const headerDot = style({
+  position: 'absolute',
+  top: '-2px',
+  right: '-2px',
+  display: 'flex',
+  color: c.primary,
+  pointerEvents: 'none',
 });
 
 export const search = style({gap: '8px'});
