@@ -1,3 +1,4 @@
+import {getEditorStore} from '@codeimage/store/editor';
 import type {AppLocaleEntries} from '../../../i18n';
 import {useI18n} from '@codeimage/locale';
 import {getFrameState} from '@codeimage/store/editor/frame';
@@ -132,6 +133,7 @@ export function buildCommands(input: {
   const [t] = useI18n<AppLocaleEntries>();
   const {model, listed, actions, settings, reveal} = input;
   const shown = shownTheme(model);
+  const {animation} = getEditorStore();
 
   return [
     ...actions.map((action, index): Command => ({
@@ -140,6 +142,27 @@ export function buildCommands(input: {
       label: action.label,
       note: action.note,
       run: action.run,
+    })),
+    {
+      id: 'animate',
+      group: t('animation.panel'),
+      label: t('animation.toolbar'),
+      run: () => animation.actions.setOpen(!animation.open()),
+    },
+    {
+      id: 'animate.play',
+      group: t('animation.panel'),
+      label: t('animation.shortcut.togglePlayback'),
+      run: () => {
+        animation.actions.setOpen(true);
+        animation.actions.toggle();
+      },
+    },
+    ...(['tab', 'title', 'tabs'] as const).map(mode => ({
+      id: `animate.header.${mode}`,
+      group: t('animation.panel'),
+      label: `${t('animation.header.label')}: ${t(`animation.header.${mode}`)}`,
+      run: () => animation.actions.setHeader({mode}),
     })),
     ...settings,
     ...model.themes().map((theme): Command => ({

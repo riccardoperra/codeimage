@@ -1,3 +1,4 @@
+import type {getEditorStore} from '../../apps/codeimage/src/state/editor/index';
 import assert from 'node:assert/strict';
 import {parseArgs} from 'node:util';
 import {chromium, type Page} from 'playwright';
@@ -30,7 +31,7 @@ async function load(page: Page) {
   await page
     .locator('.cm-content[contenteditable="true"]')
     .first()
-    .waitFor({timeout: 300000});
+    .waitFor({timeout: 60000});
   const close = page.getByRole('button', {name: 'close', exact: true});
   if (await close.isVisible()) await close.click();
   await page.evaluate(async () => {
@@ -40,9 +41,7 @@ async function load(page: Page) {
   });
 }
 // Page evaluation uses the real store, including its context and browser clock.
-type Store = ReturnType<
-  (typeof import('../../apps/codeimage/src/state/editor/index'))['getEditorStore']
->;
+type Store = ReturnType<typeof getEditorStore>;
 declare const window: Window & {editorStore: Store; measuredFrames: number};
 async function seed(page: Page) {
   await page.evaluate(tabs => {
@@ -139,28 +138,254 @@ async function header(page: Page) {
   await page.waitForTimeout(350);
   assert.equal(await page.evaluate(() => window.measuredFrames), 0);
 }
-const lanes = {Pill: pill, Header: header};
+
+async function placement(page: Page) {
+  await page.evaluate(() =>
+    window.editorStore.animation.actions.setOpen(false),
+  );
+  const toggle = page.locator('[data-animate-toggle]:visible');
+  await toggle.click();
+  assert.equal(await toggle.getAttribute('aria-pressed'), 'true');
+  assert.ok(
+    await toggle.evaluate(element => element === document.activeElement),
+  );
+  const island = page.locator('[data-animate-panel]');
+  await island.waitFor();
+  await page.waitForTimeout(250);
+  const box = await island.boundingBox();
+  const frame = await page
+    .locator('[data-fit-scale] > div > div')
+    .last()
+    .boundingBox();
+  assert.ok(
+    box && box.x >= 0 && box.x + box.width <= page.viewportSize()!.width + 1,
+  );
+  const code = await page
+    .locator('.cm-content[contenteditable="true"]')
+    .first()
+    .boundingBox();
+  assert.ok(
+    code && box && code.y + code.height <= box.y + 2,
+    `frame above island: ${JSON.stringify({code, box, frame})}`,
+  );
+  await page.screenshot({
+    path: `${out}/layout-${new URL(page.url()).searchParams.get('v')}-${page.viewportSize()!.width}.png`,
+  });
+  await toggle.click();
+  assert.equal(await island.count(), 0);
+  await toggle.click();
+}
+async function playback(page: Page) {
+  const panel = page.locator('[data-animate-panel]');
+  await panel
+    .getByRole('button', {name: 'Play animation', exact: true})
+    .click();
+  await page.waitForFunction(() => window.editorStore.animation.playhead() > 0);
+  await panel
+    .getByRole('button', {name: 'Pause animation', exact: true})
+    .click();
+  assert.equal(
+    await page.evaluate(() => window.editorStore.animation.playback().state),
+    'paused',
+  );
+  const stage = page.locator('[data-animation-stage]:visible');
+  await stage.focus();
+  await page.keyboard.press('Space');
+  assert.equal(
+    await page.evaluate(() => window.editorStore.animation.playback().state),
+    'playing',
+  );
+  await panel.getByRole('button', {name: 'Stop and edit the code'}).click();
+  assert.equal(
+    await page.evaluate(() => window.editorStore.animation.playback().state),
+    'editing',
+  );
+  assert.ok(
+    await page
+      .locator('.cm-content[contenteditable="true"]')
+      .evaluate(element => element === document.activeElement),
+  );
+}
+async function scrub(page: Page) {
+  const ruler = page.getByRole('slider', {name: 'Playhead', exact: true});
+  const box = (await ruler.boundingBox())!;
+  await page.mouse.move(box.x + box.width * 0.25, box.y + 12);
+  await page.mouse.down();
+  await page.mouse.move(box.x + box.width * 0.6, box.y + 12);
+  await page.mouse.up();
+  const at = await page.evaluate(() => window.editorStore.animation.playhead());
+  await page.waitForTimeout(100);
+  assert.equal(
+    await page.evaluate(() => window.editorStore.animation.playhead()),
+    at,
+  );
+  await page.locator('[data-animation-segment]').first().click();
+  assert.equal(
+    await page.evaluate(() => window.editorStore.animation.playhead()),
+    at,
+  );
+  assert.equal(
+    await page.locator('[data-animation-segment][data-selected]').count(),
+    1,
+  );
+}
+async function steps(page: Page) {
+  const menu = page.getByRole('button', {name: 'Steps', exact: true});
+  await menu.click();
+  await page
+    .getByRole('menuitem', {name: 'Add to animation', exact: true})
+    .hover();
+  await page.getByRole('menuitem', {name: 'user.test.ts', exact: true}).click();
+  assert.equal(
+    await page.evaluate(
+      () => window.editorStore.animation.settings().steps.at(-1)?.editorId,
+    ),
+    'c',
+  );
+  await menu.click();
+  await page
+    .getByRole('menuitem', {name: 'Duplicate as next step', exact: true})
+    .click();
+  assert.equal(
+    await page.evaluate(() => window.editorStore.editor.state.editors.length),
+    4,
+  );
+  assert.equal(
+    await page.evaluate(
+      () => window.editorStore.animation.settings().steps.length,
+    ),
+    5,
+  );
+  await page.evaluate(() => {
+    const {animation, editor} = window.editorStore;
+    animation.actions.addStep('a');
+    const id = animation.settings().steps.at(-1)!.id;
+    animation.actions.moveStep(id, -1);
+    animation.actions.removeStep(id);
+    editor.actions.addEditor({}, false);
+  });
+  assert.equal(
+    await page.evaluate(
+      () => window.editorStore.animation.settings().steps.length,
+    ),
+    5,
+  );
+  await page.evaluate(() =>
+    window.editorStore.editor.actions.removeEditor('c'),
+  );
+  await page.waitForFunction(() =>
+    window.editorStore.animation
+      .settings()
+      .steps.every(step => step.editorId !== 'c'),
+  );
+}
+async function persistence(page: Page) {
+  await page.evaluate(() => {
+    const {animation} = window.editorStore;
+    animation.actions.setTransition('b', {
+      ms: 1234,
+      easing: 'cubic-bezier(0.25, 0.1, 0.25, 1)',
+    });
+    animation.actions.setHeader({mode: 'title', title: 'Saved story'});
+    animation.actions.addStep('a');
+  });
+  const before = await page.evaluate(() =>
+    window.editorStore.animation.stateToPersist(),
+  );
+  await page.waitForTimeout(700);
+  await page.reload();
+  await load(page);
+  assert.deepEqual(
+    await page.evaluate(() => window.editorStore.animation.stateToPersist()),
+    before,
+  );
+  assert.equal(
+    await page.evaluate(() => window.editorStore.animation.open()),
+    false,
+  );
+}
+async function hotkeys(page: Page) {
+  await page
+    .locator('[data-animate-panel] button[aria-label=Header]:visible')
+    .click();
+  await page.getByRole('option', {name: 'Title only', exact: true}).click();
+  const title = page.getByRole('textbox', {name: 'Title', exact: true});
+  const before = await page.evaluate(() => [
+    window.editorStore.frame.store.padding,
+    window.editorStore.frame.store.visible,
+    window.editorStore.terminal.state.showHeader,
+  ]);
+  await title.click();
+  await title.pressSequentially('FPBDHW');
+  await title.press('Enter');
+  assert.deepEqual(
+    await page.evaluate(() => [
+      window.editorStore.frame.store.padding,
+      window.editorStore.frame.store.visible,
+      window.editorStore.terminal.state.showHeader,
+    ]),
+    before,
+  );
+  assert.equal(
+    await page.evaluate(
+      () => window.editorStore.animation.settings().header.title,
+    ),
+    'FPBDHW',
+  );
+}
+const lanes = {
+  Placement: placement,
+  Playback: playback,
+  Scrub: scrub,
+  Steps: steps,
+  Persistence: persistence,
+  Hotkeys: hotkeys,
+  Pill: pill,
+  Header: header,
+};
+let passed = 0;
+const failures: string[] = [];
 try {
-  for (const [name, run] of Object.entries(lanes)) {
-    if (args.lane && !args.lane.includes(name)) continue;
-    const page = await browser.newPage({viewport: {width: 1440, height: 900}});
-    await page.route('**/mockServiceWorker.js', route =>
-      route.fulfill({
-        path: new URL(
-          '../../apps/codeimage/node_modules/msw/lib/mockServiceWorker.js',
-          import.meta.url,
-        ).pathname,
-        contentType: 'text/javascript',
-      }),
-    );
-    page.on('pageerror', error => console.error('PAGE', error.message));
-    await page.goto(`${args.url}?v=2`);
-    await load(page);
-    await seed(page);
-    await run(page);
-    console.log(`PASS ${name}`);
-    await page.close();
-  }
+  for (const layout of [2, 3, 4])
+    for (const viewport of [
+      {width: 1440, height: 900},
+      {width: 390, height: 844},
+    ]) {
+      const context = await browser.newContext({viewport});
+      const page = await context.newPage();
+      page.setDefaultTimeout(10000);
+      page.on('pageerror', error =>
+        console.error(`PAGE ${layout}`, error.message),
+      );
+      try {
+        await page.goto(`${args.url}?v=${layout}`, {
+          waitUntil: 'domcontentloaded',
+        });
+        await load(page);
+        for (const [name, run] of Object.entries(lanes)) {
+          if (args.lane && !args.lane.includes(name)) continue;
+          const label = `${name} v${layout} ${viewport.width}`;
+          try {
+            await seed(page);
+            await run(page);
+            console.log(`PASS ${label}`);
+            passed++;
+          } catch (error) {
+            failures.push(label);
+            console.error(`FAIL ${label}`, String(error).slice(0, 2000));
+            await page.screenshot({
+              path: `${out}/failure-${name}-${layout}-${viewport.width}.png`,
+            });
+          }
+        }
+      } finally {
+        await context.close();
+      }
+    }
 } finally {
   await browser.close();
 }
+console.log(
+  `${passed} passed, ${failures.length} failed; Chrome only (Firefox/WebKit skipped)`,
+);
+if (failures.length) process.exitCode = 1;

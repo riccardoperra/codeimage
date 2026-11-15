@@ -2,6 +2,7 @@ import {useI18n} from '@codeimage/locale';
 import {getActiveEditorStore} from '@codeimage/store/editor/activeEditor';
 import {dispatchRandomTheme} from '@codeimage/store/effects/onThemeChange';
 import {HStack} from '@codeimage/ui';
+import type {ParentProps} from 'solid-js';
 import {Button} from '@codeui/kit';
 import {createAsyncAction} from '@core/hooks/async-action';
 import {ColorSwatchIcon} from '../../../components/Icons/ColorSwatch';
@@ -12,7 +13,7 @@ import type {AppLocaleEntries} from '../../../i18n';
 /**
  * Today's `FrameToolbar`, with the same buttons and markup, with its image actions in the Export menu.
  */
-export function FrameActions() {
+export function FrameActions(props: ParentProps) {
   const [t] = useI18n<AppLocaleEntries>();
   const activeEditor = getActiveEditorStore();
   const [formatAction, {notify: dispatchFormat}] = createAsyncAction(() =>
@@ -25,6 +26,7 @@ export function FrameActions() {
   return (
     <div class={styles.frameToolbar}>
       <HStack spacing={2}>
+        {props.children}
         <Button
           size={'xs'}
           theme={'secondary'}

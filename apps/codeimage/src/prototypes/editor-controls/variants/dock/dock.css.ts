@@ -220,7 +220,7 @@ export const item = style({
           flex: '1 1 0',
           flexDirection: 'column',
           gap: '4px',
-          minWidth: '40px',
+          minWidth: '32px',
           height: '52px',
           padding: '0 2px',
           fontSize: '10px',
@@ -554,4 +554,14 @@ export const grabber = style({
       },
     },
   },
+});
+
+export const animateBottom = createVar();
+export const animate = style({
+  position: 'absolute',
+  bottom: animateBottom,
+  left: 0,
+  right: 0,
+  zIndex: 2,
+  '@media': {[phone]: {position: 'relative', bottom: 'auto', order: 2}},
 });

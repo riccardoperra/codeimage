@@ -395,10 +395,12 @@ export default function Studio(props: VariantProps) {
           <div class={styles.stage}>
             <props.stage.Canvas />
           </div>
+          <props.stage.AnimatePanel />
           <Show
             when={modality === 'full'}
             fallback={
               <div class={styles.compactActions}>
+                <props.stage.AnimateToggle iconOnly />
                 <ShareButton showLabel={false} />
                 <Button
                   size="xs"
@@ -420,7 +422,9 @@ export default function Studio(props: VariantProps) {
             }
           >
             <div class={styles.frameActions}>
-              <FrameActions />
+              <FrameActions>
+                <props.stage.AnimateToggle />
+              </FrameActions>
             </div>
             <div class={styles.footer}>
               <Footer />

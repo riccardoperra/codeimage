@@ -1,3 +1,5 @@
+import {AnimatePanel} from '../../components/Animation/AnimatePanel';
+import {AnimateToggle} from '../../components/Animation/AnimateToggle';
 import {AnimationPreview} from '../../components/Animation/AnimationPreview';
 import {getExportCanvasStore} from '@codeimage/store/canvas';
 import {getActiveEditorStore} from '@codeimage/store/editor/activeEditor';
@@ -40,6 +42,8 @@ const CustomEditorPreview = lazy(
 );
 
 export interface Stage {
+  readonly AnimatePanel: Component;
+  readonly AnimateToggle: Component<{iconOnly?: boolean}>;
   /**
    * The live frame with the real CodeMirror editor. Render it once; it fills its
    * parent and zooms out when the frame is larger than the space it gets.
@@ -157,6 +161,8 @@ export function createStage(): Stage {
   const size = useModality() === 'full' ? 'sm' : 'xs';
 
   return {
+    AnimatePanel,
+    AnimateToggle,
     Canvas: () => {
       onMount(() => getExportCanvasStore().initCanvas(exportRef));
       // Every placeholder sits inside FitFrame, where the frame will be. The

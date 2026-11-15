@@ -1,10 +1,19 @@
+import {getEditorStore} from '@codeimage/store/editor';
 import {useI18n} from '@codeimage/locale';
 import {signatureEditor} from '@codeimage/store/frame/signatureEditor';
 import {Button, IconButton} from '@codeui/kit';
 import {useModality} from '@core/hooks/isMobile';
 import {Popover} from '@kobalte/core/popover';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
-import {createSignal, For, onCleanup, onMount, Show} from 'solid-js';
+import {
+  createEffect,
+  on,
+  createSignal,
+  For,
+  onCleanup,
+  onMount,
+  Show,
+} from 'solid-js';
 import type {JSX} from 'solid-js';
 import {Dynamic} from 'solid-js/web';
 import {sidebarTheme} from '../../../../components/PropertyEditor/EditorSidebar.css';
@@ -213,6 +222,8 @@ export default function Dock(props: VariantProps) {
   const compact = createMediaQuery('(max-width: 767px)');
   const canHover = createMediaQuery('(hover: hover) and (pointer: fine)');
 
+  const {animation} = getEditorStore();
+  const [animateHeight, setAnimateHeight] = createSignal(0);
   const [panel, setPanel] = createSignal<PanelId>();
   const [overlays, setOverlays] = createSignal<HTMLDivElement>();
   const [dockHeight, setDockHeight] = createSignal(0);
@@ -223,6 +234,23 @@ export default function Dock(props: VariantProps) {
   let sheetTrigger: HTMLElement | undefined;
 
   const close = () => setPanel(undefined);
+  createEffect(
+    on(animation.open, open => {
+      if (open && compact()) close();
+    }),
+  );
+  createEffect(
+    on(panel, panel => {
+      if (panel && compact()) animation.actions.setOpen(false);
+    }),
+  );
+  const measureAnimation = (element: HTMLDivElement) => {
+    const observer = new ResizeObserver(() =>
+      setAnimateHeight(element.getBoundingClientRect().height),
+    );
+    observer.observe(element);
+    onCleanup(() => observer.disconnect());
+  };
 
   const dock: DockApi = {
     model: props.model,
@@ -320,7 +348,8 @@ export default function Dock(props: VariantProps) {
         class={styles.root}
         data-compact={compact() ? '' : undefined}
         style={assignInlineVars({
-          [styles.safe]: `${dockHeight() + MARGIN * 2}px`,
+          [styles.safe]: `${dockHeight() + MARGIN * 2 + (animateHeight() ? animateHeight() + 12 : 0)}px`,
+          [styles.animateBottom]: `${dockHeight() + MARGIN * 2}px`,
         })}
       >
         {/* Popovers mount here: inside the root, out of its layout. */}
@@ -443,6 +472,9 @@ export default function Dock(props: VariantProps) {
                 label={t('editor.more')}
                 icon={<SlidersIcon />}
               />
+              <Show when={compact()}>
+                <props.stage.AnimateToggle iconOnly />
+              </Show>
               <Show when={!compact()}>
                 <Button
                   class={styles.item}
@@ -469,11 +501,16 @@ export default function Dock(props: VariantProps) {
             <ShortcutHelp />
             <Show when={!compact()}>
               <div class={`${styles.frameActions} ${styles.float}`}>
-                <FrameActions />
+                <FrameActions>
+                  <props.stage.AnimateToggle />
+                </FrameActions>
               </div>
             </Show>
           </div>
 
+          <div class={styles.animate} ref={measureAnimation}>
+            <props.stage.AnimatePanel />
+          </div>
           <Show when={compact()}>
             <Sheet bar={() => bar} trigger={() => sheetTrigger} />
           </Show>

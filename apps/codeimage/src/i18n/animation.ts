@@ -1,6 +1,20 @@
 export const animationLocale = {
   en: {
     animation: {
+      addStep: 'Add to animation',
+      duplicate: 'Duplicate as next step',
+      remove: 'Remove step',
+      needsSteps: 'Add or duplicate a step to play',
+      selectHint: 'Select a segment to edit its timing',
+      stepName: 'Step {{n}} · {{tab}}',
+      betweenSteps: 'Step {{from}} → {{to}}',
+      header: {
+        label: 'Header',
+        tab: 'Current tab',
+        title: 'Title only',
+        tabs: 'All tabs',
+        titleField: 'Title',
+      },
       toolbar: 'Animate',
       panel: 'Animation',
       play: 'Play animation',
@@ -35,6 +49,20 @@ export const animationLocale = {
   },
   it: {
     animation: {
+      addStep: 'Aggiungi all’animazione',
+      duplicate: 'Duplica come passaggio successivo',
+      remove: 'Rimuovi passaggio',
+      needsSteps: 'Aggiungi o duplica un passaggio per riprodurre',
+      selectHint: 'Seleziona un segmento per modificarne i tempi',
+      stepName: 'Passaggio {{n}} · {{tab}}',
+      betweenSteps: 'Passaggio {{from}} → {{to}}',
+      header: {
+        label: 'Intestazione',
+        tab: 'Scheda corrente',
+        title: 'Solo titolo',
+        tabs: 'Tutte le schede',
+        titleField: 'Titolo',
+      },
       toolbar: 'Anima',
       panel: 'Animazione',
       play: 'Riproduci animazione',
@@ -71,6 +99,20 @@ export const animationLocale = {
   },
   de: {
     animation: {
+      addStep: 'Zur Animation hinzufügen',
+      duplicate: 'Als nächsten Schritt duplizieren',
+      remove: 'Schritt entfernen',
+      needsSteps: 'Zum Abspielen einen Schritt hinzufügen oder duplizieren',
+      selectHint: 'Segment auswählen, um die Dauer zu ändern',
+      stepName: 'Schritt {{n}} · {{tab}}',
+      betweenSteps: 'Schritt {{from}} → {{to}}',
+      header: {
+        label: 'Kopfzeile',
+        tab: 'Aktueller Tab',
+        title: 'Nur Titel',
+        tabs: 'Alle Tabs',
+        titleField: 'Titel',
+      },
       toolbar: 'Animieren',
       panel: 'Animation',
       play: 'Animation abspielen',
@@ -107,6 +149,20 @@ export const animationLocale = {
   },
   es: {
     animation: {
+      addStep: 'Añadir a la animación',
+      duplicate: 'Duplicar como siguiente paso',
+      remove: 'Eliminar paso',
+      needsSteps: 'Añade o duplica un paso para reproducir',
+      selectHint: 'Selecciona un segmento para editar su duración',
+      stepName: 'Paso {{n}} · {{tab}}',
+      betweenSteps: 'Paso {{from}} → {{to}}',
+      header: {
+        label: 'Encabezado',
+        tab: 'Pestaña actual',
+        title: 'Solo título',
+        tabs: 'Todas las pestañas',
+        titleField: 'Título',
+      },
       toolbar: 'Animar',
       panel: 'Animación',
       play: 'Reproducir animación',

@@ -73,7 +73,7 @@ export const workspace = style({
     },
     [phone]: {
       gridTemplateColumns: 'minmax(0, 1fr)',
-      gridTemplateRows: 'minmax(0, 1fr) auto',
+      gridTemplateRows: 'minmax(0, 1fr) auto auto',
       padding: '0 8px 8px',
       gap: '8px',
     },
@@ -84,7 +84,7 @@ export const canvas = style({
   minWidth: 0,
   minHeight: 0,
   display: 'grid',
-  gridTemplateRows: 'minmax(0, 1fr) auto',
+  gridTemplateRows: 'minmax(0, 1fr) auto auto',
   overflow: 'hidden',
   borderRadius: '22px',
   background: c.background,

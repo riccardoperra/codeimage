@@ -14,6 +14,8 @@ type Shortcut = {label: LocaleKeys<AppLocaleEntries>; key: string[]};
 // KeyboardShortcuts keeps its definitions private. Mirror its list here, using
 // the production mark definitions, until it exposes a list and hotkey hook.
 export const shortcuts: readonly Shortcut[] = [
+  {label: 'animation.shortcut.togglePlayback', key: ['Space']},
+  {label: 'animation.shortcut.backToEditor', key: ['Esc']},
   {label: 'shortcut.focusCodeEditor', key: ['F']},
   {label: 'shortcut.unFocusCodeEditor', key: ['Esc']},
   {label: 'shortcut.toggleBackground', key: ['B']},

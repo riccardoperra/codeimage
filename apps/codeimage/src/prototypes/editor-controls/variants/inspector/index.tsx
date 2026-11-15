@@ -1,3 +1,4 @@
+import {getEditorStore} from '@codeimage/store/editor';
 import {useI18n} from '@codeimage/locale';
 import {getFrameState} from '@codeimage/store/editor/frame';
 import {displayHandle} from '@codeimage/store/frame/signature';
@@ -174,6 +175,12 @@ export default function Inspector(props: VariantProps) {
   const [t] = useI18n<AppLocaleEntries>();
   // One section at a time. All may be closed, which leaves the summaries.
   const [openSection, setOpenSection] = createSignal<PanelId | null>('themes');
+  const {animation} = getEditorStore();
+  createEffect(
+    on(animation.open, open => {
+      if (open) setSheet('short');
+    }),
+  );
   const [sheet, setSheet] = createSignal<'short' | 'tall'>('short');
   // How far down the page the layout ends, which sets how tall the sheet
   // may grow. The page's header is above the root.
@@ -286,11 +293,14 @@ export default function Inspector(props: VariantProps) {
           <div class={styles.stage}>
             <props.stage.Canvas />
           </div>
+          <props.stage.AnimatePanel />
           <div class={styles.frameActions}>
             <Show when={!mobile()}>
               <ShortcutHelp />
             </Show>
-            <FrameActions />
+            <FrameActions>
+              <props.stage.AnimateToggle />
+            </FrameActions>
             <Show
               when={mobile()}
               fallback={
