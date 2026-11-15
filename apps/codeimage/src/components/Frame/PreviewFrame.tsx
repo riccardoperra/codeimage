@@ -17,6 +17,7 @@ import {useHotkey} from '../../hooks/use-hotkey';
 import * as styles from './Frame.css';
 import {FrameSkeleton} from './FrameSkeleton';
 import {FrameView} from './FrameView';
+
 export interface PreviewFrameProps {
   ref: Ref<HTMLDivElement>;
   tab?: EditorState;

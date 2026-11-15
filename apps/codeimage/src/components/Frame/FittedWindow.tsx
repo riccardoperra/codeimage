@@ -55,15 +55,15 @@ export function FittedWindow(
   });
   const placement = () => props.placement ?? measured();
   const fit = () => {
-    const element = viewport();
-    const window = content();
-    if (!element || !window || !props.active || props.placement) return;
+    const box = viewport();
+    const fitted = content();
+    if (!box || !fitted || !props.active || props.placement) return;
     setMeasured(
       fittedPlacement(
-        {width: element.clientWidth, height: element.clientHeight},
+        {width: box.clientWidth, height: box.clientHeight},
         {
-          width: Math.max(window.offsetWidth, window.scrollWidth),
-          height: Math.max(window.offsetHeight, window.scrollHeight),
+          width: Math.max(fitted.offsetWidth, fitted.scrollWidth),
+          height: Math.max(fitted.offsetHeight, fitted.scrollHeight),
         },
       ),
     );
