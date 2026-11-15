@@ -24,6 +24,8 @@ SIGNATURE_URL=http://127.0.0.1:4200 SIGNATURE_RATIO=1 SIGNATURE_OUT=/tmp/codeima
 SIGNATURE_URL=http://127.0.0.1:4200 SIGNATURE_RATIO=2 SIGNATURE_OUT=/tmp/codeimage-verification/signature-2x pnpm exec tsx scripts/parity/signature-renderer.ts
 ```
 
+`rasterizers.ts` selects the Inspector layout through saved preferences and uses the unified window, line-number, settings and export controls. Its renderer/font/window assertions are retained; the classic picker and confirmation-dialog setup are removed. `P2_SETUP_ONLY=1` checks these controls and decodes one PNG, then exits before the renderer matrix or timings.
+
 `rasterizers.ts` also exposes `P2_REVIEW_CASE=local-fonts`, `crossovers` and `blocked-font`, plus `P2_TARGETS=1`. Local-font checks need a browser and operating system that support the font permissions. Record unavailable prerequisites rather than treating skipped cells as passes.
 
 The retained P2 live-lane reference is `scripts/fixtures/p2/trunk-off.png`. It preserves the original reviewed input byte-for-byte. Use it only with the matching fixture and environment; capture and review a new baseline when the trunk or fixture changes, rather than silently accepting a new image.
@@ -43,7 +45,7 @@ Additional renderer controls from the retired reports:
 | `SIGNATURE_ALL_ICONS=1` | Check every platform icon.                                                 |
 | `SIGNATURE_QUICK=1`     | Restrict the signature background and position combinations.               |
 
-For head/base matrices and the additional export cases, follow `scripts/parity/README.md`. Preserve every nonzero diff for inspection. Keep benchmark results separate from functional results; `scripts/verify-p5-exports.cjs` measures interleaved head/trunk exports and is not replaced by a downloaded PNG. It accepts `P5_TRUNK_URL`, `P5_HEAD_URL`, `P5_OUT` and `P5_CHROMIUM`; it also accepts `P5_TOOLS_ROOT` when Playwright is installed outside the workspace. Preserve both server revisions and follow the benchmark checklist before interpreting its timings.
+For head/base matrices and the additional export cases, follow `scripts/parity/README.md`. Preserve every nonzero diff for inspection. Keep benchmark results separate from functional results; `scripts/verify-p5-exports.cjs` measures interleaved head/trunk exports and is not replaced by a downloaded PNG. It accepts `P5_TRUNK_URL`, `P5_HEAD_URL`, `P5_OUT` and `P5_CHROMIUM`; it also accepts `P5_TOOLS_ROOT` when Playwright is installed outside the workspace. Both URLs must serve the unified editor: the check uses its existing static preview and `use-export-image` pipeline. The classic confirmation dialog and legacy CodeMirror-preview branch are retired. `P5_SETUP_ONLY=1` loads both 300-line previews and verifies 100 marks on head, then exits before timing or profiling. Preserve both server revisions and follow the benchmark checklist before interpreting its timings.
 
 ## Locales and shared UI
 
