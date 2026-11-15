@@ -11,6 +11,7 @@ import type {
   SnapshotDocument,
 } from '@codeimage/render';
 import {UsageError} from '../errors';
+import {formatIssues} from '../snapshot';
 import type {Preset} from '../snapshot';
 import type {Flag, FlagValues} from './index';
 
@@ -101,6 +102,17 @@ export function parseAnimation(values: FlagValues): AnimationArgs | undefined {
   };
 }
 
+function presetAnimation(preset?: Preset): AnimationSettings | undefined {
+  if (preset?.animation === undefined) return undefined;
+  const parsed = animationSettingsSchema.safeParse(preset.animation);
+  if (!parsed.success) {
+    throw new UsageError(
+      `--preset animation: ${formatIssues(parsed.error.issues)}`,
+    );
+  }
+  return parsed.data;
+}
+
 // Every tab of the snapshot is one step, in tab order. `notes` are for
 // stderr.
 export function planAnimation(
@@ -113,7 +125,7 @@ export function planAnimation(
       '--animate: needs two or more steps, one per input file or tab',
     );
   }
-  const stored = preset?.animation;
+  const stored = presetAnimation(preset);
   const fps = args.fps ?? stored?.fps;
   let document: AnimationDocument;
   try {

@@ -182,3 +182,16 @@ A second model reviewed the branch at `ea7c086d`, on the same base `29521428`, a
 - `animation-endpoints.ts --encode` passes `rename`, `grow`, `gutter`, `marks`, `identity`, `edge-empty-to`, `edge-target`, and `edge-target-scale`. WebP and APNG are 0.000% on every frame. Every GIF has 0 ghost pixels, and the holes are 4,599 in `edge-target` and 545 in `edge-target-scale`, as before.
 - Lane 3 at this head: `--fps 60 -o l3.gif` prints `GIF supports 50, 25, or 20 fps, so this one plays at 50 instead of 60` and writes 125 frames of 20 ms. A preset at 60 fps prints the same note, and the same preset with `.webp` prints none.
 - The perf lane did not run. The load average stayed between 11 and 30 for the whole review.
+
+## Verdict at 2f2fc75a and root follow-up
+
+An independent Fable verifier passed every gate, the ten lanes, parity, and the GIF disposal stress at `2f2fc75a`. It blocked only on the WebP perf budget.
+
+- **WebP budget re-baselined from 4 s to 6 s.** The 4 s budget came from the lossy prototype. A2 encodes WebP losslessly, an accepted decision, because Takumi's lossy animated WebP drops alpha and was 31% larger. The verifier measured a median of 4.42 s over 20 cold runs (range 3.52 to 6.89 s) for the 3 s, 60 fps, 1920 by 1080 pixel-count clip, with the 1-minute load between 6.2 and 8.0 at each start. Each run spends about 19.7 s of CPU in the lossless encoder. The root countersigns the new budget of 6 s on that evidence.
+- **Interrupted writes.** The CLI now writes to `<path>.<pid>.partial` and renames it into place, and removes the partial file on SIGINT or SIGTERM. A SIGINT 4 s into a 2x render exited 130 and left no file.
+- **Preset `animation` section.** It is checked only with `--animate`, so an invalid section no longer breaks still exports. With `--animate` the error reads `--preset animation: <field>: <issue>`.
+
+Open for A4:
+
+- A GIF with a hidden frame background draws the window shadow as a solid black slab, because GIF alpha is on or off. A4 should offer WebP or APNG when the background is hidden, or flatten the shadow for GIF.
+- A GIF without `--fps` plays at 25 fps, by design, with no note.

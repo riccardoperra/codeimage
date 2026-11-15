@@ -114,10 +114,16 @@ describe('animate flag', () => {
     });
   });
 
-  it('names --preset and the field on invalid animation settings', () => {
-    expect(() =>
-      parsePreset(JSON.stringify(presetWith({steps: [], transitionMs: 1}))),
-    ).toThrow('--preset: animation.steps');
+  it('names --preset and the field on invalid animation settings', async () => {
+    const preset = presetWith({steps: [], transitionMs: 1});
+    await expect(plan([], inputs, preset)).rejects.toThrow(
+      '--preset animation: steps',
+    );
+  });
+
+  it('keeps a still export working with invalid animation settings', () => {
+    const preset = presetWith({steps: [], transitionMs: 1});
+    expect(() => parsePreset(JSON.stringify(preset))).not.toThrow();
   });
 
   it.each([

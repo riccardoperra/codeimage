@@ -1,5 +1,6 @@
 #!/usr/bin/env node
-import {readFile, writeFile} from 'node:fs/promises';
+import {rmSync} from 'node:fs';
+import {readFile, rename, rm, writeFile} from 'node:fs/promises';
 import {renderUsage} from 'citty';
 import {COMMAND, parseArgs, UsageError} from './args';
 import {FLAGS} from './flags';
@@ -70,7 +71,7 @@ async function main() {
         );
       });
     } else {
-      await writeFile(output.path, image);
+      await writeAtomically(output.path, image);
       process.stdout.write(`${output.path}\n`);
     }
     for (const flag of FLAGS) {
@@ -81,6 +82,30 @@ async function main() {
     }
   }
 }
+
+let partial: string | undefined;
+
+// An interrupted write leaves the previous file, or none, never a cut one.
+async function writeAtomically(path: string, data: string | Uint8Array) {
+  partial = `${path}.${process.pid}.partial`;
+  try {
+    await writeFile(partial, data);
+    await rename(partial, path);
+  } catch (error) {
+    await rm(partial, {force: true});
+    throw error;
+  } finally {
+    partial = undefined;
+  }
+}
+
+function removePartialAndExit(code: number) {
+  if (partial) rmSync(partial, {force: true});
+  process.exit(code);
+}
+
+process.on('SIGINT', () => removePartialAndExit(130));
+process.on('SIGTERM', () => removePartialAndExit(143));
 
 process.stdout.on('error', error => {
   process.stderr.write(`codeimage: ${error.message}\n`);
