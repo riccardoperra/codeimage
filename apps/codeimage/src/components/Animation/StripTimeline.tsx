@@ -203,9 +203,10 @@ export function StripTimeline() {
     }),
   );
   createEffect(
-    on(animation.playhead, ms => {
+    on([animation.playhead, animation.playback], ([ms, playback], previous) => {
       if (
-        animation.playback().state === 'playing' &&
+        (playback.state === 'playing' ||
+          (playback.state === 'paused' && previous?.[1].state === 'playing')) &&
         performance.now() >= userScrollUntil
       )
         reveal(geometry().timeToX(ms));

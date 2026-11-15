@@ -1104,7 +1104,7 @@ export async function audit({page, context, base, out, server}) {
     await page.locator('[role=menu]').waitFor({state: 'hidden'});
   }
   await feature('animate-focus', async () => {
-    await animationMatrix('focus', async ({viewport}) => {
+    await animationMatrix('focus', async ({viewport, name}) => {
       const transition = animationSegments().nth(1);
       const hold = animationSegments().first();
       await transition.click();
@@ -1183,16 +1183,33 @@ export async function audit({page, context, base, out, server}) {
         }
         await page.locator('[data-easing-trigger]').click();
         const easing = page.getByRole('dialog', {name: 'Easing', exact: true});
-        await easing.evaluate(el =>
-          Promise.all(el.getAnimations().map(animation => animation.finished)),
+        await easing.evaluate(element =>
+          Promise.all(
+            element.getAnimations().map(animation => animation.finished),
+          ),
         );
+        const touchTargets = [];
         for (const control of [
           easing.getByRole('tab', {name: 'Smooth', exact: true}),
           easing.getByRole('button', {name: 'Play transition', exact: true}),
         ]) {
           const box = await control.boundingBox();
-          assert.ok(box.width >= 40 && box.height >= 40, 'easing touch target');
+          const minimum = await control.evaluate(element => ({
+            height: getComputedStyle(element).minHeight,
+            width: getComputedStyle(element).minWidth,
+          }));
+          assert.equal(minimum.height, '40px', 'easing target minimum height');
+          assert.equal(minimum.width, '40px', 'easing target minimum width');
+          assert.ok(
+            box.width >= 39.99 && box.height >= 39.99,
+            `easing touch target: ${JSON.stringify(box)}`,
+          );
+          touchTargets.push({box, minimum});
         }
+        await writeFile(
+          resolve(out, `animate-touch-${name}.json`),
+          JSON.stringify(touchTargets, null, 2),
+        );
         await easing.getByRole('tab', {name: 'Smooth', exact: true}).focus();
         await page.keyboard.press('Escape');
         await easing.waitFor({state: 'hidden'});
@@ -1259,14 +1276,13 @@ export async function audit({page, context, base, out, server}) {
     await page.waitForFunction(() => !document.querySelector('[role=menu]'));
   }
   async function visibleInStrip(locator) {
-    const box = await locator.boundingBox();
-    const root = await page.locator('[data-animation-scroller]').boundingBox();
-    return (
-      box &&
-      root &&
-      box.x >= root.x - 1 &&
-      box.x + box.width <= root.x + root.width + 1
-    );
+    return locator.evaluate(element => {
+      const box = element.getBoundingClientRect();
+      const root = element
+        .closest('[data-animation-scroller]')
+        .getBoundingClientRect();
+      return box.x >= root.x - 1 && box.right <= root.right + 1;
+    });
   }
   await feature('animate-geometry', async () => {
     await animationMatrix('geometry', async ({viewport, name}) => {
@@ -1441,6 +1457,23 @@ export async function audit({page, context, base, out, server}) {
         );
         await page.waitForTimeout(100);
       }
+      await page.waitForFunction(
+        () => {
+          const ruler = document.querySelector(
+            '[data-animate-panel] [aria-label="Playhead"]',
+          );
+          return (
+            Number(ruler?.getAttribute('aria-valuenow')) ===
+            Number(ruler?.getAttribute('aria-valuemax'))
+          );
+        },
+        null,
+        {timeout: 15000},
+      );
+      assert.ok(
+        await visibleInStrip(page.locator('[data-animation-playhead]')),
+        'the final paused playhead stays visible',
+      );
       await page
         .getByRole('button', {name: 'Stop and edit the code', exact: true})
         .click();

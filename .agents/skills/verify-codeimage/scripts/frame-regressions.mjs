@@ -20,6 +20,7 @@ export async function verifyColdStart({fresh, out}) {
         const name = `frame-cold-start-${layout}-${viewport.width}-${start + 1}`;
         let modules = 0,
           inputs = 0;
+        const routeErrors = [];
         await fresh(
           {
             name,
@@ -108,7 +109,18 @@ export async function verifyColdStart({fresh, out}) {
                   '**/Tabs/TabName/TabName.tsx*',
                   async route => {
                     inputs++;
-                    await new Promise(resolve => setTimeout(resolve, 300));
+                    await context
+                      .pages()[0]
+                      .waitForFunction(
+                        () =>
+                          window.__frameSamples.some(
+                            sample =>
+                              sample.frame?.painted && !sample.frame.input,
+                          ),
+                        null,
+                        {timeout: 15000},
+                      )
+                      .catch(error => routeErrors.push(String(error)));
                     await route.continue();
                   },
                 );
@@ -120,6 +132,11 @@ export async function verifyColdStart({fresh, out}) {
             await page
               .locator('[data-fit-scale] [aria-label="Tab name"] input')
               .waitFor();
+            assert.deepEqual(
+              routeErrors,
+              [],
+              `${name}: delayed label fallback painted`,
+            );
             await page.mouse.move(0, 0);
             await page.waitForFunction(
               rest => {
