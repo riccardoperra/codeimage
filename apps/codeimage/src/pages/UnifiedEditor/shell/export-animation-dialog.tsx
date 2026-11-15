@@ -5,13 +5,15 @@ import {
   DialogPanelContent,
   DialogPanelFooter,
   Select,
+  RadioList,
+  RadioListItem,
 } from '@codeui/kit';
 import {Dialog} from '@kobalte/core/dialog';
-import {createEffect, createSignal, Show} from 'solid-js';
+import {Progress} from '@kobalte/core/progress';
+import {type Accessor, createEffect, createSignal, Show} from 'solid-js';
 import download from 'downloadjs';
 import {useExportAnimation} from '../../../hooks/use-export-animation';
 import {type VideoFps} from '../../../core/video/encode';
-import type {AnimationExport} from '../../../core/video/protocol';
 import type {AppLocaleEntries} from '../../../i18n';
 import {animationSnapshot} from './export-animation';
 import * as styles from './export.css';
@@ -23,17 +25,18 @@ export function createAnimationExporter() {
   const [open, setOpen] = createSignal(false);
   const [fps, setFps] = createSignal<VideoFps>(30);
   const [size, setSize] = createSignal<'current' | '1080p'>('current');
-  const [prepared, setPrepared] = createSignal<AnimationExport>();
+  const [summary, setSummary] =
+    createSignal<Awaited<ReturnType<typeof snapshot.describe>>>();
   let generation = 0;
   const busy = () => ['preparing', 'encoding'].includes(job.state().kind);
   const refresh = async () => {
     const current = ++generation;
-    setPrepared(undefined);
+    setSummary(undefined);
     const frameRate = fps();
     const output = size() === '1080p' ? {width: 1920, height: 1080} : undefined;
     await job.check(async () => {
-      const value = await snapshot(frameRate, output);
-      if (current === generation) setPrepared(value);
+      const value = await snapshot.describe(frameRate, output);
+      if (current === generation) setSummary(value);
       return value.config;
     });
   };
@@ -50,7 +53,7 @@ export function createAnimationExporter() {
   const close = () => {
     ++generation;
     job.cancel();
-    setPrepared(undefined);
+    setSummary(undefined);
     setOpen(false);
   };
   const changeFps = (value: VideoFps | null) => {
@@ -68,7 +71,7 @@ export function createAnimationExporter() {
     // Read again after the secrets review, including any redaction it made.
     const frameRate = fps();
     const output = size() === '1080p' ? {width: 1920, height: 1080} : undefined;
-    void job.start(() => snapshot(frameRate, output));
+    void job.start(() => snapshot.capture(frameRate, output));
   };
   return {
     job,
@@ -79,7 +82,8 @@ export function createAnimationExporter() {
     size,
     changeFps,
     changeSize,
-    prepared,
+    summary,
+    retry: refresh,
     busy,
     start,
     available: () => (animation.stateToPersist()?.steps.length ?? 0) >= 2,
@@ -91,10 +95,10 @@ export function AnimationExportDialog(props: {
   exporter: AnimationExporter;
   onStart: () => void;
 }) {
-  const [t] = useI18n<AppLocaleEntries>();
+  const [t, {locale}] = useI18n<AppLocaleEntries>();
   const exporter = () => props.exporter;
   const state = () => exporter().job.state();
-  const prepared = () => exporter().prepared();
+  const summary = () => exporter().summary();
   const done = () => {
     const value = state();
     return value.kind === 'done' ? value : undefined;
@@ -109,7 +113,9 @@ export function AnimationExportDialog(props: {
   };
   const failure = () => {
     const value = state();
-    return value.kind === 'failed' ? value.cause : undefined;
+    return value.kind === 'failed'
+      ? t(`animation.export.errors.${value.reason}`)
+      : undefined;
   };
   const canStart = () =>
     state().kind === 'ready' && !unsupported() && !exporter().busy();
@@ -117,17 +123,49 @@ export function AnimationExportDialog(props: {
     const value = state();
     return value.kind === 'encoding' ? value : {done: 0, total: 1};
   };
-  const durationMs = () => {
-    const value = prepared();
-    if (!value) return 0;
-    const ms = value.scenes.reduce((sum, scene) => sum + scene.durationMs, 0);
+  const number = (value: number) =>
+    new Intl.NumberFormat(locale()).format(value);
+  const seconds = (ms: number) =>
+    new Intl.NumberFormat(locale(), {
+      style: 'unit',
+      unit: 'second',
+      unitDisplay: 'short',
+      maximumFractionDigits: 2,
+    }).format(ms / 1000);
+  const megabytes = (bytes: number) =>
+    new Intl.NumberFormat(locale(), {
+      style: 'unit',
+      unit: 'megabyte',
+      unitDisplay: 'short',
+      maximumFractionDigits: 1,
+    }).format(bytes / 1_000_000);
+  const summaryLabel = () => {
+    const value = summary();
     return (
-      (Math.ceil((ms * value.config.fps) / 1000) * 1000) / value.config.fps
+      value &&
+      `${number(value.config.width)} × ${number(value.config.height)} · ${seconds(value.durationMs)}`
+    );
+  };
+  const doneLabel = () => {
+    const value = done();
+    return (
+      value &&
+      t('animation.export.done', {
+        size: megabytes(value.size),
+        duration: seconds(value.durationMs),
+      })
     );
   };
   const sizeLabel = (size: 'current' | '1080p') =>
-    size === 'current' ? t('animation.export.currentSize') : '1920 × 1080';
-  const fpsLabel = (fps: VideoFps) => `${fps} fps`;
+    size === 'current'
+      ? t('animation.export.currentSize')
+      : `${number(1920)} × ${number(1080)}`;
+  const fpsLabel = (fps: VideoFps) =>
+    t('animation.export.fpsValue', {fps: number(fps)});
+  const fpsValue = (value: Accessor<VideoFps>) => fpsLabel(value());
+  const sizeValue = (value: Accessor<'current' | '1080p'>) =>
+    sizeLabel(value());
+  const retry = () => void exporter().retry();
   const keepOpen = (event: Event) => event.preventDefault();
   const closeChanged = (open: boolean) => {
     if (!open) exporter().close();
@@ -145,7 +183,9 @@ export function AnimationExportDialog(props: {
   };
   const canShare = () => {
     const value = file();
-    return !!value && !!navigator.canShare?.({files: [value]});
+    return (
+      !!value && !!navigator.share && !!navigator.canShare?.({files: [value]})
+    );
   };
   const share = async () => {
     const value = file();
@@ -179,14 +219,14 @@ export function AnimationExportDialog(props: {
               <div class={styles.videoFields}>
                 <div class={styles.videoRow}>
                   <span>{t('animation.export.format')}</span>
-                  <Button
+                  <RadioList
                     size="sm"
-                    theme="secondary"
+                    value="mp4"
+                    aria-label={t('animation.export.format')}
                     disabled={!!unsupported()}
-                    aria-pressed="true"
                   >
-                    MP4
-                  </Button>
+                    <RadioListItem value="mp4" label="MP4" />
+                  </RadioList>
                 </div>
                 <div class={styles.videoRow}>
                   <span>{t('animation.export.fps')}</span>
@@ -198,7 +238,7 @@ export function AnimationExportDialog(props: {
                     onChange={exporter().changeFps}
                     itemLabel={fpsLabel}
                     optionTextValue={fpsLabel}
-                    valueComponent={value => fpsLabel(value())}
+                    valueComponent={fpsValue}
                     disabled={exporter().busy()}
                     disallowEmptySelection
                   />
@@ -213,26 +253,13 @@ export function AnimationExportDialog(props: {
                     onChange={exporter().changeSize}
                     itemLabel={sizeLabel}
                     optionTextValue={sizeLabel}
-                    valueComponent={value => sizeLabel(value())}
+                    valueComponent={sizeValue}
                     disabled={exporter().busy()}
                     disallowEmptySelection
                   />
                 </div>
-                <Show when={prepared()}>
-                  {value => (
-                    <div class={styles.hint}>
-                      {value().config.width} × {value().config.height} ·{' '}
-                      {(durationMs() / 1000).toFixed(2)} s ·{' '}
-                      {t('animation.export.estimated', {
-                        size: (
-                          ((value().config.encoder.bitrate ?? 0) *
-                            durationMs()) /
-                          8000 /
-                          1_000_000
-                        ).toFixed(1),
-                      })}
-                    </div>
-                  )}
+                <Show when={summary()}>
+                  <div class={styles.hint}>{summaryLabel()}</div>
                 </Show>
                 <Show when={state().kind === 'checking'}>
                   <div role="status">{t('animation.export.checking')}</div>
@@ -257,29 +284,25 @@ export function AnimationExportDialog(props: {
                   }
                 >
                   <div role="status" class={styles.videoFields}>
-                    <progress
-                      class={styles.videoProgress}
+                    <Progress
                       aria-label={t('animation.export.progress')}
-                      max={progress().total}
+                      maxValue={progress().total}
                       value={progress().done}
-                    />
+                    >
+                      <Progress.Track class={styles.videoProgress}>
+                        <Progress.Fill class={styles.videoProgressFill} />
+                      </Progress.Track>
+                    </Progress>
                     <span class={styles.hint}>
                       {t('animation.export.frames', {
-                        done: String(progress().done),
-                        total: String(progress().total),
+                        done: number(progress().done),
+                        total: number(progress().total),
                       })}
                     </span>
                   </div>
                 </Show>
                 <Show when={done()}>
-                  {value => (
-                    <div role="status">
-                      {t('animation.export.done', {
-                        size: (value().size / 1_000_000).toFixed(1),
-                        duration: (value().durationMs / 1000).toFixed(2),
-                      })}
-                    </div>
-                  )}
+                  <div role="status">{doneLabel()}</div>
                 </Show>
               </div>
             </DialogPanelContent>
@@ -290,12 +313,18 @@ export function AnimationExportDialog(props: {
                     ? t('animation.export.cancel')
                     : t('common.close')}
                 </Button>
+                <Show when={failure()}>
+                  <Button size="sm" theme="primary" onClick={retry}>
+                    {t('animation.export.retry')}
+                  </Button>
+                </Show>
                 <Show
-                  when={done()}
+                  when={!failure() && done()}
                   fallback={
                     <Button
                       size="sm"
                       theme="primary"
+                      hidden={!!failure()}
                       disabled={!canStart()}
                       onClick={props.onStart}
                     >
@@ -305,7 +334,7 @@ export function AnimationExportDialog(props: {
                 >
                   <Show when={canShare()}>
                     <Button size="sm" theme="secondary" onClick={share}>
-                      {t('export.shareMode')}
+                      {t('animation.export.share')}
                     </Button>
                   </Show>
                   <Button size="sm" theme="primary" onClick={save}>

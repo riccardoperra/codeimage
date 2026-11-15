@@ -72,6 +72,7 @@ export interface Exporter {
   readonly canShare: Accessor<boolean>;
   /** A requested export waits here while the user reviews visible secrets. */
   readonly confirming: Accessor<boolean>;
+  readonly confirmingAnimation: Accessor<boolean>;
   readonly confirm: () => void;
   readonly cancel: () => void;
   readonly copyAltText: () => void;
@@ -258,6 +259,9 @@ export function createExporter(
     canCopy: () => ready() && !!navigator.clipboard?.write,
     canShare: () => !!navigator.share,
     confirming: () => pending() !== undefined,
+    confirmingAnimation: () =>
+      pending()?.action === 'animation' ||
+      pending()?.action === 'animationStart',
     confirm,
     cancel: () => setPending(undefined),
     copyAltText,

@@ -67,7 +67,11 @@ export function ExportControl(props: ExportControlProps) {
               class={styles.confirmationPanel}
               onCloseAutoFocus={restoreFocus}
             >
-              <Dialog.Title>{t('export.title')}</Dialog.Title>
+              <Dialog.Title>
+                {exporter().confirmingAnimation()
+                  ? t('animation.export.title')
+                  : t('export.title')}
+              </Dialog.Title>
               <DialogPanelContent>
                 <div class={styles.warning}>
                   <Show when={exporter().secrets() > 0}>

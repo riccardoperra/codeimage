@@ -217,7 +217,7 @@ function appendStyle(element: Element, declaration: string) {
   );
 }
 
-export function cloneExportNode(node: HTMLElement) {
+function* cloneExportSteps(node: HTMLElement) {
   const clone = node.cloneNode(true);
   if (!(clone instanceof HTMLElement)) throw new Error('Invalid export node.');
   // Chrome sized the frame with its own text metrics, and Takumi ignores
@@ -229,11 +229,11 @@ export function cloneExportNode(node: HTMLElement) {
   const fontFamilies = new Set<string>();
   const originals = [node, ...node.querySelectorAll('*')];
   const copies = [clone, ...clone.querySelectorAll('*')];
-  originals.forEach((original, index) => {
+  for (const [index, original] of originals.entries()) {
     const copy = copies[index];
     if (original.closest('[data-export-exclude="true"]')) {
       copy.remove();
-      return;
+      continue;
     }
     const computed = getComputedStyle(original);
     if (
@@ -261,7 +261,8 @@ export function cloneExportNode(node: HTMLElement) {
         appendStyle(copy, `height: ${getComputedStyle(line).lineHeight}`);
       }
     }
-  });
+    yield;
+  }
   const html = document.documentElement.cloneNode(false);
   const body = document.body.cloneNode(false);
   if (!(html instanceof HTMLElement) || !(body instanceof HTMLElement))
@@ -269,6 +270,28 @@ export function cloneExportNode(node: HTMLElement) {
   body.append(clone);
   html.append(body);
   return {html: html.outerHTML, text: clone.textContent ?? '', fontFamilies};
+}
+
+export function cloneExportNode(node: HTMLElement) {
+  const steps = cloneExportSteps(node);
+  let next = steps.next();
+  while (!next.done) next = steps.next();
+  return next.value;
+}
+
+// The animation captures many trees. Release the main thread between small
+// batches while retaining the same serialization as a static image.
+export async function cloneAnimationNode(node: HTMLElement) {
+  const steps = cloneExportSteps(node);
+  let next = steps.next();
+  while (!next.done) {
+    const started = performance.now();
+    do {
+      next = steps.next();
+    } while (!next.done && performance.now() - started < 8);
+    if (!next.done) await new Promise<void>(resolve => setTimeout(resolve, 0));
+  }
+  return next.value;
 }
 
 async function localFontSources(
@@ -360,7 +383,17 @@ export async function collectRasterizeResources(
   node: HTMLElement,
   codeFont: CustomFontConfiguration,
 ) {
-  const {html, text, fontFamilies} = cloneExportNode(node);
+  const {html, ...snapshot} = cloneExportNode(node);
+  return {html, resources: await collectSnapshotResources(snapshot, codeFont)};
+}
+
+export async function collectSnapshotResources(
+  {
+    text,
+    fontFamilies,
+  }: Pick<ReturnType<typeof cloneExportNode>, 'text' | 'fontFamilies'>,
+  codeFont: CustomFontConfiguration,
+): Promise<RasterizeResources> {
   const {css, fontSources, requiredFamilies} = await fontResources(
     fontFamilies,
     text,
@@ -392,15 +425,12 @@ export async function collectRasterizeResources(
     }
   }
   return {
-    html,
-    resources: {
-      css,
-      fonts,
-      fontFamilies: [
-        ...new Set([codeFont.name, ...fontSources.map(source => source.name)]),
-      ],
-    },
-  } satisfies {html: string; resources: RasterizeResources};
+    css,
+    fonts,
+    fontFamilies: [
+      ...new Set([codeFont.name, ...fontSources.map(source => source.name)]),
+    ],
+  };
 }
 
 export const takumi: Rasterizer = async (

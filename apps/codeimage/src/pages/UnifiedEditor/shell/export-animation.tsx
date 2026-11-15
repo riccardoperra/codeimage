@@ -21,12 +21,12 @@ import type {
   Size,
 } from '../../../core/animation/model';
 import {
-  collectRasterizeResources,
-  cloneExportNode,
+  collectSnapshotResources,
+  cloneAnimationNode,
 } from '../../../core/rasterize/takumi';
 import {mp4Config, type VideoFps} from '../../../core/video/encode';
 import type {AnimationExport} from '../../../core/video/protocol';
-import {getOwner, runWithOwner} from 'solid-js';
+import {createSignal, getOwner, runWithOwner} from 'solid-js';
 import {render} from 'solid-js/web';
 
 const yieldToEditor = () =>
@@ -37,7 +37,7 @@ export function animationSnapshot() {
   const frame = getFrameState();
   const style = useFrameCodeStyle();
   const owner = getOwner();
-  return async (fps: VideoFps, output?: Size): Promise<AnimationExport> => {
+  const measure = async (fps: VideoFps, output?: Size) => {
     const settings: AnimationSettings = structuredClone({
       ...animation.settings(),
       fps,
@@ -86,6 +86,43 @@ export function animationSnapshot() {
       height: timeline.height * pixelRatio,
     };
     const config = mp4Config(contentSize, fps);
+    return {
+      settings,
+      tabs,
+      codeStyle,
+      font,
+      target,
+      pixelRatio,
+      timeline,
+      languages,
+      contentSize,
+      config,
+    };
+  };
+  const describe = async (fps: VideoFps, output?: Size) => {
+    const {config, timeline} = await measure(fps, output);
+    const ms = timeline.scenes.reduce(
+      (sum, scene) => sum + scene.durationMs,
+      0,
+    );
+    return {config, durationMs: (Math.ceil((ms * fps) / 1000) * 1000) / fps};
+  };
+  const capture = async (
+    fps: VideoFps,
+    output?: Size,
+  ): Promise<AnimationExport> => {
+    const {
+      settings,
+      tabs,
+      codeStyle,
+      font,
+      target,
+      pixelRatio,
+      timeline,
+      languages,
+      contentSize,
+      config,
+    } = await measure(fps, output);
     const host = document.createElement('div');
     host.style.cssText =
       'position:fixed;left:0;top:0;opacity:0;pointer-events:none;z-index:-9999';
@@ -114,6 +151,8 @@ export function animationSnapshot() {
       for (const [index, scene] of timeline.scenes.entries()) {
         await yieldToEditor();
         const tab = tabs[scene.step];
+        const [codeReady, setCodeReady] = createSignal(false);
+        const [lineLimit, setLineLimit] = createSignal(0);
         const view = () => (
           <div
             data-video-root
@@ -133,8 +172,10 @@ export function animationSnapshot() {
               header={settings.header}
               activeTabId={tab.id}
               code={
-                scene.kind === 'hold' ? (
+                codeReady() &&
+                (scene.kind === 'hold' ? (
                   <StaticCodeView
+                    lineLimit={lineLimit()}
                     code={tab.code}
                     marks={tab.marks}
                     languageId={tab.languageId}
@@ -156,7 +197,7 @@ export function animationSnapshot() {
                     fontWeight={codeStyle.fontWeight}
                     enableLigatures={codeStyle.enableLigatures}
                   />
-                )
+                ))
               }
             />
           </div>
@@ -165,6 +206,15 @@ export function animationSnapshot() {
         host.append(mount);
         const dispose = runWithOwner(owner, () => render(view, mount));
         if (dispose) disposers.push(dispose);
+        await yieldToEditor();
+        setCodeReady(true);
+        if (scene.kind === 'hold') {
+          const lines = tab.code.split('\n').length;
+          for (let limit = 4; limit < lines + 4; limit += 4) {
+            await yieldToEditor();
+            setLineLimit(limit);
+          }
+        }
       }
       for (const element of host.querySelectorAll<HTMLElement>('[style]')) {
         if (element.style.animationName)
@@ -191,19 +241,30 @@ export function animationSnapshot() {
           }
         }
       }
-      for (const frame of frames) await prepareWatermark(frame);
+      for (const frame of frames) {
+        await yieldToEditor();
+        await prepareWatermark(frame);
+      }
       const scenes: AnimationExport['scenes'] = [];
+      const fontFamilies = new Set<string>();
+      let text = '';
       for (const [index, scene] of timeline.scenes.entries()) {
         await yieldToEditor();
+        const snapshot = await cloneAnimationNode(roots[index]);
+        snapshot.fontFamilies.forEach(family => fontFamilies.add(family));
+        text += snapshot.text;
         scenes.push({
-          html: cloneExportNode(roots[index]).html,
+          html: snapshot.html,
           durationMs: scene.durationMs,
           css: frameCss[index],
         });
       }
       // Watermark observers need these layout rules until every scene is captured.
       captureStyle.remove();
-      const {resources} = await collectRasterizeResources(host, font);
+      const resources = await collectSnapshotResources(
+        {text, fontFamilies},
+        font,
+      );
       return {
         scenes,
         resources,
@@ -217,8 +278,12 @@ export function animationSnapshot() {
         ].join('\n'),
       };
     } finally {
-      disposers.forEach(dispose => dispose());
+      for (const dispose of disposers) {
+        await yieldToEditor();
+        dispose();
+      }
       host.remove();
     }
   };
+  return {describe, capture};
 }

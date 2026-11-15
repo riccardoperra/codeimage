@@ -65,6 +65,7 @@ async function measureHidden<T>(
   try {
     dispose = runWithOwner(owner, () => render(view, host));
     await document.fonts.ready;
+    await new Promise<void>(resolve => setTimeout(resolve, 0));
     return read(host);
   } finally {
     dispose?.();

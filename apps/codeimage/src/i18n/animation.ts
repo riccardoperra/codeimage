@@ -4,11 +4,21 @@ export const animationLocale = {
       export: {
         title: 'Export animation',
         description: 'MP4 video, rendered on your device.',
+        retry: 'Retry',
+        share: 'Share MP4',
+        fpsValue: '{{fps}} fps',
+        errors: {
+          workerLoad:
+            'The video worker could not load. A file may be unavailable after an update, or you may be offline. Reconnect and retry; reload the page if needed.',
+          workerMessage:
+            'The video worker returned an unreadable message. Retry the export.',
+          export:
+            'Rendering or encoding failed. Check your connection for fonts and renderer files, then retry.',
+        },
         format: 'Format',
         fps: 'Frame rate',
         outputSize: 'Output size',
         currentSize: 'Current frame',
-        estimated: 'About {{size}} MB',
         checking: 'Checking video support and preparing fonts…',
         missing:
           'MP4 needs WebCodecs. Try a current Chrome, Firefox or Safari.',
@@ -17,7 +27,7 @@ export const animationLocale = {
         failed: 'Video export failed: {{cause}}',
         progress: 'Video export progress',
         frames: '{{done}} / {{total}} frames',
-        done: 'Ready · {{size}} MB · {{duration}} s',
+        done: 'Ready · {{size}} · {{duration}}',
         cancel: 'Cancel',
         start: 'Export MP4',
         download: 'Download MP4',
@@ -78,11 +88,21 @@ export const animationLocale = {
       export: {
         title: 'Esporta animazione',
         description: 'Video MP4, generato sul tuo dispositivo.',
+        retry: 'Riprova',
+        share: 'Condividi MP4',
+        fpsValue: '{{fps}} fps',
+        errors: {
+          workerLoad:
+            'Impossibile caricare il worker video. Un file potrebbe non essere disponibile dopo un aggiornamento, oppure sei offline. Riconnettiti e riprova; se necessario ricarica la pagina.',
+          workerMessage:
+            'Il worker video ha restituito un messaggio illeggibile. Riprova l’esportazione.',
+          export:
+            'Rendering o codifica non riusciti. Controlla la connessione per i caratteri e il renderer, poi riprova.',
+        },
         format: 'Formato',
         fps: 'Fotogrammi al secondo',
         outputSize: 'Dimensioni video',
         currentSize: 'Riquadro corrente',
-        estimated: 'Circa {{size}} MB',
         checking: 'Verifica del video e preparazione dei caratteri…',
         missing:
           'MP4 richiede WebCodecs. Prova una versione recente di Chrome, Firefox o Safari.',
@@ -91,7 +111,7 @@ export const animationLocale = {
         failed: 'Esportazione video non riuscita: {{cause}}',
         progress: 'Avanzamento esportazione video',
         frames: '{{done}} / {{total}} fotogrammi',
-        done: 'Pronto · {{size}} MB · {{duration}} s',
+        done: 'Pronto · {{size}} · {{duration}}',
         cancel: 'Annulla',
         start: 'Esporta MP4',
         download: 'Scarica MP4',
@@ -153,11 +173,21 @@ export const animationLocale = {
       export: {
         title: 'Animation exportieren',
         description: 'MP4-Video, auf deinem Gerät gerendert.',
+        retry: 'Erneut versuchen',
+        share: 'MP4 teilen',
+        fpsValue: '{{fps}} Bilder/s',
+        errors: {
+          workerLoad:
+            'Der Video-Worker konnte nicht geladen werden. Nach einem Update fehlt möglicherweise eine Datei, oder du bist offline. Verbinde dich und versuche es erneut; lade bei Bedarf die Seite neu.',
+          workerMessage:
+            'Der Video-Worker hat eine unlesbare Nachricht gesendet. Versuche den Export erneut.',
+          export:
+            'Rendering oder Kodierung fehlgeschlagen. Prüfe die Verbindung für Schriftarten und Renderer-Dateien und versuche es erneut.',
+        },
         format: 'Format',
         fps: 'Bildrate',
         outputSize: 'Videoabmessungen',
         currentSize: 'Aktueller Rahmen',
-        estimated: 'Etwa {{size}} MB',
         checking: 'Videounterstützung prüfen und Schriftarten vorbereiten…',
         missing:
           'MP4 benötigt WebCodecs. Versuche eine aktuelle Version von Chrome, Firefox oder Safari.',
@@ -166,7 +196,7 @@ export const animationLocale = {
         failed: 'Videoexport fehlgeschlagen: {{cause}}',
         progress: 'Fortschritt des Videoexports',
         frames: '{{done}} / {{total}} Bilder',
-        done: 'Fertig · {{size}} MB · {{duration}} s',
+        done: 'Fertig · {{size}} · {{duration}}',
         cancel: 'Abbrechen',
         start: 'MP4 exportieren',
         download: 'MP4 herunterladen',
@@ -228,11 +258,21 @@ export const animationLocale = {
       export: {
         title: 'Exportar animación',
         description: 'Vídeo MP4, renderizado en tu dispositivo.',
+        retry: 'Reintentar',
+        share: 'Compartir MP4',
+        fpsValue: '{{fps}} fps',
+        errors: {
+          workerLoad:
+            'No se pudo cargar el worker de vídeo. Puede faltar un archivo tras una actualización, o puede que estés sin conexión. Conéctate y reintenta; recarga la página si es necesario.',
+          workerMessage:
+            'El worker de vídeo devolvió un mensaje ilegible. Reintenta la exportación.',
+          export:
+            'Error de renderizado o codificación. Comprueba la conexión para las fuentes y el renderizador, y reintenta.',
+        },
         format: 'Formato',
         fps: 'Fotogramas por segundo',
         outputSize: 'Dimensiones del vídeo',
         currentSize: 'Marco actual',
-        estimated: 'Unos {{size}} MB',
         checking: 'Comprobando el vídeo y preparando las fuentes…',
         missing:
           'MP4 necesita WebCodecs. Prueba una versión reciente de Chrome, Firefox o Safari.',
@@ -241,7 +281,7 @@ export const animationLocale = {
         failed: 'Error al exportar el vídeo: {{cause}}',
         progress: 'Progreso de exportación del vídeo',
         frames: '{{done}} / {{total}} fotogramas',
-        done: 'Listo · {{size}} MB · {{duration}} s',
+        done: 'Listo · {{size}} · {{duration}}',
         cancel: 'Cancelar',
         start: 'Exportar MP4',
         download: 'Descargar MP4',
