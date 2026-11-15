@@ -34,12 +34,13 @@ export function describeOptions(options: readonly ChoiceOption[], limit = 12) {
 
 /** What `get_editor_state` reports for a control. */
 export function describeControl(control: AgentControl) {
-  const base = {id: control.id, kind: control.kind, label: control.label()};
+  const base = {id: control.id, label: control.label()};
   switch (control.kind) {
     case 'segmented':
     case 'select':
       return {
         ...base,
+        kind: control.kind,
         value: control.value(),
         options: control
           .options()
@@ -48,6 +49,7 @@ export function describeControl(control: AgentControl) {
     case 'range':
       return {
         ...base,
+        kind: control.kind,
         value: control.value(),
         min: control.min,
         max: control.max,
@@ -56,13 +58,14 @@ export function describeControl(control: AgentControl) {
     case 'number':
       return {
         ...base,
+        kind: control.kind,
         value: control.value(),
         min: control.min,
         max: control.max,
       };
     case 'toggle':
     case 'background':
-      return {...base, value: control.value()};
+      return {...base, kind: control.kind, value: control.value()};
   }
 }
 

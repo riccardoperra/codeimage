@@ -196,6 +196,10 @@ export async function audit({page, context, base, out, server}) {
     const {verifyAgentTools} = await import('./agent-tools.mjs');
     return verifyAgentTools({fresh, out});
   });
+  await feature('local-ai', async () => {
+    const {verifyLocalAi} = await import('./local-ai.mjs');
+    return verifyLocalAi({fresh, out});
+  });
   await feature('editor', async () => {
     for (const route of ['/', '/classic']) {
       await doctor(route);

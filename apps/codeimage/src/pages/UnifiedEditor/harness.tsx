@@ -6,8 +6,12 @@ import type {JSX} from 'solid-js';
 import {createEffect, createMemo, on, Show} from 'solid-js';
 import {Dynamic} from 'solid-js/web';
 import {AgentTools} from './agent-tools/AgentTools';
+import {ToolActivity} from './agent-tools/ToolActivity';
+import {createAgentTools} from './agent-tools/tools';
 import {CommandMenu} from './command-menu/CommandMenu';
+import {createListedModel} from './command-menu/listed-model';
 import {EditorHost} from './EditorHost';
+import {LocalAi, localAi} from './local-ai/LocalAi';
 import {createEditorControlsModel} from './model';
 import {controlOverlay} from './controls/ControlOverlay';
 import {resolveEditorPageState} from './page-state';
@@ -37,6 +41,7 @@ function Editor() {
       () => {
         commandMenu.close();
         controlOverlay.close();
+        localAi.close();
         model.endPreview();
       },
       {defer: true},
@@ -75,6 +80,13 @@ function Editor() {
             // Created outside the JSX: a call in a prop compiles to a getter
             // and would build a new stage on every read.
             const stage = createStage(pageState);
+            const listed = createListedModel(model);
+            const tools = createAgentTools({
+              model,
+              listed,
+              exporter: stage.exporter,
+              pageState,
+            });
             const BoundThemePicker = (slot: ThemePickerSlotProps) => (
               <ThemePicker
                 {...slot}
@@ -100,7 +112,12 @@ function Editor() {
                   stage={stage}
                   pageState={pageState}
                 />
-                <AgentTools model={model} stage={stage} pageState={pageState} />
+                <AgentTools tools={tools} />
+                <LocalAi
+                  tools={tools}
+                  compact={stage.compact}
+                  pageState={pageState}
+                />
               </>
             );
           }}
@@ -108,7 +125,12 @@ function Editor() {
       </div>
       {/* Outside the layout, so it stays open while the layout under it changes. */}
       <SettingsDialog model={model} />
-      <WhatsNewHost quiet={() => !settings.isOpen() && !commandMenu.isOpen()} />
+      <ToolActivity />
+      <WhatsNewHost
+        quiet={() =>
+          !settings.isOpen() && !commandMenu.isOpen() && !localAi.isOpen()
+        }
+      />
     </>
   );
 }
