@@ -7,6 +7,7 @@ import {size} from './size';
 import {split} from './split';
 import {alt} from './alt';
 import {fonts} from './fonts';
+import {animate} from './animate';
 
 export type FlagValues = Record<
   string,
@@ -35,4 +36,12 @@ export interface Flag {
   ): {path: string; text: string}[];
 }
 
-export const FLAGS: readonly Flag[] = [redact, marks, size, split, alt, fonts];
+export const FLAGS: readonly Flag[] = [
+  redact,
+  marks,
+  size,
+  split,
+  alt,
+  fonts,
+  animate,
+];

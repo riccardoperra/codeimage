@@ -14,7 +14,7 @@ import type {EditorState} from '@codeimage/store/editor/model';
 import type {Language} from '@codemirror/language';
 import {getTerminalState} from '@codeimage/store/editor/terminal';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
-import type {Ref, VoidProps} from 'solid-js';
+import type {JSX, Ref, VoidProps} from 'solid-js';
 import {createEffect, on, Show} from 'solid-js';
 import {DynamicTerminal} from '../Terminal/DynamicTerminal/DynamicTerminal';
 import StaticCodeView from '../CustomEditor/StaticCodeView';
@@ -33,6 +33,8 @@ export interface FrameViewProps {
   media: FrameMedia;
   windowPlacement?: FittedPlacement;
   showOnlyActiveTab?: boolean;
+  /** Replaces the tab's static code, as a Node animation scene does. */
+  code?: JSX.Element;
 }
 
 export function FrameView(props: VoidProps<FrameViewProps>) {
@@ -139,22 +141,24 @@ export function FrameView(props: VoidProps<FrameViewProps>) {
             surface={terminal.surface}
             themeId={editor.state.options.themeId}
           >
-            <Show when={tab()}>
-              {active => (
-                <StaticCodeView
-                  code={active().code}
-                  marks={active().marks}
-                  languageId={active().languageId}
-                  language={props.language}
-                  theme={props.theme}
-                  showLineNumbers={editor.state.options.showLineNumbers}
-                  lineNumberStart={active().lineNumberStart ?? 1}
-                  fontFamily={editor.computed.selectedFont().name}
-                  fontWeight={editor.state.options.fontWeight}
-                  enableLigatures={editor.state.options.enableLigatures}
-                />
-              )}
-            </Show>
+            {props.code ?? (
+              <Show when={tab()}>
+                {active => (
+                  <StaticCodeView
+                    code={active().code}
+                    marks={active().marks}
+                    languageId={active().languageId}
+                    language={props.language}
+                    theme={props.theme}
+                    showLineNumbers={editor.state.options.showLineNumbers}
+                    lineNumberStart={active().lineNumberStart ?? 1}
+                    fontFamily={editor.computed.selectedFont().name}
+                    fontWeight={editor.state.options.fontWeight}
+                    enableLigatures={editor.state.options.enableLigatures}
+                  />
+                )}
+              </Show>
+            )}
           </DynamicTerminal>
         </FittedWindow>
         <FrameSignature

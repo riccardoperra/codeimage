@@ -6,6 +6,7 @@ import {defineCommand} from 'citty';
 import {THEME_REGISTRY} from '../../../apps/codeimage/src/state/theme/themeRegistry';
 import {FLAGS} from './flags';
 import type {FlagArg, FlagValues} from './flags';
+import {parseAnimation} from './flags/animate';
 import {UsageError} from './errors';
 export {UsageError} from './errors';
 import {parseFontArgs} from './commands/fonts';
@@ -23,7 +24,8 @@ const CORE_ARGS = {
   format: {
     type: 'string',
     valueHint: 'type',
-    description: 'png, jpeg, webp, or svg (default: from -o, else png)',
+    description:
+      'png, jpeg, webp, or svg (default: from -o, else png). With --animate: webp, gif, or apng',
   },
   theme: {
     type: 'string',
@@ -115,8 +117,11 @@ export function parseArgs(argv: string[], stdoutIsTTY = true) {
   if (values.help) return {kind: 'help'} as const;
 
   if (values.output === '') throw new UsageError('-o: expected a path or -');
-  const format =
-    values.format === undefined
+  const animation = parseAnimation(values);
+  // An animation has its own formats, and its snapshot keeps the default.
+  const format = animation
+    ? 'png'
+    : values.format === undefined
       ? (formatOf(
           extname(values.output ?? '')
             .slice(1)
@@ -167,8 +172,11 @@ export function parseArgs(argv: string[], stdoutIsTTY = true) {
     theme: values.theme,
     preset: values.preset,
     format,
+    animation,
     scale,
-    output: values.output ?? (stdoutIsTTY ? `codeimage.${format}` : '-'),
+    output:
+      values.output ??
+      (stdoutIsTTY ? `codeimage.${animation?.format ?? format}` : '-'),
     values: values as FlagValues,
   } as const;
 }

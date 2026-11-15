@@ -1,5 +1,7 @@
 import type {
-  FrameSize,
+  AnimationHost,
+  ComposedFrame,
+  LayoutNode,
   RenderEntry,
 } from '../../../apps/codeimage/src/render/contract';
 import {readFile} from 'node:fs/promises';
@@ -10,13 +12,18 @@ import type {FontCacheOptions} from './fontCache';
 import {findFont} from './fontManifest';
 import {Renderer} from '@takumi-rs/core';
 import {positionWatermark} from './watermarkGeometry';
-import type {ImageSource} from '@takumi-rs/core';
+import {watermarkScenes} from './animationWatermark';
+import {clearGifFrames} from './gif';
+import type {ImageSource, MeasuredNode} from '@takumi-rs/core';
 import type {
+  AnimationDocument,
+  AnimationInput,
   ProjectSnapshot,
   SnapshotDocument,
   SnapshotInput,
 } from './document';
-import {parseSnapshotDocument} from './document';
+import {parseAnimationDocument, parseSnapshotDocument} from './document';
+import type {FrameSize} from '../../../apps/codeimage/src/render/contract';
 
 export interface AnnotatedCode {
   code: string;
@@ -98,10 +105,28 @@ export async function supportedFontIds(): Promise<string[]> {
 export interface RendererOptions extends FontCacheOptions {
   codeFontFile?: string;
 }
+// The frame rate a file of `format` plays at when the settings ask for `fps`.
+// A GIF frame lasts whole hundredths of a second, and Takumi rejects one
+// shorter than two of them, so a GIF plays at 50, 25 or 20 fps.
+export function animationFps(
+  format: AnimationDocument['format'],
+  fps: number,
+): number {
+  return format === 'gif' ? 100 / Math.ceil(100 / Math.min(fps, 50)) : fps;
+}
+
+const inCssPixels = (node: MeasuredNode, scale: number): LayoutNode => ({
+  width: node.width / scale,
+  height: node.height / scale,
+  children: node.children.map(child => inCssPixels(child, scale)),
+  runs: node.runs.map(run => ({text: run.text, width: run.width / scale})),
+});
+
 export function createRenderer(options: RendererOptions = {}) {
   const store = createFontStore(options);
-  async function prepare(input: SnapshotInput) {
-    const document = parseSnapshotDocument(input);
+  // A renderer with the faces of the document's code font, and the host the
+  // SSR entry lays out and samples pages through.
+  async function open(document: SnapshotDocument | AnimationDocument) {
     const {entry, stylesheet} = await getRuntime();
     const renderer = new Renderer();
     const code = findFont(store.catalog, document.editor.options.fontId);
@@ -148,26 +173,33 @@ export function createRenderer(options: RendererOptions = {}) {
       }
     }
     const scale = document.format === 'svg' ? 1 : document.scale;
-    const frame = await entry.composeFrame(document, {
+    const pageCss = (css: string[]) =>
+      [...css, stylesheet].map(normalizeGradients);
+    const layout: AnimationHost['layout'] = async markup => {
+      if (code.family !== markup.fontFamily)
+        throw new Error(
+          `Font family differs from catalog: ${markup.fontFamily}`,
+        );
+      const content = await renderer.measure(
+        normalizeStyleAttributes(markup.html),
+        {
+          css: pageCss(markup.css),
+          images: markup.images,
+          fontFamilies,
+          fonts,
+          signal: options.signal,
+          devicePixelRatio: scale,
+        },
+      );
+      return inCssPixels(content, scale);
+    };
+    const host: AnimationHost = {
       offline: options.offline,
       async measure(markup) {
-        if (code.family !== markup.fontFamily)
-          throw new Error(
-            `Font family differs from catalog: ${markup.fontFamily}`,
-          );
-        const content = await renderer.measure(
-          normalizeStyleAttributes(markup.html),
-          {
-            css: [...markup.css, stylesheet].map(normalizeGradients),
-            images: markup.images,
-            fontFamilies,
-            fonts,
-            signal: options.signal,
-            devicePixelRatio: scale,
-          },
-        );
-        return {width: content.width / scale, height: content.height / scale};
+        const {width, height} = await layout(markup);
+        return {width, height};
       },
+      layout,
       async pixels(markup, size) {
         return renderer.render(markup.html, {
           css: markup.css,
@@ -179,24 +211,46 @@ export function createRenderer(options: RendererOptions = {}) {
           signal: options.signal,
         });
       },
-    });
-    const css = [...frame.css, stylesheet].map(normalizeGradients);
-    const html = await positionWatermark({
-      html: normalizeStyleAttributes(frame.html),
-      ...frame.watermarkFrame,
-      pixelRatio: scale,
-      measure: html =>
-        renderer.measure(html, {
-          css,
-          images: frame.images,
-          fonts,
-          fontFamilies,
-          width: frame.size.width * scale,
-          height: frame.size.height * scale,
-          devicePixelRatio: scale,
-          signal: options.signal,
-        }),
-    });
+    };
+    // Moves the watermark off code the way the web export does.
+    const placeWatermark = (frame: ComposedFrame) =>
+      positionWatermark({
+        html: normalizeStyleAttributes(frame.html),
+        ...frame.watermarkFrame,
+        pixelRatio: scale,
+        measure: html =>
+          renderer.measure(html, {
+            css: pageCss(frame.css),
+            images: frame.images,
+            fonts,
+            fontFamilies,
+            width: frame.size.width * scale,
+            height: frame.size.height * scale,
+            devicePixelRatio: scale,
+            signal: options.signal,
+          }),
+      });
+    return {
+      entry,
+      renderer,
+      resources,
+      fonts,
+      fontFamilies,
+      local,
+      scale,
+      pageCss,
+      host,
+      placeWatermark,
+    };
+  }
+
+  async function prepare(input: SnapshotInput) {
+    const document = parseSnapshotDocument(input);
+    const opened = await open(document);
+    const {entry, renderer, fonts, fontFamilies, scale, pageCss} = opened;
+    const frame = await entry.composeFrame(document, opened.host);
+    const css = pageCss(frame.css);
+    const html = await opened.placeWatermark(frame);
     const prepared = await renderer.prepare(html, {
       css,
       images: options.offline
@@ -220,13 +274,56 @@ export function createRenderer(options: RendererOptions = {}) {
       document,
       html,
       css,
-      naturalCss: [...frame.browserCss, stylesheet].map(normalizeGradients),
+      naturalCss: pageCss(frame.browserCss),
       size: frame.size,
-      fonts: [...(await resources.faces()), ...(local ? [local] : [])],
+      fonts: [
+        ...(await opened.resources.faces()),
+        ...(opened.local ? [opened.local] : []),
+      ],
       fontFamilies,
       images: frame.images,
     };
     return {markup, renderer, prepared};
+  }
+
+  // Each step holds the static export of its tab, then morphs into the next
+  // one. WebP is lossless: Takumi writes lossy animated WebP without an alpha
+  // channel, which fills the frame's rounded corners and paints the margin
+  // of a smaller step black.
+  async function animate(input: AnimationInput): Promise<Uint8Array> {
+    const document = parseAnimationDocument(input);
+    const opened = await open(document);
+    const {entry, renderer, fonts, fontFamilies, scale, pageCss} = opened;
+    const fps = animationFps(document.format, document.animation.fps);
+    const animation = await entry.renderAnimationScenes(
+      document,
+      {...document.animation, fps},
+      opened.host,
+    );
+    const scenes = await watermarkScenes(animation, opened.placeWatermark);
+    const image = await renderer.renderAnimation({
+      scenes: scenes.map(({html, durationMs}) => ({
+        node: normalizeStyleAttributes(html),
+        durationMs,
+      })),
+      width: Math.floor(animation.width * scale),
+      height: Math.floor(animation.height * scale),
+      css: pageCss(animation.css),
+      images: animation.images,
+      fontFamilies,
+      fonts,
+      fps,
+      format: document.format,
+      devicePixelRatio: scale,
+      signal: options.signal,
+    });
+    const bytes = new Uint8Array(
+      image.buffer,
+      image.byteOffset,
+      image.byteLength,
+    );
+    if (document.format === 'gif') clearGifFrames(bytes);
+    return bytes;
   }
 
   return {
@@ -243,6 +340,7 @@ export function createRenderer(options: RendererOptions = {}) {
       });
       return new Uint8Array(image.buffer, image.byteOffset, image.byteLength);
     },
+    renderAnimation: animate,
   };
 }
 export function snapshotMarkup(input: SnapshotInput): Promise<SnapshotMarkup> {
@@ -252,4 +350,7 @@ export function renderSnapshot(
   input: SnapshotInput,
 ): Promise<Uint8Array | string> {
   return createRenderer().render(input);
+}
+export function renderAnimation(input: AnimationInput): Promise<Uint8Array> {
+  return createRenderer().renderAnimation(input);
 }
