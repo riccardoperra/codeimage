@@ -22,6 +22,7 @@ export function FitFrame(props: ParentProps<FitFrameProps>) {
   let wrapper!: HTMLDivElement;
   let content!: HTMLDivElement;
   const [scale, setScale] = createSignal(1);
+  const [ready, setReady] = createSignal(false);
 
   onMount(() => {
     const available = {width: 0, height: 0};
@@ -68,7 +69,16 @@ export function FitFrame(props: ParentProps<FitFrameProps>) {
         target.height = height;
         resized = true;
       }
-      if (!resized || !fit()) return;
+      if (!resized) return;
+      const changed = fit();
+      if (
+        available.width &&
+        available.height &&
+        natural.width &&
+        natural.height
+      )
+        setReady(true);
+      if (!changed) return;
       observer.unobserve(content);
       cancelAnimationFrame(frame);
       frame = requestAnimationFrame(() => observer.observe(content));
@@ -87,6 +97,7 @@ export function FitFrame(props: ParentProps<FitFrameProps>) {
         class={styles.handler}
         style={{
           zoom: scale(),
+          opacity: ready() ? undefined : 0,
           'margin-bottom': 0,
         }}
         data-fit-scale={scale()}
