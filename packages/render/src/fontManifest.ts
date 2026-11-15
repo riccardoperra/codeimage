@@ -54,3 +54,11 @@ export function findFont(catalog: FontManifest, id: string): CatalogFont {
     );
   return font;
 }
+
+export function resolveFontId(id: string): string {
+  const catalog = loadFontCatalog();
+  return findFont(
+    {...catalog, fonts: catalog.fonts.filter(font => font.role === 'code')},
+    id,
+  ).id;
+}

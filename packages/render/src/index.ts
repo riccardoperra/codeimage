@@ -27,3 +27,4 @@ export type {
   FontCache,
 } from './fontCache';
 export type {RendererOptions} from './render';
+export {resolveFontId} from './fontManifest';

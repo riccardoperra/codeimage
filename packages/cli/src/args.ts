@@ -8,6 +8,7 @@ import {FLAGS} from './flags';
 import type {FlagArg, FlagValues} from './flags';
 import {UsageError} from './errors';
 export {UsageError} from './errors';
+import {parseFontArgs} from './commands/fonts';
 
 const DEFAULT_SCALE = 1;
 
@@ -16,7 +17,8 @@ const CORE_ARGS = {
     type: 'string',
     alias: 'o',
     valueHint: 'path',
-    description: 'Output file, or - for stdout (default: codeimage.png)',
+    description:
+      'Output file, or - for stdout (default: stdout when redirected, else codeimage.png)',
   },
   format: {
     type: 'string',
@@ -95,7 +97,8 @@ export function resolveTheme(id: string, flag = '--theme') {
   return theme;
 }
 
-export function parseArgs(argv: string[]) {
+export function parseArgs(argv: string[], stdoutIsTTY = true) {
+  if (argv[0] === 'fonts') return parseFontArgs(argv.slice(1));
   let parsed;
   try {
     parsed = parseNodeArgs({
@@ -165,7 +168,7 @@ export function parseArgs(argv: string[]) {
     preset: values.preset,
     format,
     scale,
-    output: values.output ?? `codeimage.${format}`,
+    output: values.output ?? (stdoutIsTTY ? `codeimage.${format}` : '-'),
     values: values as FlagValues,
   } as const;
 }

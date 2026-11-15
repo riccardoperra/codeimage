@@ -3,7 +3,8 @@ import {readFile, writeFile} from 'node:fs/promises';
 import {renderUsage} from 'citty';
 import {COMMAND, parseArgs, UsageError} from './args';
 import {FLAGS} from './flags';
-import {renderSnapshot} from '@codeimage/render';
+import {createRenderer} from '@codeimage/render';
+import {runFontCommand} from './commands/fonts';
 import {planImages} from './images';
 import {parsePreset} from './snapshot';
 import type {CodeInput} from './snapshot';
@@ -30,11 +31,22 @@ async function readStdin() {
 }
 
 async function main() {
-  const args = parseArgs(process.argv.slice(2));
+  const args = parseArgs(process.argv.slice(2), !!process.stdout.isTTY);
   if (args.kind === 'help') {
     process.stdout.write(await renderUsage(COMMAND));
     return;
   }
+  if (args.kind !== 'render') {
+    await runFontCommand(args);
+    return;
+  }
+  const renderer = createRenderer({
+    offline: args.values.offline === true,
+    codeFontFile:
+      typeof args.values['font-file'] === 'string'
+        ? args.values['font-file']
+        : undefined,
+  });
   if (!args.files.length && process.stdin.isTTY) {
     process.stderr.write(await renderUsage(COMMAND));
     process.exitCode = 2;
@@ -54,7 +66,7 @@ async function main() {
   }
   const outputs = await planImages(args, inputs, preset);
   for (const output of outputs) {
-    const image = await renderSnapshot(output.snapshot);
+    const image = await renderer.render(output.snapshot);
     if (output.path === '-') {
       await new Promise<void>((resolve, reject) => {
         process.stdout.write(image, error =>
