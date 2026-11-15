@@ -13,7 +13,7 @@ import {
   type CodeStyle,
   type PreviewTab,
 } from '../../../components/Animation/planPreview';
-import {prepareWatermarks} from '../../../core/watermark/browser';
+import {prepareWatermark} from '../../../core/watermark/scope';
 import {frameRules} from '../../../core/animation/timeline';
 import type {
   AnimationSettings,
@@ -91,6 +91,7 @@ export function animationSnapshot() {
       'position:fixed;left:0;top:0;opacity:0;pointer-events:none;z-index:-9999';
     document.body.append(host);
     const disposers: (() => void)[] = [];
+    const frames: HTMLElement[] = [];
     const scope = `video-${crypto.randomUUID()}`;
     const scopedCss = (value: string) =>
       value.replace(/\bt(\d+)-/g, `${scope}-t$1-`);
@@ -126,6 +127,7 @@ export function animationSnapshot() {
             }}
           >
             <FrameView
+              ref={element => frames.push(element)}
               targetSize={output}
               animated
               header={settings.header}
@@ -189,7 +191,7 @@ export function animationSnapshot() {
           }
         }
       }
-      for (const root of roots) await prepareWatermarks(root);
+      for (const frame of frames) await prepareWatermark(frame);
       const scenes: AnimationExport['scenes'] = [];
       for (const [index, scene] of timeline.scenes.entries()) {
         await yieldToEditor();
