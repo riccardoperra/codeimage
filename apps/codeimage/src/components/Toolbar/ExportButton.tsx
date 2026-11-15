@@ -362,7 +362,7 @@ export function ExportDialog(props: ExportDialogProps & DialogProps) {
                 size={'md'}
                 label={t('exportTabs.oneImagePerTab')}
               />
-              <NewDot highlight="tabs" />
+              <NewDot at="export:tabs" />
             </HStack>
           </VStack>
         </DynamicSizedContainer>

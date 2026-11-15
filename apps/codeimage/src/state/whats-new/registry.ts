@@ -1,11 +1,15 @@
 // Pure content with zero imports, so the Settings archive and the tests can
 // render from this file alone.
 
-/**
- * Places in the editor where a feature lives. Adding one means the component
- * that owns the place must register how to reveal it.
- */
-export type Where = 'command-menu' | 'settings-experiments' | 'export';
+export type Place = 'command-menu' | 'export' | 'control' | 'setting';
+
+/** Item places require an id; menu and export also have shared triggers. */
+export type Where =
+  | 'command-menu'
+  | 'export'
+  | `export:${string}`
+  | `control:${string}`
+  | `setting:${string}`;
 
 export interface Highlight {
   /**
@@ -54,7 +58,7 @@ export const RELEASES = [
         id: 'tabs',
         title: 'One image per tab',
         body: 'Export each tab as its own image, together in one zip. It needs two tabs or more.',
-        where: 'export',
+        where: 'export:tabs',
       },
       {
         id: 'command-menu',
@@ -66,14 +70,14 @@ export const RELEASES = [
         id: 'layouts',
         title: 'Editor layouts',
         body: 'Choose Inspector, Dock or Studio in Settings, Experiments.',
-        where: 'settings-experiments',
+        where: 'setting:layout',
         experimental: true,
       },
       {
         id: 'theme-cards',
         title: 'Theme card styles',
         body: 'Choose Window, Orb or Aa list for the theme picker in Settings, Experiments.',
-        where: 'settings-experiments',
+        where: 'setting:theme-cards',
         experimental: true,
       },
     ],
@@ -90,3 +94,5 @@ export type LocatedHighlightId = Extract<
   ShippedHighlight,
   {readonly where: Where}
 >['id'];
+
+export type ShippedWhere = NonNullable<ShippedHighlight['where']>;

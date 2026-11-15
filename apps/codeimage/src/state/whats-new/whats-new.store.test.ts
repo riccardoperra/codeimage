@@ -102,9 +102,9 @@ describe('release discovery across visits', () => {
     b.store.seen('layouts');
     const reloaded = boot(db);
     await settle();
-    expect(reloaded.store.hasDot('command-menu')).toBe(false);
-    expect(reloaded.store.hasDot('layouts')).toBe(false);
-    expect(reloaded.store.hasDot('theme-cards')).toBe(true);
+    expect(reloaded.store.dotAt('command-menu')).toBeUndefined();
+    expect(reloaded.store.dotAt('setting:layout')).toBeUndefined();
+    expect(reloaded.store.dotAt('setting:theme-cards')).toBe('theme-cards');
     window.dispatchEvent(new Event('focus'));
     await settle();
     expect(a.store.isNew('layouts')).toBe(false);
@@ -164,12 +164,12 @@ describe('release discovery across visits', () => {
     try {
       await settle();
       expect(app.store.isNew('tabs')).toBe(true);
-      expect(app.store.hasDot('tabs')).toBe(true);
+      expect(app.store.dotAt('export:tabs')).toBe('tabs');
       now.mockReturnValue(Date.parse('2026-12-29T00:00:00Z'));
       window.dispatchEvent(new Event('focus'));
       await settle();
       expect(app.store.isNew('tabs')).toBe(false);
-      expect(app.store.hasDot('tabs')).toBe(false);
+      expect(app.store.dotAt('export:tabs')).toBeUndefined();
       app.setQuiet(true);
       expect(app.announcement()).toBeNull();
     } finally {
@@ -197,7 +197,7 @@ describe('release discovery across visits', () => {
     await settle();
     expect(app.announcement()?.surface).toBe('nudge');
     expect(() => app.store.seen('command-menu')).not.toThrow();
-    expect(app.store.hasDot('command-menu')).toBe(false);
+    expect(app.store.dotAt('command-menu')).toBeUndefined();
     expect(() => app.store.dismiss()).not.toThrow();
     expect(app.announcement()).toBeNull();
     await settle();
@@ -217,9 +217,9 @@ describe('release discovery across visits', () => {
     expect(app.store.canShowMe('command-menu')).toBe(true);
     app.store.showMe('command-menu', 'nudge');
     expect(revealed).toBe(true);
-    expect(app.store.hasDot('command-menu')).toBe(true);
+    expect(app.store.dotAt('command-menu')).toBe('command-menu');
     app.store.seen('command-menu');
-    expect(app.store.hasDot('command-menu')).toBe(false);
+    expect(app.store.dotAt('command-menu')).toBeUndefined();
     unbind();
     expect(app.store.canShowMe('command-menu')).toBe(false);
     app.dispose();
@@ -233,4 +233,29 @@ it('only accepts located highlights for Show me', () => {
   expectTypeOf<
     Parameters<WhatsNew['canShowMe']>[0]
   >().toEqualTypeOf<LocatedHighlightId>();
+});
+
+it('resolves items by their most specific owner and rejects duplicate owners', async () => {
+  const app = boot(database());
+  await settle();
+  expect(app.store.canShowMe('layouts')).toBe(false);
+  const reveal = vi.fn();
+  const exact = vi.fn();
+  const unbind = createRoot(dispose => {
+    app.store.bindLocation('setting', reveal);
+    app.store.bindLocation('setting:layout', exact);
+    expect(() => app.store.bindLocation('setting', vi.fn())).toThrow(
+      'already has an owner',
+    );
+    return dispose;
+  });
+  app.store.showMe('layouts', 'library');
+  expect(exact).toHaveBeenCalledWith(undefined);
+  expect(reveal).not.toHaveBeenCalled();
+  app.store.showMe('theme-cards', 'library');
+  expect(reveal).toHaveBeenCalledWith('theme-cards');
+  expect(app.store.isNew('layouts')).toBe(true);
+  unbind();
+  expect(app.store.canShowMe('layouts')).toBe(false);
+  app.dispose();
 });

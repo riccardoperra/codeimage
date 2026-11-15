@@ -1,4 +1,4 @@
-import {WithNewDot} from '../../../../components/WhatsNew/NewDot';
+import {CommandMenuButton} from '../../command-menu/CommandMenuButton';
 import {Button, IconButton} from '@codeui/kit';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 import {
@@ -57,7 +57,7 @@ function RailSettings() {
     <button
       type="button"
       class={styles.railButton}
-      aria-haspopup="dialog"
+
       aria-expanded={settings.isOpen()}
       data-settings-trigger
       onClick={() => settings.open()}
@@ -313,22 +313,23 @@ export default function Studio(props: VariantProps) {
             )}
           </For>
           <Show when={!isPhone()}>
-            <WithNewDot highlight="command-menu">
-              <button
-                type="button"
-                class={`${styles.railButton} ${styles.railSearch}`}
-                aria-haspopup="dialog"
-                aria-expanded={commandMenu.isOpen()}
-                title={`Search themes and options (${commandMenu.shortcut})`}
-                onClick={commandMenu.open}
-              >
-                <span class={styles.railIcon}>
-                  <SearchIcon />
-                </span>
-                Search
-                <kbd class={styles.railHint}>{commandMenu.shortcut}</kbd>
-              </button>
-            </WithNewDot>
+            <CommandMenuButton>
+              {trigger => (
+                <button
+                  type="button"
+                  class={`${styles.railButton} ${styles.railSearch}`}
+
+                  title={`Search themes and options (${commandMenu.shortcut})`}
+                  {...trigger}
+                >
+                  <span class={styles.railIcon}>
+                    <SearchIcon />
+                  </span>
+                  Search
+                  <kbd class={styles.railHint}>{commandMenu.shortcut}</kbd>
+                </button>
+              )}
+            </CommandMenuButton>
             <RailSettings />
           </Show>
         </nav>

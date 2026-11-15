@@ -17,7 +17,7 @@ import {
 } from '@codeui/kit';
 import {createSignal, Show} from 'solid-js';
 import {DownloadIcon} from '../../../components/Icons/Download';
-import {WithNewDot} from '../../../components/WhatsNew/NewDot';
+import {NewDot} from '../../../components/WhatsNew/NewDot';
 import {getWhatsNew} from '../../../state/whats-new';
 import {useHotkey} from '../../../hooks/use-hotkey';
 import type {AppLocaleEntries} from '../../../i18n';
@@ -107,7 +107,7 @@ export function ExportControl(props: {exporter: Exporter; size?: 'sm' | 'xs'}) {
           open={menuOpen()}
           onOpenChange={setMenuOpen}
         >
-          <WithNewDot highlight="tabs" filled>
+          <NewDot at="export" filled>
             <DropdownMenuTrigger
               as={IconButton}
               class={styles.more}
@@ -118,7 +118,7 @@ export function ExportControl(props: {exporter: Exporter; size?: 'sm' | 'xs'}) {
             >
               <icons.ChevronDownIcon />
             </DropdownMenuTrigger>
-          </WithNewDot>
+          </NewDot>
           <DropdownMenuPortal>
             <DropdownMenuContent>
               <DropdownMenuItem

@@ -1,4 +1,4 @@
-import {WithNewDot} from '../../../../components/WhatsNew/NewDot';
+import {CommandMenuButton} from '../../command-menu/CommandMenuButton';
 import {Button, Listbox} from '@codeui/kit';
 import {SegmentedField} from '@ui/SegmentedField/SegmentedField';
 import type {Component} from 'solid-js';
@@ -9,7 +9,6 @@ import {ColorPickerPopover} from '../../../../components/PropertyEditor/controls
 import {createFontPickerListboxProps} from '../../../../components/PropertyEditor/controls/FontPicker/FontPickerListbox';
 import {FontSystemPicker} from '../../../../components/PropertyEditor/controls/FontPicker/FontSystemPicker';
 import {PanelHeader} from '../../../../components/PropertyEditor/PanelHeader';
-import {commandMenu} from '../../command-menu/state';
 import {useDock} from './context';
 import * as styles from './dock.css';
 import {AmbientSwatch} from '../../controls/AmbientSwatch';
@@ -231,16 +230,18 @@ function PhoneActions() {
   const dock = useDock();
   return (
     <div class={styles.phoneActions}>
-      <WithNewDot highlight="command-menu">
-        <Button
-          size={'sm'}
-          theme={'secondary'}
-          leftIcon={<SearchIcon />}
-          onClick={commandMenu.open}
-        >
-          Search all options
-        </Button>
-      </WithNewDot>
+      <CommandMenuButton>
+        {trigger => (
+          <Button
+            size={'sm'}
+            theme={'secondary'}
+            leftIcon={<SearchIcon />}
+            {...trigger}
+          >
+            Search all options
+          </Button>
+        )}
+      </CommandMenuButton>
       <Button
         size={'sm'}
         theme={'secondary'}

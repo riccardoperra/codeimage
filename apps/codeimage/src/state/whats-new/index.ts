@@ -4,6 +4,8 @@ export type {
   HighlightId,
   LocatedHighlightId,
   Release,
+  Place,
+  ShippedWhere,
   Where,
 } from './registry';
 export {getWhatsNew} from './whats-new.store';

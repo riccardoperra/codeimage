@@ -11,12 +11,13 @@ import {
 import type {Decision, Facts} from './decide';
 import {
   decide,
+  holds,
   mergeFacts,
   NO_FACTS,
   parseFacts,
   serializeFacts,
 } from './decide';
-import type {HighlightId, LocatedHighlightId, Where} from './registry';
+import type {HighlightId, LocatedHighlightId, Place, Where} from './registry';
 import {RELEASES} from './registry';
 
 export type Surface = 'nudge' | 'showcase' | 'coachmark' | 'library';
@@ -30,7 +31,7 @@ export interface WhatsNew {
    */
   announce(watchQuiet: () => Accessor<boolean>): Accessor<Announcement>;
   dismiss(): void;
-  hasDot(id: LocatedHighlightId): boolean;
+  dotAt(at: Where): LocatedHighlightId | undefined;
   isNew(id: HighlightId): boolean;
   opened(id: HighlightId, on: Surface): void;
   seen(id: HighlightId): void;
@@ -38,7 +39,10 @@ export interface WhatsNew {
   canShowMe(id: LocatedHighlightId): boolean;
   showMe(id: LocatedHighlightId, from: Surface): void;
   /** Unbinds when the calling owner is disposed. */
-  bindLocation(where: Where, reveal: () => void): void;
+  bindLocation(
+    place: Place | Where,
+    reveal: (item: string | undefined) => void,
+  ): void;
 }
 
 interface Storage {
@@ -65,7 +69,7 @@ export function createWhatsNew(
   const [loaded, setLoaded] = createSignal(false);
   const [announcement, setAnnouncement] = createSignal<Announcement>(null);
   const [locations, setLocations] = createSignal<
-    ReadonlyMap<Where, () => void>
+    ReadonlyMap<Place | Where, (item: string | undefined) => void>
   >(new Map());
   const decision = createMemo(() =>
     decide(loaded() ? RELEASES : [], facts(), now()),
@@ -77,6 +81,18 @@ export function createWhatsNew(
     RELEASES.flatMap(release => release.highlights).find(
       highlight => highlight.id === id,
     )?.where ?? null;
+
+  const bound = (id: LocatedHighlightId) => {
+    const where = whereOf(id);
+    if (where === null) return;
+    return [...locations()]
+      .filter(([place]) => holds(place, where))
+      .sort(([a], [b]) => b.length - a.length)
+      .map(([place, reveal]) => ({
+        reveal,
+        item: where === place ? undefined : where.slice(place.length + 1),
+      }))[0];
+  };
 
   // idb-keyval opens the database synchronously, so a browser that refuses
   // IndexedDB throws instead of rejecting. Editing must go on either way.
@@ -140,22 +156,34 @@ export function createWhatsNew(
         release: current.release.id,
       });
     },
-    hasDot: id => decision().dots.includes(id),
+    dotAt: at => {
+      const highlight = RELEASES.flatMap(release => release.highlights)
+        .filter(highlight => highlight.where !== null)
+        .find(
+          highlight =>
+            highlight.where !== null &&
+            holds(at, highlight.where) &&
+            decision().dots.includes(highlight.id),
+        );
+      return highlight?.id;
+    },
     isNew: id => decision().fresh.has(id),
     opened: (id, surface) => track('opened', {surface, highlight: id}),
     seen(id) {
       record({seen: new Set([id]), dismissed: new Set()});
     },
-    canShowMe: id => {
-      const where = whereOf(id);
-      return where !== null && locations().has(where);
-    },
+    canShowMe: id => bound(id) !== undefined,
     showMe(id, surface) {
       track('show-me', {surface, highlight: id});
-      const where = whereOf(id);
-      if (where) locations().get(where)?.();
+      const location = bound(id);
+      location?.reveal(location.item);
     },
     bindLocation(where, reveal) {
+      if (locations().has(where)) {
+        if (import.meta.env.DEV)
+          throw new Error(`What's new place "${where}" already has an owner`);
+        return;
+      }
       setLocations(current => new Map(current).set(where, reveal));
       onCleanup(() =>
         setLocations(current => {

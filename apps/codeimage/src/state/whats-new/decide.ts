@@ -1,6 +1,6 @@
 // The whole policy as pure functions: no Solid, no IndexedDB, no clock.
 
-import type {Release} from './registry';
+import type {Place, Release, Where} from './registry';
 
 export const NEW_FOR_DAYS = 45;
 export const DOT_LIMIT = 3;
@@ -115,4 +115,8 @@ export function serializeFacts(facts: Facts): StoredFacts {
     seen: [...facts.seen].sort(),
     dismissed: [...facts.dismissed].sort(),
   };
+}
+
+export function holds(at: Where | Place, where: Where): boolean {
+  return where === at || where.startsWith(`${at}:`);
 }

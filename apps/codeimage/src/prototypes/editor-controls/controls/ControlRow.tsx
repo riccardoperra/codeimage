@@ -1,3 +1,4 @@
+import {NewDot} from '../../../components/WhatsNew/NewDot';
 import {RangeField} from '@codeimage/ui';
 import {NumberField} from '@codeui/kit';
 import type {JSX} from 'solid-js';
@@ -208,7 +209,11 @@ export function ControlRow(props: ControlRowProps): JSX.Element {
         data-control={control.id}
         data-kind={control.kind}
       >
-        <PanelRow for={labelFor} label={look.label ?? control.label()}>
+        <PanelRow
+          for={labelFor}
+          label={look.label ?? control.label()}
+          labelAccessory={<NewDot at={`control:${control.id}`} />}
+        >
           <Show
             when={full}
             fallback={<TwoColumnPanelRow>{element}</TwoColumnPanelRow>}

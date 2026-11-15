@@ -3,15 +3,34 @@ import {Popover} from '@kobalte/core/popover';
 import type {JSX} from 'solid-js';
 import {createSignal, onCleanup, Show} from 'solid-js';
 import {Dynamic} from 'solid-js/web';
-import type {LocatedHighlightId} from '../../state/whats-new';
+import type {LocatedHighlightId, Where} from '../../state/whats-new';
 import {getWhatsNew, RELEASES} from '../../state/whats-new';
 import {tabbableBeside} from './focus';
 import {illustrations} from './illustrations';
 import {duration, fromKeyboard} from './motion';
 import * as styles from './whats-new.css';
 
-export function NewDot(props: {highlight: LocatedHighlightId}) {
+type NewDotProps =
+  | {at: Where; children?: undefined; filled?: undefined}
+  | {at: Where; children: JSX.Element; filled?: boolean};
+
+export function NewDot(props: NewDotProps) {
+  return (
+    <Show when={props.children !== undefined} fallback={<Dot at={props.at} />}>
+      <span
+        class={`${styles.commandAnchor} ${props.filled ? styles.filledAnchor : ''}`}
+      >
+        {props.children}
+        <Dot at={props.at} />
+      </span>
+    </Show>
+  );
+}
+
+function Dot(props: {at: Where}) {
   const news = getWhatsNew();
+  const [pinned, setPinned] = createSignal<LocatedHighlightId>();
+  const current = () => pinned() ?? news.dotAt(props.at);
   let anchor: HTMLSpanElement | undefined;
   let content: HTMLDivElement | undefined;
   // A seen dot leaves with its coachmark, so focus cannot return to it.
@@ -24,38 +43,48 @@ export function NewDot(props: {highlight: LocatedHighlightId}) {
   const [closing, setClosing] = createSignal(false);
   let closed: number | undefined;
   onCleanup(() => clearTimeout(closed));
-  const toggle = (value: boolean, side: 'before' | 'after' = 'before') => {
+  const toggle = (value: boolean, side?: 'before' | 'after') => {
     if (value === open()) return;
     if (value) {
       // Open before marking seen, or the dot unmounts for a moment and comes
       // back as a new element, without its fade.
+      const id = current();
+      if (!id) return;
+      clearTimeout(closed);
+      setClosing(false);
+      setPinned(id);
       setOpen(true);
-      news.opened(props.highlight, 'coachmark');
-      news.seen(props.highlight);
+      news.opened(id, 'coachmark');
+      news.seen(id);
       return;
     }
-    if (anchor && !news.hasDot(props.highlight))
-      returnTo = tabbableBeside(anchor, side, content);
+    if (anchor && (side !== undefined || !news.dotAt(props.at)))
+      returnTo = tabbableBeside(anchor, side ?? 'before', content);
     clearTimeout(closed);
     setClosing(!instant());
-    closed = window.setTimeout(() => setClosing(false), duration.coachmarkOut);
+    const unpin = () => {
+      setPinned(undefined);
+      setClosing(false);
+    };
     setOpen(false);
+    if (instant()) unpin();
+    else closed = window.setTimeout(unpin, duration.coachmarkOut);
     returnTo?.focus();
   };
   const highlight = () =>
     RELEASES.flatMap(release => release.highlights).find(
-      item => item.id === props.highlight,
+      item => item.id === current(),
     );
   return (
     <Show when={highlight()}>
       {item => (
-        <Show when={news.hasDot(props.highlight) || open() || closing()}>
+        <Show when={news.dotAt(props.at) === current() || open() || closing()}>
           <span
             ref={element => {
               anchor = element;
             }}
             class={styles.dotAnchor}
-            data-news-dot={props.highlight}
+            data-news-dot={current()}
           >
             <Popover
               open={open()}
@@ -68,7 +97,7 @@ export function NewDot(props: {highlight: LocatedHighlightId}) {
                 onClick={(event: MouseEvent) => setInstant(fromKeyboard(event))}
                 data-instant={instant() ? '' : undefined}
                 aria-label={`New: ${item().title}`}
-                data-seen={!news.hasDot(props.highlight) ? '' : undefined}
+                data-seen={news.dotAt(props.at) !== current() ? '' : undefined}
               />
               <Popover.Portal
                 mount={
@@ -127,24 +156,5 @@ export function NewDot(props: {highlight: LocatedHighlightId}) {
         </Show>
       )}
     </Show>
-  );
-}
-
-/**
- * Puts the dot on the top right corner of the control it wraps. `filled` is
- * for a control filled with the dot's colour, so that a ring separates them.
- */
-export function WithNewDot(props: {
-  highlight: LocatedHighlightId;
-  filled?: boolean;
-  children: JSX.Element;
-}) {
-  return (
-    <span
-      class={`${styles.commandAnchor} ${props.filled ? styles.filledAnchor : ''}`}
-    >
-      {props.children}
-      <NewDot highlight={props.highlight} />
-    </span>
   );
 }

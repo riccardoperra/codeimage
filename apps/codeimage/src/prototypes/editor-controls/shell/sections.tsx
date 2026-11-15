@@ -16,7 +16,7 @@ import {Dynamic} from 'solid-js/web';
 import {illustrations} from '../../../components/WhatsNew/illustrations';
 import {releaseDate} from '../../../components/WhatsNew/releaseDate';
 import {getWhatsNew, RELEASES} from '../../../state/whats-new';
-import type {HighlightId, LocatedHighlightId} from '../../../state/whats-new';
+import type {HighlightId} from '../../../state/whats-new';
 import {CopyAltTextButton} from '../../../components/Toolbar/CopyAltTextButton';
 import {ExportExtension} from '../../../hooks/use-export-image';
 import type {AppLocaleEntries} from '../../../i18n';
@@ -50,7 +50,6 @@ import * as styles from './settings.css';
 export interface SettingRow {
   readonly id: string;
   readonly title: string;
-  readonly highlight?: LocatedHighlightId;
   readonly fresh?: HighlightId;
   readonly experimental?: boolean;
   /** A small picture before the text, as the archive's rows have. */
@@ -314,7 +313,6 @@ export function createSettingSections(
         rows: [
           {
             id: 'layout',
-            highlight: 'layouts',
             title: 'Layout',
             description: () =>
               'Where the controls sit around the canvas. Inspector is the default, Dock and Studio are experiments.',
@@ -342,7 +340,6 @@ export function createSettingSections(
         rows: [
           {
             id: 'theme-cards',
-            highlight: 'theme-cards',
             title: 'Theme cards',
             description: () =>
               'How the theme picker draws each theme. Window is the default, Orb and Aa list are experiments.',

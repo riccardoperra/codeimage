@@ -1,4 +1,4 @@
-import {WithNewDot} from '../../../../components/WhatsNew/NewDot';
+import {CommandMenuButton} from '../../command-menu/CommandMenuButton';
 import {Button, IconButton} from '@codeui/kit';
 import {Popover} from '@kobalte/core/popover';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
@@ -115,7 +115,7 @@ function DockItem(props: DockItemProps & {host: DockItemHost}) {
       fallback={
         <Button
           {...button}
-          aria-haspopup="dialog"
+
           aria-expanded={isOpen()}
           onClick={(event: MouseEvent) =>
             props.host.onToggle(props.panel, event)
@@ -186,7 +186,7 @@ function BarSettings() {
       size={'sm'}
       aria-label="Settings"
       title="Settings"
-      aria-haspopup="dialog"
+
       aria-expanded={settings.isOpen()}
       data-settings-trigger
       onClick={() => settings.open()}
@@ -435,21 +435,22 @@ export default function Dock(props: VariantProps) {
                 icon={<SlidersIcon />}
               />
               <Show when={!compact()}>
-                <WithNewDot highlight="command-menu">
-                  <Button
-                    class={styles.item}
-                    theme={'secondary'}
-                    variant={'ghost'}
-                    size={'sm'}
-                    leftIcon={<SearchIcon />}
-                    aria-label="Search themes and options"
-                    aria-haspopup="dialog"
-                    aria-expanded={commandMenu.isOpen()}
-                    onClick={commandMenu.open}
-                  >
-                    <kbd class={styles.kbd}>{commandMenu.shortcut}</kbd>
-                  </Button>
-                </WithNewDot>
+                <CommandMenuButton>
+                  {trigger => (
+                    <Button
+                      class={styles.item}
+                      theme={'secondary'}
+                      variant={'ghost'}
+                      size={'sm'}
+                      leftIcon={<SearchIcon />}
+                      aria-label="Search themes and options"
+
+                      {...trigger}
+                    >
+                      <kbd class={styles.kbd}>{commandMenu.shortcut}</kbd>
+                    </Button>
+                  )}
+                </CommandMenuButton>
                 <BarSettings />
               </Show>
               <Show when={props.stage.compact()}>

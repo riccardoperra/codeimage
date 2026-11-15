@@ -264,6 +264,11 @@ function Commands(
  * no motion, because it is opened from the keyboard many times a session.
  */
 export function CommandMenu(props: CommandMenuProps) {
+  getWhatsNew().bindLocation('command-menu', () => {
+    settings.close();
+    requestAnimationFrame(commandMenu.open);
+  });
+
   // A command that only runs, such as Export, moves focus itself.
   let giveFocusBack = true;
 

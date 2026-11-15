@@ -1,16 +1,10 @@
+import {commandMenu} from '../command-menu/state';
 import {NewDot} from '../../../components/WhatsNew/NewDot';
 import {getWhatsNew} from '../../../state/whats-new';
 import {Dialog, IconButton, TextField} from '@codeui/kit';
 import {useModality} from '@core/hooks/isMobile';
 import {Dialog as KDialog} from '@kobalte/core/dialog';
-import {
-  createEffect,
-  createMemo,
-  createSignal,
-  For,
-  onCleanup,
-  Show,
-} from 'solid-js';
+import {createEffect, createMemo, For, onCleanup, Show} from 'solid-js';
 import type {EditorControlsModel} from '../model';
 import {CloseIcon, SearchIcon} from './icons';
 import type {SettingGroup, SettingRow, SettingSection} from './sections';
@@ -45,9 +39,7 @@ function Row(props: {row: SettingRow}) {
           <Show when={props.row.experimental}>
             <span class={styles.tag}>Experiment</span>
           </Show>
-          <Show when={props.row.highlight}>
-            {id => <NewDot highlight={id()} />}
-          </Show>
+          <NewDot at={`setting:${props.row.id}`} />
           <Show when={props.row.fresh && getWhatsNew().isNew(props.row.fresh)}>
             <span class={styles.tag}>New</span>
           </Show>
@@ -75,7 +67,8 @@ function Group(props: SettingGroup) {
 
 function Panel(props: {sections: readonly SettingSection[]}) {
   const modality = useModality();
-  const [query, setQuery] = createSignal('');
+  const query = settings.query;
+  const setQuery = settings.setQuery;
   let shell!: HTMLDivElement;
   let search: HTMLInputElement | undefined;
 
@@ -282,6 +275,15 @@ function Panel(props: {sections: readonly SettingSection[]}) {
  */
 export function SettingsDialog(props: {model: EditorControlsModel}) {
   const sections = createSettingSections(props.model);
+  getWhatsNew().bindLocation('setting', row => {
+    const section = sections.find(section =>
+      section.groups().some(group => group.rows.some(item => item.id === row)),
+    );
+    if (!section) return;
+    commandMenu.close();
+    settings.setQuery('');
+    settings.open(section.id);
+  });
   return (
     <Dialog
       size={'xl'}

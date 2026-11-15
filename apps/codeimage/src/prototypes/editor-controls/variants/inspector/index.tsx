@@ -1,4 +1,4 @@
-import {WithNewDot} from '../../../../components/WhatsNew/NewDot';
+import {CommandMenuButton} from '../../command-menu/CommandMenuButton';
 import {Button} from '@codeui/kit';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 import {
@@ -297,19 +297,22 @@ export default function Inspector(props: VariantProps) {
             <Show
               when={props.stage.compact()}
               fallback={
-                <WithNewDot highlight="command-menu">
-                  <Button
-                    class={styles.command}
-                    size="sm"
-                    theme="secondary"
-                    aria-haspopup="dialog"
-                    aria-expanded={commandMenu.isOpen()}
-                    onClick={commandMenu.open}
-                  >
-                    Search
-                    <kbd class={styles.commandKey}>{commandMenu.shortcut}</kbd>
-                  </Button>
-                </WithNewDot>
+                <CommandMenuButton>
+                  {trigger => (
+                    <Button
+                      class={styles.command}
+                      size="sm"
+                      theme="secondary"
+
+                      {...trigger}
+                    >
+                      Search
+                      <kbd class={styles.commandKey}>
+                        {commandMenu.shortcut}
+                      </kbd>
+                    </Button>
+                  )}
+                </CommandMenuButton>
               }
             >
               <props.stage.ExportButton />

@@ -1,5 +1,4 @@
 import {WhatsNewHost} from '../../components/WhatsNew/WhatsNewHost';
-import {getWhatsNew} from '../../state/whats-new';
 import {commandMenu} from './command-menu/state';
 import {settings} from './shell/settings-state';
 import type {JSX} from 'solid-js';
@@ -22,15 +21,6 @@ export {PickerRoute as PrototypeRoute} from './picker/PickerRoute';
 
 function Editor() {
   const model = createEditorControlsModel();
-  const news = getWhatsNew();
-  news.bindLocation('command-menu', () => {
-    settings.close();
-    requestAnimationFrame(commandMenu.open);
-  });
-  news.bindLocation('settings-experiments', () => {
-    commandMenu.close();
-    settings.open('experiments');
-  });
   let page!: HTMLDivElement;
 
   const side = () =>

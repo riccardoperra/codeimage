@@ -16,6 +16,7 @@ const [isOpen, setOpen] = createSignal(false);
 // How many settings entries the layout on screen shows in its own chrome.
 const [layoutEntries, setLayoutEntries] = createSignal(0);
 const [section, setSection] = createSignal<SectionId>('general');
+const [query, setQuery] = createSignal('');
 let opener: HTMLElement | undefined;
 
 /** The settings entry on screen, which a change of layout replaces. */
@@ -25,6 +26,8 @@ const entryButton = () =>
 /** The settings dialog of the page. The editor shell mounts it once; anything can open it. */
 export const settings = {
   isOpen,
+  query,
+  setQuery,
   /** The section on screen, which stays the same from one opening to the next. */
   section,
   setSection,
