@@ -4,7 +4,7 @@ Audit date 2026-11-14. Branch `t3/codebase-ui-modernization`. App driven at `htt
 
 **Goal.** Riccardo wants to modernize the CodeImage editor unless it is already modern. He named three pains: the space is small, there are many options, and theme selection could be better. This report measures those three pains and feeds three layout prototypes.
 
-**Historical design record.** This audit describes the classic editor before the unified redesign. Its measurements and UX findings are historical, not a current verification result. The original screenshots and run reports are recoverable from Git history. For the current design, read the [editor source guide](../../apps/codeimage/src/pages/UnifiedEditor/README.md). Use the [verification skill](../../.agents/skills/verify-codeimage/SKILL.md) for current checks.
+**Historical design record.** This audit describes the classic editor before the unified redesign. Its measurements and UX findings are historical, not a current verification result. The original screenshots and run reports are recoverable from Git history. For the current design, read [`DESIGN.md`](../../DESIGN.md) and the [editor source guide](../../apps/codeimage/src/pages/UnifiedEditor/README.md). Use the [verification skill](../../.agents/skills/verify-codeimage/SKILL.md) for current checks.
 
 **Labels.** "Measured" means a script read the value from the running page. "Inferred" means I derived it from measured values or from code. "Guess" means neither.
 
