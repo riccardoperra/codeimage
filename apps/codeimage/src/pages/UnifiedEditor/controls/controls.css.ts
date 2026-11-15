@@ -66,7 +66,7 @@ export const switchThumb = style({
 });
 
 /** The height a layout gives its segmented controls, when it sets one. */
-export const segmentedHeight = createVar('proto-segmented-height');
+export const segmentedHeight = createVar('editor-segmented-height');
 
 /*
  * SegmentedField's adapt makes the kit control height: 100%, which falls back
