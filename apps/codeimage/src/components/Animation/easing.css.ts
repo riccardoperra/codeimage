@@ -1,13 +1,14 @@
 import {themeVars} from '@codeimage/ui';
-import {style} from '@vanilla-extract/css';
+import {globalStyle, style} from '@vanilla-extract/css';
 const c = themeVars.dynamicColors;
 export const content = style({
   width: 340,
   maxWidth: 'calc(100vw - 32px)',
-  display: 'grid',
-  gap: 12,
+  rowGap: 12,
   padding: 16,
 });
+globalStyle(`${content} > p`, {display: 'grid', gap: 12});
+globalStyle(`${content} [data-cui="segmentedControl"]`, {height: 28});
 export const curve = style({
   width: '100%',
   height: 144,

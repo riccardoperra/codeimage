@@ -29,7 +29,7 @@ export function HeaderField() {
     event.stopPropagation();
     if (event.key === 'Enter' && event.target instanceof HTMLInputElement) {
       event.preventDefault();
-      event.target.blur();
+      commitTitle();
     }
   };
   return (

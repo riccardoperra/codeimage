@@ -33,9 +33,6 @@ interface SegmentedFieldProps<T> {
  * @deprecated This is just a wrapper for @codeui/kit SegmentedControl
  */
 export function SegmentedField<T>(props: SegmentedFieldProps<T>): JSX.Element {
-  const leaveEscapeToOverlay = (event: KeyboardEvent) => {
-    if (event.key === 'Escape') event.stopPropagation();
-  };
   const nativeEscape = (event: KeyboardEvent) => {
     if (event.key !== 'Escape' || !props.onEscape) return;
     event.stopPropagation();
@@ -53,9 +50,7 @@ export function SegmentedField<T>(props: SegmentedFieldProps<T>): JSX.Element {
   };
 
   const escapeProps = () =>
-    props.onEscape
-      ? {'on:keydown': nativeEscape}
-      : {onKeyDown: leaveEscapeToOverlay};
+    props.onEscape ? {'on:keydown': nativeEscape} : {};
 
   return (
     <SegmentedControl

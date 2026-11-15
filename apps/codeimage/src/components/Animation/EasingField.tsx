@@ -42,7 +42,6 @@ export function EasingField(props: {stepId: string}) {
   let content: HTMLDivElement | undefined;
   createEffect(
     on(value, () => {
-      setChoice(preset());
       setText(
         `cubic-bezier(${curveOf(easingOf(value())).map(formatPoint).join(', ')})`,
       );
@@ -60,6 +59,8 @@ export function EasingField(props: {stepId: string}) {
       animation.actions.setTransition(props.stepId, {easing: choice});
   };
   const commitCustom = () => {
+    if (!animation.settings().steps.some(step => step.id === props.stepId))
+      return;
     const easing = parseEasing(text());
     setInvalid(easing === null);
     if (easing && easing !== value())
@@ -105,7 +106,10 @@ export function EasingField(props: {stepId: string}) {
       : null;
   };
   const close = () => setOpen(false);
-  const play = () => animation.actions.playTransition(props.stepId);
+  const play = () => {
+    setOpen(false);
+    animation.actions.playTransition(props.stepId);
+  };
   return (
     <Popover open={open()} onOpenChange={openChange} placement="top-end">
       <PopoverTrigger
@@ -138,7 +142,7 @@ export function EasingField(props: {stepId: string}) {
           label={t('animation.curve')}
         />
         <Show when={choice() === 'custom'}>
-          <div on:keydown={customKeyDown}>
+          <div on:keydown={customKeyDown} onFocusOut={commitCustom}>
             <TextField
               id="animationCustomEasing"
               size="xs"

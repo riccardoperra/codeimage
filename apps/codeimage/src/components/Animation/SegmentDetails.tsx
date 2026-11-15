@@ -5,7 +5,7 @@ import {
   transitionOf,
 } from '@codeimage/store/editor/animationSettings';
 import {Button, NumberField} from '@codeui/kit';
-import {createEffect, createSignal, Show} from 'solid-js';
+import {createEffect, createSignal, Show, untrack} from 'solid-js';
 import type {AppLocaleEntries} from '../../i18n';
 import {EasingField} from './EasingField';
 import * as styles from './AnimatePanel.css';
@@ -16,7 +16,9 @@ function DurationInput(props: {
   limits: {min: number; max: number};
   commit: (value: number) => void;
 }) {
-  const [pending, setPending] = createSignal<number | null>();
+  const [pending, setPending] = createSignal<number | null | undefined>(
+    untrack(() => props.value),
+  );
   createEffect(() => setPending(props.value));
   const change = (value: number | null | undefined) => setPending(value);
   const commit = () => {
@@ -32,7 +34,7 @@ function DurationInput(props: {
     if (event.key === 'Enter' && event.target instanceof HTMLInputElement) {
       event.preventDefault();
       event.stopPropagation();
-      event.target.blur();
+      commit();
     }
   };
   return (
@@ -126,16 +128,23 @@ export function SegmentDetails() {
           }
           commit={commit}
         />
-        <Show when={segment()?.kind === 'transition'}>
-          <EasingField stepId={segment()!.stepId} />
-          <Button
-            size="xs"
-            theme="secondary"
-            disabled={allMatch()}
-            onClick={apply}
-          >
-            {t('animation.applyAll')}
-          </Button>
+        <Show
+          when={segment()?.kind === 'transition' && segment()?.stepId}
+          keyed
+        >
+          {stepId => (
+            <>
+              <EasingField stepId={stepId} />
+              <Button
+                size="xs"
+                theme="secondary"
+                disabled={allMatch()}
+                onClick={apply}
+              >
+                {t('animation.applyAll')}
+              </Button>
+            </>
+          )}
         </Show>
       </Show>
     </div>
