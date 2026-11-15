@@ -1,6 +1,6 @@
 import {createSignal, onCleanup} from 'solid-js';
 
-export type HeaderAction = 'settings' | 'experiments';
+export type HeaderAction = 'commands' | 'settings' | 'experiments';
 const [hosted, setHosted] = createSignal<readonly HeaderAction[]>([]);
 
 export const headerHosts = (action: HeaderAction) => !hosted().includes(action);

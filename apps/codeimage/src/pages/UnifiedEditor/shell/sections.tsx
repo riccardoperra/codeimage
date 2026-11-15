@@ -21,6 +21,7 @@ import {getWhatsNew, RELEASES} from '../../../state/whats-new';
 import type {HighlightId} from '../../../state/whats-new';
 import {CopyAltTextButton} from '../../../components/Toolbar/CopyAltTextButton';
 import {ExportExtension} from '../../../hooks/use-export-image';
+import {EXPORT_SCALES, exportFormats, JPEG_QUALITY} from './export-formats';
 import type {AppLocaleEntries} from '../../../i18n';
 import {SwitchField} from '../controls/fields';
 import type {EditorControlsModel, ThemeEntry} from '../model';
@@ -39,6 +40,7 @@ import type {ThemeCardsId} from './preferences';
 import {
   DEFAULT_CARDS,
   DEFAULT_LAYOUT,
+  EXPORT_STYLES,
   LAYOUTS,
   preferences,
   THEME_CARDS,
@@ -292,6 +294,26 @@ export function createSettingSections(model: EditorControlsModel) {
           },
         ],
       },
+      {
+        title: t('toolbar.export'),
+        rows: [
+          {
+            id: 'export-style' as const,
+            title: t('editor.exportStyle'),
+            description: () => t('editor.exportStyleHint'),
+            control: () => (
+              <Segmented
+                value={preferences.exportStyle()}
+                onChange={preferences.setExportStyle}
+                items={EXPORT_STYLES.map(style => ({
+                  label: t(style.name),
+                  value: style.id,
+                }))}
+              />
+            ),
+          },
+        ],
+      },
     ]),
   } satisfies SettingSection;
 
@@ -435,11 +457,10 @@ export function createSettingSections(model: EditorControlsModel) {
               <Segmented
                 value={exportStore.get.extension}
                 onChange={value => exportStore.set('extension', value)}
-                items={[
-                  {label: 'PNG', value: ExportExtension.png},
-                  {label: 'SVG', value: ExportExtension.svg},
-                  {label: 'JPEG', value: ExportExtension.jpeg},
-                ]}
+                items={exportFormats.map(format => ({
+                  label: format.name,
+                  value: format.extension,
+                }))}
               />
             ),
           },
@@ -459,9 +480,9 @@ export function createSettingSections(model: EditorControlsModel) {
                         onChange={value =>
                           exportStore.set('jpegQuality', value)
                         }
-                        min={70}
-                        max={100}
-                        step={2}
+                        min={JPEG_QUALITY.min}
+                        max={JPEG_QUALITY.max}
+                        step={JPEG_QUALITY.step}
                       />
                     </div>
                   ),
@@ -497,7 +518,7 @@ export function createSettingSections(model: EditorControlsModel) {
                   onChange={value =>
                     exportStore.set('devicePixelRatio', Number(value))
                   }
-                  items={[1, 2, 3, 6].map(scale => ({
+                  items={EXPORT_SCALES.map(scale => ({
                     label: `${scale}x`,
                     value: String(scale),
                   }))}

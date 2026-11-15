@@ -10,6 +10,8 @@ import {CodeImageLogoV2} from '../../../components/Icons/CodeImageLogoV2';
 import {CollectionIcon} from '../../../components/Icons/Collection';
 import {ShareButton} from '../../../components/Toolbar/ShareButton';
 import {ToolbarSnippetName} from '../../../components/Toolbar/ToolbarSnippetName';
+import {CommandMenuButton} from '../command-menu/CommandMenuButton';
+import {commandMenu} from '../command-menu/state';
 import {UserBadge} from '../localized/UserBadge';
 import type {Stage} from '../stage';
 import * as styles from './header.css';
@@ -22,7 +24,7 @@ import {
 } from '../../../components/WhatsNew/motion';
 import * as newsStyles from '../../../components/WhatsNew/whats-new.css';
 import {getWhatsNew} from '../../../state/whats-new';
-import {ExperimentsIcon, SettingsIcon} from './icons';
+import {ExperimentsIcon, SearchIcon, SettingsIcon} from './icons';
 import {settings} from './settings-state';
 import {headerHosts} from './header-actions';
 
@@ -71,6 +73,24 @@ export function Header(props: {stage: Stage}) {
 
       <div class={styles.actions}>
         <WhatsNewButton />
+        {/* Dock and Studio host their command triggers. */}
+        <Show when={headerHosts('commands') && !props.stage.compact()}>
+          <CommandMenuButton>
+            {trigger => (
+              <Button
+                {...trigger}
+                class={styles.search}
+                size={'sm'}
+                theme={'secondary'}
+                variant={'ghost'}
+                leftIcon={<SearchIcon size={16} />}
+              >
+                {t('editor.commands')}
+                <kbd class={styles.kbd}>{commandMenu.shortcut}</kbd>
+              </Button>
+            )}
+          </CommandMenuButton>
+        </Show>
         <Show when={headerHosts('experiments')}>
           <IconButton
             class={styles.extraButton}

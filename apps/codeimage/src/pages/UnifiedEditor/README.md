@@ -15,13 +15,13 @@ The unified editor and the classic editor use the same stores and local document
 
 ## Preferences
 
-`shell/preferences.ts` saves `{layout, inspectorSide, themeCards}` in `localStorage` under `codeimage:editor-settings`.
-The defaults are Inspector, a panel on the right, and Window theme cards.
+`shell/preferences.ts` saves `{layout, inspectorSide, themeCards, exportStyle}` in `localStorage` under `codeimage:editor-settings`.
+The defaults are Inspector, a panel on the right, Window theme cards, and the Menu export style.
 There is no migration from the previous storage key.
 
 Settings and the command menu change these choices.
 The Experiments section offers the layouts and theme cards.
-Appearance contains the colour mode and Inspector panel side.
+Appearance contains the colour mode, the Inspector panel side, and the export style.
 The `v` and `t` URL parameters have no effect.
 Changing a preference leaves the URL unchanged.
 
@@ -65,7 +65,7 @@ Previews do not save or send analytics.
 `syntax.ts` reads token colours from CodeMirror extensions with `highlightingFor()` and the theme's style modules.
 Tokens without a colour use the base text colour.
 
-`stage.tsx` supplies the live `Canvas`, `ExportButton`, `exporter`, `ThemePreview`, and frame actions.
+`stage.tsx` supplies the live `Canvas`, `ExportButton`, `exporter`, `ThemePreview`, format and randomize.
 Each layout renders `Canvas` once inside a container with a definite size.
 `FitFrame.tsx` scales the frame to the available space.
 `exportRef()` supplies the element that export captures.
@@ -83,12 +83,16 @@ A resize observer hides the trigger if it would overlap the frame or extend beyo
 The keyboard shortcut and command-menu entry still open help when the trigger is hidden.
 Phones keep their existing help trigger, placement, and dialog.
 
+`CanvasToolbar.tsx` contains Format code and Copy image on desktop in all three layouts.
+Shortcut help has its own trigger. Randomize stays in the command menu and its shortcut, without a button.
+
 `shell/Header.tsx` contains the logo, account controls, Share, and Export.
-`shell/header-actions.ts` lets mounted layout entries claim Settings or Experiments.
+`shell/header-actions.ts` lets mounted layout entries claim Commands, Settings, or Experiments.
 The header renders only unclaimed actions, and cleanup returns ownership when an entry unmounts.
-Dock claims Settings; Studio claims Settings and Experiments in its desktop rail.
-Studio groups Search, Settings, Experiments, and GitHub at the bottom, retaining `CommandMenuButton` and its announcement dot.
-Phones claim neither action and keep the existing header.
+Inspector keeps Commands before Experiments and Settings in the header.
+Dock claims Commands and Settings; Studio claims all three in its desktop rail.
+Studio groups Commands, Settings, Experiments, and GitHub at the bottom, retaining `CommandMenuButton` and its announcement dot.
+Phones claim no header actions and keep the existing header.
 
 `shell/SettingsDialog.tsx` stays mounted while layouts change.
 `shell/sections.tsx` defines the sections, groups, and rows.
@@ -129,9 +133,17 @@ The highlighted command previews its value.
 Enter applies it, and closing the menu ends the preview.
 Layouts use `CommandMenuButton` for their own trigger.
 
-`shell/ExportControl.tsx` contains the Export button and its menu.
+`shell/export-formats.ts` lists the formats in display order, with their icon, description and abilities, and defines `ExportChoice`, a format, scale and JPEG quality for one export.
+`shell/export-actions.tsx` lists every export action with its icon, title, one-line description, visibility and disabled state. Every Export surface renders its rows from it.
 `shell/export.tsx` shares the image actions with the command menu and keyboard shortcuts.
-Every image action passes through `createExporter.request` for the secrets review.
+An image action takes an optional `ExportChoice`; without one it uses the saved export settings.
+Every image action passes through `createExporter.request` for the secrets review, which keeps the choice it was asked with.
+`shell/ExportControl.tsx` binds the shortcuts, owns the secrets review and renders the chosen Export style.
+
+The Appearance setting "Export style" chooses how Export offers a one-off format and scale, saved as `exportStyle` in the editor preferences.
+Menu (`shell/export-styles/panel.tsx`, the default) keeps the split button and opens a panel under its arrow. Dialog (`shell/export-styles/sheet.tsx`) opens a dialog with a preview.
+Both start from the saved settings each time and can save the choice as the default.
+Every action button carries `data-export-action` with its id.
 Export settings use `getExportCanvasStore()`.
 The per-tab export renders a separate preview frame for each tab.
 
@@ -155,7 +167,7 @@ Keyboard dismissal focuses the header entry when visible; keyboard reopening foc
 Pointer dismissal restores nearby non-text-field focus and, after the Nudge's exit, fades and
 scales the header entry from 0.96. Reopening fades it out as the Nudge enters.
 The entry is first in the right-aligned action row, retaining its width through its exit and
-reserving nothing afterwards, so Settings and Experiments keep their positions throughout.
+reserving nothing afterwards, so the later header actions keep their positions throughout.
 Page-load entries and keyboard handovers are instant; reduced motion uses opacity only.
 Reloading respects the stored dismissal. A still unread dot on the sparkle icon appears with
 unseen highlights, outside the three feature-dot slots.

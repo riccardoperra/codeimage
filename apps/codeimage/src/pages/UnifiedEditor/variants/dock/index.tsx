@@ -13,7 +13,7 @@ import {shownTheme} from '../../command-menu/listed-model';
 import {commandMenu} from '../../command-menu/state';
 import type {VariantMeta, VariantProps} from '../../contract';
 import {fieldId, SegmentedChoice, SelectChoice} from '../../controls/fields';
-import {FrameActions} from '../../controls/FrameActions';
+import {CanvasToolbar} from '../../controls/CanvasToolbar';
 import {keepMarkToolbarAboveSelection} from '../../controls/mark-toolbar';
 import {ShortcutHelp} from '../../controls/ShortcutHelp';
 import type {ControlId} from '../../model';
@@ -184,7 +184,7 @@ function DockItem(props: DockItemProps & {host: DockItemHost}) {
 /** The settings entry in the floating bar, beside Search. */
 function BarSettings() {
   const [t] = useI18n<AppLocaleEntries>();
-  claimHeaderActions(['settings']);
+  claimHeaderActions(['commands', 'settings']);
   return (
     <IconButton
       class={styles.item}
@@ -470,7 +470,7 @@ export default function Dock(props: VariantProps) {
             </Show>
             <Show when={!compact()}>
               <div class={`${styles.frameActions} ${styles.float}`}>
-                <FrameActions />
+                <CanvasToolbar stage={props.stage} />
               </div>
             </Show>
           </div>

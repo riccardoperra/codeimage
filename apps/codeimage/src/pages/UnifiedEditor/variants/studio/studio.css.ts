@@ -316,19 +316,6 @@ export const frameActions = style({
   flexShrink: 0,
 });
 
-globalStyle(`${frameActions} > *`, {
-  position: 'static',
-  transform: 'none',
-  maxWidth: '100%',
-  height: 'auto',
-  minHeight: '50px',
-});
-globalStyle(`${frameActions} > div > div`, {
-  flexWrap: 'wrap',
-  justifyContent: 'center',
-  rowGap: '8px',
-});
-
 export const compactActions = style({
   display: 'flex',
   flexWrap: 'wrap',

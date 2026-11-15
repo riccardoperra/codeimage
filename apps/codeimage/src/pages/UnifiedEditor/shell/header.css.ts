@@ -112,3 +112,11 @@ export const headerDot = style({
   color: c.primary,
   pointerEvents: 'none',
 });
+
+export const search = style({gap: '8px'});
+
+export const kbd = style({
+  font: 'inherit',
+  fontSize: '11px',
+  color: c.descriptionTextColor,
+});

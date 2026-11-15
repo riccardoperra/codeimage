@@ -11,7 +11,6 @@ import {
   Show,
 } from 'solid-js';
 import {Dynamic} from 'solid-js/web';
-import {ColorSwatchIcon} from '../../../../components/Icons/ColorSwatch';
 import {SparklesIcon} from '../../../../components/Icons/SparklesIcon';
 import {ShareButton} from '../../../../components/Toolbar/ShareButton';
 import type {AppLocaleEntries} from '../../../../i18n';
@@ -19,7 +18,7 @@ import {CommandMenuButton} from '../../command-menu/CommandMenuButton';
 import {commandMenu} from '../../command-menu/state';
 import type {VariantMeta, VariantProps} from '../../contract';
 import {controlOverlay} from '../../controls/ControlOverlay';
-import {FrameActions} from '../../controls/FrameActions';
+import {CanvasToolbar} from '../../controls/CanvasToolbar';
 import {keepMarkToolbarAboveSelection} from '../../controls/mark-toolbar';
 import {ShortcutHelp} from '../../controls/ShortcutHelp';
 import {ExperimentsIcon, SettingsIcon, GitHubIcon} from '../../shell/icons';
@@ -57,7 +56,7 @@ function rubberband(overshoot: number, dimension: number) {
 /** Layout-hosted header actions, followed by the repository link. */
 function RailActions() {
   const [t] = useI18n<AppLocaleEntries>();
-  claimHeaderActions(['settings', 'experiments']);
+  claimHeaderActions(['commands', 'settings', 'experiments']);
   return (
     <>
       <button
@@ -433,13 +432,6 @@ export default function Studio(props: VariantProps) {
                 <Button
                   size="xs"
                   theme="secondary"
-                  aria-label={t('shortcut.pickRandomTheme')}
-                  leftIcon={<ColorSwatchIcon />}
-                  onClick={() => props.stage.randomize()}
-                />
-                <Button
-                  size="xs"
-                  theme="secondary"
                   aria-label={t('editor.formatCode')}
                   leftIcon={<SparklesIcon />}
                   disabled={!props.stage.canFormat()}
@@ -450,7 +442,7 @@ export default function Studio(props: VariantProps) {
             }
           >
             <div class={styles.frameActions}>
-              <FrameActions />
+              <CanvasToolbar stage={props.stage} />
             </div>
           </Show>
         </main>

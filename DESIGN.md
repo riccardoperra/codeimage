@@ -48,10 +48,13 @@ The editor has three layouts. A layout decides where the canvas, the controls an
 
 ## Header
 
-The header holds, in order: the logo, the dashboard link and snippet name where they apply, the settings gear, Share, Export, and the sign-in button or user badge.
+The header starts with the logo, dashboard link and snippet name where they apply.
+Its right-aligned actions are What's new, Commands, Experiments, Settings, Share, Export, and the sign-in button or user badge.
+Commands, Experiments and Settings move into the layout as described below.
 
 - The settings gear appears in the header only when the layout has no entry of its own. Studio opens the settings from the foot of its rail. Dock opens them from its bar. On a phone the gear is always in the header.
-- Studio keeps Search, Settings, Experiments, and a GitHub icon link together at the bottom of its desktop rail. The shell tracks action ownership, so Experiments stays in the header in Inspector and Dock.
+- Studio keeps Commands, Settings, Experiments, and a GitHub icon link together at the bottom of its desktop rail. The shell tracks Commands, Settings and Experiments ownership. Inspector keeps all three in the header; Dock keeps Experiments there.
+- What's new is the first action, so its handover with the Nudge leaves the other buttons in place. What's new and Experiments hide at 768px and below.
 - There is no menu behind the logo. Its entries moved to the settings and the command menu.
 
 ## Theme picker
@@ -95,14 +98,21 @@ One dialog in two panes, with sections on the left and rows on the right. The se
 
 ## Export
 
-- The Export button exports at once, with the saved settings and no dialog. Ctrl+S does the same.
-- The arrow beside it opens the alternatives: one image per tab, Copy, Open in a new tab, Redact secrets, and Export settings.
-- Copy and Open exist once, in that menu. They are not repeated in a frame toolbar.
-- An export that would show a secret asks first, in one review step shared by every export action.
+- Settings, Appearance offers Menu and Dialog export styles. Menu is the default.
+- In Menu style, the main Export button downloads with the saved settings. Its arrow opens a panel for one export's format, scale and JPEG quality.
+- In Dialog style, Export opens a dialog with a preview and the same one-off choices. Both styles can save the choice as the default.
+- Both surfaces use the same action registry for one image per tab, Copy, Open in a new tab, Redact secrets, and Export settings.
+- Ctrl+S exports with the saved settings in either style.
+- Every desktop canvas toolbar contains Format code and Copy image. Copy image always copies a PNG at the chosen scale.
+- Shortcut help uses the labelled button at the top left of the canvas in all three layouts. The toolbar has no `?` entry.
+- Randomize stays in the command menu and its shortcut, without a button.
+- An export that would show a secret asks first. Every export action shares that review, which retains the one-off choice.
 
 ## Command menu
 
-Cmd+K, or Ctrl+K off Apple platforms, opens it in every layout. It lists every theme, every option of every visible control, the actions, the exports and the settings.
+Cmd+K, or Ctrl+K off Apple platforms, opens it in every layout.
+Inspector has a labelled Commands button in the header. Studio has one at the bottom of its rail. Dock keeps its icon trigger.
+The command menu lists every theme, every option of every visible control, the actions, the exports and the settings.
 
 - A new control or setting must appear in it. The menu reads the same model and the same settings rows, so this is automatic for anything added as data.
 - The highlighted row previews on the canvas. Enter saves it. Escape ends the preview.
