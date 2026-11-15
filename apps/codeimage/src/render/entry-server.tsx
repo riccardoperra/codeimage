@@ -135,6 +135,7 @@ export async function composeFrame(
         },
         TONE_SAMPLE_SIZE,
       ),
+    host.offline,
   );
   const target = getExportTarget(frame.exportTarget);
   const renderPass = (

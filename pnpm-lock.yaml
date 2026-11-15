@@ -1237,9 +1237,6 @@ importers:
       '@fontsource-variable/source-code-pro':
         specifier: 5.3.1
         version: 5.3.1
-      '@fontsource/ibm-plex-mono':
-        specifier: 5.3.0
-        version: 5.3.0
       '@fontsource/space-mono':
         specifier: 5.3.0
         version: 5.3.0
@@ -3328,9 +3325,6 @@ packages:
 
   '@fontsource-variable/source-code-pro@5.3.1':
     resolution: {integrity: sha512-N0nZDizh8CQ19+AHHA8Ssb1i/aQf4N2lpRl3qZVH4/9f1yNgWzTkBFpc26v+QQr2hm4By4aiv597BCoEg2SDQg==}
-
-  '@fontsource/ibm-plex-mono@5.3.0':
-    resolution: {integrity: sha512-eTgnZjZEGk1QtD3ZstF+Vclo2HLAni8YMy34/DxllwZvyz1lR/1RF/xTiAquOBO7MvqBx8D2Ig2WCPMVfdZu7Q==}
 
   '@fontsource/space-mono@5.3.0':
     resolution: {integrity: sha512-FrpBMOVWn3PRdRHlrZWC55X3kZG/2BTH7SM5ZyS/bky3iKya2BturI5lk+t0RoDQL2JyHzURsVq/EisCsxpI5A==}
@@ -13946,8 +13940,6 @@ snapshots:
   '@fontsource-variable/overpass-mono@5.3.0': {}
 
   '@fontsource-variable/source-code-pro@5.3.1': {}
-
-  '@fontsource/ibm-plex-mono@5.3.0': {}
 
   '@fontsource/space-mono@5.3.0': {}
 

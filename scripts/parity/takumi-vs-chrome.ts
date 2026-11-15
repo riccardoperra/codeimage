@@ -353,8 +353,8 @@ const FONT_FORMATS: Record<string, [mime: string, format: string]> = {
 };
 
 async function fontFace(font: SnapshotFont): Promise<string> {
-  const [mime, format] = FONT_FORMATS[extname(font.path)];
-  const data = (await readFile(font.path)).toString('base64');
+  const [mime, format] = FONT_FORMATS[extname(font.file)];
+  const data = Buffer.from(font.data).toString('base64');
   const ranges = font.unicodeRange
     ?.map(([start, end]) => `U+${start.toString(16)}-${end.toString(16)}`)
     .join(',');

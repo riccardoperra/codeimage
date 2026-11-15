@@ -45,8 +45,7 @@
     "vite": "catalog:next",
     "vitest": "catalog:next",
     "fontkit": "2.0.4",
-    "postcss": "8.5.33",
-    "@fontsource/ibm-plex-mono": "5.3.0"
+    "postcss": "8.5.33"
   },
   "engines": {
     "node": ">=24"

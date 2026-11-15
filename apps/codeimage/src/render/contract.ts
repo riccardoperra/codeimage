@@ -16,6 +16,7 @@ export interface FrameMarkup {
 }
 
 export interface FrameHost {
+  offline?: boolean;
   measure(markup: FrameMarkup): Promise<FrameSize>;
   pixels(markup: FrameMarkup, size: number): Promise<Uint8Array>;
 }

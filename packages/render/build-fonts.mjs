@@ -56,7 +56,9 @@ const FONT_SOURCES = {
   'space-mono': [fontsource('@fontsource/space-mono', '400.css', '700.css')],
   'geist-mono': [appFont('geist_mono/GeistMono[wght].ttf')],
   'ibm-plex-mono': [
-    fontsource('@fontsource/ibm-plex-mono', '400.css', '600.css', '700.css'),
+    appFont('IBM_Plex_Mono/IBMPlexMono-Regular.ttf', 400),
+    appFont('IBM_Plex_Mono/IBMPlexMono-SemiBold.ttf', 500),
+    appFont('IBM_Plex_Mono/IBMPlexMono-Bold.ttf', 600),
   ],
   agave: [appFont('agave/Agave-Regular.ttf', 400)],
   ...Object.fromEntries(
@@ -119,10 +121,7 @@ async function fontsourceFaces({pkg, stylesheets}) {
       faces.push({
         path: join(pkgDir, 'files', src),
         file: `files/${src}`,
-        weight:
-          pkg === '@fontsource/ibm-plex-mono'
-            ? {400: 400, 600: 500, 700: 600}[weight]
-            : weight,
+        weight,
         unicodeRange: declarations['unicode-range']
           ? parseUnicodeRange(declarations['unicode-range'])
           : undefined,

@@ -344,6 +344,22 @@ export function createFontStore(
     );
     return {
       loaders,
+      async primary(): Promise<FontLoader | undefined> {
+        if (!code) return undefined;
+        // Native needs may skip a primary with no matching glyphs; its metrics still affect line boxes.
+        const file =
+          code.files.find(
+            file =>
+              /-latin-(?!ext-)/.test(file.file) &&
+              (file.weight === undefined || file.weight === 400),
+          ) ?? code.files[0];
+        return {
+          name: code.family,
+          data: await data(code, file),
+          weight: file.weight,
+          unicodeRange: file.unicodeRange,
+        };
+      },
       async faces() {
         return Promise.all(
           selected.flatMap(font =>

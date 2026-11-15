@@ -1,11 +1,10 @@
-import {readFile} from 'node:fs/promises';
 import type {MeasuredNode} from '@takumi-rs/core';
 import {Renderer} from '@takumi-rs/core';
 import {PNG} from 'pngjs';
 import {describe, expect, it, vi} from 'vitest';
 import type {SnapshotInput} from './document';
 import type {SnapshotMarkup} from './render';
-import {renderSnapshot, snapshotMarkup} from './render';
+import {createRenderer, renderSnapshot, snapshotMarkup} from './render';
 import {sampleDocument} from './sample';
 import {countPixels, decode, plainDocument} from './test-utils';
 
@@ -31,7 +30,7 @@ async function textRuns(markup: SnapshotMarkup) {
   for (const font of markup.fonts) {
     await renderer.registerFont({
       name: font.family,
-      data: await readFile(font.path),
+      data: font.data,
       weight: font.weight,
       unicodeRange: font.unicodeRange,
     });
@@ -216,6 +215,38 @@ describe('renderSnapshot', {timeout: 30_000}, () => {
       'inter-latin-ext-wght-normal.woff2',
     ]);
     expect(faces.every(font => font.unicodeRange?.length)).toBe(true);
+  });
+  it('never fetches avatars or remote backgrounds offline', async () => {
+    const fetch = vi
+      .spyOn(globalThis, 'fetch')
+      .mockRejectedValue(new Error('network forbidden'));
+    try {
+      const renderer = createRenderer({offline: true});
+      await renderer.render({
+        ...sampleDocument,
+        frame: {
+          ...sampleDocument.frame,
+          signature: {
+            handle: 'me',
+            style: 'card',
+            avatar: 'profile',
+            platform: 'github',
+          },
+        },
+      });
+      await expect(
+        renderer.render({
+          ...sampleDocument,
+          frame: {
+            ...sampleDocument.frame,
+            background: 'link:https://example.com/image.png',
+          },
+        }),
+      ).rejects.toThrow('--offline');
+      expect(fetch).not.toHaveBeenCalled();
+    } finally {
+      fetch.mockRestore();
+    }
   });
   it('renders terminal and shell aliases identically', async () => {
     const render = (type: string) =>
