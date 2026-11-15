@@ -1,6 +1,7 @@
 import {Button, IconButton, icons} from '@codeui/kit';
 import {
   createEffect,
+  createMemo,
   createSignal,
   createUniqueId,
   For,
@@ -28,7 +29,7 @@ export function Nudge(props: {
   const [view, setView] = createSignal<View>({step: 0});
   const [closing, setClosing] = createSignal(false);
   const [instant, setInstant] = createSignal(false);
-  const step = () => view().step;
+  const step = createMemo(() => view().step);
   const highlight = () => props.release.highlights[step()];
   const located = () => {
     const item = highlight();
