@@ -13,7 +13,7 @@
 | [Presets](presets.md)                | Studio → Presets                                     | Create/reload/apply; `preset-management` checks rename and persistent delete                                                |
 | [Secrets](secrets.md)                | Editor warning, image actions                        | Synthetic key review/cancel, Redact all and real download                                                                   |
 | [Agent tools](agent-tools.md)        | WebMCP agents, Chrome DevTools MCP                   | `agent-tools` drives code, theme, settings and a 1x/2x PNG export through the tools                                         |
-| [Local AI](local-ai.md)              | Settings → Experiments, Cmd/Ctrl+K                   | `local-ai` downloads a fake Prompt API model in Experiments, then runs a canned plan: new tab, theme, padding, 2x PNG       |
+| [Local AI](local-ai.md)              | Settings → Experiments, Ask AI, Cmd/Ctrl+K           | `local-ai` downloads a fake Prompt API model, then a fake tool-calling run: new tab, theme, padding, 2x PNG, turn limit    |
 | [Projects](projects.md)              | Sign in, Dashboard New/card, project URL             | Dashboard CRUD and persistence; six snippet cases cover loading, previews, ownership, Clone, failures and navigation        |
 
 Run `VERIFY_AUDIT=1 node .agents/skills/verify-codeimage/scripts/verify.mjs` from repository root. `audit.json` is the authoritative per-journey result; the table describes implemented coverage, not a guarantee every future run passes. The default helper still provides a quick editor-to-PNG smoke run.

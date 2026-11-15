@@ -3,50 +3,148 @@ import {readFile} from 'node:fs/promises';
 import {resolve} from 'node:path';
 import {PNG} from 'pngjs';
 
-const CODE = 'def hello():\n    print("hi")';
-const REQUEST = `add a tab with this code \`\`\`py\n${CODE}\n\`\`\` named hello.py, use Dracula, padding 32, export PNG 2x`;
-const PLAN = {
-  steps: [
+const CODE = 'export const answer = 42;\nconsole.log(answer);';
+const REQUEST = `add a tab test.tsx with this code ${CODE}, use Dracula, padding 32, export PNG 2x`;
+const FAILING_REQUEST = 'use the Nope theme';
+const LOOP_REQUEST = 'keep looking at the themes';
+
+// What the fake model answers, by request. Each turn is the chunks
+// promptStreaming() yields: text, then tool calls. Text comes as the text so
+// far, as Chrome may send it.
+const SCRIPTS = {
+  [REQUEST]: [
+    [
+      {type: 'text', value: 'I will add'},
+      {type: 'text', value: 'I will add the tab, then style and export it.'},
+      {
+        type: 'tool-call',
+        value: {
+          callId: 'call-1',
+          name: 'add_tab',
+          arguments: {name: 'test.tsx', language: 'typescript', code: CODE},
+        },
+      },
+      {
+        type: 'tool-call',
+        value: {
+          callId: 'call-2',
+          name: 'apply_theme',
+          arguments: {theme: 'Dracula'},
+        },
+      },
+      {
+        type: 'tool-call',
+        value: {
+          callId: 'call-3',
+          name: 'set_controls',
+          arguments: {values: {'frame.padding': 32}},
+        },
+      },
+      {
+        type: 'tool-call',
+        value: {
+          callId: 'call-4',
+          name: 'export_image',
+          arguments: {format: 'png', scale: 2},
+        },
+      },
+    ],
+    ['Added test.tsx with Dracula, padding 32, and exported a 2x PNG.'],
+  ],
+  [FAILING_REQUEST]: [
+    [
+      {
+        type: 'tool-call',
+        value: {
+          callId: 'bad-1',
+          name: 'apply_theme',
+          arguments: {theme: 'Nope'},
+        },
+      },
+    ],
+    [{type: 'text', value: 'There is no theme called Nope.'}],
+  ],
+  [LOOP_REQUEST]: Array.from({length: 10}, (_, index) => [
     {
-      tool: 'add_tab',
-      args: {code: 'CODE_1', language: 'python', name: 'hello.py'},
+      type: 'tool-call',
+      value: {callId: `loop-${index}`, name: 'list_themes', arguments: {}},
     },
-    {tool: 'apply_theme', args: {theme: 'Dracula'}},
-    {tool: 'set_controls', args: {values: {'frame.padding': 32}}},
-    {tool: 'export_image', args: {format: 'png', scale: 2}},
-  ],
-};
-const FAILING_REQUEST = 'use the Nope theme and export';
-const FAILING_PLAN = {
-  steps: [
-    {tool: 'apply_theme', args: {theme: 'Nope'}},
-    {tool: 'export_image', args: {}},
-  ],
+  ]),
 };
 
-// A stand-in for Chrome's Prompt API. In `click` mode the model starts
-// downloadable and a create() downloads it with progress 0, then 0.5. In
-// `background` mode Chrome is already downloading at load and the model is
-// available 8 s later with no progress events. In `fail` mode create() fails.
-// `window.__localAi.forced` overrides what availability() answers.
-function installLanguageModel({
-  mode,
-  request,
-  plan,
-  failingRequest,
-  failingPlan,
-}) {
+// A stand-in for Chrome's Prompt API with tool calling. In `click` mode the
+// model starts downloadable and a create() downloads it with progress 0, then
+// 0.5. In `background` mode Chrome is already downloading at load and the
+// model is available 8 s later with no progress events. In `fail` mode
+// create() fails. In `ready` mode the model is available from the start.
+// `window.__localAi.forced` overrides what availability() answers, and
+// `thinkMs`, `chunkMs` pace the stream.
+function installLanguageModel({mode, scripts}) {
   const record = {
-    sessions: [],
-    prompts: [],
     forced: undefined,
+    createError: undefined,
+    thinkMs: 0,
+    chunkMs: 150,
     checks: 0,
     creates: 0,
+    bases: [],
+    clones: 0,
+    appended: [],
+    prompts: [],
   };
   window.__localAi = record;
   const started = Date.now();
-  let state = mode === 'background' ? 'downloading' : 'downloadable';
+  let state =
+    mode === 'background'
+      ? 'downloading'
+      : mode === 'ready'
+        ? 'available'
+        : 'downloadable';
   const wait = ms => new Promise(done => setTimeout(done, ms));
+  const wrapper = kind =>
+    class {
+      constructor(init) {
+        Object.assign(this, init, {kind});
+      }
+    };
+  globalThis.LanguageModelToolCall = wrapper('call');
+  globalThis.LanguageModelToolSuccess = wrapper('success');
+  globalThis.LanguageModelToolError = wrapper('error');
+  const plain = value => JSON.parse(JSON.stringify(value));
+
+  function session() {
+    let script;
+    let turn = 0;
+    return {
+      destroy() {},
+      async append(messages) {
+        record.appended.push(plain(messages));
+      },
+      async clone() {
+        record.clones++;
+        return session();
+      },
+      promptStreaming(input) {
+        record.prompts.push(plain(input));
+        if (typeof input === 'string') {
+          script = scripts[input] ?? [['I cannot help with that.']];
+          turn = 0;
+        }
+        const chunks = script[turn++] ?? ['Nothing more to do.'];
+        return new ReadableStream({
+          async start(controller) {
+            await wait(record.thinkMs);
+            for (const chunk of chunks) {
+              controller.enqueue(chunk);
+              await wait(record.chunkMs);
+            }
+            controller.close();
+          },
+        });
+      },
+    };
+  }
+
   globalThis.LanguageModel = {
     availability: async () => {
       record.checks++;
@@ -67,32 +165,29 @@ function installLanguageModel({
           await wait(1500);
         }
         state = 'available';
-        return {destroy() {}, prompt: async () => ''};
+        return session();
       }
-      record.sessions.push({system: options.initialPrompts?.[0]?.content});
-      return {
-        destroy() {},
-        prompt: async (text, {responseConstraint}) => {
-          record.prompts.push({text, responseConstraint});
-          if (text.startsWith(request.split('```')[0]))
-            return JSON.stringify(plan);
-          if (text.startsWith(failingRequest))
-            return JSON.stringify(failingPlan);
-          return '{"steps":[]}';
-        },
-      };
+      if (options.tools && record.createError)
+        throw new DOMException(
+          'The device is unable to create a session to run the model.',
+          record.createError,
+        );
+      if (options.tools)
+        record.bases.push(
+          plain({
+            initialPrompts: options.initialPrompts,
+            tools: options.tools.map(tool => tool.name),
+            expectedInputs: options.expectedInputs,
+            expectedOutputs: options.expectedOutputs,
+          }),
+        );
+      return session();
     },
   };
 }
 
 const install = mode => context =>
-  context.addInitScript(installLanguageModel, {
-    mode,
-    request: REQUEST,
-    plan: PLAN,
-    failingRequest: FAILING_REQUEST,
-    failingPlan: FAILING_PLAN,
-  });
+  context.addInitScript(installLanguageModel, {mode, scripts: SCRIPTS});
 
 const modelRow = page => page.locator('[data-setting="local-ai-model"]');
 const requirements = row => row.getByRole('list', {name: 'What Chrome needs'});
@@ -129,14 +224,185 @@ async function turnOn(page) {
   assert.equal(await toggle.getAttribute('aria-checked'), 'true');
 }
 
+// The experiment already on, as a returning user has it.
+function experimentOn() {
+  const key = 'codeimage:editor-settings';
+  const stored = JSON.parse(localStorage.getItem(key) ?? '{}');
+  localStorage.setItem(key, JSON.stringify({...stored, localAi: true}));
+}
+
+const bar = page => page.locator('[data-local-ai]');
+const field = page => bar(page).getByRole('textbox', {name: 'Request'});
+const run = page => bar(page).locator('[data-local-ai-run]');
+const rows = page => run(page).locator('li[data-tool]');
+
+// Every distinct state of the run, recorded in the page so that no state is
+// missed between two polls.
+async function recordRuns(page) {
+  await page.evaluate(() => {
+    window.__runs = [];
+    const take = () => {
+      const panel = document.querySelector('[data-local-ai-run]');
+      if (!panel) return;
+      const snap = {
+        phase: panel.dataset.localAiRun,
+        thinking: !!panel.querySelector('[data-local-ai-thinking]'),
+        calls: [...panel.querySelectorAll('li[data-tool]')].map(
+          li => `${li.dataset.tool}:${li.dataset.status}`,
+        ),
+      };
+      if (JSON.stringify(window.__runs.at(-1)) !== JSON.stringify(snap))
+        window.__runs.push(snap);
+    };
+    new MutationObserver(take).observe(document.body, {
+      subtree: true,
+      childList: true,
+      attributes: true,
+      attributeFilter: ['data-status', 'data-local-ai-run'],
+    });
+  });
+}
+
+async function send(page, request) {
+  await field(page).fill(request);
+  await page.keyboard.press('Enter');
+}
+
 export async function verifyLocalAi({fresh, out}) {
   const states = await verifyDownload({fresh, out});
   const background = await verifyBackgroundDownload({fresh});
   const failed = await verifyFailedDownload({fresh, out});
-  return {...states, background, failed};
+  const layouts = {};
+  for (const target of LAYOUTS)
+    layouts[target.name] = await verifyLayout({fresh, out, ...target});
+  for (const layout of ['inspector', 'dock', 'studio'])
+    layouts[`${layout}-phone`] = await verifyNoPhone({fresh, layout});
+  return {...states, background, failed, layouts};
 }
 
-// Settings → Experiments downloads the model, then the plan runs.
+const LAYOUTS = [
+  {name: 'inspector', layout: 'inspector'},
+  {name: 'dock', layout: 'dock'},
+  {name: 'studio', layout: 'studio'},
+];
+
+async function dismissNudge(page) {
+  const nudge = page.locator('[data-whats-new=nudge]');
+  await nudge.waitFor({timeout: 8000}).catch(() => {});
+  await nudge
+    .getByRole('button', {name: "Dismiss what's new"})
+    .click()
+    .catch(() => {});
+  await nudge.waitFor({state: 'hidden'});
+}
+
+// The bar in each desktop layout: it opens in the action bar's place without
+// moving the frame, and shows thinking, a call running and the answer.
+function verifyLayout({fresh, out, name, layout}) {
+  const width = 1440;
+  return fresh(
+    {
+      name: `local-ai-${name}`,
+      layout,
+      viewport: {width, height: 1000},
+      initialize: async context => {
+        await install('ready')(context);
+        await context.addInitScript(experimentOn);
+      },
+    },
+    async ({page, doctor}) => {
+      await doctor();
+      await dismissNudge(page);
+      const shot = state =>
+        page.screenshot({path: resolve(out, `local-ai-${name}-${state}.png`)});
+      const frameBox = () =>
+        page
+          .locator('[data-fit-scale] [data-watermark-frame]')
+          .first()
+          .boundingBox();
+      const before = await frameBox();
+      await page.locator('[data-ask-ai]').click();
+      await field(page).waitFor();
+      await page.waitForTimeout(300);
+      const after = await frameBox();
+      assert.ok(
+        Object.keys(before).every(
+          key => Math.abs(after[key] - before[key]) < 0.5,
+        ),
+        `the frame stays where it was: ${JSON.stringify([before, after])}`,
+      );
+      const box = await bar(page).locator('[data-local-ai-bar]').boundingBox();
+      assert.ok(
+        box.width > 300 && box.x >= 8 && box.x + box.width <= width - 8,
+        `the bar keeps off the edges: ${box.x} to ${box.x + box.width} of ${width}`,
+      );
+      assert.ok(
+        await page.evaluate(
+          () => document.scrollingElement.scrollWidth <= innerWidth,
+        ),
+        'no horizontal scroll',
+      );
+      await shot('idle');
+
+      await page.evaluate(() => {
+        window.__localAi.thinkMs = 1500;
+        window.__localAi.chunkMs = 700;
+      });
+      await send(page, REQUEST);
+      await bar(page).locator('[data-local-ai-thinking]').waitFor();
+      await shot('thinking');
+      await rows(page).nth(1).waitFor();
+      await shot('running');
+      await bar(page)
+        .locator('[data-local-ai-run="answered"]')
+        .waitFor({timeout: 60000});
+      const panel = await run(page).boundingBox();
+      assert.ok(
+        panel.y >= 0 && panel.y + panel.height <= box.y + 1,
+        'the list sits above the bar, on screen',
+      );
+      await shot('done');
+      await field(page).focus();
+      await page.keyboard.press('Escape');
+      await bar(page).waitFor({state: 'detached'});
+      return {bar: [Math.round(box.width), Math.round(box.height)]};
+    },
+  );
+}
+
+// No Ask AI on a phone: neither the button nor the command.
+function verifyNoPhone({fresh, layout}) {
+  return fresh(
+    {
+      name: `local-ai-${layout}-phone`,
+      layout,
+      viewport: {width: 390, height: 844},
+      initialize: async context => {
+        await install('ready')(context);
+        await context.addInitScript(experimentOn);
+      },
+    },
+    async ({page, doctor}) => {
+      await doctor();
+      await dismissNudge(page);
+      await page.waitForTimeout(500);
+      assert.equal(
+        await page.locator('[data-ask-ai]').count(),
+        0,
+        `no Ask AI button in ${layout} at 390 px`,
+      );
+      const option = await commandFor(page);
+      await page.waitForTimeout(200);
+      assert.equal(await option.count(), 0, 'no Ask AI command at 390 px');
+      await closeMenu(page);
+      assert.equal(await bar(page).count(), 0);
+      return 'absent';
+    },
+  );
+}
+
+// Settings → Experiments downloads the model, then a request runs through
+// native tool calls.
 function verifyDownload({fresh, out}) {
   return fresh(
     {
@@ -153,6 +419,7 @@ function verifyDownload({fresh, out}) {
         'the command waits for the experiment',
       );
       await closeMenu(page);
+      assert.equal(await page.locator('[data-ask-ai]').count(), 0);
 
       await settings('experiments');
       const row = modelRow(page);
@@ -200,17 +467,9 @@ function verifyDownload({fresh, out}) {
       });
       const determinate = row.locator('progress[value]');
       await determinate.waitFor({timeout: 3000});
-      assert.equal(
-        await determinate.evaluate(element => element.value),
-        0.5,
-        'the bar shows real progress once Chrome reports it',
-      );
+      assert.equal(await determinate.evaluate(element => element.value), 0.5);
       assert.match(await row.innerText(), /50%/);
-      assert.equal(
-        await row.locator('[data-address]').count(),
-        0,
-        'real progress needs no pointer to Chrome',
-      );
+      assert.equal(await row.locator('[data-address]').count(), 0);
       await group.screenshot({
         path: resolve(out, 'local-ai-row-downloading.png'),
       });
@@ -220,6 +479,7 @@ function verifyDownload({fresh, out}) {
 
       await turnOn(page);
       await closeSettings();
+      await dismissNudge(page);
 
       const framePadding = () =>
         page
@@ -228,72 +488,169 @@ function verifyDownload({fresh, out}) {
           .evaluate(element => getComputedStyle(element).paddingLeft);
       const paddingBefore = await framePadding();
 
-      await (await commandFor(page)).click();
-      const dialog = page.locator('[data-local-ai]');
-      await dialog.waitFor();
-      const request = dialog.getByRole('textbox', {name: 'Request'});
-      await request.click();
-      await request.pressSequentially(REQUEST);
-      assert.equal(await request.inputValue(), REQUEST, 'typed as is');
+      const ask = page.locator('[data-ask-ai]');
+      await ask.click();
+      await field(page).waitFor();
+      assert.equal(
+        await field(page).evaluate(
+          element => element === document.activeElement,
+        ),
+        true,
+        'the field takes the focus',
+      );
+      assert.equal(await ask.count(), 0, "the bar takes the toolbar's place");
+      await field(page).pressSequentially('one');
+      await page.keyboard.press('Shift+Enter');
+      await field(page).pressSequentially('two');
+      assert.equal(
+        await field(page).inputValue(),
+        'one\ntwo',
+        'Shift+Enter breaks the line',
+      );
+      await page.keyboard.press('ControlOrMeta+a');
+      await page.keyboard.press('Backspace');
+      assert.equal(
+        await field(page).inputValue(),
+        '',
+        'the field keeps its keys',
+      );
 
+      await recordRuns(page);
+      await page.evaluate(() => (window.__localAi.thinkMs = 600));
       const [download] = await Promise.all([
         page.waitForEvent('download', {timeout: 60000}),
-        dialog.getByRole('button', {name: 'Run', exact: true}).click(),
+        send(page, REQUEST),
       ]);
       const file = resolve(out, 'local-ai-2x.png');
       await download.saveAs(file);
       const png = PNG.sync.read(await readFile(file));
-
-      const rows = dialog.getByRole('listitem');
-      await page.waitForFunction(
-        () => document.querySelectorAll('[data-local-ai] li').length === 4,
+      await bar(page)
+        .locator('[data-local-ai-run="answered"]')
+        .waitFor({timeout: 15000});
+      assert.equal(
+        await field(page).inputValue(),
+        '',
+        'Enter sent the request',
       );
+
+      const runs = await page.evaluate(() => window.__runs);
+      assert.equal(runs[0].phase, 'thinking', 'the run starts by thinking');
+      assert.ok(runs[0].thinking, 'thinking shows');
+      for (const tool of [
+        'add_tab',
+        'apply_theme',
+        'set_controls',
+        'export_image',
+      ]) {
+        const running = runs.findIndex(state =>
+          state.calls.includes(`${tool}:running`),
+        );
+        const done = runs.findIndex(state =>
+          state.calls.includes(`${tool}:done`),
+        );
+        assert.ok(
+          running >= 0 && done > running,
+          `${tool} shows running, then done`,
+        );
+      }
       assert.deepEqual(
-        await rows.evaluateAll(items =>
+        await rows(page).evaluateAll(items =>
           items.map(item => [
-            item.querySelector('code').textContent,
-            item.dataset.ok,
+            item.dataset.tool,
+            item.dataset.status,
+            item.querySelector('[data-tool-name]').textContent,
+            item.querySelector('[data-summary]')?.textContent,
           ]),
         ),
         [
-          ['add_tab', 'true'],
-          ['apply_theme', 'true'],
-          ['set_controls', 'true'],
-          ['export_image', 'true'],
+          ['add_tab', 'done', 'add_tab', 'test.tsx · typescript · 2 lines'],
+          ['apply_theme', 'done', 'apply_theme', 'Dracula'],
+          ['set_controls', 'done', 'set_controls', 'padding 32'],
+          ['export_image', 'done', 'export_image', 'PNG · 2x · download'],
         ],
+        'each call has its title, tool name and arguments',
       );
+      assert.match(await rows(page).first().innerText(), /Add a tab/);
+      assert.equal(
+        await run(page).locator('[data-local-ai-note]').innerText(),
+        'I will add the tab, then style and export it.',
+        'cumulative text chunks read once',
+      );
+      assert.equal(
+        await run(page).locator('[data-local-ai-answer]').innerText(),
+        'Added test.tsx with Dracula, padding 32, and exported a 2x PNG.',
+      );
+      assert.equal(
+        await page.locator('[data-tool-activity]').count(),
+        0,
+        'the activity card leaves local AI to the bar',
+      );
+      await page.screenshot({path: resolve(out, 'local-ai-answered.png')});
 
       const sent = await page.evaluate(() => window.__localAi);
-      assert.equal(sent.prompts.length, 1);
-      assert.ok(!sent.prompts[0].text.includes('print("hi")'), 'no code sent');
-      assert.match(sent.prompts[0].text, /CODE_1/);
-      assert.match(sent.prompts[0].text, /CODE_1 was fenced as "py"/);
-      const tools =
-        sent.prompts[0].responseConstraint.properties.steps.items.properties
-          .tool.enum;
-      assert.ok(tools.includes('add_tab') && tools.includes('select_tab'));
-      assert.ok(!tools.includes('get_editor_state'));
-      const system = sent.sessions[0].system;
-      assert.match(system, /Dracula/);
-      assert.match(system, /frame\.padding: 0\|16\|32\|64\|128 \(now 64\)/);
+      assert.equal(sent.bases.length, 1);
+      const base = sent.bases[0];
+      assert.deepEqual(base.initialPrompts.length, 1);
+      assert.equal(base.initialPrompts[0].role, 'system');
       assert.ok(
-        system.length < 12000,
-        `system prompt is ${system.length} chars`,
+        !/[{}]/.test(base.initialPrompts[0].content),
+        'no editor state in the system prompt',
+      );
+      assert.deepEqual(
+        [...base.tools].sort(),
+        [
+          'add_tab',
+          'apply_theme',
+          'export_image',
+          'get_editor_state',
+          'list_themes',
+          'select_tab',
+          'set_code',
+          'set_controls',
+        ],
+        'the eight agent tools',
+      );
+      assert.deepEqual(
+        base.expectedOutputs.map(output => output.type),
+        ['text', 'tool-call'],
+      );
+      const [seed] = sent.appended;
+      assert.equal(seed[0].role, 'assistant');
+      assert.equal(seed[0].content[0].value.kind, 'call');
+      assert.equal(seed[0].content[0].value.name, 'get_editor_state');
+      assert.equal(seed[1].content[0].value.kind, 'success');
+      assert.equal(
+        seed[1].content[0].value.callId,
+        seed[0].content[0].value.callId,
+        'the seeded state answers its own call',
+      );
+      const state = seed[1].content[0].value.result[0].value;
+      assert.ok(Array.isArray(state.tabs), 'the seed is the real editor state');
+      assert.ok(
+        !JSON.stringify(state.tabs).includes('test.tsx'),
+        'read before the request ran',
+      );
+      assert.equal(sent.prompts[0], REQUEST);
+      const responses = sent.prompts[1][0].content.map(part => part.value);
+      assert.deepEqual(
+        responses.map(response => [
+          response.kind,
+          response.callId,
+          response.name,
+        ]),
+        [
+          ['success', 'call-1', 'add_tab'],
+          ['success', 'call-2', 'apply_theme'],
+          ['success', 'call-3', 'set_controls'],
+          ['success', 'call-4', 'export_image'],
+        ],
+        'the results go back with the callIds',
       );
 
-      await page.keyboard.press('Escape');
-      await dialog.waitFor({state: 'detached'});
       assert.equal(await editor().innerText(), CODE, 'the new tab is active');
       assert.ok(
-        await page.locator('[data-fit-scale]').getByText('hello.py').count(),
+        await page.locator('[data-fit-scale]').getByText('test.tsx').count(),
         'the window shows the new tab',
-      );
-      await section('themes');
-      assert.equal(
-        await page
-          .getByRole('option', {name: 'Dracula Dark theme', exact: true})
-          .getAttribute('aria-selected'),
-        'true',
       );
       assert.notEqual(await framePadding(), paddingBefore);
       const frame = await page
@@ -306,26 +663,72 @@ function verifyDownload({fresh, out}) {
         `PNG ${png.width}x${png.height} is the ${frame.join('x')} frame at 2x`,
       );
 
-      let downloads = 0;
-      page.on('download', () => downloads++);
+      await send(page, FAILING_REQUEST);
+      await bar(page).locator('[data-local-ai-run="answered"]').waitFor();
+      assert.deepEqual(
+        await rows(page).evaluateAll(items =>
+          items.map(item => [item.dataset.tool, item.dataset.status]),
+        ),
+        [['apply_theme', 'failed']],
+        'a new request starts a new list',
+      );
+      assert.match(await rows(page).first().innerText(), /Nope/);
+      const error = await page.evaluate(
+        () => window.__localAi.prompts.at(-1)[0].content[0].value,
+      );
+      assert.equal(error.kind, 'error');
+      assert.equal(error.callId, 'bad-1');
+      assert.match(error.errorMessage, /Nope/, 'the error reaches the model');
+      assert.equal(
+        await run(page).locator('[data-local-ai-answer]').innerText(),
+        'There is no theme called Nope.',
+      );
+      const after = await page.evaluate(() => window.__localAi);
+      assert.equal(after.bases.length, 1, 'one base session for two requests');
+      assert.equal(after.clones, 2, 'each request clones it');
+      await page.screenshot({path: resolve(out, 'local-ai-failed.png')});
+
+      await page.evaluate(() => (window.__localAi.chunkMs = 0));
+      await send(page, LOOP_REQUEST);
+      await bar(page)
+        .locator('[data-local-ai-run="turn-limit"]')
+        .waitFor({timeout: 20000});
+      assert.equal(await rows(page).count(), 6, 'six turns of calls');
+      assert.match(await run(page).innerText(), /Stopped after 6 turns/);
+      await page.screenshot({path: resolve(out, 'local-ai-turn-limit.png')});
+
+      await field(page).focus();
+      await page.keyboard.press('Escape');
+      await bar(page).waitFor({state: 'detached'});
+      await page.waitForFunction(
+        () => document.activeElement?.hasAttribute('data-ask-ai'),
+        undefined,
+        {timeout: 2000},
+      );
+
       await (await commandFor(page)).click();
-      await dialog.waitFor();
-      const again = dialog.getByRole('textbox', {name: 'Request'});
-      await again.fill('');
-      await again.pressSequentially(FAILING_REQUEST);
-      await dialog.getByRole('button', {name: 'Run', exact: true}).click();
-      await dialog.locator('li[data-ok=false]').waitFor();
-      assert.equal(await rows.count(), 1, 'the plan stops at the failed step');
-      assert.match(await rows.first().innerText(), /Unknown theme "Nope"/);
-      await page.waitForTimeout(500);
-      assert.equal(downloads, 0, 'nothing after the failed step runs');
-      await page.screenshot({path: resolve(out, 'local-ai-dialog.png')});
+      await field(page).waitFor();
+      assert.equal(await run(page).count(), 0, 'closing forgot the last run');
+      await page.waitForFunction(
+        () => document.activeElement?.getAttribute('aria-label') === 'Request',
+        undefined,
+        {timeout: 2000},
+      );
+      await page.keyboard.press('Escape');
+      await bar(page).waitFor({state: 'detached'});
+      await section('themes');
+      assert.equal(
+        await page
+          .getByRole('option', {name: 'Dracula Dark theme', exact: true})
+          .getAttribute('aria-selected'),
+        'true',
+      );
 
       return {
         png: [png.width, png.height],
         frame,
-        systemPromptChars: system.length,
-        requestChars: sent.prompts[0].text.length,
+        systemPromptChars: base.initialPrompts[0].content.length,
+        seedChars: JSON.stringify(state).length,
       };
     },
   );
@@ -362,26 +765,31 @@ function verifyBackgroundDownload({fresh}) {
       );
       await turnOn(page);
       await closeSettings();
-      assert.equal(
-        await (await commandFor(page)).count(),
-        1,
-        'the command shows once the model is ready',
-      );
-      await closeMenu(page);
       await (await commandFor(page)).click();
-      const dialog = page.locator('[data-local-ai]');
-      await dialog.waitFor();
+      await field(page).waitFor();
+      await page.evaluate(
+        () => (window.__localAi.createError = 'InvalidStateError'),
+      );
+      await send(page, 'use Dracula');
+      await bar(page)
+        .getByText(
+          'Chrome could not start the on-device model. Check free disk space and chrome://on-device-internals.',
+        )
+        .waitFor();
+      assert.equal(
+        await run(page).getAttribute('data-local-ai-run'),
+        'cannot-start',
+      );
       await page.evaluate(() => (window.__localAi.forced = 'downloadable'));
-      await dialog.getByRole('textbox', {name: 'Request'}).fill('use Dracula');
-      await dialog.getByRole('button', {name: 'Run', exact: true}).click();
-      await dialog.getByText('The on-device model is not ready.').waitFor();
-      await dialog.getByRole('button', {name: 'Open experiments'}).click();
-      await dialog.waitFor({state: 'detached'});
+      await send(page, 'use Dracula');
+      await bar(page).getByText('The on-device model is not ready.').waitFor();
+      await bar(page).getByRole('button', {name: 'Open experiments'}).click();
+      await bar(page).waitFor({state: 'detached'});
       await row.getByRole('button', {name: 'Download model'}).waitFor();
       assert.equal(
         await page.evaluate(() => window.__localAi.creates),
-        0,
-        'loading, opening the dialog and Run never start a download',
+        1,
+        'only the session that could not start called create(): no download',
       );
       return {readyAfterMs: readyAfter};
     },
