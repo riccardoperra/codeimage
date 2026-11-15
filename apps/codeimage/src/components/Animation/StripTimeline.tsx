@@ -9,7 +9,14 @@ import {
 } from '@codeimage/store/editor/animationSettings';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 import {createResizeObserver} from '@solid-primitives/resize-observer';
-import {createMemo, createSignal, For, onMount, Show} from 'solid-js';
+import {
+  createEffect,
+  createMemo,
+  createSignal,
+  For,
+  onMount,
+  Show,
+} from 'solid-js';
 import {timelineGeometry, type TimelineGeometry} from './timelineGeometry';
 import type {AppLocaleEntries} from '../../i18n';
 import {createSegmentResize} from './createSegmentResize';
@@ -123,7 +130,10 @@ function Segment(props: {
     </button>
   );
 }
-export function StripTimeline(props: {overview?: boolean}) {
+export function StripTimeline(props: {
+  overview?: boolean;
+  onDensityChange: (dense: boolean) => void;
+}) {
   const {animation} = getEditorStore();
   const [t, {locale}] = useI18n<AppLocaleEntries>();
   let ruler!: HTMLDivElement;
@@ -142,6 +152,9 @@ export function StripTimeline(props: {overview?: boolean}) {
       minWidth: 8,
     }),
   );
+  createEffect(() => {
+    if (width() > 0) props.onDensityChange(geometry().dense);
+  });
   const keys = createMemo(() =>
     animation.segments().map(segment => `${segment.kind}:${segment.stepId}`),
   );
@@ -264,17 +277,16 @@ export function StripTimeline(props: {overview?: boolean}) {
         >
           <Show when={!props.overview}>
             <For each={ticks()}>
-              {ms => (
+              {tick => (
                 <span
                   class={styles.tick}
-                  data-animation-tick={ms}
-                  data-first={ms === 0 ? '' : undefined}
-                  data-last={ms === ticks().at(-1) ? '' : undefined}
+                  data-animation-tick={tick.ms}
+                  data-alignment={tick.alignment}
                   style={assignInlineVars({
-                    [styles.position]: `${geometry().timeToX(ms)}px`,
+                    [styles.position]: `${tick.x}px`,
                   })}
                 >
-                  {formatSeconds(ms, locale())}
+                  {formatSeconds(tick.ms, locale())}
                 </span>
               )}
             </For>

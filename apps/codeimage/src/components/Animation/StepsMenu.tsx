@@ -11,7 +11,7 @@ import {
   DropdownSubMenuTrigger,
   DropdownSubMenuContent,
 } from '@codeui/kit';
-import {For, onCleanup} from 'solid-js';
+import {For, onCleanup, Show} from 'solid-js';
 import type {AppLocaleEntries} from '../../i18n';
 function AddStepItem(props: {id: string; name: string}) {
   const {animation} = getEditorStore();
@@ -87,10 +87,20 @@ export function StepsMenu() {
           </DropdownSubMenu>
           <DropdownMenuItem
             disabled={index() < 0 || !editor.computed.canAddEditor()}
+            aria-describedby={
+              !editor.computed.canAddEditor()
+                ? 'animation-duplicate-limit'
+                : undefined
+            }
             onSelect={duplicate}
           >
             {t('animation.duplicate')}
           </DropdownMenuItem>
+          <Show when={!editor.computed.canAddEditor()}>
+            <p id="animation-duplicate-limit">
+              {t('animation.duplicateLimit')}
+            </p>
+          </Show>
           <DropdownMenuItem disabled={index() <= 0} onSelect={earlier}>
             {t('animation.moveEarlier')}
           </DropdownMenuItem>

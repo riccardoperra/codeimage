@@ -1,6 +1,6 @@
 import {useI18n} from '@codeimage/locale';
 import {getEditorStore} from '@codeimage/store/editor';
-import {Show} from 'solid-js';
+import {createSignal, Show} from 'solid-js';
 import type {AppLocaleEntries} from '../../i18n';
 import {PhoneSteps} from './PhoneSteps';
 import {TransportBar} from './TransportBar';
@@ -11,6 +11,8 @@ import * as styles from './AnimatePanel.css';
 export function AnimatePanel(props: {compact: boolean}) {
   const {animation, editor} = getEditorStore();
   const [t] = useI18n<AppLocaleEntries>();
+  const [dense, setDense] = createSignal(false);
+  const compact = () => props.compact || dense();
   let island!: HTMLElement;
   const keyDown = (event: KeyboardEvent) => {
     if (event.key !== 'Escape') return;
@@ -39,22 +41,14 @@ export function AnimatePanel(props: {compact: boolean}) {
         data-animate-panel
         on:keydown={keyDown}
       >
-        <TransportBar compact={props.compact} />
-        <Show
-          when={props.compact}
-          fallback={
-            <>
-              <StripTimeline />
-              <SegmentDetails />
-            </>
-          }
-        >
-          <StripTimeline overview />
+        <TransportBar compact={compact()} />
+        <StripTimeline overview={compact()} onDensityChange={setDense} />
+        <Show when={compact()} fallback={<SegmentDetails />}>
           <PhoneSteps />
         </Show>
-        <div class={styles.mobileHeader}>
+        <Show when={compact()}>
           <HeaderField />
-        </div>
+        </Show>
       </section>
     </Show>
   );

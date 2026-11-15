@@ -34,6 +34,12 @@ function StepRow(props: {id: string; open: (id: string) => void}) {
     editor.state.editors.find(tab => tab.id === step()?.editorId)?.tab
       .tabName || t('animation.untitledTab');
   const transition = () => transitionOf(animation.settings(), step());
+  const label = () =>
+    `${t('animation.stepName', {n: String(index() + 1), tab: name()})}. ${
+      index() > 0
+        ? `${t('animation.transitionShort')}: ${formatDuration(transition().ms, locale())}`
+        : t('animation.noTransition')
+    }. ${t('animation.holdShort')}: ${formatDuration(step()?.holdMs ?? 0, locale())}`;
   const open = () => props.open(props.id);
   return (
     <li>
@@ -42,6 +48,7 @@ function StepRow(props: {id: string; open: (id: string) => void}) {
         class={styles.row}
         data-animation-step-row
         aria-haspopup="dialog"
+        aria-label={label()}
         data-step-id={props.id}
         data-selected={
           animation.selection()?.stepId === props.id ? '' : undefined
@@ -54,21 +61,19 @@ function StepRow(props: {id: string; open: (id: string) => void}) {
         }
         onClick={open}
       >
-        <span class={styles.index}>{index() + 1}</span>
-        <span class={styles.name}>{name()}</span>
-        <span
-          class={styles.metric}
-          aria-label={`${t('animation.transition')}: ${index() > 0 ? formatDuration(transition().ms, locale()) : '—'}`}
-        >
+        <span class={styles.index} aria-hidden="true">
+          {index() + 1}
+        </span>
+        <span class={styles.name} aria-hidden="true">
+          {name()}
+        </span>
+        <span class={styles.metric} aria-hidden="true">
           <Show when={index() > 0} fallback="—">
             <EasingCurve easing={easingOf(transition().easing)} glyph />
             {formatDuration(transition().ms, locale())}
           </Show>
         </span>
-        <span
-          class={styles.metric}
-          aria-label={`${t('animation.hold')}: ${formatDuration(step()?.holdMs ?? 0, locale())}`}
-        >
+        <span class={styles.metric} aria-hidden="true">
           {formatDuration(step()?.holdMs ?? 0, locale())}
         </span>
       </button>
@@ -98,8 +103,19 @@ function StepFields(props: {
   const timing = (ms: number) =>
     animation.actions.setTransition(props.id, {ms});
   const apply = () => animation.actions.applyToAll(props.id);
-  const earlier = () => animation.actions.moveStep(props.id, -1);
-  const later = () => animation.actions.moveStep(props.id, 1);
+  let earlierButton!: HTMLButtonElement;
+  let laterButton!: HTMLButtonElement;
+  const earlier = () => {
+    const focused = document.activeElement === earlierButton;
+    animation.actions.moveStep(props.id, -1);
+    if (focused && index() === 0) laterButton.focus();
+  };
+  const later = () => {
+    const focused = document.activeElement === laterButton;
+    animation.actions.moveStep(props.id, 1);
+    if (focused && index() === animation.settings().steps.length - 1)
+      earlierButton.focus();
+  };
   const duplicate = () => {
     props.close();
     animation.actions.duplicateAsNext(props.id);
@@ -126,6 +142,8 @@ function StepFields(props: {
       <DurationInput
         id="animationHold"
         label={t('animation.hold')}
+        field="hold"
+        compact
         value={step()?.holdMs ?? 0}
         limits={DURATION_LIMITS.holdMs}
         commit={hold}
@@ -135,6 +153,8 @@ function StepFields(props: {
         <DurationInput
           id="animationTransition"
           label={t('animation.transition')}
+          field="transition"
+          compact
           value={transition().ms}
           limits={DURATION_LIMITS.transitionMs}
           commit={timing}
@@ -149,6 +169,7 @@ function StepFields(props: {
       </Show>
       <div class={styles.actions}>
         <Button
+          ref={earlierButton}
           size="sm"
           theme="secondary"
           disabled={index() === 0}
@@ -157,6 +178,7 @@ function StepFields(props: {
           {t('animation.moveEarlier')}
         </Button>
         <Button
+          ref={laterButton}
           size="sm"
           theme="secondary"
           disabled={index() === animation.settings().steps.length - 1}
@@ -170,6 +192,11 @@ function StepFields(props: {
           size="sm"
           theme="secondary"
           disabled={!editor.computed.canAddEditor()}
+          aria-describedby={
+            !editor.computed.canAddEditor()
+              ? 'animation-duplicate-limit'
+              : undefined
+          }
           onClick={duplicate}
         >
           {t('animation.duplicate')}
@@ -183,6 +210,11 @@ function StepFields(props: {
           {t('animation.remove')}
         </Button>
       </div>
+      <Show when={!editor.computed.canAddEditor()}>
+        <p id="animation-duplicate-limit" class={styles.hint}>
+          {t('animation.duplicateLimit')}
+        </p>
+      </Show>
     </>
   );
 }

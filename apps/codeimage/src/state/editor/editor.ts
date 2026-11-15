@@ -178,7 +178,7 @@ export function createEditorsStore() {
     active?: boolean,
   ) => {
     if (store.get.editors.length === MAX_EDITOR_TABS) return;
-    const id = createUniqueId();
+    const id = `${crypto.randomUUID()}$0`;
     const editor: EditorState = {
       ...getInitialEditorState(),
       tab: {

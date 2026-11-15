@@ -99,5 +99,6 @@ export const actions = style({
   alignItems: 'center',
   gap: 8,
 });
+export const hint = style({margin: 0, fontSize: 12});
 globalStyle(`${sheet} button, ${sheet} input`, {minHeight: 40, minWidth: 40});
 globalStyle(`${sheet} h2`, {margin: 0, fontSize: themeVars.fontSize.base});

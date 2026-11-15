@@ -14,12 +14,16 @@ export function timelineGeometry(
     0,
   );
   const width = Math.max(0, viewportWidth);
-  const gap = Math.min(TIMELINE_GAP, width / Math.max(1, segments.length * 2));
-  const reservedGaps = Math.max(0, segments.length - 1) * gap;
-  const minimum = Math.min(
-    options.minWidth,
-    ((width - reservedGaps) / Math.max(1, segments.length)) * 0.8,
+  const dense = width <= segments.length * options.minWidth;
+  const gap = Math.min(
+    TIMELINE_GAP,
+    Math.max(0, width - segments.length * options.minWidth) /
+      Math.max(1, (segments.length - 1) * 2),
   );
+  const reservedGaps = Math.max(0, segments.length - 1) * gap;
+  const minimum = dense
+    ? (width / Math.max(1, segments.length)) * 0.8
+    : options.minWidth;
   const scale =
     (width - reservedGaps - segments.length * minimum) /
     Math.max(1, durationMs);
@@ -31,7 +35,7 @@ export function timelineGeometry(
       : width >= (segment.kind === 'hold' ? 88 : 72)
         ? 'full'
         : segment.kind === 'hold' &&
-            width >= String(segment.index + 1).length * 7
+            width >= String(segment.index + 1).length * 7 + 8
           ? 'number'
           : 'none';
     const entry = {segment, x, width, label};
@@ -63,11 +67,12 @@ export function timelineGeometry(
     width: Math.max(0, x - gap),
     scale,
     gap,
+    dense,
     timeToX,
     xToTime,
     ticks: (stepMs: number, spacing = 64) => {
       let previous = -Infinity;
-      return Array.from(
+      const times = Array.from(
         {length: Math.floor(durationMs / stepMs) + 1},
         (_, index) => index * stepMs,
       ).filter(ms => {
@@ -76,6 +81,16 @@ export function timelineGeometry(
         previous = x;
         return true;
       });
+      return times.map(ms => ({
+        ms,
+        x: timeToX(ms),
+        alignment:
+          ms === 0
+            ? 'start'
+            : timeToX(ms) > width - spacing / 2
+              ? 'end'
+              : 'center',
+      }));
     },
     resizedDuration: (initial: number, deltaX: number) =>
       initial + deltaX / Math.max(Number.EPSILON, scale),
