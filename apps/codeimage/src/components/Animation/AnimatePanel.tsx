@@ -40,10 +40,10 @@ export function AnimatePanel() {
       >
         <TransportBar />
         <StripTimeline />
+        <SegmentDetails />
         <div class={styles.mobileHeader}>
           <HeaderField />
         </div>
-        <SegmentDetails />
       </section>
     </Show>
   );

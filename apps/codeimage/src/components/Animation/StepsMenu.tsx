@@ -22,17 +22,26 @@ export function StepsMenu() {
   const {animation, editor} = getEditorStore();
   const [t] = useI18n<AppLocaleEntries>();
   const index = () =>
-    Math.max(
-      0,
-      animation
-        .settings()
-        .steps.findIndex(step => step.id === animation.selection()?.stepId),
-    );
-  const id = () => animation.settings().steps[index()].id;
-  const duplicate = () => animation.actions.duplicateAsNext(id());
-  const earlier = () => animation.actions.moveStep(id(), -1);
-  const later = () => animation.actions.moveStep(id(), 1);
-  const remove = () => animation.actions.removeStep(id());
+    animation
+      .settings()
+      .steps.findIndex(step => step.id === animation.selection()?.stepId);
+  const id = () => animation.settings().steps[index()]?.id;
+  const duplicate = () => {
+    const stepId = id();
+    if (stepId) animation.actions.duplicateAsNext(stepId);
+  };
+  const earlier = () => {
+    const stepId = id();
+    if (stepId) animation.actions.moveStep(stepId, -1);
+  };
+  const later = () => {
+    const stepId = id();
+    if (stepId) animation.actions.moveStep(stepId, 1);
+  };
+  const remove = () => {
+    const stepId = id();
+    if (stepId) animation.actions.removeStep(stepId);
+  };
   return (
     <DropdownMenu placement="top-end">
       <DropdownMenuTrigger as={Button} size="xs" theme="secondary">
@@ -58,22 +67,24 @@ export function StepsMenu() {
             </DropdownMenuPortal>
           </DropdownSubMenu>
           <DropdownMenuItem
-            disabled={!editor.computed.canAddEditor()}
+            disabled={index() < 0 || !editor.computed.canAddEditor()}
             onSelect={duplicate}
           >
             {t('animation.duplicate')}
           </DropdownMenuItem>
-          <DropdownMenuItem disabled={index() === 0} onSelect={earlier}>
+          <DropdownMenuItem disabled={index() <= 0} onSelect={earlier}>
             {t('animation.moveEarlier')}
           </DropdownMenuItem>
           <DropdownMenuItem
-            disabled={index() === animation.settings().steps.length - 1}
+            disabled={
+              index() < 0 || index() === animation.settings().steps.length - 1
+            }
             onSelect={later}
           >
             {t('animation.moveLater')}
           </DropdownMenuItem>
           <DropdownMenuItem
-            disabled={animation.settings().steps.length === 1}
+            disabled={index() < 0 || animation.settings().steps.length === 1}
             onSelect={remove}
           >
             {t('animation.remove')}

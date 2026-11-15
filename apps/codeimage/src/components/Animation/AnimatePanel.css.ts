@@ -1,5 +1,5 @@
 import {themeVars} from '@codeimage/ui';
-import {style} from '@vanilla-extract/css';
+import {globalStyle, style} from '@vanilla-extract/css';
 const c = themeVars.dynamicColors;
 export const island = style({
   width: 'calc(100% - 24px)',
@@ -20,6 +20,12 @@ export const island = style({
     '(max-width: 768px)': {padding: 12, width: 'calc(100% - 16px)', gap: 8},
   },
 });
+globalStyle(
+  `${island} [data-cui="button"], ${island} [data-cui="icon-button"], ${island} [aria-haspopup="listbox"]`,
+  {
+    '@media': {'(max-width: 768px)': {minHeight: 40}},
+  },
+);
 export const transport = style({
   minWidth: 0,
   display: 'flex',

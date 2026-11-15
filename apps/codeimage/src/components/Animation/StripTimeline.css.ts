@@ -1,7 +1,8 @@
 import {themeVars} from '@codeimage/ui';
 import {createVar, style} from '@vanilla-extract/css';
 const c = themeVars.dynamicColors;
-export const root = style({minWidth: 0});
+export const root = style({minWidth: 0, overflowX: 'auto', padding: '2px 4px'});
+export const axis = style({width: '100%'});
 export const fraction = createVar();
 export const gaps = createVar();
 export const position = createVar();
@@ -19,11 +20,16 @@ export const tick = style({
   opacity: 0.65,
   fontVariantNumeric: 'tabular-nums',
   transform: 'translateX(-50%)',
+  whiteSpace: 'nowrap',
+  selectors: {
+    '&[data-first]': {transform: 'none', paddingLeft: 6},
+    '&[data-last]': {transform: 'translateX(-100%)'},
+  },
 });
 export const playhead = style({
   position: 'absolute',
   left: position,
-  top: 0,
+  top: 12,
   bottom: 0,
   width: 2,
   background: c.primary,
@@ -55,10 +61,10 @@ export const segment = style({
   alignItems: 'center',
   justifyContent: 'center',
   gap: 6,
-  minWidth: 8,
+  minWidth: 0,
   width: `calc(${fraction} * (100% - ${gaps}))`,
   flexShrink: 0,
-  padding: '0 8px',
+  padding: 0,
   border: 0,
   borderRadius: themeVars.borderRadius.md,
   background: c.panel.background,
