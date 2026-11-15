@@ -36,6 +36,9 @@ async function load(page: Page) {
     .waitFor({timeout: 60000});
   const close = page.getByRole('button', {name: 'close', exact: true});
   if (await close.isVisible()) await close.click();
+  // The What's new nudge appears once the page settles and covers Dock's
+  // phone bar, so a lane would click it instead of the control under it.
+  await page.addStyleTag({content: '[data-whats-new]{display:none!important}'});
   await page.evaluate(async () => {
     const path = '/src/state/editor/index.ts';
     const {getEditorStore} = await import(/* @vite-ignore */ path);
