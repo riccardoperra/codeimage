@@ -1,7 +1,10 @@
+import {EditorConfigStore} from '@codeimage/store/editor/config.store';
+import {provideState} from 'statebuilder';
 import {getFrameState} from '@codeimage/store/editor/frame';
 import {useI18n} from '@codeimage/locale';
 import {getExportCanvasStore} from '@codeimage/store/canvas';
 import {getRootEditorStore} from '@codeimage/store/editor';
+import {getWhatsNew} from '@codeimage/store/whats-new';
 import {detectSecrets} from '@codeimage/secrets';
 import type {SegmentedFieldItem} from '@codeimage/ui';
 import {
@@ -9,6 +12,7 @@ import {
   FieldLabel,
   FieldLabelHint,
   FlexField,
+  HStack,
   Link,
   RangeField,
   toast,
@@ -46,6 +50,7 @@ import {DownloadIcon} from '../Icons/Download';
 import {ExclamationIcon} from '../Icons/Exclamation';
 import {HintIcon} from '../Icons/Hint';
 import {redactTabCode} from '../CustomEditor/plugins/secrets';
+import {NewDot} from '../WhatsNew/NewDot';
 import * as styles from './ExportButton.css';
 import {CopyAltTextButton} from './CopyAltTextButton';
 
@@ -55,12 +60,14 @@ interface ExportButtonProps {
 
 export const ExportButton: Component<ExportButtonProps> = props => {
   const [t] = useI18n<AppLocaleEntries>();
+  const config = provideState(EditorConfigStore);
   const modality = useModality();
   const buttonSize = () => (modality === 'full' ? 'sm' : 'xs');
   const [open, setOpen] = createSignal(false);
   const [data, notify] = useExportSnippet();
 
   const label = () => t('toolbar.export');
+  getWhatsNew().bindLocation('export', () => setOpen(true));
 
   createEffect(() => {
     if (data.error) {
@@ -103,6 +110,7 @@ export const ExportButton: Component<ExportButtonProps> = props => {
         size={modality === 'mobile' ? 'full' : 'md'}
         onConfirm={payload => {
           notify({
+            renderer: config.get.renderer,
             options: {
               extension: payload.extension,
               mode: payload.type,
@@ -149,7 +157,8 @@ export function ExportDialog(props: ExportDialogProps & DialogProps) {
         )
       : 0,
   );
-  const redactAll = () =>
+  const redactAll = () => {
+    getWhatsNew().seen('redact');
     batch(() => {
       editorStore.state.editors.forEach((editor, index) => {
         const redacted = redactTabCode(
@@ -162,6 +171,7 @@ export function ExportDialog(props: ExportDialogProps & DialogProps) {
           editorStore.actions.setEditors(index, 'code', redacted);
       });
     });
+  };
   const target = () => getFrameState().exportTarget();
   const [mode, setMode] = createSignal<ExportMode>(ExportMode.export);
   const [extension, setExtension] = createSignal<ExportExtension>(
@@ -349,12 +359,15 @@ export function ExportDialog(props: ExportDialogProps & DialogProps) {
               size={'md'}
               label={t('exportTabs.showOnlyActiveTab')}
             />
-            <Checkbox
-              checked={exportCanvasStore.get.oneImagePerTab}
-              onChange={value => exportCanvasStore.set('oneImagePerTab', value)}
-              size={'md'}
-              label={t('exportTabs.oneImagePerTab')}
-            />
+            <HStack spacing={'1'} alignItems={'center'}>
+              <Checkbox
+                checked={exportCanvasStore.get.oneImagePerTab}
+                onChange={exportCanvasStore.setOneImagePerTab}
+                size={'md'}
+                label={t('exportTabs.oneImagePerTab')}
+              />
+              <NewDot at="export:tabs" />
+            </HStack>
           </VStack>
         </DynamicSizedContainer>
       </DialogPanelContent>

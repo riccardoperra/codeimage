@@ -16,6 +16,7 @@ import {
 } from 'solid-js';
 import type {ParentProps} from 'solid-js';
 import type {AppLocaleEntries} from '../../../../i18n';
+import {CommandMenuButton} from '../../command-menu/CommandMenuButton';
 import {commandMenu} from '../../command-menu/state';
 import type {VariantMeta, VariantProps} from '../../contract';
 import {controlOverlay, SignatureRow} from '../../controls/ControlOverlay';
@@ -302,19 +303,23 @@ export default function Inspector(props: VariantProps) {
               <props.stage.AnimateToggle />
             </FrameActions>
             <Show
-              when={mobile()}
+              when={props.stage.compact()}
               fallback={
-                <Button
-                  class={styles.command}
-                  size="sm"
-                  theme="secondary"
-                  aria-haspopup="dialog"
-                  aria-expanded={commandMenu.isOpen()}
-                  onClick={commandMenu.open}
-                >
-                  {t('editor.search')}
-                  <kbd class={styles.commandKey}>{commandMenu.shortcut}</kbd>
-                </Button>
+                <CommandMenuButton>
+                  {trigger => (
+                    <Button
+                      {...trigger}
+                      class={styles.command}
+                      size="sm"
+                      theme="secondary"
+                    >
+                      {t('editor.search')}
+                      <kbd class={styles.commandKey}>
+                        {commandMenu.shortcut}
+                      </kbd>
+                    </Button>
+                  )}
+                </CommandMenuButton>
               }
             >
               <props.stage.ExportButton />

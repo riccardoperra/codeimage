@@ -116,8 +116,8 @@ The left pane has a search field and the sections, each with an icon. The right 
 | Export      | Tabs         | Only the active tab | Switch                              |
 | Experiments | Editor       | Layout              | Cards: Inspector, Dock, Studio      |
 | Experiments | Theme picker | Theme cards         | Cards: Window, Orb, Aa list         |
+| What's new  | Release      | Highlights          | New tags and Show me actions        |
 | About       | CodeImage    | Version             | The version, to read                |
-| About       | CodeImage    | Changelog           | Opens the production changelog      |
 | About       | CodeImage    | GitHub              | A link to the repository            |
 | About       | Account      | Log out             | A button, only for a signed-in user |
 
@@ -125,20 +125,20 @@ The left pane has a search field and the sections, each with an icon. The right 
 - Experiments holds what is not the default yet. Inspector and Window carry a `Default` tag, and `Restore defaults` goes back to both. The choices are cards and not switches because each is one out of three: two switches would turn each other off.
 - The search filters the rows of every section by title and description, and every word has to match. The results are grouped by section. Escape clears the search, a second Escape closes the dialog, and `/` focuses the field.
 - Opening the dialog focuses the section on screen, not the search, so a phone does not open its keyboard over the settings.
-- Under 769px the left pane becomes two rows on top: the search with the close button, then the sections as tabs without icons. Five sections do not need a screen of their own, and this keeps every section and the search one tap away.
+- Under 769px the left pane becomes two rows on top: the search with the close button, then the sections as tabs without icons, three to a row. Six sections do not need a screen of their own, and this keeps every section and the search one tap away.
 - To add a setting, add a row to a group in `sections.tsx`. Use the segmented control or a switch for a choice. The kit's `Select` does not work in this dialog: the dialog is modal, and Kobalte marks the select's list, which it adds outside the dialog, as hidden from assistive technology.
-- Create anything a row opens, such as the changelog, in `SettingsDialog`, which stays mounted. The panel inside it goes away as the dialog closes.
+- Create any dialog a row opens in `SettingsDialog`, which stays mounted. The panel inside it goes away as the dialog closes.
 
 The harness sets `data-layout` on the page root, `.proto-variant`. While Inspector is chosen it also sets `data-inspector-side="left|right"`, on `.proto-variant` and on the root element that the layout renders, so a layout can read it from either.
 
 The old menu at the top left of the header is gone. Its entries moved:
 
-| Old entry | New home                                                         |
-| --------- | ---------------------------------------------------------------- |
-| Settings  | The gear in the header, and the `Settings…` command              |
-| Changelog | Settings, About, and the `Changelog` command                     |
-| GitHub    | Settings, About, and the `CodeImage on GitHub` command           |
-| Logout    | The user badge's menu, Settings, About, and the `Logout` command |
+| Old entry  | New home                                                         |
+| ---------- | ---------------------------------------------------------------- |
+| Settings   | The gear in the header, and the `Settings…` command              |
+| What's new | Settings, What's new, and the `What's new` command               |
+| GitHub     | Settings, About, and the `CodeImage on GitHub` command           |
+| Logout     | The user badge's menu, Settings, About, and the `Logout` command |
 
 ## Export
 
@@ -211,7 +211,7 @@ Inspector puts its panel on the right. Change Panel side in Settings → Appeara
 - The highlighted row is previewed on the canvas through the model's preview session. Enter saves it. Escape, or any other way out, ends the preview.
 - It floats at the bottom centre with no scrim and is six rows tall, so the frame stays in view while the list is walked.
 - It does not open over an open list, menu, popover or modal dialog. A layout that wants it to open anyway closes what it has open first: `commandMenu.beforeOpen(close)`.
-- A layout adds a button with `commandMenu.open` and shows `commandMenu.shortcut` beside it, as Dock and Studio do. Both come from `command-menu/state.ts`.
+- A layout renders `command-menu/CommandMenuButton` with a render prop for its button. Spread the supplied trigger props on that button and show `commandMenu.shortcut` beside it. The layout keeps its own element and styling.
 
 ## Rules for builders
 
@@ -224,6 +224,56 @@ Inspector puts its panel on the right. Change Panel side in Settings → Appeara
 - Render rows with `controls/ControlRow`, not with fields of your own.
 - `SegmentedField` with `adapt` makes the kit control `height: 100%`. Under a parent of auto height that falls back to its line height, about 24px. Give the parent the kit's field height, 36px at `sm` or 40px at `md`.
 - Solid delegates `onKeyDown` to `document`, so `stopPropagation()` in an `onKeyDown` handler does not keep a key from another listener on `document`, such as the command menu's shortcut. Use a native `on:keydown` listener where propagation matters.
+
+## What's new
+
+The harness mounts `components/WhatsNew/WhatsNewHost` once. Its Nudge floats at the bottom left and waits for Settings, the command menu, and other popups to close before appearing. A release with `major: true` uses the Showcase sheet instead. Neither announcement reserves layout space. Dismiss and Done move focus to the nearest visible control before the Nudge in tab order, only when focus is inside the Nudge. Coachmarks use the same rule, in `components/WhatsNew/focus.ts`, which skips text fields so that a phone does not open its keyboard. Escape inside its expanded card dismisses instantly through a native key listener; Escape elsewhere leaves it open.
+
+Every highlight names its place in `state/whats-new/registry.ts` as `where`. The shared piece that draws that place draws its dot with `NewDot at`. `ControlRow` draws `control:<ControlId>` beside its label through `PanelRow.labelAccessory`, outside the HTML label. Settings draws `setting:<row id>` beside every row title. `ExportControl` draws `export` on its arrow, covering all `export:` items. The classic export dialog draws only `export:tabs`, beside its checkbox. `CommandMenuButton` draws `command-menu` around the layout's button. Layout files import none of the What's new modules; lint enforces this rule.
+
+To add a highlight for an existing place:
+
+1. Add its entry and precise `where` to the registry, in editorial order. Use `null` for a feature with no control, which has neither a dot nor Show me.
+2. Add its title and body under the highlight id in every locale in `src/i18n/whatsNew.ts`. For a new release, add its title under the release id too. The registry holds metadata only. Missing translations fail the typecheck.
+3. Add its illustration in `components/WhatsNew/illustrations.tsx`, with `play`, `still`, and `thumb` modes. Translate any explanatory UI labels with the existing locale keys. Code samples and geometric pictures stay unchanged.
+4. Call `seen(id)` where the feature is used.
+5. Run the typecheck. `places.ts` rejects a registry place that names a missing model control, settings row, or Export item. Setting row IDs come from the actual definitions in `shell/sections.tsx`.
+
+No layout or dot JSX changes for an existing place. To introduce a new kind, extend the registry vocabulary and `places.ts`, then render `NewDot at` once in its shared owner. Controls that bypass `ControlRow` do not receive dots. This includes Dock's background, padding, language, and font family, and Studio's system-font fallback.
+
+`dotAt(place)` selects the first eligible highlight held by that place. The same `holds` rule resolves Show me against the most specific bound owner. An owner binds once it is mounted, so a placement or route that replaces another takes over after the old one is disposed. A second owner mounted beside the first is rejected loudly in development. `CommandMenu` binds `command-menu`; Settings binds `setting` and clears search before selecting the row's section. Each `ExportControl` binds `export` to its own menu. Header and layouts share `stage.compact` so exactly one Export control is visible at every width. `control` has no reveal binding in this change, so its highlights have dots but no Show me.
+
+`NewDot` accepts `children` for a corner dot and `filled` for its ring on a blue control. When highlights share a place, it keeps the opened highlight pinned until the coachmark finishes closing, then presents the next on the same trigger element. `decide` still caps eligible highlights at three in registry order. Hide secrets has no dot or Show me because its warning appears when needed. A dot inside the Export menu could not be reached with Tab, which an open menu keeps for itself.
+
+Only a coachmark opening or a feature being used marks a highlight seen. Show me, Nudge steps, and archive rows keep the dot available. The command menu marks use when a command runs. Layout and theme card choices mark use when a choice is applied. Exporting one image per tab, from the menu or the command, marks `tabs` used when the export runs, so after the secrets review when there is one. Redact secrets, or Redact on an editor warning, marks `redact` used. The Export menu and command actions go through `shell/export.tsx`. Redact on an editor warning calls `redactInEditor` and `seen('redact')` directly in `components/CustomEditor/plugins/secrets/index.ts`.
+
+Each archive row in Settings shows its highlight's illustration as a thumbnail. An illustration takes a `mode`: `play` in a Nudge step or a Showcase card, `still` in a coachmark, and `thumb` in the archive, where a picture made of text draws bars instead. A new highlight adds one illustration to `components/WhatsNew/illustrations.tsx` with all three modes.
+
+### Motion
+
+`components/WhatsNew/motion.ts` holds every curve, duration, and stagger delay below, and the styles and the exit timers read it. Extend it, and add a row here. `out` is `cubic-bezier(0.23, 1, 0.32, 1)`, `inOut` is `cubic-bezier(0.77, 0, 0.175, 1)`, and `toast` is `ease`. An action from the keyboard does not animate. With reduced motion only opacity changes, with no delays, and a picture shows its last frame.
+
+| Element                  | When it moves                                                            | Duration                                 | Curve                                                    | What moves                                         |
+| ------------------------ | ------------------------------------------------------------------------ | ---------------------------------------- | -------------------------------------------------------- | -------------------------------------------------- |
+| Nudge                    | It appears                                                               | 400ms                                    | `toast`                                                  | Opacity, rises its own height from the bottom edge |
+| Nudge                    | Done or dismiss                                                          | 200ms                                    | `out`                                                    | Opacity, drops its own height                      |
+| Nudge card               | See                                                                      | 260ms                                    | `out`                                                    | Clip-path reveals it upward from the bar's height  |
+| Nudge step               | Next                                                                     | 200ms                                    | `out`                                                    | Opacity, 8px in from the right, out to the left    |
+| Illustration             | 220ms after its Nudge step appears, 350ms after its Showcase card starts | 240 to 450ms per part, done within 850ms | `out`, `inOut` for a wipe or a highlight moving in place | Opacity, transform, clip-path                      |
+| Coachmark                | Its dot opens it                                                         | 180ms                                    | `out`                                                    | Opacity, scale from .96 at the dot                 |
+| Coachmark                | It closes                                                                | 120ms                                    | `out`                                                    | Opacity, scale back to .96                         |
+| Dot                      | Its coachmark opens                                                      | 180ms                                    | `out`                                                    | Opacity                                            |
+| Dot                      | Press                                                                    | 120ms                                    | `out`                                                    | Scale to .97                                       |
+| Showcase sheet           | It opens                                                                 | 250ms                                    | `out`                                                    | Opacity                                            |
+| Showcase title           | It opens, at 0ms                                                         | 550ms                                    | `out`                                                    | Opacity, 12px rise                                 |
+| Showcase subtitle, cards | At 80, 160, 240, 300, 340, 370ms                                         | 500ms, cards 450ms                       | `out`                                                    | Opacity, 8px rise                                  |
+| Showcase date, footer    | At 0 and 400ms                                                           | 400ms                                    | `out`                                                    | Opacity                                            |
+
+Illustration part lengths live in `illustrationFor`; offsets from `duration.playAt` live in `illustrationAt`. Redact takes 450ms at +150ms. Tabs take 360ms at +0, +90, and +160ms. The shortcut takes 240ms at +0ms, then the command selection takes 420ms at +180ms. Layout panels take 360ms at +0, +110, and +190ms. Theme styles take 360ms at +0, +90, and +150ms.
+
+The archive rows and the step indicator stay still, since Settings opens many times a day and has its own entrance. A dot does not pulse, since it stays on screen for days. The kit's buttons keep the kit's press, a 200ms `ease` scale to .97.
+
+In development, use `?whatsNew=nudge` or `?whatsNew=showcase` to review a view regardless of saved facts. Run `await window.resetWhatsNew()` and reload for a fresh visit. These aids are removed in production builds. `/classic` has announcements, external release links, and the export dialog's One image per tab dot, with no archive. There, turning the One image per tab checkbox on marks `tabs` used, and Redact all marks `redact` used.
 
 ## The theme-card lab
 

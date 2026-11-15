@@ -1,5 +1,7 @@
+import {whatsNewLocale} from './whatsNew';
 import {editorLocale} from './editor';
 import {secrets} from './secrets';
+import {rendering} from './rendering';
 import {altText} from './altText';
 import {animationLocale} from './animation';
 import {lineMarksLocale} from './lineMarks';
@@ -104,10 +106,12 @@ export const locale = {
     ...presets.it,
     ...signatures.it,
     ...exportTabs.it,
+    ...rendering.it,
     ...altText.it,
     ...lineMarksLocale.it,
     ...editorLocale.it,
     ...animationLocale.it,
+    ...whatsNewLocale.it,
   },
   en: {
     ...secrets.en,
@@ -199,10 +203,12 @@ export const locale = {
     ...presets.en,
     ...signatures.en,
     ...exportTabs.en,
+    ...rendering.en,
     ...altText.en,
     ...lineMarksLocale.en,
     ...editorLocale.en,
     ...animationLocale.en,
+    ...whatsNewLocale.en,
   },
   de: {
     ...secrets.de,
@@ -295,10 +301,12 @@ export const locale = {
     ...presets.de,
     ...signatures.de,
     ...exportTabs.de,
+    ...rendering.de,
     ...altText.de,
     ...lineMarksLocale.de,
     ...editorLocale.de,
     ...animationLocale.de,
+    ...whatsNewLocale.de,
   },
   es: {
     ...secrets.es,
@@ -390,10 +398,12 @@ export const locale = {
     ...presets.es,
     ...signatures.es,
     ...exportTabs.es,
+    ...rendering.es,
     ...altText.es,
     ...lineMarksLocale.es,
     ...editorLocale.es,
     ...animationLocale.es,
+    ...whatsNewLocale.es,
   },
 };
 

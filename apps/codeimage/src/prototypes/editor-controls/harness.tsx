@@ -1,3 +1,6 @@
+import {WhatsNewHost} from '../../components/WhatsNew/WhatsNewHost';
+import {commandMenu} from './command-menu/state';
+import {settings} from './shell/settings-state';
 import type {JSX} from 'solid-js';
 import {createEffect, Show} from 'solid-js';
 import {Dynamic} from 'solid-js/web';
@@ -77,6 +80,7 @@ function Editor() {
       </div>
       {/* Outside the layout, so it stays open while the layout under it changes. */}
       <SettingsDialog model={model} />
+      <WhatsNewHost quiet={() => !settings.isOpen() && !commandMenu.isOpen()} />
     </>
   );
 }

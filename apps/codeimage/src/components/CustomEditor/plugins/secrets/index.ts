@@ -8,6 +8,7 @@ import {isolateHistory} from '@codemirror/commands';
 import {forceLinting, linter} from '@codemirror/lint';
 import {StateEffect} from '@codemirror/state';
 import {EditorView} from '@codemirror/view';
+import {getWhatsNew} from '@codeimage/store/whats-new';
 
 export interface SecretMessages {
   warning(ruleId: SecretRuleId): string;
@@ -96,7 +97,9 @@ export function createSecretsExtension(
                   const current = detectSecrets(view.state.doc.toString()).find(
                     item => item.from === from && item.to === to,
                   );
-                  if (current) redactInEditor(view, [current]);
+                  if (!current) return;
+                  redactInEditor(view, [current]);
+                  getWhatsNew().seen('redact');
                 },
               },
               {

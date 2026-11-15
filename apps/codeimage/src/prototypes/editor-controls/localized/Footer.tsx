@@ -2,14 +2,11 @@ import {useI18n} from '@codeimage/locale';
 import type {AppLocaleEntries} from '../../../i18n';
 import {Box, Link} from '@codeimage/ui';
 import {getUmami} from '@core/constants/umami';
-import {createControlledDialog} from '@core/hooks/createControlledDialog';
-import {Changelog} from '../../../components/Changelog/Changelog';
 import {link} from '../../../components/Footer/Footer.css';
 import * as styles from '../../../components/Footer/Footer.css';
 
 export const Footer = () => {
   const [t] = useI18n<AppLocaleEntries>();
-  const openDialog = createControlledDialog();
 
   return (
     <div class={styles.wrapper}>
@@ -63,7 +60,9 @@ export const Footer = () => {
             class={link}
             as={'a'}
             size="xs"
-            onClick={() => openDialog(Changelog, {latest: false})}
+            href="https://github.com/riccardoperra/codeimage/releases"
+            target="_blank"
+            rel="noreferrer"
           >
             🎉
             <Box as={'span'} marginLeft={1}>

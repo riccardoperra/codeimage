@@ -1,0 +1,407 @@
+{
+  "main": "89200f59",
+  "head": "4b96d7ac",
+  "parity": {
+    "cells": 112,
+    "worstPercent": 0.33233353545853545,
+    "errors": [],
+    "fallback": []
+  },
+  "targets": [
+    {
+      "target": "x-landscape",
+      "engine": "dom-export",
+      "percent": 0.220625,
+      "width": 1600,
+      "height": 900
+    },
+    {
+      "target": "x-landscape",
+      "engine": "takumi",
+      "percent": 0.3229166666666667,
+      "width": 1600,
+      "height": 900
+    },
+    {
+      "target": "square",
+      "engine": "dom-export",
+      "percent": 0.004029492455418381,
+      "width": 1080,
+      "height": 1080
+    },
+    {
+      "target": "square",
+      "engine": "takumi",
+      "percent": 0.22213648834019203,
+      "width": 1080,
+      "height": 1080
+    },
+    {
+      "target": "linkedin-portrait",
+      "engine": "dom-export",
+      "percent": 0.0032235939643347053,
+      "width": 1080,
+      "height": 1350
+    },
+    {
+      "target": "linkedin-portrait",
+      "engine": "takumi",
+      "percent": 0.17551440329218107,
+      "width": 1080,
+      "height": 1350
+    },
+    {
+      "target": "open-graph",
+      "engine": "dom-export",
+      "percent": 0.009656084656084656,
+      "width": 1200,
+      "height": 630
+    },
+    {
+      "target": "open-graph",
+      "engine": "takumi",
+      "percent": 0.3277777777777778,
+      "width": 1200,
+      "height": 630
+    }
+  ],
+  "live": [
+    {
+      "lane": 6,
+      "passed": true
+    },
+    {
+      "lane": 2,
+      "passed": true
+    },
+    {
+      "lane": 3,
+      "passed": true
+    },
+    {
+      "lane": 5,
+      "passed": true
+    },
+    {
+      "lane": 8,
+      "passed": true
+    },
+    {
+      "lane": 9,
+      "passed": true
+    },
+    {
+      "lane": 10,
+      "passed": true
+    },
+    {
+      "lane": 7,
+      "passed": true
+    }
+  ],
+  "validation": {
+    "appTests": 108,
+    "typecheckExit": 0,
+    "lintExit": 0,
+    "buildExit": 0,
+    "node": "24.14.0",
+    "latestCodeHead": "66abc153"
+  },
+  "probeCorrection": "The first current-main run passed all 112 matrix cells but timed out taking a settings-container screenshot in live lane 8. Capturing the page and closing through Escape removes the container assumption; all eight live checks pass on rerun.",
+  "lineMarksMain": "1ffe0c9d",
+  "lineMarks": {
+    "results": [
+      {
+        "theme": "Fleet Dark",
+        "numbers": false,
+        "focus": false,
+        "terminal": 0,
+        "percent": 0.1296251217137293,
+        "width": 790,
+        "height": 624
+      },
+      {
+        "theme": "Fleet Dark",
+        "numbers": false,
+        "focus": false,
+        "terminal": 1,
+        "percent": 0.082359623498864,
+        "width": 790,
+        "height": 624
+      },
+      {
+        "theme": "Fleet Dark",
+        "numbers": false,
+        "focus": false,
+        "terminal": 2,
+        "percent": 0.082359623498864,
+        "width": 790,
+        "height": 624
+      },
+      {
+        "theme": "Fleet Dark",
+        "numbers": false,
+        "focus": false,
+        "terminal": 3,
+        "percent": 0.082359623498864,
+        "width": 790,
+        "height": 624
+      },
+      {
+        "theme": "Fleet Dark",
+        "numbers": false,
+        "focus": true,
+        "terminal": 0,
+        "percent": 0.13307367737747486,
+        "width": 790,
+        "height": 624
+      },
+      {
+        "theme": "Fleet Dark",
+        "numbers": false,
+        "focus": true,
+        "terminal": 1,
+        "percent": 0.08580817916260955,
+        "width": 790,
+        "height": 624
+      },
+      {
+        "theme": "Fleet Dark",
+        "numbers": false,
+        "focus": true,
+        "terminal": 2,
+        "percent": 0.08580817916260955,
+        "width": 790,
+        "height": 624
+      },
+      {
+        "theme": "Fleet Dark",
+        "numbers": false,
+        "focus": true,
+        "terminal": 3,
+        "percent": 0.08580817916260955,
+        "width": 790,
+        "height": 624
+      },
+      {
+        "theme": "Fleet Dark",
+        "numbers": true,
+        "focus": false,
+        "terminal": 0,
+        "percent": 0.12678997613365156,
+        "width": 838,
+        "height": 624
+      },
+      {
+        "theme": "Fleet Dark",
+        "numbers": true,
+        "focus": false,
+        "terminal": 1,
+        "percent": 0.08223180955877853,
+        "width": 838,
+        "height": 624
+      },
+      {
+        "theme": "Fleet Dark",
+        "numbers": true,
+        "focus": false,
+        "terminal": 2,
+        "percent": 0.08223180955877853,
+        "width": 838,
+        "height": 624
+      },
+      {
+        "theme": "Fleet Dark",
+        "numbers": true,
+        "focus": false,
+        "terminal": 3,
+        "percent": 0.08223180955877853,
+        "width": 838,
+        "height": 624
+      },
+      {
+        "theme": "Fleet Dark",
+        "numbers": true,
+        "focus": true,
+        "terminal": 0,
+        "percent": 0.1281286334985619,
+        "width": 838,
+        "height": 624
+      },
+      {
+        "theme": "Fleet Dark",
+        "numbers": true,
+        "focus": true,
+        "terminal": 1,
+        "percent": 0.08357046692368889,
+        "width": 838,
+        "height": 624
+      },
+      {
+        "theme": "Fleet Dark",
+        "numbers": true,
+        "focus": true,
+        "terminal": 2,
+        "percent": 0.08357046692368889,
+        "width": 838,
+        "height": 624
+      },
+      {
+        "theme": "Fleet Dark",
+        "numbers": true,
+        "focus": true,
+        "terminal": 3,
+        "percent": 0.08357046692368889,
+        "width": 838,
+        "height": 624
+      },
+      {
+        "theme": "GitHub Light",
+        "numbers": false,
+        "focus": false,
+        "terminal": 0,
+        "percent": 0.17567348263550794,
+        "width": 790,
+        "height": 624
+      },
+      {
+        "theme": "GitHub Light",
+        "numbers": false,
+        "focus": false,
+        "terminal": 1,
+        "percent": 0.12800227198961375,
+        "width": 790,
+        "height": 624
+      },
+      {
+        "theme": "GitHub Light",
+        "numbers": false,
+        "focus": false,
+        "terminal": 2,
+        "percent": 0.11846802986043492,
+        "width": 790,
+        "height": 624
+      },
+      {
+        "theme": "GitHub Light",
+        "numbers": false,
+        "focus": false,
+        "terminal": 3,
+        "percent": 0.12759655955858487,
+        "width": 790,
+        "height": 624
+      },
+      {
+        "theme": "GitHub Light",
+        "numbers": false,
+        "focus": true,
+        "terminal": 0,
+        "percent": 0.17749918857513794,
+        "width": 790,
+        "height": 624
+      },
+      {
+        "theme": "GitHub Light",
+        "numbers": false,
+        "focus": true,
+        "terminal": 1,
+        "percent": 0.13104511522233042,
+        "width": 790,
+        "height": 624
+      },
+      {
+        "theme": "GitHub Light",
+        "numbers": false,
+        "focus": true,
+        "terminal": 2,
+        "percent": 0.13104511522233042,
+        "width": 790,
+        "height": 624
+      },
+      {
+        "theme": "GitHub Light",
+        "numbers": false,
+        "focus": true,
+        "terminal": 3,
+        "percent": 0.12090230444660824,
+        "width": 790,
+        "height": 624
+      },
+      {
+        "theme": "GitHub Light",
+        "numbers": true,
+        "focus": false,
+        "terminal": 0,
+        "percent": 0.15813253012048192,
+        "width": 830,
+        "height": 624
+      },
+      {
+        "theme": "GitHub Light",
+        "numbers": true,
+        "focus": false,
+        "terminal": 1,
+        "percent": 0.1133379672536299,
+        "width": 830,
+        "height": 624
+      },
+      {
+        "theme": "GitHub Light",
+        "numbers": true,
+        "focus": false,
+        "terminal": 2,
+        "percent": 0.12279888785912882,
+        "width": 830,
+        "height": 624
+      },
+      {
+        "theme": "GitHub Light",
+        "numbers": true,
+        "focus": false,
+        "terminal": 3,
+        "percent": 0.12279888785912882,
+        "width": 830,
+        "height": 624
+      },
+      {
+        "theme": "GitHub Light",
+        "numbers": true,
+        "focus": true,
+        "terminal": 0,
+        "percent": 0.17126197096076615,
+        "width": 830,
+        "height": 624
+      },
+      {
+        "theme": "GitHub Light",
+        "numbers": true,
+        "focus": true,
+        "terminal": 1,
+        "percent": 0.12588816805684275,
+        "width": 830,
+        "height": 624
+      },
+      {
+        "theme": "GitHub Light",
+        "numbers": true,
+        "focus": true,
+        "terminal": 2,
+        "percent": 0.12608124806919987,
+        "width": 830,
+        "height": 624
+      },
+      {
+        "theme": "GitHub Light",
+        "numbers": true,
+        "focus": true,
+        "terminal": 3,
+        "percent": 0.12608124806919987,
+        "width": 830,
+        "height": 624
+      }
+    ],
+    "errors": [],
+    "fallback": [],
+    "fontIssues": []
+  }
+}

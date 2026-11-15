@@ -1,10 +1,10 @@
 import {randomUUID} from 'node:crypto';
 import {
   parseAnimationSettings,
-  parseTabMarks,
   readFrameExportProperties,
   readTerminalSurface,
   writeFrameSignature,
+  parseTabMarks,
 } from './project.model.js';
 import type * as repository from './project.repository.js';
 import type {

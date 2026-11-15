@@ -1,8 +1,4 @@
-import {nodeTypes} from '@mdx-js/mdx';
-import mdx from '@mdx-js/rollup';
 import {vanillaExtractPlugin} from '@vanilla-extract/vite-plugin';
-import rehypeRaw from 'rehype-raw';
-import rehypeSlug from 'rehype-slug';
 import type {Plugin, UserConfigExport} from 'vite';
 import {defineConfig} from 'vite';
 import solidPlugin from 'vite-plugin-solid';
@@ -11,20 +7,11 @@ import {withStaticVercelPreview} from '../../scripts/vercel-output-build';
 
 const config: UserConfigExport = defineConfig(({mode}) => ({
   plugins: [
-    {
-      ...mdx({
-        jsx: true,
-        jsxImportSource: 'solid-jsx',
-        providerImportSource: 'solid-mdx',
-        rehypePlugins: [rehypeSlug, [rehypeRaw, {passThrough: nodeTypes}]],
-      }),
-      enforce: 'pre',
-    },
     vanillaExtractPlugin({
       unstable_mode: 'transform',
     }),
     solidPlugin({
-      extensions: ['.mdx', '.tsx', '.ts'],
+      extensions: ['.tsx', '.ts'],
     }),
     tsconfigPaths(),
     {

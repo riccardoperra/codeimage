@@ -2,7 +2,6 @@ import {getEditorStore} from '@codeimage/store/editor';
 import {useI18n} from '@codeimage/locale';
 import {signatureEditor} from '@codeimage/store/frame/signatureEditor';
 import {Button, IconButton} from '@codeui/kit';
-import {useModality} from '@core/hooks/isMobile';
 import {Popover} from '@kobalte/core/popover';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 import {
@@ -18,6 +17,7 @@ import type {JSX} from 'solid-js';
 import {Dynamic} from 'solid-js/web';
 import {sidebarTheme} from '../../../../components/PropertyEditor/EditorSidebar.css';
 import type {AppLocaleEntries} from '../../../../i18n';
+import {CommandMenuButton} from '../../command-menu/CommandMenuButton';
 import {shownTheme} from '../../command-menu/listed-model';
 import {commandMenu} from '../../command-menu/state';
 import type {VariantMeta, VariantProps} from '../../contract';
@@ -216,9 +216,6 @@ export default function Dock(props: VariantProps) {
   const [t] = useI18n<AppLocaleEntries>();
   keepMarkToolbarAboveSelection();
   const fields = createFields(props.model);
-  // The production header shows Export only when the page loaded on a wide
-  // window, so the bar offers it in exactly the other case.
-  const exportInBar = useModality() === 'mobile';
   const compact = createMediaQuery('(max-width: 767px)');
   const canHover = createMediaQuery('(hover: hover) and (pointer: fine)');
 
@@ -476,22 +473,24 @@ export default function Dock(props: VariantProps) {
                 <props.stage.AnimateToggle iconOnly />
               </Show>
               <Show when={!compact()}>
-                <Button
-                  class={styles.item}
-                  theme={'secondary'}
-                  variant={'ghost'}
-                  size={'sm'}
-                  leftIcon={<SearchIcon />}
-                  aria-label={t('editor.searchOptions')}
-                  aria-haspopup="dialog"
-                  aria-expanded={commandMenu.isOpen()}
-                  onClick={commandMenu.open}
-                >
-                  <kbd class={styles.kbd}>{commandMenu.shortcut}</kbd>
-                </Button>
+                <CommandMenuButton>
+                  {trigger => (
+                    <Button
+                      {...trigger}
+                      class={styles.item}
+                      theme={'secondary'}
+                      variant={'ghost'}
+                      size={'sm'}
+                      leftIcon={<SearchIcon />}
+                      aria-label={t('editor.searchOptions')}
+                    >
+                      <kbd class={styles.kbd}>{commandMenu.shortcut}</kbd>
+                    </Button>
+                  )}
+                </CommandMenuButton>
                 <BarSettings />
               </Show>
-              <Show when={exportInBar}>
+              <Show when={props.stage.compact()}>
                 <div class={styles.barExport} onClick={close}>
                   <props.stage.ExportButton />
                 </div>

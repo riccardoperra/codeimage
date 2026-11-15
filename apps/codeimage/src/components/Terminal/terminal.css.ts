@@ -89,6 +89,7 @@ export const content = style({
 });
 
 export const header = style({
+  fontFamily: '"Inter var", system-ui, -apple-system, sans-serif',
   display: 'flex',
   alignItems: 'center',
   position: 'relative',

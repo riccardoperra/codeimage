@@ -197,6 +197,7 @@ export function FrameView(props: VoidProps<FrameViewProps>) {
 }
 
 export function PreviewFrame(props: VoidProps<PreviewFrameProps>) {
+  const config = provideState(EditorConfigStore);
   let ref!: HTMLDivElement;
   const editor = getRootEditorStore();
   const tab = () => props.tab ?? getActiveEditorStore().editor();
@@ -222,7 +223,7 @@ export function PreviewFrame(props: VoidProps<PreviewFrameProps>) {
       'Control+C': () => {
         if (filterHotKey()) return;
         if (!ref) return;
-        dispatchCopyToClipboard({ref});
+        dispatchCopyToClipboard({ref, renderer: config.get.renderer});
       },
     });
   });
