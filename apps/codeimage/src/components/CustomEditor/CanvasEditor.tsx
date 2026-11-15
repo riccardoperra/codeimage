@@ -77,10 +77,13 @@ export default function CanvasEditor(props: CanvasEditorProps) {
   );
   const {
     state: editorState,
-    actions: {setFocused, setActiveEditorView},
+    actions: {setFocused, setActiveEditorView, setActiveEditorViewTabId},
   } = getRootEditorStore();
   createEffect(() => setActiveEditorView(editorView()));
-  onCleanup(() => setActiveEditorView(undefined));
+  onCleanup(() => {
+    setActiveEditorView(undefined);
+    setActiveEditorViewTabId(undefined);
+  });
 
   const {setFocused: editorSetFocused} = createEditorFocus(
     editorView as Accessor<EditorView>,

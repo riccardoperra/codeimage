@@ -44,6 +44,8 @@ export function getInitialEditorUiOptions(): EditorUIOptions {
 
 export function createEditorsStore() {
   const [activeEditorView, setActiveEditorView] = createSignal<EditorView>();
+  const [activeEditorViewTabId, setActiveEditorViewTabId] =
+    createSignal<string>();
 
   const config = defineStore(() => ({
     editors: [getInitialEditorState()],
@@ -283,12 +285,14 @@ export function createEditorsStore() {
     },
     stateToPersist$,
     activeEditorView,
+    activeEditorViewTabId,
     computed: {
       selectedFont,
       canAddEditor,
     },
     actions: {
       setActiveEditorView,
+      setActiveEditorViewTabId,
       setEditors: setEditorsWithCommand,
       addEditor,
       removeEditor,

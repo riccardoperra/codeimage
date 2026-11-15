@@ -1,3 +1,4 @@
+import type {AnimationHeader} from '@core/animation/model';
 import type {LanguageIconDefinition} from '@codeimage/config';
 import type {TerminalState} from '@codeimage/store/editor/model';
 import {FadeInOutTransition} from '@codeimage/ui';
@@ -21,7 +22,10 @@ export interface BaseTerminalProps extends Omit<
   surface?: TerminalState['surface'];
   ref?: Ref<HTMLDivElement>;
   showTab: boolean;
+  title?: string;
+  headerMode?: AnimationHeader['mode'];
   readonlyTab: boolean;
+  staticTabs?: boolean;
   preview?: boolean;
   tabIcon?: LanguageIconDefinition['content'];
   onTabChange?: (tab: string) => void;

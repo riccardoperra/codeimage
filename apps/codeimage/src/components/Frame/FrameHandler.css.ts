@@ -51,7 +51,8 @@ export const content = style({
   height: '100%',
 });
 
-export const squaredBackgroundOverlay = style({
+// The squares that stand for a transparent background.
+export const checkerboard = {
   backgroundImage: `
     linear-gradient(45deg,  ${frameHandlerVars.emptySquareBackgroundColor} 25%,transparent 0),
     linear-gradient(-45deg, ${frameHandlerVars.emptySquareBackgroundColor} 25%,transparent 0),
@@ -60,9 +61,19 @@ export const squaredBackgroundOverlay = style({
   `,
   backgroundSize: '20px 20px',
   backgroundPosition: '0 0,0 10px, 10px -10px, -10px 0',
+};
+
+export const squaredBackgroundOverlay = style({
+  ...checkerboard,
   zIndex: 1,
   position: 'absolute',
   width: '100%',
   height: '100%',
   borderRadius: frameHandlerVars.borderRadius,
+  selectors: {
+    // The animation preview draws its own, the size of the export.
+    [`${content}:has([data-animation-stage]:not([hidden])) &`]: {
+      display: 'none',
+    },
+  },
 });

@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import {mkdir, readFile, writeFile} from 'node:fs/promises';
 import {resolve} from 'node:path';
 import {PNG} from 'pngjs';
+import {createMockContext} from './mock-context.mjs';
 
 const isSave = request =>
   request.method() === 'PUT' &&
@@ -203,7 +204,7 @@ export async function auditSnippets({feature, doctor, context, base, out}) {
       for (const layout of ['inspector', 'dock', 'studio']) {
         for (const width of [1440, 390]) {
           const tag = `${layout}-${width}`;
-          const laneContext = await context.browser().newContext({
+          const laneContext = await createMockContext(context.browser(), base, {
             viewport: {width, height: width === 390 ? 844 : 900},
             locale: 'en-US',
             permissions: ['clipboard-read', 'clipboard-write'],

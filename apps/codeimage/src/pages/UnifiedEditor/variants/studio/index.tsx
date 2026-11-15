@@ -454,10 +454,16 @@ export default function Studio(props: VariantProps) {
           <div class={styles.stage}>
             <props.stage.Canvas />
           </div>
+          <EditingControls state={props.pageState()}>
+            <props.stage.AnimatePanel />
+          </EditingControls>
           <Show
             when={!props.stage.compact()}
             fallback={
               <div class={styles.compactActions}>
+                <EditingControls state={props.pageState()}>
+                  <props.stage.AnimateToggle iconOnly />
+                </EditingControls>
                 <Show when={props.pageState().kind === 'local'}>
                   <ShareButton showLabel={false} />
                 </Show>

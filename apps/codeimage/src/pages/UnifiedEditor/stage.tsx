@@ -1,3 +1,6 @@
+import {AnimatePanel} from '../../components/Animation/AnimatePanel';
+import {AnimateToggle} from '../../components/Animation/AnimateToggle';
+import {AnimationPreview} from '../../components/Animation/AnimationPreview';
 import {ShortcutHelp} from './controls/ShortcutHelp';
 import * as shortcutStyles from './controls/shortcut-help.css';
 import {getExportCanvasStore} from '@codeimage/store/canvas';
@@ -45,6 +48,8 @@ const CustomEditorPreview = lazy(
 );
 
 export interface Stage {
+  readonly AnimatePanel: Component;
+  readonly AnimateToggle: Component<{iconOnly?: boolean}>;
   /** Shared by the header and layouts, so Export has exactly one home. */
   readonly compact: Accessor<boolean>;
   /**
@@ -178,9 +183,11 @@ export function createStage(pageState: Accessor<EditorPageState>): Stage {
   const size = useModality() === 'full' ? 'sm' : 'xs';
 
   return {
+    AnimatePanel,
+    AnimateToggle,
     compact,
     Canvas: () => {
-      let canvas: HTMLDivElement | undefined;
+      const [pillHost, setPillHost] = createSignal<HTMLDivElement>();
       onMount(() => getExportCanvasStore().initCanvas(exportRef));
       const [fontsReady] = createResource(exportRef, element => {
         // Layout starts loading the preview's code font before awaiting it.
@@ -190,7 +197,7 @@ export function createStage(pageState: Accessor<EditorPageState>): Stage {
       // Every placeholder sits inside FitFrame, where the frame will be. The
       // export copy renders into a portal, so its place in the tree is free.
       return (
-        <div ref={canvas} class={shortcutStyles.canvas}>
+        <div ref={setPillHost} class={shortcutStyles.canvas}>
           <FitFrame
             onScaleChange={setScale}
             overlay={<ReadOnlyNotice state={pageState()} />}
@@ -200,17 +207,16 @@ export function createStage(pageState: Accessor<EditorPageState>): Stage {
             >
               <Suspense fallback={<FramePlaceholder frame={exportRef} />}>
                 <Show when={fontsReady()}>
-                  <ManagedFrame />
+                  <AnimationPreview pillHost={pillHost()}>
+                    <ManagedFrame />
+                  </AnimationPreview>
                 </Show>
               </Suspense>
             </SuspenseEditorItem>
             <PreviewFrame ref={setExportRef} />
           </FitFrame>
           <Show when={!compact() && pageState().kind !== 'read-only'}>
-            <ShortcutHelp
-              canvas={() => canvas}
-              editable={pageState().editable}
-            />
+            <ShortcutHelp canvas={pillHost} editable={pageState().editable} />
           </Show>
         </div>
       );

@@ -195,6 +195,22 @@ The announcement styles and exit timers read those constants.
 Keyboard actions do not animate.
 Reduced motion uses opacity without delays and shows illustrations in their final state.
 
+## Animate
+
+The stage supplies `AnimatePanel` and `AnimateToggle`, and `Canvas` wraps the frame in `AnimationPreview`.
+Layouts place the island under the canvas.
+Desktop Dock floats it above the bar and adds its measured height to the canvas inset.
+Compact Dock puts it above the bar and never opens it together with the sheet.
+Inspector and Studio give it its own row, so `FitFrame` refits the frame.
+
+The components live in `components/Animation/`, the store in `state/editor/animation.ts`, and the settings rules in `state/editor/animationSettings.ts`.
+Steps are tabs with stable ids, saved with the document; selection and playback are not saved.
+Keys the island swallows use native `on:keydown` listeners, because the body hotkeys run before Solid's delegated handlers.
+Stopping a key that way also stops delegated handlers below it, so keep those listeners around text fields only.
+
+`scripts/parity/live-animate.ts` runs the Animate lanes in Chrome, `scripts/parity/animation-defaults.ts` compares default timelines with a base, and `scripts/parity/animation-preview.ts --preview` compares the preview with Takumi.
+`docs/plans/animate-new-ui-verification.md` lists the commands.
+
 ## Verification
 
 From the repository root, with the dev server running on port 4347:
