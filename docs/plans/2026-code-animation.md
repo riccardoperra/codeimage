@@ -199,8 +199,8 @@ Each live lane runs in its own git worktree at the PR head. There is no `control
 
 **Review gate.** The operator reviews before merge.
 
-- [ ] Copy lane 2, 5, and 7 screenshots into `docs/plans/media/a2-review-<slug>.png`.
-- [ ] Record a 30 to 60 second video of the CLI rendering a three-step animation and of the result playing in Chrome. Save it as `docs/plans/media/a2-review.mp4`.
+- [ ] Copy lane 2, 5, and 7 screenshots into `/tmp/codeimage-verification/a2-review-<slug>.png`.
+- [ ] Record a 30 to 60 second video of the CLI rendering a three-step animation and of the result playing in Chrome. Save it as `/tmp/codeimage-verification/a2-review.mp4`.
 - [ ] Post the screenshots and the video in chat. Stop at merge-ready. Wait for the operator's click.
 
 **Merge.**
@@ -266,8 +266,8 @@ Each live lane runs in its own git worktree at the PR head. There is no `control
 
 **Review gate.** The operator reviews before merge.
 
-- [ ] Copy lane 2, 3, and 10 screenshots into `docs/plans/media/a3-review-<slug>.png`.
-- [ ] Record a 30 to 60 second video of making three tabs, reordering them, changing the timing, playing, and scrubbing. Save it as `docs/plans/media/a3-review.mp4`.
+- [ ] Copy lane 2, 3, and 10 screenshots into `/tmp/codeimage-verification/a3-review-<slug>.png`.
+- [ ] Record a 30 to 60 second video of making three tabs, reordering them, changing the timing, playing, and scrubbing. Save it as `/tmp/codeimage-verification/a3-review.mp4`.
 - [ ] Post the screenshots and the video in chat. Stop at merge-ready. Wait for the operator's click.
 
 **Merge.**
@@ -326,8 +326,8 @@ Each live lane runs in its own git worktree at the PR head. There is no `control
 
 **Review gate.** The operator reviews before merge.
 
-- [ ] Copy lane 2, 5, and 8 screenshots into `docs/plans/media/a4-review-<slug>.png`.
-- [ ] Record a 30 to 60 second video of exporting WebP and GIF, cancelling one export, and playing the result. Save it as `docs/plans/media/a4-review.mp4`.
+- [ ] Copy lane 2, 5, and 8 screenshots into `/tmp/codeimage-verification/a4-review-<slug>.png`.
+- [ ] Record a 30 to 60 second video of exporting WebP and GIF, cancelling one export, and playing the result. Save it as `/tmp/codeimage-verification/a4-review.mp4`.
 - [ ] Post the screenshots and the video in chat. Stop at merge-ready. Wait for the operator's click.
 
 **Merge.**
@@ -398,8 +398,8 @@ Each live lane runs in its own git worktree at the PR head. There is no `control
 
 **Review gate.** The operator reviews before merge.
 
-- [ ] Copy lane 2, 3, and 7 screenshots into `docs/plans/media/a5-review-<slug>.png`.
-- [ ] Record a 30 to 60 second video of exporting MP4 in the browser and from the CLI, and of playing both files. Save it as `docs/plans/media/a5-review.mp4`.
+- [ ] Copy lane 2, 3, and 7 screenshots into `/tmp/codeimage-verification/a5-review-<slug>.png`.
+- [ ] Record a 30 to 60 second video of exporting MP4 in the browser and from the CLI, and of playing both files. Save it as `/tmp/codeimage-verification/a5-review.mp4`.
 - [ ] Post the screenshots and the video in chat. Stop at merge-ready. Wait for the operator's click.
 
 **Merge.**
