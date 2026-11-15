@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import {mkdir, readFile, writeFile} from 'node:fs/promises';
 import {resolve} from 'node:path';
 import {PNG} from 'pngjs';
+import {createMockContext} from './mock-context.mjs';
 
 const isSave = request =>
   request.method() === 'PUT' &&
@@ -11,6 +12,11 @@ const frame = page =>
 const code = page => page.locator('[data-fit-scale] .cm-content').first();
 
 async function dismissNews(page) {
+  const showcase = page.getByRole('dialog', {name: "What\'s new", exact: true});
+  if (await showcase.isVisible()) {
+    await showcase.getByRole('button', {name: 'Close', exact: true}).click();
+    await showcase.waitFor({state: 'hidden'});
+  }
   const dismiss = page.getByRole('button', {
     name: "Dismiss what's new",
     exact: true,
@@ -24,11 +30,16 @@ async function dismissNews(page) {
 async function ready(page, kind = 'owner') {
   await page.locator(`.unified-editor[data-page-state="${kind}"]`).waitFor();
   await code(page).waitFor();
+  await page
+    .locator('[data-fit-scale] [data-frame-placeholder]')
+    .waitFor({state: 'detached'});
+  await page.locator('[data-fit-scale] .cm-content .cm-line').first().waitFor();
   await page.evaluate(() => document.fonts.ready);
-  await page.waitForTimeout(500);
+  await page.waitForTimeout(800);
   await dismissNews(page);
   const close = page.getByRole('button', {name: /^close$/i}).first();
   if (await close.isVisible()) await close.click();
+  await page.locator('[data-whats-new="showcase"]').waitFor({state: 'hidden'});
 }
 
 async function command(page, label) {
@@ -203,7 +214,7 @@ export async function auditSnippets({feature, doctor, context, base, out}) {
       for (const layout of ['inspector', 'dock', 'studio']) {
         for (const width of [1440, 390]) {
           const tag = `${layout}-${width}`;
-          const laneContext = await context.browser().newContext({
+          const laneContext = await createMockContext(context.browser(), base, {
             viewport: {width, height: width === 390 ? 844 : 900},
             locale: 'en-US',
             permissions: ['clipboard-read', 'clipboard-write'],

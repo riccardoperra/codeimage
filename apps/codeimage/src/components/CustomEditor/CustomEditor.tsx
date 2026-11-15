@@ -32,7 +32,14 @@ import {
 } from '@codemirror/view';
 import {createCodeMirror, createEditorReadonly} from 'solid-codemirror';
 import type {VoidProps} from 'solid-js';
-import {createEffect, createMemo, createResource, on, untrack} from 'solid-js';
+import {
+  createEffect,
+  createMemo,
+  createResource,
+  getOwner,
+  on,
+  untrack,
+} from 'solid-js';
 import {baseEditorTheme} from './editorTheme';
 import {createTabIcon} from '../../hooks/use-tab-icon';
 import {mapLines} from '../../core/diff/mapLines';
@@ -75,10 +82,12 @@ interface CustomEditorProps {
 export default function CustomEditor(props: VoidProps<CustomEditorProps>) {
   const {themeArray: themes} = getThemeStore();
   const [t] = useI18n<AppLocaleEntries>();
+  const owner = getOwner();
   const languages = SUPPORTED_LANGUAGES;
   const {
     state: editorState,
     computed: {selectedFont},
+    actions: {setActiveEditorViewTabId},
   } = getRootEditorStore();
   const {editor} = getActiveEditorStore();
   const selectedLanguage = createMemo(() =>
@@ -167,6 +176,11 @@ export default function CustomEditor(props: VoidProps<CustomEditorProps>) {
   };
 
   createEditorReadonly(editorView, () => props.readOnly);
+  // Code that is not editable is not focusable either, and leaving the
+  // animation preview returns the focus to it.
+  createExtension(() =>
+    props.readOnly ? EditorView.contentAttributes.of({tabindex: '0'}) : [],
+  );
   createExtension(EditorView.lineWrapping);
   createExtension(() =>
     EditorView.contentAttributes.of({
@@ -212,23 +226,28 @@ export default function CustomEditor(props: VoidProps<CustomEditorProps>) {
     const offset = editorState.options.showLineNumbers
       ? (lineNumberStart() ?? 1) - 1
       : 0;
-    return lineMarksExtension(!props.readOnly, initialMarks, {
-      toolbar: t('lineMarks.toolbar'),
-      highlight: t('lineMarks.highlight'),
-      added: t('lineMarks.added'),
-      removed: t('lineMarks.removed'),
-      clear: t('lineMarks.clear'),
-      focus: t('lineMarks.focus'),
-      focusHint: t('lineMarks.focusHint'),
-      removeMark: t('lineMarks.removeMark'),
-      unmarked: t('lineMarks.unmarked'),
-      line: line => t('lineMarks.line', {line: String(line + offset)}),
-      selection: (from, to) =>
-        t('lineMarks.selection', {
-          from: String(from + offset),
-          to: String(to + offset),
-        }),
-    });
+    return lineMarksExtension(
+      !props.readOnly,
+      initialMarks,
+      {
+        toolbar: t('lineMarks.toolbar'),
+        highlight: t('lineMarks.highlight'),
+        added: t('lineMarks.added'),
+        removed: t('lineMarks.removed'),
+        clear: t('lineMarks.clear'),
+        focus: t('lineMarks.focus'),
+        focusHint: t('lineMarks.focusHint'),
+        removeMark: t('lineMarks.removeMark'),
+        unmarked: t('lineMarks.unmarked'),
+        line: line => t('lineMarks.line', {line: String(line + offset)}),
+        selection: (from, to) =>
+          t('lineMarks.selection', {
+            from: String(from + offset),
+            to: String(to + offset),
+          }),
+      },
+      owner ?? undefined,
+    );
   });
   createExtension(() => EditorState.readOnly.of(props.readOnly));
 
@@ -275,7 +294,10 @@ export default function CustomEditor(props: VoidProps<CustomEditorProps>) {
         const changedTab = id !== activeId;
         const current = view.state.doc.toString();
         const changedCode = code !== current;
-        if (!changedTab && !changedCode && !marks) return;
+        if (!changedTab && !changedCode && !marks) {
+          setActiveEditorViewTabId(id);
+          return;
+        }
         if (!changedTab && changedCode && !props.readOnly) {
           // Format rewrites the stored code; map marks by line and keep the step undoable.
           const lines = mapLines(current, code);
@@ -320,6 +342,7 @@ export default function CustomEditor(props: VoidProps<CustomEditorProps>) {
         } finally {
           syncing = false;
         }
+        setActiveEditorViewTabId(id);
       },
     ),
   );

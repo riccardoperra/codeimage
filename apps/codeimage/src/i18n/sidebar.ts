@@ -49,8 +49,6 @@ export default {
       addTab: 'Add tab',
       closeTab: 'Close tab',
       freeSize: 'Free size',
-      signature: 'Signature',
-      signaturePosition: 'Position',
       bottomLeft: 'Bottom left',
       bottomRight: 'Bottom right',
       targets: {
@@ -138,8 +136,6 @@ export default {
       addTab: 'Aggiungi scheda',
       closeTab: 'Chiudi scheda',
       freeSize: 'Dimensioni libere',
-      signature: 'Firma',
-      signaturePosition: 'Posizione',
       bottomLeft: 'In basso a sinistra',
       bottomRight: 'In basso a destra',
       targets: {
@@ -228,8 +224,6 @@ export default {
       addTab: 'Tab hinzufügen',
       closeTab: 'Tab schließen',
       freeSize: 'Freie Größe',
-      signature: 'Signatur',
-      signaturePosition: 'Position',
       bottomLeft: 'Unten links',
       bottomRight: 'Unten rechts',
       targets: {
@@ -318,8 +312,6 @@ export default {
       addTab: 'Añadir pestaña',
       closeTab: 'Cerrar pestaña',
       freeSize: 'Tamaño libre',
-      signature: 'Firma',
-      signaturePosition: 'Posición',
       bottomLeft: 'Abajo a la izquierda',
       bottomRight: 'Abajo a la derecha',
       targets: {

@@ -11,7 +11,7 @@ import type {VoidProps} from 'solid-js';
 import {createMemo, ErrorBoundary, For, Show, Suspense} from 'solid-js';
 import {createTabIcon} from '../../../hooks/use-tab-icon';
 import type {WindowStyle} from '../WindowStyles/WindowStyles';
-import {WindowTab} from './Tab/WindowTab';
+import {WindowTab, WindowTabContentText} from './Tab/WindowTab';
 import * as modern from './Tab/WindowTabStyle.css';
 import {DraggableWindowTab} from './Tab/DraggableWindowTab';
 import * as styles from './Tab/Tab.css';
@@ -27,6 +27,7 @@ export interface TerminalWindowTabListProps {
   small?: boolean;
   showOnlyActiveTab?: boolean;
   activeTabId?: string;
+  staticTabs?: boolean;
 }
 
 export function TerminalWindowTabList(
@@ -34,7 +35,8 @@ export function TerminalWindowTabList(
 ) {
   return (
     <>
-      {props.appearance && (props.readOnly || props.preview) ? (
+      {props.staticTabs ||
+      (props.appearance && (props.readOnly || props.preview)) ? (
         <StaticWindowTabs {...props} />
       ) : props.preview ? (
         <TerminalWindowTabListPreview {...props} />
@@ -191,21 +193,53 @@ function StaticWindowTabs(props: TerminalWindowTabListProps) {
     editor.state.editors.filter(
       tab =>
         (!props.showOnlyActiveTab || active(tab.id)) &&
-        (props.appearance === 'editor' || !!tab.tab.tabName),
+        (!props.appearance ||
+          props.appearance === 'editor' ||
+          !!tab.tab.tabName),
     );
   return (
-    <div class={modern.wrapper} data-window-tabs={props.appearance}>
-      <div class={modern.list}>
+    <div
+      class={
+        props.appearance
+          ? modern.wrapper
+          : styles.wrapper({accent: props.accent, lite: props.lite})
+      }
+      data-window-tabs={props.appearance}
+      data-accent-visible={!props.appearance ? props.accent : undefined}
+    >
+      <div class={props.appearance ? modern.list : styles.tabListWrapper}>
         <For each={tabs()}>
-          {tab => (
-            <WindowTab
-              appearance={props.appearance}
-              active={active(tab.id)}
-              accentMode={false}
-              index={0}
-              content={<span>{tab.tab.tabName || 'Untitled'}</span>}
-            />
-          )}
+          {(tab, index) => {
+            const icon = createTabIcon(
+              () => tab.tab.tabName ?? null,
+              () => tab.languageId,
+              true,
+            );
+            return (
+              <WindowTab
+                appearance={props.appearance}
+                active={active(tab.id)}
+                accentMode={props.appearance ? false : props.accent}
+                tabIcon={icon()?.content}
+                index={
+                  props.appearance
+                    ? 0
+                    : active(tab.id)
+                      ? 10
+                      : 10 - (index() + 1)
+                }
+                content={
+                  props.appearance ? (
+                    <span>{tab.tab.tabName || 'Untitled'}</span>
+                  ) : (
+                    <WindowTabContentText>
+                      {tab.tab.tabName}
+                    </WindowTabContentText>
+                  )
+                }
+              />
+            );
+          }}
         </For>
       </div>
     </div>

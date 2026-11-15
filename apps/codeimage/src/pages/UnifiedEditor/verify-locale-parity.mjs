@@ -219,25 +219,29 @@ function hardcodedMessages(source) {
 }
 const {readdirSync} = await import('node:fs');
 const editorDirectory = fileURLToPath(new URL('./', import.meta.url));
-for (const entry of readdirSync(editorDirectory, {recursive: true})) {
-  if (!/\.tsx?$/.test(entry) || entry.endsWith('.css.ts')) continue;
-  const path = `${editorDirectory}/${entry}`;
-  const contents = readFileSync(path, 'utf8');
-  assert(!contents.includes('// i18n'), `${entry}: unresolved i18n marker`);
-  assert.deepEqual(
-    hardcodedMessages(
-      ts.createSourceFile(
-        path,
-        contents,
-        ts.ScriptTarget.Latest,
-        true,
-        ts.ScriptKind.TSX,
+for (const directory of [
+  editorDirectory,
+  fileURLToPath(new URL('../../components/Animation/', import.meta.url)),
+])
+  for (const entry of readdirSync(directory, {recursive: true})) {
+    if (!/\.tsx?$/.test(entry) || entry.endsWith('.css.ts')) continue;
+    const path = `${directory}/${entry}`;
+    const contents = readFileSync(path, 'utf8');
+    assert(!contents.includes('// i18n'), `${entry}: unresolved i18n marker`);
+    assert.deepEqual(
+      hardcodedMessages(
+        ts.createSourceFile(
+          path,
+          contents,
+          ts.ScriptTarget.Latest,
+          true,
+          ts.ScriptKind.TSX,
+        ),
       ),
-    ),
-    [],
-    `${entry}: hard-coded user-facing messages`,
-  );
-}
+      [],
+      `${entry}: hard-coded user-facing messages`,
+    );
+  }
 assert.deepEqual(
   hardcodedMessages(
     ts.createSourceFile(
@@ -253,3 +257,79 @@ assert.deepEqual(
 console.log(
   'PASS: unified editor text, labels, hints and accessible names use locale keys; hard-coded-message negative control passed.',
 );
+
+export function localeUsage(messages, sources) {
+  const keys = Object.keys(flatten(messages));
+  const used = new Set();
+  const unknown = new Set();
+  let nonLiteralCalls = 0;
+  for (const source of sources) {
+    function visit(node) {
+      // Include keys in metadata passed indirectly to t(), as well as direct calls.
+      if (ts.isStringLiteralLike(node) && keys.includes(node.text))
+        used.add(node.text);
+      if (ts.isTemplateExpression(node) && node.head.text.includes('.'))
+        for (const key of keys)
+          if (key.startsWith(node.head.text)) used.add(key);
+      if (
+        ts.isCallExpression(node) &&
+        ts.isIdentifier(node.expression) &&
+        ['t', 'tUnsafe'].includes(node.expression.text)
+      ) {
+        if (!node.arguments[0] || !ts.isStringLiteralLike(node.arguments[0]))
+          nonLiteralCalls++;
+        else if (!keys.includes(node.arguments[0].text))
+          unknown.add(node.arguments[0].text);
+      }
+      ts.forEachChild(node, visit);
+    }
+    visit(source);
+  }
+  return {
+    unknown: [...unknown].sort(),
+    unused: keys.filter(key => !used.has(key)).sort(),
+    nonLiteralCalls,
+  };
+}
+const appDirectory = fileURLToPath(new URL('../../', import.meta.url));
+const usage = localeUsage(
+  locale.en,
+  readdirSync(appDirectory, {recursive: true})
+    .filter(entry => /\.tsx?$/.test(entry) && !entry.startsWith('i18n/'))
+    .map(entry =>
+      ts.createSourceFile(
+        entry,
+        readFileSync(`${appDirectory}/${entry}`, 'utf8'),
+        ts.ScriptTarget.Latest,
+        true,
+      ),
+    ),
+);
+assert.deepEqual(usage.unknown, [], 'Unknown literal locale keys');
+const negativeUsage = localeUsage(
+  {used: 'Used', group: {one: 'One'}, unused: 'Unused'},
+  [
+    ts.createSourceFile(
+      'usage-negative.ts',
+      "t('used'); const label = 'missing'; t(label); tUnsafe(label); t(`group.${id}`); t('missing');",
+      ts.ScriptTarget.Latest,
+      true,
+    ),
+  ],
+);
+assert.deepEqual(negativeUsage, {
+  unknown: ['missing'],
+  unused: ['unused'],
+  nonLiteralCalls: 3,
+});
+function nonLiteralUsageMessage(count) {
+  return `UNCHECKED: ${count} non-literal t()/tUnsafe() call sites (variable or interpolated keys).`;
+}
+assert.equal(
+  nonLiteralUsageMessage(negativeUsage.nonLiteralCalls),
+  'UNCHECKED: 3 non-literal t()/tUnsafe() call sites (variable or interpolated keys).',
+);
+console.log(
+  `PASS: no unknown literal locale keys (literal t()/tUnsafe() arguments only); usage negative controls passed. Unused locale keys (${usage.unused.length}): ${usage.unused.join(', ')}`,
+);
+console.log(nonLiteralUsageMessage(usage.nonLiteralCalls));

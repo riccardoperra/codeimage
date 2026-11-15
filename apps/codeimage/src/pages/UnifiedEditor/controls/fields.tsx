@@ -1,3 +1,4 @@
+import {getWhatsNew} from '../../../state/whats-new';
 import {getFrameState} from '@codeimage/store/editor/frame';
 import {createSelectOptions, Select} from '@codeui/kit';
 import {Switch} from '@kobalte/core/switch';
@@ -120,7 +121,10 @@ export function AspectRatioField(props: {control: SelectControl}) {
       value={props.control.value() === 'null' ? null : props.control.value()}
       onChange={ratio => props.control.set(String(ratio))}
       target={frame.exportTarget()}
-      onTargetChange={frame.setExportTarget}
+      onTargetChange={target => {
+        frame.setExportTarget(target);
+        if (target) getWhatsNew().seen('social');
+      }}
     />
   );
 }

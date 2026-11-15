@@ -3,6 +3,7 @@ import {editorLocale} from './editor';
 import {secrets} from './secrets';
 import {rendering} from './rendering';
 import {altText} from './altText';
+import {animationLocale} from './animation';
 import {lineMarksLocale} from './lineMarks';
 import {notFound} from './ notFound';
 import {dashboard} from './dashboard';
@@ -21,10 +22,6 @@ export const locale = {
     common: {
       close: 'Chiudi',
       confirm: 'Conferma',
-      yes: 'Si',
-      no: 'No',
-      show: 'Mostra',
-      hide: 'Nascondi',
       reload: 'Ricarica',
       clone: 'Clona',
       new: 'Nuovo',
@@ -67,19 +64,13 @@ export const locale = {
     export: {
       title: 'Esporta immagine',
       shareMode: 'Condividi il tuo codice',
-      shareHint: 'Questa modalità usa la nuova',
-      noOpacitySupportedWithThisExtension:
-        'La transparenza personalizzata non è compatibile con questa estensione',
-      exportMode: 'Esporta come immagine',
       fileName: 'Nome file',
       fileNamePlaceholder: 'Inserisci nome file...',
-      extensionType: 'Estensione file',
       pixelRatio: 'Scala',
       genericSaveError: 'Si è verificato un errore durante il salvataggio',
       quality: 'Qualità',
     },
     shortcut: {
-      esc: 'Esc',
       buttonAction: 'Scorciatoie tastiera',
       focusCodeEditor: 'Attiva l’editor di codice',
       unFocusCodeEditor: 'Esci dall’editor di codice',
@@ -92,7 +83,6 @@ export const locale = {
       pickRandomTheme: 'Scegli un tema casuale',
       export: 'Esporta',
       exportNewTab: 'Esporta in una nuova tab',
-      copyLink: 'Copia link',
       copySnippet: 'Copia snippet',
       openShortcuts: 'Apri scorciatoie',
     },
@@ -113,6 +103,7 @@ export const locale = {
     ...altText.it,
     ...lineMarksLocale.it,
     ...editorLocale.it,
+    ...animationLocale.it,
     ...whatsNewLocale.it,
   },
   en: {
@@ -127,10 +118,6 @@ export const locale = {
     common: {
       close: 'Close',
       confirm: 'Confirm',
-      yes: 'Yes',
-      no: 'No',
-      show: 'Show',
-      hide: 'Hide',
       reload: 'Reload',
       clone: 'Clone',
       new: 'New',
@@ -165,20 +152,14 @@ export const locale = {
     export: {
       title: 'Export image',
       shareMode: 'Share your code',
-      shareHint: 'This modality uses the new',
-      exportMode: 'Export as image',
       fileName: 'File name',
       fileNamePlaceholder: 'Enter file name...',
-      extensionType: 'File extension',
       pixelRatio: 'Scale',
       genericSaveError: 'An error occurred while saving',
-      noOpacitySupportedWithThisExtension:
-        'The custom transparency is not compatible with this extension',
       quality: 'Quality',
     },
     shortcut: {
       selectLanguage: 'Select language',
-      esc: 'Esc',
       buttonAction: 'Keyboard shortcuts',
       focusCodeEditor: 'Focus code editor',
       unFocusCodeEditor: 'Unfocus code editor',
@@ -190,7 +171,6 @@ export const locale = {
       pickRandomTheme: 'Pick random theme',
       export: 'Export',
       exportNewTab: 'Export in a new tab',
-      copyLink: 'Copy link',
       copySnippet: 'Copy snippet',
       openShortcuts: 'Open shortcuts',
     },
@@ -211,6 +191,7 @@ export const locale = {
     ...altText.en,
     ...lineMarksLocale.en,
     ...editorLocale.en,
+    ...animationLocale.en,
     ...whatsNewLocale.en,
   },
   de: {
@@ -218,10 +199,6 @@ export const locale = {
     common: {
       close: 'Schließen',
       confirm: 'Bestätigen',
-      yes: 'Ja',
-      no: 'Nein',
-      show: 'Anzeigen',
-      hide: 'Verstecken',
       reload: 'Neu laden',
       clone: 'Klonen',
       new: 'Neu',
@@ -264,20 +241,14 @@ export const locale = {
     export: {
       title: 'Bild exportieren',
       shareMode: 'Code teilen',
-      shareHint: 'Diese Funktion verwendet die neue',
-      exportMode: 'Als Bild exportieren',
       fileName: 'Dateiname',
       fileNamePlaceholder: 'Dateinamen eingeben...',
-      extensionType: 'Dateierweiterung',
       pixelRatio: 'Skalierung',
       genericSaveError: 'Beim Speichern ist ein Fehler aufgetreten',
-      noOpacitySupportedWithThisExtension:
-        'Die benutzerdefinierte Transparenz ist mit dieser Erweiterung nicht kompatibel',
       quality: 'Qualität',
     },
     shortcut: {
       selectLanguage: 'Sprache wählen',
-      esc: 'Esc',
       buttonAction: 'Tastaturkürzel',
       focusCodeEditor: 'Code Editor fokussieren',
       unFocusCodeEditor: 'Fokus von Code Editor nehmen',
@@ -290,7 +261,6 @@ export const locale = {
       export: 'Export',
       exportNewTab: 'In neuem Tab exportieren',
       copySnippet: 'Code-Schnipsel kopieren',
-      copyLink: 'Link kopieren',
       openShortcuts: 'Tastaturkürzel öffnen',
     },
     themeSwitcher: {
@@ -310,6 +280,7 @@ export const locale = {
     ...altText.de,
     ...lineMarksLocale.de,
     ...editorLocale.de,
+    ...animationLocale.de,
     ...whatsNewLocale.de,
   },
   es: {
@@ -317,10 +288,6 @@ export const locale = {
     common: {
       close: 'Cerrar',
       confirm: 'Confirmar',
-      yes: 'Si',
-      no: 'No',
-      show: 'Mostrar',
-      hide: 'Esconder',
       reload: 'Recargar',
       clone: 'Clonar',
       new: 'Nuevo',
@@ -362,19 +329,13 @@ export const locale = {
     export: {
       title: 'Exporta imagen',
       shareMode: 'Comparte tu código',
-      shareHint: 'Esta modalidad utiliza el nuevo',
-      noOpacitySupportedWithThisExtension:
-        'La transparencia personalizada no es compatible con esta extensión',
-      exportMode: 'Exportar como imagen',
       fileName: 'Nombre del archivo',
       fileNamePlaceholder: 'Inserta el nombre del archivo...',
-      extensionType: 'Extensión de archivo',
       pixelRatio: 'Escala',
       genericSaveError: 'Se produjo un error al guardar',
       quality: 'Calidad',
     },
     shortcut: {
-      esc: 'Esc',
       buttonAction: 'Atajos de teclado',
       focusCodeEditor: 'Activar el editor de código',
       unFocusCodeEditor: 'Salir del editor de código',
@@ -387,7 +348,6 @@ export const locale = {
       pickRandomTheme: 'Elegir un tema al azar',
       export: 'Exporta',
       exportNewTab: 'Exportar en una pestaña nueva',
-      copyLink: 'Copia enlace',
       copySnippet: 'Copia snippet',
       openShortcuts: 'Abre atajo',
     },
@@ -408,6 +368,7 @@ export const locale = {
     ...altText.es,
     ...lineMarksLocale.es,
     ...editorLocale.es,
+    ...animationLocale.es,
     ...whatsNewLocale.es,
   },
 };

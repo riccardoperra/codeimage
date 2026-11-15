@@ -44,6 +44,7 @@ export function CanvasToolbar(props: {stage: Stage}) {
         >
           {t('editor.copyImage')}
         </Button>
+        <props.stage.AnimateToggle />
         <AskAiButton />
       </div>
     </Show>

@@ -1,424 +1,567 @@
 import {useI18n} from '@codeimage/locale';
 import type {AppLocaleEntries} from '../../i18n';
 import type {Component, JSX} from 'solid-js';
-import {Show} from 'solid-js';
-import type {HighlightId} from '../../state/whats-new';
-import * as styles from './whats-new.css';
+import {
+  For,
+  Match,
+  Switch,
+  onCleanup,
+  onMount,
+  createSignal,
+  Show,
+} from 'solid-js';
+import type {ContentHighlightId} from '../../state/whats-new/registry';
+import * as styles from './illustrations.css';
 
-/**
- * `play` explains the feature once, as a Nudge step or a Showcase card
- * appears. `still` is the picture in a coachmark, the last frame of `play`.
- * `thumb` is the small picture of an archive row, where text would be too
- * small to read, so a picture made of text draws bars instead.
- */
 export type IllustrationMode = 'play' | 'still' | 'thumb';
-
 interface IllustrationProps {
   readonly mode?: IllustrationMode;
 }
 
-function Frame(props: IllustrationProps & {children: JSX.Element}) {
+/** A single explanation on first intersection; the resting drawing is complete. */
+function Frame(
+  props: IllustrationProps & {id: ContentHighlightId; children: JSX.Element},
+) {
+  let frame!: HTMLDivElement;
+  const [playing, setPlaying] = createSignal<'entrance' | 'scroll'>();
+  // Once it has played, the picture is the still drawing again: no animation
+  // is left holding a layer, so its edges stay as crisp as the still mode's.
+  const play = (from: 'entrance' | 'scroll') => {
+    setPlaying(from);
+    requestAnimationFrame(() => {
+      const parts = frame.getAnimations({subtree: true});
+      void Promise.allSettled(parts.map(part => part.finished)).then(() =>
+        setPlaying(undefined),
+      );
+    });
+  };
+  onMount(() => {
+    if (props.mode !== 'play') return;
+    let first = true;
+    const observer = new IntersectionObserver(
+      entries => {
+        const visible = entries.some(entry => entry.isIntersecting);
+        // A picture on screen from the start waits for its card to settle.
+        // One that is scrolled to has nothing to wait for.
+        if (visible) play(first ? 'entrance' : 'scroll');
+        first = false;
+        if (visible) observer.disconnect();
+      },
+      {threshold: 0.25},
+    );
+    observer.observe(frame);
+    onCleanup(() => observer.disconnect());
+  });
   return (
     <div
-      class={styles.illustration}
+      ref={frame}
+      class={styles.frame}
+      data-picture={props.id}
       data-mode={props.mode ?? 'still'}
+      data-playing={playing()}
+      style={
+        playing() === 'scroll' ? {'--whats-new-play-at': '0ms'} : undefined
+      }
       aria-hidden="true"
     >
-      {props.children}
+      <div class={styles.stage}>{props.children}</div>
     </div>
   );
 }
 
-function CommandIllustration(props: IllustrationProps) {
+const cx = (...names: (string | undefined)[]) =>
+  names.filter(Boolean).join(' ');
+
+function Bar(props: {width: string; class?: string; children?: JSX.Element}) {
+  return (
+    <i class={cx(styles.bar, props.class)} style={{width: props.width}}>
+      {props.children}
+    </i>
+  );
+}
+function Tile(props: {tone?: number; children?: JSX.Element; class?: string}) {
+  return (
+    <div class={cx(styles.tile, props.class)} data-tone={props.tone ?? 0}>
+      {props.children}
+    </div>
+  );
+}
+/** Code on its canvas. */
+function Code(props: {
+  lines?: readonly string[];
+  /** A window with its own fill, for the pictures about the window itself. */
+  window?: boolean;
+  class?: string;
+  children?: JSX.Element;
+}) {
+  return (
+    <div class={cx(props.window ? styles.win : styles.code, props.class)}>
+      {props.children}
+      <For each={props.lines ?? ['68%', '46%', '58%']}>
+        {width => <Bar width={width} />}
+      </For>
+    </div>
+  );
+}
+function Chip(props: {children: JSX.Element}) {
+  return <span class={styles.chip}>{props.children}</span>;
+}
+function PlayGlyph() {
+  return (
+    <svg viewBox="0 0 10 10">
+      <path d="M2.5 1.2v7.6L9 5z" />
+    </svg>
+  );
+}
+function Chevron() {
+  return (
+    <svg viewBox="0 0 6 6">
+      <path d="M1.5 1 4.5 3l-3 2" />
+    </svg>
+  );
+}
+
+/** Thumbnails are symbols drawn for 64×44, with no miniature labels. */
+function Thumb(props: {id: ContentHighlightId}) {
   const [t] = useI18n<AppLocaleEntries>();
   return (
-    <Frame mode={props.mode}>
-      <Show
-        when={props.mode === 'thumb'}
-        fallback={
-          <>
-            <div class={styles.miniWindow}>
-              <div>⌕ {t('editor.searchOptions')}</div>
-              <hr />
-              <div class={styles.commandList}>
-                <div class={styles.commandPick} />
-                <div>{t('frame.theme')}: GitHub Dark</div>
-                <div>
-                  {t('editor.layoutCommand', {value: t('editor.inspector')})}
-                </div>
-                <div>{t('export.title')}</div>
+    <Switch>
+      <Match when={props.id === 'marks'}>
+        <Bar width="46%" />
+        <div class={styles.removed}>
+          <i class={styles.removedWash} />
+          <Bar width="58%" />
+        </div>
+        <div class={styles.added}>
+          <i class={styles.addedWash} />
+          <Bar width="78%" />
+        </div>
+        <Bar width="34%" />
+      </Match>
+      <Match when={props.id === 'redact'}>
+        <Bar width="64%" />
+        <div class={styles.warned}>
+          <i class={styles.warnedWash} />
+          <span class={styles.dots}>
+            <For each={[0, 1, 2, 3, 4]}>{() => <i />}</For>
+          </span>
+        </div>
+        <Bar width="42%" />
+      </Match>
+      <Match when={props.id === 'social'}>
+        <div class={styles.thumbSizes}>
+          <Tile />
+          <Tile />
+          <Tile />
+        </div>
+      </Match>
+      <Match when={props.id === 'tabs'}>
+        <div class={styles.thumbTabs}>
+          <i />
+          <i />
+          <i />
+        </div>
+        <div class={styles.thumbRow}>
+          <Tile />
+          <Tile tone={1} />
+          <Tile tone={2} />
+        </div>
+      </Match>
+      <Match when={props.id === 'alt'}>
+        <div class={cx(styles.thumbRow, styles.thumbCentre)}>
+          <Tile />
+          <span class={styles.altSymbol}>{t('whatsNew.illustration.alt')}</span>
+        </div>
+      </Match>
+      <Match when={props.id === 'cli'}>
+        <div class={styles.prompt}>
+          $ <b />
+        </div>
+        <Bar width="78%" />
+        <Bar width="46%" />
+      </Match>
+      <Match when={props.id === 'signature'}>
+        <Tile class={styles.thumbSigned}>
+          <span class={styles.thumbPill}>
+            <i />
+            <b />
+          </span>
+        </Tile>
+      </Match>
+      <Match when={props.id === 'window-styles'}>
+        <div class={styles.thumbRow}>
+          <Tile class={styles.thumbWindow}>
+            <div class={styles.win}>
+              <div class={styles.thumbLights}>
+                <i />
+                <i />
+                <i />
+              </div>
+              <i style={{width: '80%'}} />
+            </div>
+          </Tile>
+          <Tile tone={2} class={styles.thumbWindow}>
+            <div class={cx(styles.win, styles.shell)}>
+              <i class={styles.thumbPrompt} />
+              <i style={{width: '70%'}} />
+            </div>
+          </Tile>
+        </div>
+      </Match>
+      <Match when={props.id === 'command-menu'}>
+        <div class={styles.commandSymbol}>⌘ K</div>
+        <div class={styles.thumbSelected}>
+          <Bar width="75%" />
+        </div>
+      </Match>
+      <Match when={props.id === 'takumi'}>
+        <div class={cx(styles.thumbRow, styles.thumbCentre)}>
+          <span class={styles.toggle}>
+            <i />
+          </span>
+          <Tile class={styles.thumbOutput} />
+        </div>
+      </Match>
+      <Match when={props.id === 'layouts'}>
+        <div class={styles.thumbScreen}>
+          <Tile />
+          <i />
+        </div>
+      </Match>
+      <Match when={props.id === 'theme-cards'}>
+        <div class={styles.thumbThemes}>
+          <Tile />
+          <div class={styles.orb} />
+          <span class={styles.aa}>Aa</span>
+        </div>
+      </Match>
+      <Match when={props.id === 'animate'}>
+        <Tile class={styles.thumbPlay}>
+          <PlayGlyph />
+        </Tile>
+        <div class={styles.thumbTimeline}>
+          <i style={{flex: 3}} />
+          <i style={{flex: 2}} />
+          <i style={{flex: 4}} />
+          <b />
+        </div>
+      </Match>
+    </Switch>
+  );
+}
+
+function Drawing(props: {id: ContentHighlightId}) {
+  const [t] = useI18n<AppLocaleEntries>();
+  return (
+    <Switch>
+      <Match when={props.id === 'marks'}>
+        <Bar width="46%" />
+        <div class={styles.removed}>
+          <i class={cx(styles.removedWash, styles.removedWipe)} />
+          <Bar width="38%">
+            <i class={cx(styles.tint, styles.tintOut[0])} />
+          </Bar>
+        </div>
+        <div class={styles.added}>
+          <i class={cx(styles.addedWash, styles.addedWipe)} />
+          <Bar width="72%">
+            <i class={cx(styles.tint, styles.tintOut[1])} />
+          </Bar>
+        </div>
+        <Bar width="60%" />
+        <Bar width="24%" />
+      </Match>
+      <Match when={props.id === 'redact'}>
+        <Bar width="52%" />
+        <div class={styles.warned}>
+          <i class={cx(styles.warnedWash, styles.warnedWipe)} />
+          <div class={styles.secretRow}>
+            <Bar width="24%" />
+            <span class={styles.secretSlot}>
+              <span class={cx(styles.secretText, styles.secretLeaves)}>
+                sk_live_9aF3kQ
+              </span>
+              <span class={styles.dots}>
+                <For each={styles.dot}>{dot => <i class={dot} />}</For>
+              </span>
+            </span>
+          </div>
+        </div>
+        <Bar width="64%" />
+        <Bar width="34%" class={styles.aboveChip} />
+        <Chip>
+          <i class={styles.warnDot} />
+          {t('whatsNew.illustration.secretHidden')}
+        </Chip>
+      </Match>
+      <Match when={props.id === 'social'}>
+        <div class={styles.sizes}>
+          <For each={['16:9', '1:1', '4:5']}>
+            {(ratio, index) => (
+              <Tile class={styles.arrive[index()]}>
+                <span style={{'aspect-ratio': ratio.replace(':', '/')}}>
+                  {ratio}
+                </span>
+              </Tile>
+            )}
+          </For>
+        </div>
+      </Match>
+      <Match when={props.id === 'tabs'}>
+        <div class={cx(styles.tabs, styles.centred)}>
+          <For each={['app.tsx', 'api.ts', 'types.ts']}>
+            {file => <span>{file}</span>}
+          </For>
+        </div>
+        <div class={cx(styles.tileRow, styles.centred)}>
+          <For each={[0, 1, 2]}>
+            {tone => <Tile tone={tone} class={styles.drop[tone]} />}
+          </For>
+        </div>
+      </Match>
+      <Match when={props.id === 'alt'}>
+        <div class={cx(styles.row, styles.altRow, styles.aboveChip)}>
+          <Tile class={styles.altTile}>
+            <Code lines={['70%', '45%']} />
+          </Tile>
+          <q class={cx(styles.altCopy, styles.written)}>
+            {t('whatsNew.illustration.altDescription')}
+          </q>
+        </div>
+        <Chip>{t('whatsNew.illustration.alt')}</Chip>
+      </Match>
+      <Match when={props.id === 'cli'}>
+        <div class={styles.cli}>
+          <div class={styles.terminal}>
+            <div class={styles.terminalHead}>
+              <i />
+              <i />
+              <i />
+            </div>
+            <code class={styles.cliLine}>
+              <b>$</b>
+              <span class={styles.typed}>
+                codeimage snippet.ts
+                <i class={cx(styles.typeCover, styles.typing)} />
+              </span>
+            </code>
+            <code class={cx(styles.cliLine, styles.cliDim, styles.cliAnswer)}>
+              <b>✓</b>
+              snippet.png
+            </code>
+          </div>
+          <Tile class={cx(styles.cliOutput, styles.cliProduced)}>
+            <Code />
+          </Tile>
+        </div>
+      </Match>
+      <Match when={props.id === 'takumi'}>
+        <div class={styles.engine}>
+          <div class={styles.engineSwitch}>
+            <i class={cx(styles.engineThumb, styles.engineChosen)} />
+            <span class={cx(styles.engineOption, styles.engineOn)} data-on="">
+              <i />
+              Takumi
+            </span>
+            <span class={cx(styles.engineOption, styles.engineOff)}>
+              <i />
+              {t('whatsNew.illustration.browser')}
+            </span>
+          </div>
+          <svg
+            class={styles.wires}
+            viewBox="0 0 44 56"
+            preserveAspectRatio="none"
+          >
+            <path
+              class={styles.wireFallback}
+              d="M0 41C24 41 20 28 44 28"
+              vector-effect="non-scaling-stroke"
+            />
+            <path
+              class={cx(styles.wireActive, styles.wireOn)}
+              d="M0 15C24 15 20 28 44 28"
+              vector-effect="non-scaling-stroke"
+            />
+          </svg>
+          <Tile class={styles.engineOutput}>
+            <Code />
+          </Tile>
+        </div>
+      </Match>
+      <Match when={props.id === 'signature'}>
+        <Tile class={cx(styles.canvas, styles.signed, styles.centred)}>
+          <Code lines={['62%', '40%']} />
+          <div class={styles.signatures}>
+            <span class={cx(styles.minimal, styles.stamp[0])}>@dev</span>
+            <span class={cx(styles.pill, styles.stamp[1])}>@dev</span>
+            <span class={cx(styles.card, styles.stamp[2])}>
+              <i class={styles.avatar} />
+              @dev
+            </span>
+          </div>
+        </Tile>
+      </Match>
+      <Match when={props.id === 'window-styles'}>
+        <div class={cx(styles.tileRow, styles.windows, styles.centred)}>
+          <Tile class={cx(styles.windowTile, styles.arrive[0])}>
+            <Code window lines={['72%', '46%', '60%']}>
+              <div class={styles.windowHead}>
+                <i />
+                <i />
+                <i />
+                <b />
+              </div>
+            </Code>
+          </Tile>
+          <Tile tone={1} class={cx(styles.windowTile, styles.arrive[1])}>
+            <Code window lines={[]}>
+              <div class={styles.editorHead}>
+                <b />
+              </div>
+              <For each={['64%', '40%', '54%']}>
+                {width => (
+                  <div class={styles.numbered}>
+                    <i />
+                    <Bar width={width} />
+                  </div>
+                )}
+              </For>
+            </Code>
+          </Tile>
+          <Tile tone={2} class={cx(styles.windowTile, styles.arrive[2])}>
+            <Code window lines={[]} class={styles.shell}>
+              <div class={styles.promptLine}>
+                <Chevron />
+                <Bar width="58%" />
+              </div>
+              <Bar width="72%" />
+              <div class={styles.promptLine}>
+                <Chevron />
+                <b />
+              </div>
+            </Code>
+          </Tile>
+        </div>
+      </Match>
+      <Match when={props.id === 'command-menu'}>
+        <div class={cx(styles.command, styles.centred)}>
+          <div class={styles.commandSearch}>
+            <Bar width="48%" />
+            <span class={styles.key}>⌘ K</span>
+          </div>
+          <div class={cx(styles.selected, styles.arrive[0])}>
+            <span>↗</span>
+            {t('whatsNew.illustration.exportImage')}
+            <span>↵</span>
+          </div>
+          <Bar width="56%" />
+        </div>
+      </Match>
+      <Match when={props.id === 'layouts'}>
+        <div class={cx(styles.layouts, styles.centred)}>
+          <div class={styles.layoutOption}>
+            <div class={styles.screen} data-layout="inspector">
+              <div class={styles.stageCanvas}>
+                <Tile />
+              </div>
+              <i class={cx(styles.control, styles.docked.inspector)} />
+            </div>
+            <span>{t('editor.inspector')}</span>
+          </div>
+          <div class={styles.layoutOption}>
+            <div class={styles.screen} data-layout="dock">
+              <div class={styles.stageCanvas}>
+                <Tile />
+              </div>
+              <i class={cx(styles.control, styles.docked.dock)} />
+            </div>
+            <span>{t('editor.dock')}</span>
+          </div>
+          <div class={styles.layoutOption}>
+            <div class={styles.screen} data-layout="studio">
+              <i class={cx(styles.control, styles.rail, styles.docked.rail)} />
+              <i
+                class={cx(styles.control, styles.docked.studio)}
+                data-soft=""
+              />
+              <div class={styles.stageCanvas}>
+                <Tile />
               </div>
             </div>
-            <kbd class={styles.keycap}>⌘ K</kbd>
-          </>
-        }
-      >
-        <svg viewBox="0 0 120 76">
-          <rect
-            class={styles.thumbWindow}
-            x="14"
-            y="4"
-            width="92"
-            height="68"
-            rx="8"
-          />
-          <rect
-            class={styles.wireFrame}
-            x="24"
-            y="14"
-            width="72"
-            height="9"
-            rx="4.5"
-          />
-          <rect
-            class={styles.wireCanvas}
-            x="20"
-            y="40"
-            width="80"
-            height="12"
-            rx="4"
-          />
-          <rect
-            class={styles.wireFrame}
-            x="26"
-            y="31"
-            width="44"
-            height="4"
-            rx="2"
-          />
-          <rect
-            fill="currentColor"
-            x="26"
-            y="44"
-            width="56"
-            height="4"
-            rx="2"
-          />
-          <rect
-            class={styles.wireFrame}
-            x="26"
-            y="57"
-            width="36"
-            height="4"
-            rx="2"
-          />
-        </svg>
-      </Show>
-    </Frame>
-  );
-}
-
-function RedactIllustration(props: IllustrationProps) {
-  return (
-    <Frame mode={props.mode}>
-      <Show
-        when={props.mode === 'thumb'}
-        fallback={
-          <div class={styles.miniWindow}>
-            <div>const client = connect({'{'}</div>
-            <div>
-              &nbsp;&nbsp;token: '
-              <span class={styles.secret}>
-                <span class={styles.plain}>sk_live_51</span>
-                <span class={`${styles.redacted} ${styles.dots}`}>
-                  ••••••••••
-                </span>
-              </span>
-              ',
-            </div>
-            <div>{'}'});</div>
+            <span>{t('editor.studio')}</span>
           </div>
-        }
-      >
-        <svg viewBox="0 0 120 76">
-          <rect
-            class={styles.thumbWindow}
-            x="14"
-            y="4"
-            width="92"
-            height="68"
-            rx="8"
-          />
-          <rect
-            class={styles.wireFrame}
-            x="24"
-            y="18"
-            width="60"
-            height="5"
-            rx="2.5"
-          />
-          <rect
-            class={styles.wireFrame}
-            x="32"
-            y="36"
-            width="20"
-            height="5"
-            rx="2.5"
-          />
-          <path
-            d="M58 38.5h32"
-            stroke="currentColor"
-            stroke-width="5"
-            stroke-linecap="round"
-            stroke-dasharray="0 8"
-          />
+        </div>
+      </Match>
+      <Match when={props.id === 'theme-cards'}>
+        <div class={styles.themes}>
+          <Tile class={cx(styles.themeTile, styles.arrive[0])}>
+            <Code />
+          </Tile>
+          <div class={cx(styles.orb, styles.arrive[1])} />
+          <span class={cx(styles.aa, styles.arrive[2])}>Aa</span>
+        </div>
+      </Match>
+      <Match when={props.id === 'animate'}>
+        <div class={styles.animate}>
+          <Tile class={styles.preview}>
+            <Code lines={[]}>
+              <Bar width="62%" />
+              <Bar width="44%" class={cx(styles.inserted, styles.insertedIn)} />
+              <Bar width="74%" class={styles.pushedDown} />
+              <Bar width="36%" class={styles.pushedDown} />
+            </Code>
+          </Tile>
+          <div class={styles.timeline}>
+            <div class={styles.steps}>
+              <span class={styles.step} style={{flex: 3}}>
+                1
+              </span>
+              <span class={styles.step} style={{flex: 2}} data-current="">
+                2
+              </span>
+              <span class={styles.step} style={{flex: 4}}>
+                3
+              </span>
+              <div class={cx(styles.scrub, styles.scrubbing)}>
+                <i />
+              </div>
+            </div>
+            <div class={styles.transport}>
+              <PlayGlyph />
+              0:02
+              <i />
+              0:06
+            </div>
+          </div>
+        </div>
+      </Match>
+    </Switch>
+  );
+}
 
-          <rect
-            class={styles.wireFrame}
-            x="24"
-            y="54"
-            width="16"
-            height="5"
-            rx="2.5"
-          />
-        </svg>
+function picture(id: ContentHighlightId): Component<IllustrationProps> {
+  return props => (
+    <Frame {...props} id={id}>
+      <Show when={props.mode === 'thumb'} fallback={<Drawing id={id} />}>
+        <Thumb id={id} />
       </Show>
     </Frame>
   );
 }
 
-function TabsIllustration(props: IllustrationProps) {
-  return (
-    <Frame mode={props.mode}>
-      <svg width="250" height="96" viewBox="0 0 250 96">
-        <rect
-          class={styles.wireCanvas}
-          x="0"
-          y="8"
-          width="96"
-          height="80"
-          rx="8"
-        />
-        <rect fill="currentColor" x="8" y="16" width="24" height="8" rx="3" />
-        <rect
-          class={styles.wireFrame}
-          x="36"
-          y="16"
-          width="24"
-          height="8"
-          rx="3"
-        />
-        <rect
-          class={styles.wireFrame}
-          x="64"
-          y="16"
-          width="24"
-          height="8"
-          rx="3"
-        />
-        <path
-          d="M10 42h56m-56 12h40m-40 12h50"
-          stroke="currentColor"
-          stroke-width="3"
-        />
-        <path
-          d="M112 48h24m-8-8 8 8-8 8"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="3"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        />
-        <g class={styles.tabOut[0]}>
-          <rect
-            class={styles.wireCanvas}
-            x="154"
-            y="4"
-            width="96"
-            height="24"
-            rx="6"
-          />
-          <rect
-            class={styles.wireFrame}
-            x="166"
-            y="9"
-            width="44"
-            height="14"
-            rx="3"
-          />
-        </g>
-        <g class={styles.tabOut[1]}>
-          <rect
-            class={styles.wireCanvas}
-            x="154"
-            y="36"
-            width="96"
-            height="24"
-            rx="6"
-          />
-          <rect
-            class={styles.wireFrame}
-            x="166"
-            y="41"
-            width="44"
-            height="14"
-            rx="3"
-          />
-        </g>
-        <g class={styles.tabOut[2]}>
-          <rect
-            class={styles.wireCanvas}
-            x="154"
-            y="68"
-            width="96"
-            height="24"
-            rx="6"
-          />
-          <rect
-            class={styles.wireFrame}
-            x="166"
-            y="73"
-            width="44"
-            height="14"
-            rx="3"
-          />
-        </g>
-      </svg>
-    </Frame>
-  );
-}
-
-function LayoutIllustration(props: IllustrationProps) {
-  return (
-    <Frame mode={props.mode}>
-      <svg width="250" height="90" viewBox="0 0 250 90">
-        <rect
-          class={styles.wireCanvas}
-          x="0"
-          y="10"
-          width="72"
-          height="65"
-          rx="6"
-        />
-        <rect
-          class={styles.wireFrame}
-          x="12"
-          y="26"
-          width="32"
-          height="30"
-          rx="3"
-        />
-        <rect
-          class={styles.dockRight}
-          fill="currentColor"
-          x="51"
-          y="10"
-          width="21"
-          height="65"
-          rx="5"
-        />
-        <rect
-          class={styles.wireCanvas}
-          x="89"
-          y="10"
-          width="72"
-          height="65"
-          rx="6"
-        />
-        <rect
-          class={styles.wireFrame}
-          x="109"
-          y="22"
-          width="32"
-          height="30"
-          rx="3"
-        />
-        <rect
-          class={styles.dockBottom}
-          fill="currentColor"
-          x="99"
-          y="61"
-          width="52"
-          height="8"
-          rx="4"
-        />
-        <rect
-          class={styles.wireCanvas}
-          x="178"
-          y="10"
-          width="72"
-          height="65"
-          rx="6"
-        />
-        <rect
-          class={styles.dockLeft}
-          fill="currentColor"
-          x="178"
-          y="10"
-          width="9"
-          height="65"
-          rx="4"
-        />
-        <rect
-          class={styles.wireFrame}
-          x="202"
-          y="26"
-          width="32"
-          height="30"
-          rx="3"
-        />
-      </svg>
-    </Frame>
-  );
-}
-
-function ThemeIllustration(props: IllustrationProps) {
-  return (
-    <Frame mode={props.mode}>
-      <svg width="240" height="100" viewBox="0 0 240 100">
-        <g class={styles.themeStyle[0]}>
-          <rect
-            class={styles.wireCanvas}
-            x="5"
-            y="16"
-            width="72"
-            height="68"
-            rx="8"
-          />
-          <rect
-            class={styles.wireFrame}
-            x="16"
-            y="27"
-            width="50"
-            height="46"
-            rx="5"
-          />
-          <path
-            d="M24 40h30m-30 8h18m-18 8h25"
-            stroke="currentColor"
-            stroke-width="3"
-          />
-        </g>
-        <g class={styles.themeStyle[1]}>
-          <circle cx="123" cy="50" r="25" fill="currentColor" opacity=".2" />
-          <path
-            d="M105 44h25m-25 8h35m-35 8h18"
-            stroke="currentColor"
-            stroke-width="4"
-          />
-        </g>
-        <text
-          class={styles.themeStyle[2]}
-          x="178"
-          y="62"
-          fill="currentColor"
-          font-size="34"
-          font-family="monospace"
-        >
-          Aa
-        </text>
-      </svg>
-    </Frame>
-  );
-}
-
-export const illustrations: Record<
-  HighlightId,
-  Component<IllustrationProps>
-> = {
-  redact: RedactIllustration,
-  tabs: TabsIllustration,
-  'command-menu': CommandIllustration,
-  layouts: LayoutIllustration,
-  'theme-cards': ThemeIllustration,
-};
+export const illustrations = {
+  marks: picture('marks'),
+  redact: picture('redact'),
+  social: picture('social'),
+  tabs: picture('tabs'),
+  alt: picture('alt'),
+  cli: picture('cli'),
+  takumi: picture('takumi'),
+  signature: picture('signature'),
+  'window-styles': picture('window-styles'),
+  'command-menu': picture('command-menu'),
+  layouts: picture('layouts'),
+  'theme-cards': picture('theme-cards'),
+  animate: picture('animate'),
+} satisfies Record<ContentHighlightId, Component<IllustrationProps>>;

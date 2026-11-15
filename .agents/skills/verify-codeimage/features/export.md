@@ -8,11 +8,11 @@ PNG/JPEG/SVG; per-tab ZIP; clipboard image and alt text; new tab; conditional We
 
 ## How to get to it (user POV)
 
-At `/`, Export downloads immediately. Arrow More ways to export opens actions and Export settings…. Classic Export opens a confirmation dialog.
+At `/`, Export downloads immediately. Arrow More ways to export opens actions and Export settings….
 
 ## Driving it with Playwright
 
-Baseline waits for a download before clicking `[data-export-image]` and decodes actual PNG. Audit changes `[data-setting="export-format"]` in Settings → Export to SVG, downloads and parses it, restores PNG, focuses `#settings-rendering-engine` and presses Space to enable it (the visible switch wrapper intercepts pointer clicks on its input) in Experiments, downloads Takumi PNG and rejects the renderer-fallback console error, then restores the engine. Tabs journey decodes ZIP members. For classic choose Export → PNG/SVG/JPEG → Confirm. Unified shortcuts come from `controls/shortcuts.ts` and are bound in ExportControl. On Apple platforms, Cmd+S downloads, Cmd+O opens a new tab and Cmd+Shift+C copies the image; Control+S/O/C remain supported. Elsewhere Ctrl+S/O/C keep those actions. Cmd+C stays text copy, and Control+C stays text copy while an editable field is focused. Exercise every combo and the secrets review when claiming shortcut coverage.
+Baseline waits for a download before clicking `[data-export-image]` and decodes actual PNG. Audit changes `[data-setting="export-format"]` in Settings → Export to SVG, downloads and parses it, restores PNG, focuses `#settings-rendering-engine` and presses Space to enable it (the visible switch wrapper intercepts pointer clicks on its input) in Experiments, downloads Takumi PNG and rejects the renderer-fallback console error, then restores the engine. Tabs journey decodes ZIP members. Unified shortcuts come from `controls/shortcuts.ts` and are bound in ExportControl. On Apple platforms, Cmd+S downloads, Cmd+O opens a new tab and Cmd+Shift+C copies the image; Control+S/O/C remain supported. Elsewhere Ctrl+S/O/C keep those actions. Cmd+C stays text copy, and Control+C stays text copy while an editable field is focused. Exercise every combo and the secrets review when claiming shortcut coverage.
 
 Source: `pages/UnifiedEditor/shell/ExportControl.tsx`, `shell/export.tsx`, `shell/sections.tsx`, `core/rasterize/takumi.ts`.
 
@@ -24,8 +24,30 @@ The case asserts live zoom 1, exact decoded PNG/screen pixel dimensions, a visib
 
 ## Gotchas
 
-Clipboard is available for PNG/SVG and needs permission. Share requires navigator.share. Do not mock those browser APIs to claim native sharing. Redaction modifies documents. Animation core exists but no animation editor UI is wired at this HEAD; CLI and animation preview on other branches are excluded.
+Clipboard is available for PNG/SVG and needs permission. Share requires navigator.share. Do not mock those browser APIs to claim native sharing. Redaction modifies documents. Animation is available in the unified guest editor; the classic editor and CLI are outside this export surface.
 
 `snippet-read-only` verifies a real PNG download and clipboard PNG from another owner's snippet in all three layouts at desktop and phone sizes. See [saved projects](projects.md).
 
 Move the pointer to Export before capturing: leaving a theme card cancels its preview. Align the screen capture to a device-pixel origin with layout offsets, not a transform that changes text rasterization. Freeze the measured frame size while removing the same editing controls export excludes; otherwise close-button spacing or rounded screenshot bounds produce false differences. Compare the rendered watermark SVG as well as the pixels, since a 2px logo offset can occupy less than 0.5% of an image.
+
+## Animation MP4
+
+With Animate open, Export video and its arrow open the video settings in the existing export popover. Export as image closes Animate and opens the image choices. With Animate closed, image export keeps its existing controls and shortcuts. Two saved steps enable MP4.
+
+Video settings offer 24, 30, 50 or 60 fps, Current frame or 1920 × 1080, and 1×, 2× or 3× for a current frame without a social target. The default scale is 2×. Social targets and 1080p retain their static window layout and fixed output pixels. The current frame uses the editor's measured dimensions, including manual resizing. Code runs retain their intrinsic width in Takumi so token boundaries cannot introduce line wrapping.
+
+MP4 has no alpha. A visible frame paints its background across the video canvas behind the scene. A hidden or fully transparent frame uses the Solid background colour field, initially the theme's editor background. Static PNG export retains alpha.
+
+`[data-animation-export]` contains the video settings and a Kobalte progressbar styled with UI tokens. Cancel terminates the worker. Completed jobs download an MP4; Share MP4 appears when both navigator.share and navigator.canShare support that file. The start action repeats secrets review and captures any redaction. Missing WebCodecs and rejected configurations disable export with a localized reason. Worker load, message, renderer, font and encoder failures show a localized cause and Retry. The worker load message explains offline and stale deployment files. There is no WebM fallback.
+
+## Animation audit
+
+The cases use fresh guest contexts, the skill's owned server and MSW boundary, visible editor controls and real downloaded files. Install ffmpeg and ffprobe before running them. Use `VERIFY_BROWSER_CHANNEL=chrome` for branded Chrome.
+
+- `animation-mp4`: a 22-line, three-step project in Inspector, Dock and Studio, plus 1080p60. ffprobe checks High-profile H.264, yuv420p, limited BT.709, dimensions, frame count, fps and duration. A box-length walk verifies faststart. Worker messages and Long Tasks record preparation and encoding observations. `VERIFY_WEBKIT=1` also replays a short hold from the captured job in WebKit and records its stream metadata as best-effort evidence.
+- `animation-mp4-errors`: abort the worker script, assert the visible cause, retry to a real MP4, dispatch a message decoding error, block WASM and confirm that the editor remains usable.
+- `animation-mp4-compositing`: inspect a decoded rounded corner, compare 2× with 1× dimensions, hide the frame and inspect the chosen solid colour in the decoded MP4.
+- `animation-mp4-modes`: check image controls with Animate closed, direct MP4 settings from the main button and arrow with Animate open, the return to image export, and the animation title and redaction path in secrets review.
+- `animation-mp4-parity`: type the two Counter steps with the createSignal line, download each static PNG at 2× and compare both decoded hold frames at the current size and after a real frame resize. A pixel scan rejects syntax text on the blank line after createSignal, so whole-frame compression tolerance cannot hide wrapping. The comparison uses pixelmatch threshold 0.15 and a 3% limit to include H.264 compression while rejecting a changed line layout.
+
+Native file sharing and real Safari remain platform checks.

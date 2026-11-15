@@ -24,6 +24,7 @@ The editor has three layouts. A layout decides where the canvas, the controls an
 | Dock      | Experiment | A floating bar over the canvas. It takes no layout space.                         |
 | Studio    | Experiment | A rail of tools with one panel open at a time.                                    |
 
+- A read-only snippet is a page mode. A layout draws no container for controls it does not show, so the canvas takes the space. Controls that open during editing must leave the frame still.
 - Inspector is the default because it is the closest to what users know, and every option is one click away.
 - In Inspector, one section is open at a time. Several open sections made the panel scroll further with each click.
 - Dock floats over the canvas. Its menus open as overlays above it. An earlier build gave the dock its own row, and the canvas shrank each time a menu opened.
