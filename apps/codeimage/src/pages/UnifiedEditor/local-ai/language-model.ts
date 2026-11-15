@@ -54,6 +54,9 @@ const LANGUAGES = {
 // asks again while a download runs.
 export const POLL_MS = 5000;
 
+/** Console trace of the model's life, filtered with "[local-ai]". */
+export const log = (...args: unknown[]) => console.info('[local-ai]', ...args);
+
 export function createLanguageModel(api: LanguageModelApi | undefined) {
   const [state, setState] = createSignal<ModelState>(
     api ? {kind: 'unavailable'} : {kind: 'unsupported'},
@@ -62,6 +65,7 @@ export function createLanguageModel(api: LanguageModelApi | undefined) {
   let poll: ReturnType<typeof setInterval> | undefined;
 
   const set = (next: ModelState) => {
+    log('state', next);
     setState(next);
     if (next.kind === 'downloading') {
       poll ??= setInterval(() => void refresh(), POLL_MS);
@@ -75,8 +79,11 @@ export function createLanguageModel(api: LanguageModelApi | undefined) {
   // creates when the answer is 'unavailable'.
   async function check(): Promise<Availability> {
     try {
-      return (await api?.availability(LANGUAGES)) ?? 'unavailable';
-    } catch {
+      const answer = (await api?.availability(LANGUAGES)) ?? 'unavailable';
+      log('availability()', answer);
+      return answer;
+    } catch (error) {
+      log('availability() threw', error);
       return 'unavailable';
     }
   }
@@ -112,17 +119,21 @@ export function createLanguageModel(api: LanguageModelApi | undefined) {
         return;
       }
       set({kind: 'downloading', loaded: undefined});
+      log('create() to download the model');
       const session = await api.create({
         ...LANGUAGES,
         monitor: monitor =>
           monitor.addEventListener('downloadprogress', event => {
+            log('downloadprogress', event.loaded);
             if (state().kind !== 'downloading') return;
             set({kind: 'downloading', loaded: event.loaded || undefined});
           }),
       });
+      log('create() resolved, the model is downloaded');
       session.destroy();
       set({kind: 'available'});
     } catch (error) {
+      log('download failed', error);
       set({
         kind: 'failed',
         error: error instanceof Error ? error.message : String(error),
@@ -143,6 +154,7 @@ export function createLanguageModel(api: LanguageModelApi | undefined) {
     if (now !== 'available') {
       throw new Error('The on-device model is not available.');
     }
+    log('create() a session');
     return api.create({
       ...LANGUAGES,
       initialPrompts: [{role: 'system', content: system}],
@@ -150,6 +162,7 @@ export function createLanguageModel(api: LanguageModelApi | undefined) {
     });
   }
 
+  if (!api) log('this browser has no LanguageModel');
   void refresh();
   return {state, refresh, download, openSession};
 }

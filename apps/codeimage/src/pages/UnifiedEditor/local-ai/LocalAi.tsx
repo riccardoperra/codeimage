@@ -12,7 +12,7 @@ import {commandMenu} from '../command-menu/state';
 import type {EditorControlsModel} from '../model';
 import {preferences} from '../shell/preferences';
 import {settings} from '../shell/settings-state';
-import {languageModel} from './language-model';
+import {languageModel, log} from './language-model';
 import type {StepResult} from './plan';
 import {
   describeSettings,
@@ -78,32 +78,36 @@ export function LocalAi(props: {
       | Awaited<ReturnType<typeof languageModel.openSession>>
       | undefined;
     try {
-      session = await languageModel.openSession(
-        systemPrompt(tools, {
-          themes: props.model.themes().map(theme => theme.name),
-          languages: FEATURED,
-          settings: describeSettings(reader.usable().map(describeControl)),
-          tabs: reader.tabs(),
-        }),
+      const system = systemPrompt(tools, {
+        themes: props.model.themes().map(theme => theme.name),
+        languages: FEATURED,
+        settings: describeSettings(reader.usable().map(describeControl)),
+        tabs: reader.tabs(),
+      });
+      log(`system prompt (${system.length} chars)`, system);
+      session = await languageModel.openSession(system, signal);
+      const prompt = requestPrompt(text, blocks);
+      log('prompt', prompt, 'code blocks', blocks);
+      const answer = await session.prompt(prompt, {
+        responseConstraint: planSchema(tools),
         signal,
-      );
-      const plan = parsePlan(
-        await session.prompt(requestPrompt(text, blocks), {
-          responseConstraint: planSchema(tools),
-          signal,
-        }),
-      );
+      });
+      log('model answer', answer);
+      const plan = parsePlan(answer);
+      log('plan', plan);
       if (!plan.ok) throw new Error(plan.error);
       if (plan.value.steps.length === 0) {
         setPhase({kind: 'failed', error: t('localAi.noSteps')});
         return;
       }
       setPhase({kind: 'running'});
-      await runPlan(plan.value, tools, blocks, step =>
-        setSteps(done => [...done, step]),
-      );
+      await runPlan(plan.value, tools, blocks, step => {
+        log('step', step);
+        setSteps(done => [...done, step]);
+      });
       setPhase({kind: 'idle'});
     } catch (error) {
+      log('request failed', error);
       if (signal.aborted) return;
       setPhase({
         kind: 'failed',
