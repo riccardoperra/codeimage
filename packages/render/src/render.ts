@@ -318,7 +318,9 @@ export async function renderAnimation(
   // registers first. renderFrame names its family.
   const {fontFamily} = await entry.renderFrame(document);
   await registerAppFont(document.editor.options.fontId, fontFamily);
-  const pageCss = (css: string) => [stylesheet, css].map(normalizeGradients);
+  // Like snapshotMarkup, the scene CSS holds the CodeMirror rules and loads
+  // first, so the app's line mark rules win over them.
+  const pageCss = (css: string) => [css, stylesheet].map(normalizeGradients);
   const fps = animationFps(format, document.animation.fps);
   const animation = await entry.renderAnimationScenes(
     document,

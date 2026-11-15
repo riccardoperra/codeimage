@@ -14,6 +14,7 @@ import {
 import {sampleDocument} from './sample';
 import {
   decode,
+  decodeApng,
   decodeGif,
   plainDocument,
   readApngAnimation,
@@ -79,7 +80,7 @@ async function setup() {
     css: string,
     options: {timeMs?: number; width?: number; height?: number} = {},
   ): Promise<MeasuredNode> =>
-    renderer.measure(html, {css: [stylesheet, css], ...options});
+    renderer.measure(html, {css: [css, stylesheet], ...options});
   return {entry, measure};
 }
 
@@ -220,6 +221,41 @@ const codePixels = (image: PNG) => {
   return count;
 };
 
+// Two tabs of one size with line numbers. Their middle line is removed in the
+// first tab and added in the second.
+const markedSteps = (): AnimationInput => {
+  const {format, ...base} = plainDocument('', {showLineNumbers: true});
+  const [tab] = base.editor.editors;
+  const step = (id: string, middle: string, kind: 'added' | 'removed') => ({
+    ...tab,
+    id,
+    tabName: `${id}.ts`,
+    code: `const a = 1;\n${middle}\nconst c = 3;`,
+    marks: {lines: [{line: 2, kind}], focusedLines: []},
+  });
+  return {
+    ...base,
+    scale: 1,
+    format: 'apng',
+    editor: {
+      ...base.editor,
+      editors: [
+        step('first', 'const b = 2;', 'removed'),
+        step('second', 'const d = 4;', 'added'),
+      ],
+    },
+  };
+};
+
+const differingPixels = (frame: PNG, image: PNG) => {
+  expect([frame.width, frame.height]).toEqual([image.width, image.height]);
+  let count = 0;
+  for (let i = 0; i < frame.data.length; i += 4) {
+    if (frame.data.compare(image.data, i, i + 4, i, i + 4)) count++;
+  }
+  return count;
+};
+
 describe('renderAnimation', {timeout: 60_000}, () => {
   it('holds every tab and morphs between them when the project stores no animation', async () => {
     const input = steps2([SHORT, TALL]);
@@ -268,6 +304,13 @@ describe('renderAnimation', {timeout: 60_000}, () => {
     );
     expect(Math.round(sum(shortFirst.file.durationsMs))).toBe(600);
     expect(shortFirst.file.durationsMs).toHaveLength(36);
+  });
+
+  it('draws the line marks of the first and the last frame like the still of each step', async () => {
+    const input = markedSteps();
+    const frames = decodeApng(await renderAnimation(input));
+    expect(differingPixels(frames[0], await still(input, 0))).toBe(0);
+    expect(differingPixels(frames.at(-1)!, await still(input, 1))).toBe(0);
   });
 
   it('scales the frames with the pixel ratio', async () => {

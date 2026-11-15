@@ -1,3 +1,4 @@
+import {crc32} from 'node:zlib';
 import {PNG} from 'pngjs';
 import type {SnapshotInput} from './document';
 import {sampleDocument} from './sample';
@@ -84,6 +85,53 @@ export function readApngAnimation(bytes: Uint8Array): AnimationFile {
     offset = data + size + 4;
   }
   return file;
+}
+
+const pngChunk = (type: string, data: Uint8Array) => {
+  const chunk = Buffer.alloc(12 + data.length);
+  chunk.writeUInt32BE(data.length);
+  chunk.write(type, 4, 'latin1');
+  chunk.set(data, 8);
+  chunk.writeUInt32BE(crc32(chunk.subarray(4, -4)), 8 + data.length);
+  return chunk;
+};
+
+// Each frame of an animated PNG whose frames are whole canvases that replace
+// the one before, which is how Takumi writes them.
+export function decodeApng(bytes: Uint8Array): PNG[] {
+  const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+  let header: Uint8Array = new Uint8Array();
+  const frames: Uint8Array[][] = [];
+  for (let offset = 8; offset + 8 <= bytes.length;) {
+    const size = view.getUint32(offset);
+    const type = String.fromCharCode(...bytes.subarray(offset + 4, offset + 8));
+    const data = bytes.subarray(offset + 8, offset + 8 + size);
+    if (type === 'IHDR') header = data;
+    if (type === 'fcTL') {
+      const BLEND_SOURCE = 0;
+      const wholeCanvas =
+        Buffer.compare(data.subarray(4, 12), header.subarray(0, 8)) === 0 &&
+        data.subarray(12, 20).every(byte => byte === 0);
+      if (!wholeCanvas || data[25] !== BLEND_SOURCE) {
+        throw new Error('An APNG frame does not replace the whole canvas');
+      }
+      frames.push([]);
+    }
+    // The first four bytes of fdAT are its sequence number.
+    if (type === 'IDAT') frames.at(-1)?.push(data);
+    if (type === 'fdAT') frames.at(-1)?.push(data.subarray(4));
+    offset += size + 12;
+  }
+  return frames.map(data =>
+    PNG.sync.read(
+      Buffer.concat([
+        bytes.subarray(0, 8),
+        pngChunk('IHDR', header),
+        pngChunk('IDAT', Buffer.concat(data)),
+        pngChunk('IEND', new Uint8Array()),
+      ]),
+    ),
+  );
 }
 
 function decodeLzw(minCodeSize: number, data: Uint8Array, pixels: number) {
