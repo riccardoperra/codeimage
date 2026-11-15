@@ -3,7 +3,6 @@
 
 export type Place = 'command-menu' | 'export' | 'control' | 'setting';
 
-/** Item places require an id; menu and export also have shared triggers. */
 export type Where =
   | 'command-menu'
   | 'export'
