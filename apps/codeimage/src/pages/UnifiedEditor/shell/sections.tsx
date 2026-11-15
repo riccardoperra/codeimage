@@ -45,6 +45,7 @@ import {
   preferences,
   THEME_CARDS,
 } from './preferences';
+import {availability} from '../local-ai/language-model';
 import {LayoutPreview} from './previews';
 import type {SectionId} from './settings-state';
 import {SECTIONS, settings} from './settings-state';
@@ -344,6 +345,29 @@ export function createSettingSections(model: EditorControlsModel) {
       </Button>
     ),
     groups: createMemo(() => [
+      ...(availability() === 'unavailable'
+        ? []
+        : [
+            {
+              title: t('localAi.experiment'),
+              rows: [
+                {
+                  id: 'local-ai' as const,
+                  title: t('localAi.experiment'),
+                  description: () => t('localAi.experimentHint'),
+                  small: true,
+                  control: () => (
+                    <SwitchField
+                      id="settings-local-ai"
+                      label={t('localAi.experimentSwitch')}
+                      checked={preferences.localAi()}
+                      onChange={preferences.setLocalAi}
+                    />
+                  ),
+                },
+              ],
+            },
+          ]),
       {
         title: t('rendering.engine'),
         rows: [

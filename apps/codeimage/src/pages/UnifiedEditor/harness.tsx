@@ -6,8 +6,11 @@ import type {JSX} from 'solid-js';
 import {createEffect, createMemo, on, Show} from 'solid-js';
 import {Dynamic} from 'solid-js/web';
 import {AgentTools} from './agent-tools/AgentTools';
+import {createAgentTools} from './agent-tools/tools';
 import {CommandMenu} from './command-menu/CommandMenu';
+import {createListedModel} from './command-menu/listed-model';
 import {EditorHost} from './EditorHost';
+import {LocalAi} from './local-ai/LocalAi';
 import {createEditorControlsModel} from './model';
 import {controlOverlay} from './controls/ControlOverlay';
 import {resolveEditorPageState} from './page-state';
@@ -75,6 +78,13 @@ function Editor() {
             // Created outside the JSX: a call in a prop compiles to a getter
             // and would build a new stage on every read.
             const stage = createStage(pageState);
+            const listed = createListedModel(model);
+            const tools = createAgentTools({
+              model,
+              listed,
+              exporter: stage.exporter,
+              pageState,
+            });
             const BoundThemePicker = (slot: ThemePickerSlotProps) => (
               <ThemePicker
                 {...slot}
@@ -100,7 +110,8 @@ function Editor() {
                   stage={stage}
                   pageState={pageState}
                 />
-                <AgentTools model={model} stage={stage} pageState={pageState} />
+                <AgentTools tools={tools} />
+                <LocalAi tools={tools} model={model} listed={listed} />
               </>
             );
           }}

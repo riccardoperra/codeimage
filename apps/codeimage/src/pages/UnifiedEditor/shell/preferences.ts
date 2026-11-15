@@ -46,6 +46,7 @@ interface Stored {
   inspectorSide?: InspectorSide;
   themeCards?: ThemeCardsId;
   exportStyle?: ExportStyleId;
+  localAi?: boolean;
 }
 
 const STORAGE_KEY = 'codeimage:editor-settings';
@@ -67,10 +68,8 @@ function readStored(): Stored {
   try {
     const raw: unknown = JSON.parse(localStorage.getItem(STORAGE_KEY) ?? '{}');
     if (typeof raw !== 'object' || raw === null) return {};
-    const {layout, inspectorSide, themeCards, exportStyle} = raw as Record<
-      string,
-      unknown
-    >;
+    const {layout, inspectorSide, themeCards, exportStyle, localAi} =
+      raw as Record<string, unknown>;
     return {
       layout: isLayout(layout) ? layout : undefined,
       inspectorSide:
@@ -79,6 +78,7 @@ function readStored(): Stored {
           : undefined,
       themeCards: isCards(themeCards) ? themeCards : undefined,
       exportStyle: isExportStyle(exportStyle) ? exportStyle : undefined,
+      localAi: typeof localAi === 'boolean' ? localAi : undefined,
     };
   } catch {
     return {};
@@ -97,6 +97,8 @@ const [inspectorSide, setSide] = createSignal<InspectorSide>(
 const [exportStyle, setExportStyleId] = createSignal<ExportStyleId>(
   stored.exportStyle ?? DEFAULT_EXPORT_STYLE,
 );
+
+const [localAi, setLocalAiOn] = createSignal(stored.localAi ?? false);
 
 setThemeStyle(stored.themeCards ?? DEFAULT_CARDS);
 
@@ -139,12 +141,19 @@ export const preferences = {
     setThemeStyle(id);
     save({themeCards: id});
   },
-  /** True while a layout or a theme card style that is not the default is on. */
+  /** Whether the command menu offers the on-device model, an experiment. */
+  localAi,
+  setLocalAi: (on: boolean) => {
+    setLocalAiOn(on);
+    save({localAi: on});
+  },
+  /** True while a layout, a theme card style or local AI that is not the default is on. */
   experimenting: () =>
-    layout() !== DEFAULT_LAYOUT || themeStyle() !== DEFAULT_CARDS,
-  /** Turns every experiment off: back to the default layout and theme cards. */
+    layout() !== DEFAULT_LAYOUT || themeStyle() !== DEFAULT_CARDS || localAi(),
+  /** Turns every experiment off: back to the default layout and theme cards, without local AI. */
   restoreDefaults: () => {
     preferences.setLayout(DEFAULT_LAYOUT);
     preferences.setThemeCards(DEFAULT_CARDS);
+    preferences.setLocalAi(false);
   },
 };

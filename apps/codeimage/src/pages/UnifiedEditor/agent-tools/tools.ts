@@ -125,27 +125,38 @@ function exportMessage(outcome: ExportOutcome): ToolResult {
   }
 }
 
+/** The settings and tabs as an agent reads them. */
+export function createEditorReader(listed: ListedModel) {
+  const editors = getRootEditorStore();
+  const controls = listed.sections
+    .flatMap(section => section.controls)
+    .filter((control): control is AgentControl => control.kind !== 'custom');
+  return {
+    /** Every setting an agent can name, available now or not. */
+    controls,
+    /** The settings an agent can change now. */
+    usable: () =>
+      controls.filter(control => unavailableReason(control) === undefined),
+    tabs: (): TabEntry[] =>
+      editors.state.editors.map((editor, index) => ({
+        index,
+        name: editor.tab.tabName ?? '',
+        language: editor.languageId,
+        active: editors.isActive(editor.id),
+      })),
+  };
+}
+
 /**
  * Every editor action an agent can take, built from the controls model, the
  * themes and the exporter that the editor UI uses.
  */
 export function createAgentTools(context: AgentToolsContext): AgentTool[] {
   const {model, listed, exporter, pageState} = context;
-  const allControls = listed.sections
-    .flatMap(section => section.controls)
-    .filter((control): control is AgentControl => control.kind !== 'custom');
-  const usable = () =>
-    allControls.filter(control => unavailableReason(control) === undefined);
+  const {controls: allControls, usable, tabs} = createEditorReader(listed);
   const language = () => listed.choice('editor.language');
   const active = getActiveEditorStore();
   const editors = getRootEditorStore();
-  const tabs = (): TabEntry[] =>
-    editors.state.editors.map((editor, index) => ({
-      index,
-      name: editor.tab.tabName ?? '',
-      language: editor.languageId,
-      active: editors.isActive(editor.id),
-    }));
   const activeTab = () => tabs().find(tab => tab.active);
   // The option key of a language id or name, checked before anything changes.
   const languageKey = (raw: unknown): Parsed<string | undefined> => {
