@@ -7,13 +7,16 @@ import {RangeField} from '@codeimage/ui';
 import {Button, buttonStyles} from '@codeui/kit';
 import {appEnvironment} from '@core/configuration';
 import {getUmami} from '@core/constants/umami';
-import {createControlledDialog} from '@core/hooks/createControlledDialog';
 import {RadioGroup} from '@kobalte/core/radio-group';
 import {useNavigate} from '@solidjs/router';
 import {SegmentedField} from '@ui/SegmentedField/SegmentedField';
 import type {Component, JSX} from 'solid-js';
 import {createMemo, For, Match, Show, Switch} from 'solid-js';
-import {Changelog} from '../../../components/Changelog/Changelog';
+import {Dynamic} from 'solid-js/web';
+import {illustrations} from '../../../components/WhatsNew/illustrations';
+import {releaseDate} from '../../../components/WhatsNew/releaseDate';
+import {getWhatsNew, RELEASES} from '../../../state/whats-new';
+import type {HighlightId} from '../../../state/whats-new';
 import {CopyAltTextButton} from '../../../components/Toolbar/CopyAltTextButton';
 import {ExportExtension} from '../../../hooks/use-export-image';
 import type {AppLocaleEntries} from '../../../i18n';
@@ -27,6 +30,7 @@ import {
   ExportIcon,
   ExternalIcon,
   GeneralIcon,
+  NewsIcon,
   RestoreIcon,
 } from './icons';
 import type {ThemeCardsId} from './preferences';
@@ -46,6 +50,10 @@ import * as styles from './settings.css';
 export interface SettingRow {
   readonly id: string;
   readonly title: string;
+  readonly fresh?: HighlightId;
+  readonly experimental?: boolean;
+  /** A small picture before the text, as the archive's rows have. */
+  readonly picture?: () => JSX.Element;
   readonly description: () => string;
   /** Beside the text, or under it for a `wide` row. */
   readonly control: () => JSX.Element;
@@ -193,16 +201,14 @@ function LanguageChoice() {
  * its search reads the same rows. Call it inside a component, since the rows
  * read the stores and the router.
  */
-export function createSettingSections(
-  model: EditorControlsModel,
-): readonly SettingSection[] {
-  const [t] = useI18n<AppLocaleEntries>();
+export function createSettingSections(model: EditorControlsModel) {
+  const [t, {locale}] = useI18n<AppLocaleEntries>();
   const nameOf = (id: SectionId) =>
     t(SECTIONS.find(entry => entry.id === id)!.name);
   const ui = getUiStore();
   const auth = getAuth0State();
   const navigate = useNavigate();
-  const openDialog = createControlledDialog();
+  const news = getWhatsNew();
 
   // The applied theme, or the first one, as the canvas draws it.
   const theme = () => {
@@ -210,39 +216,39 @@ export function createSettingSections(
     return themes.find(entry => entry.active()) ?? themes[0];
   };
 
-  const general: SettingSection = {
-    id: 'general',
+  const general = {
+    id: 'general' as const,
     get name() {
       return nameOf('general');
     },
     icon: GeneralIcon,
-    groups: () => [
+    groups: createMemo(() => [
       {
         title: t('editor.interface'),
         rows: [
           {
-            id: 'language',
+            id: 'language' as const,
             title: t('editor.language'),
             description: () => t('editor.languageHint'),
             control: () => <LanguageChoice />,
           },
         ],
       },
-    ],
-  };
+    ]),
+  } satisfies SettingSection;
 
-  const appearance: SettingSection = {
-    id: 'appearance',
+  const appearance = {
+    id: 'appearance' as const,
     get name() {
       return nameOf('appearance');
     },
     icon: AppearanceIcon,
-    groups: () => [
+    groups: createMemo(() => [
       {
         title: t('editor.colours'),
         rows: [
           {
-            id: 'colour-mode',
+            id: 'colour-mode' as const,
             title: t('editor.colourMode'),
             description: () => t('editor.colourModeHint'),
             control: () => (
@@ -263,7 +269,7 @@ export function createSettingSections(
         title: t('editor.inspector'),
         rows: [
           {
-            id: 'panel-side',
+            id: 'panel-side' as const,
             title: t('editor.panelSide'),
             description: () =>
               preferences.layout() === 'inspector'
@@ -282,11 +288,11 @@ export function createSettingSections(
           },
         ],
       },
-    ],
-  };
+    ]),
+  } satisfies SettingSection;
 
-  const experiments: SettingSection = {
-    id: 'experiments',
+  const experiments = {
+    id: 'experiments' as const,
     get name() {
       return nameOf('experiments');
     },
@@ -306,12 +312,12 @@ export function createSettingSections(
         {t('editor.restoreDefaults')}
       </Button>
     ),
-    groups: () => [
+    groups: createMemo(() => [
       {
         title: t('frame.editor'),
         rows: [
           {
-            id: 'layout',
+            id: 'layout' as const,
             title: t('editor.layout'),
             description: () => t('editor.layoutHint'),
             wide: true,
@@ -341,7 +347,7 @@ export function createSettingSections(
         title: t('editor.themePicker'),
         rows: [
           {
-            id: 'theme-cards',
+            id: 'theme-cards' as const,
             title: t('editor.themeCards'),
             description: () => t('editor.themeCardsHint'),
             wide: true,
@@ -368,15 +374,15 @@ export function createSettingSections(
           },
         ],
       },
-    ],
-  };
+    ]),
+  } satisfies SettingSection;
 
   // Every row reads and writes the production export store, the one that
   // today's export popover and dialog share, so there is one value for each.
   const exportStore = getExportCanvasStore();
   const target = () => getFrameState().exportTarget();
-  const exportSection: SettingSection = {
-    id: 'export',
+  const exportSection = {
+    id: 'export' as const,
     get name() {
       return nameOf('export');
     },
@@ -384,12 +390,12 @@ export function createSettingSections(
     get intro() {
       return t('editor.exportHint');
     },
-    groups: () => [
+    groups: createMemo(() => [
       {
         title: t('editor.image'),
         rows: [
           {
-            id: 'export-format',
+            id: 'export-format' as const,
             title: t('editor.format'),
             description: () =>
               exportStore.get.extension === ExportExtension.jpeg
@@ -410,7 +416,7 @@ export function createSettingSections(
           ...(exportStore.get.extension === ExportExtension.jpeg
             ? [
                 {
-                  id: 'export-quality',
+                  id: 'export-quality' as const,
                   title: t('export.quality'),
                   description: () =>
                     t('editor.qualityHint', {
@@ -433,7 +439,7 @@ export function createSettingSections(
               ]
             : []),
           {
-            id: 'export-scale',
+            id: 'export-scale' as const,
             title: t('export.pixelRatio'),
             description: () =>
               target()
@@ -470,7 +476,7 @@ export function createSettingSections(
             ),
           },
           {
-            id: 'export-alt-text',
+            id: 'export-alt-text' as const,
             title: t('altText.copy'),
             description: () => t('altText.hint'),
             small: true,
@@ -482,7 +488,7 @@ export function createSettingSections(
         title: t('editor.tabs'),
         rows: [
           {
-            id: 'export-active-tab',
+            id: 'export-active-tab' as const,
             title: t('exportTabs.showOnlyActiveTab'),
             description: () => t('editor.activeTabHint'),
             small: true,
@@ -497,21 +503,72 @@ export function createSettingSections(
           },
         ],
       },
-    ],
-  };
+    ]),
+  } satisfies SettingSection;
 
-  const about: SettingSection = {
-    id: 'about',
+  const library = {
+    id: 'whats-new' as const,
+    get name() {
+      return nameOf('whats-new');
+    },
+    icon: NewsIcon,
+    get intro() {
+      return t('whatsNew.intro');
+    },
+    action: () => (
+      <a
+        class={styles.historyLink}
+        href="https://github.com/riccardoperra/codeimage/releases"
+        target="_blank"
+        rel="noreferrer"
+      >
+        {t('whatsNew.older')} ↗
+      </a>
+    ),
+    groups: createMemo(() =>
+      RELEASES.map(release => ({
+        title: `${t(`whatsNew.releases.${release.id}.title`)} · ${releaseDate(release, locale())}`,
+        rows: release.highlights.map(highlight => ({
+          id: `news-${highlight.id}` as const,
+          title: t(`whatsNew.highlights.${highlight.id}.title`),
+          description: () => t(`whatsNew.highlights.${highlight.id}.body`),
+          fresh: highlight.id,
+          experimental: 'experimental' in highlight,
+          picture: () => (
+            <Dynamic component={illustrations[highlight.id]} mode="thumb" />
+          ),
+          small: true,
+          control: () => {
+            if (highlight.where === null) return;
+            return (
+              <Show when={news.canShowMe(highlight.id)}>
+                <Button
+                  size="sm"
+                  theme="secondary"
+                  onClick={() => news.showMe(highlight.id, 'library')}
+                >
+                  {t('whatsNew.showMe')}
+                </Button>
+              </Show>
+            );
+          },
+        })),
+      })),
+    ),
+  } satisfies SettingSection;
+
+  const about = {
+    id: 'about' as const,
     get name() {
       return nameOf('about');
     },
     icon: AboutIcon,
-    groups: () => [
+    groups: createMemo(() => [
       {
         title: 'CodeImage',
         rows: [
           {
-            id: 'version',
+            id: 'version' as const,
             small: true,
             title: t('editor.version'),
             description: () => t('editor.versionHint'),
@@ -520,25 +577,7 @@ export function createSettingSections(
             ),
           },
           {
-            id: 'changelog',
-            small: true,
-            title: t('editor.changelog'),
-            description: () => t('editor.changelogHint'),
-            control: () => (
-              <Button
-                size={'sm'}
-                theme={'secondary'}
-                onClick={() => {
-                  settings.close();
-                  openDialog(Changelog, {});
-                }}
-              >
-                {t('toolbar.openNewTab')}
-              </Button>
-            ),
-          },
-          {
-            id: 'github',
+            id: 'github' as const,
             small: true,
             title: 'GitHub',
             description: () => t('editor.githubHint'),
@@ -564,7 +603,7 @@ export function createSettingSections(
               title: t('editor.account'),
               rows: [
                 {
-                  id: 'logout',
+                  id: 'logout' as const,
                   small: true,
                   title: t('editor.logout'),
                   description: () => {
@@ -590,15 +629,21 @@ export function createSettingSections(
             },
           ]
         : []),
-    ],
-  };
+    ]),
+  } satisfies SettingSection;
 
   // One list of rows per section for as long as nothing they read changes,
   // so that a search keeps the rows, and their controls, that still match.
-  return [general, appearance, exportSection, experiments, about].map(
-    section => {
-      const groups = createMemo(section.groups);
-      return Object.assign(section, {groups});
-    },
-  );
+  return [
+    general,
+    appearance,
+    exportSection,
+    experiments,
+    library,
+    about,
+  ] satisfies readonly SettingSection[];
 }
+
+export type SettingRowId = ReturnType<
+  ReturnType<typeof createSettingSections>[number]['groups']
+>[number]['rows'][number]['id'];

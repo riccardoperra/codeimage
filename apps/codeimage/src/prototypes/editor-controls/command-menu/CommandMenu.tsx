@@ -2,7 +2,6 @@ import {useI18n} from '@codeimage/locale';
 import {getAuth0State} from '@codeimage/store/auth/auth0';
 import {getRootEditorStore} from '@codeimage/store/editor';
 import {icons} from '@codeui/kit';
-import {createControlledDialog} from '@core/hooks/createControlledDialog';
 import {Dialog} from '@kobalte/core/dialog';
 import {useNavigate} from '@solidjs/router';
 import {
@@ -15,7 +14,6 @@ import {
   Show,
   untrack,
 } from 'solid-js';
-import {Changelog} from '../../../components/Changelog/Changelog';
 import {
   markCommands,
   selectedLines,
@@ -23,10 +21,12 @@ import {
 } from '../../../components/CustomEditor/plugins/lineMarks/controls';
 import {toggleMark} from '../../../components/CustomEditor/plugins/lineMarks/state';
 import type {AppLocaleEntries} from '../../../i18n';
+import {getWhatsNew} from '../../../state/whats-new';
 import {ControlOverlay, controlOverlay} from '../controls/ControlOverlay';
 import {shortcutHelp} from '../controls/ShortcutHelp';
 import type {EditorControlsModel} from '../model';
 import {exportCommands, settingsCommands} from '../shell/commands';
+import {settings} from '../shell/settings-state';
 import type {Stage} from '../stage';
 import * as styles from './command-menu.css';
 import {buildCommands, filterCommands} from './commands';
@@ -75,7 +75,6 @@ function Commands(
   const editor = getRootEditorStore();
   const auth = getAuth0State();
   const navigate = useNavigate();
-  const openDialog = createControlledDialog();
   let input!: HTMLInputElement;
   let list!: HTMLDivElement;
 
@@ -103,10 +102,10 @@ function Commands(
     // What the old menu at the top left held beside Settings.
     const fromOldMenu: Command[] = [
       {
-        id: 'changelog',
+        id: 'whats-new',
         group: t('editor.settings'),
-        label: t('editor.changelog'),
-        run: () => openDialog(Changelog, {}),
+        label: t('editor.whatsNew'),
+        run: () => settings.open('whats-new'),
       },
       {
         id: 'github',
@@ -290,6 +289,11 @@ function Commands(
  */
 export function CommandMenu(props: CommandMenuProps) {
   const [t] = useI18n<AppLocaleEntries>();
+  getWhatsNew().bindLocation('command-menu', () => {
+    settings.close();
+    requestAnimationFrame(commandMenu.open);
+  });
+
   // A command that only runs, such as Export, moves focus itself.
   let giveFocusBack = true;
 
@@ -309,6 +313,7 @@ export function CommandMenu(props: CommandMenuProps) {
   onCleanup(commandMenu.close);
 
   const run = (command: Command) => {
+    getWhatsNew().seen('command-menu');
     giveFocusBack = command.preview !== undefined;
     commandMenu.close();
     if (!command.current) command.run();

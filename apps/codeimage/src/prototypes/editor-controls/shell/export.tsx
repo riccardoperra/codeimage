@@ -2,6 +2,7 @@ import {useI18n} from '@codeimage/locale';
 import {detectSecrets} from '@codeimage/secrets';
 import {getExportCanvasStore} from '@codeimage/store/canvas';
 import {getRootEditorStore} from '@codeimage/store/editor';
+import {getWhatsNew} from '@codeimage/store/whats-new';
 import {getActiveEditorStore} from '@codeimage/store/editor/activeEditor';
 import {dispatchCopyToClipboard} from '@codeimage/store/effects/onCopyToClipboard';
 import {toast} from '@codeimage/ui';
@@ -130,6 +131,7 @@ export function createExporter(
       return;
     }
     setBusy(true);
+    if (action === 'eachTab') getWhatsNew().seen('tabs');
     const mode =
       action === 'share'
         ? ExportMode.share
@@ -204,7 +206,8 @@ export function createExporter(
     canCopyAltText: () =>
       !!getActiveEditorStore().editor() && !!navigator.clipboard?.writeText,
     secrets,
-    redactSecrets: () =>
+    redactSecrets: () => {
+      getWhatsNew().seen('redact');
       batch(() => {
         editor.state.editors.forEach((tab, index) => {
           const redacted = redactTabCode(
@@ -214,6 +217,7 @@ export function createExporter(
           if (redacted !== tab.code)
             editor.actions.setEditors(index, 'code', redacted);
         });
-      }),
+      });
+    },
   };
 }

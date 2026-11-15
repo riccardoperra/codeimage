@@ -9,7 +9,7 @@ import {SparklesIcon} from '../../../../components/Icons/SparklesIcon';
 import {createFontPickerListboxProps} from '../../../../components/PropertyEditor/controls/FontPicker/FontPickerListbox';
 import {PanelHeader} from '../../../../components/PropertyEditor/PanelHeader';
 import type {AppLocaleEntries} from '../../../../i18n';
-import {commandMenu} from '../../command-menu/state';
+import {CommandMenuButton} from '../../command-menu/CommandMenuButton';
 import {AmbientSwatch} from '../../controls/AmbientSwatch';
 import {ControlRow} from '../../controls/ControlRow';
 import {fieldId, SegmentedChoice} from '../../controls/fields';
@@ -234,14 +234,18 @@ function PhoneActions() {
   const dock = useDock();
   return (
     <div class={styles.phoneActions}>
-      <Button
-        size={'sm'}
-        theme={'secondary'}
-        leftIcon={<SearchIcon />}
-        onClick={commandMenu.open}
-      >
-        {t('editor.searchAllOptions')}
-      </Button>
+      <CommandMenuButton>
+        {trigger => (
+          <Button
+            {...trigger}
+            size={'sm'}
+            theme={'secondary'}
+            leftIcon={<SearchIcon />}
+          >
+            {t('editor.searchAllOptions')}
+          </Button>
+        )}
+      </CommandMenuButton>
       <Button
         size={'sm'}
         theme={'secondary'}

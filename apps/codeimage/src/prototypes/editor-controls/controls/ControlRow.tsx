@@ -5,6 +5,7 @@ import {NumberField} from '@codeui/kit';
 import {createEffect, Show} from 'solid-js';
 import type {JSX} from 'solid-js';
 import {Dynamic} from 'solid-js/web';
+import {NewDot} from '../../../components/WhatsNew/NewDot';
 import {
   PanelRow,
   TwoColumnPanelRow,
@@ -205,6 +206,7 @@ export function ControlRow(props: ControlRowProps): JSX.Element {
         <PanelRow
           for={labelFor}
           label={look.label ? t(look.label) : control.label()}
+          labelAccessory={<NewDot at={`control:${control.id}`} />}
         >
           <TwoColumnPanelRow>{element}</TwoColumnPanelRow>
         </PanelRow>
