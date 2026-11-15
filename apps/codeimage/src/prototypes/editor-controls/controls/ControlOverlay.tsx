@@ -153,17 +153,22 @@ export function ControlOverlay(props: {model: EditorControlsModel}) {
 
   const restoreFocus = (event: Event) => {
     event.preventDefault();
-    const fallback = document.querySelector<HTMLElement>(
-      '[data-settings-trigger], header button',
-    );
-    const element =
-      opener &&
-      opener !== document.body &&
-      opener.isConnected &&
-      opener.getClientRects().length
-        ? opener
-        : fallback;
-    element?.focus();
+    const from = opener;
+    // A click outside can open something that takes focus, such as a coachmark.
+    requestAnimationFrame(() => {
+      if (document.activeElement !== document.body) return;
+      const fallback = document.querySelector<HTMLElement>(
+        '[data-settings-trigger], header button',
+      );
+      const element =
+        from &&
+        from !== document.body &&
+        from.isConnected &&
+        from.getClientRects().length
+          ? from
+          : fallback;
+      element?.focus();
+    });
   };
   return (
     <Dialog open={!!target()} onOpenChange={changeOpen} modal={false}>

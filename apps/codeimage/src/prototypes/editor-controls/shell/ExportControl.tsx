@@ -16,13 +16,25 @@ import {
   icons,
 } from '@codeui/kit';
 import {Dialog} from '@kobalte/core/dialog';
-import {Show} from 'solid-js';
+import {createSignal, Show} from 'solid-js';
 import {DownloadIcon} from '../../../components/Icons/Download';
+import {NewDot} from '../../../components/WhatsNew/NewDot';
+import {getWhatsNew} from '../../../state/whats-new';
 import {useHotkey} from '../../../hooks/use-hotkey';
 import type {AppLocaleEntries} from '../../../i18n';
 import type {Exporter} from './export';
 import * as styles from './export.css';
 import {settings} from './settings-state';
+
+export type ExportItem =
+  | 'image'
+  | 'tabs'
+  | 'share'
+  | 'copy'
+  | 'new-tab'
+  | 'alt'
+  | 'redact'
+  | 'settings';
 
 /** What an export gives with the settings now, such as `PNG at 3x`. */
 export function exportSummary(): string {
@@ -48,6 +60,11 @@ export function ExportControl(props: {exporter: Exporter; size?: 'sm' | 'xs'}) {
   const [t] = useI18n<AppLocaleEntries>();
   const exporter = () => props.exporter;
   const size = () => props.size ?? 'sm';
+  const [menuOpen, setMenuOpen] = createSignal(false);
+  getWhatsNew().bindLocation('export', () => {
+    settings.close();
+    requestAnimationFrame(() => setMenuOpen(true));
+  });
   const copyLabel = () => t('toolbar.copyToCliboard');
   const redactedLabel = () => t('editor.redacted');
 
@@ -121,17 +138,23 @@ export function ExportControl(props: {exporter: Exporter; size?: 'sm' | 'xs'}) {
         >
           {t('toolbar.export')}
         </Button>
-        <DropdownMenu placement="bottom-end">
-          <DropdownMenuTrigger
-            as={IconButton}
-            class={styles.more}
-            theme={'primary'}
-            size={size()}
-            aria-label={t('editor.moreExport')}
-            data-export-menu
-          >
-            <icons.ChevronDownIcon />
-          </DropdownMenuTrigger>
+        <DropdownMenu
+          placement="bottom-end"
+          open={menuOpen()}
+          onOpenChange={setMenuOpen}
+        >
+          <NewDot at="export" filled>
+            <DropdownMenuTrigger
+              as={IconButton}
+              class={styles.more}
+              theme={'primary'}
+              size={size()}
+              aria-label={t('editor.moreExport')}
+              data-export-menu
+            >
+              <icons.ChevronDownIcon />
+            </DropdownMenuTrigger>
+          </NewDot>
           <DropdownMenuPortal>
             <DropdownMenuContent>
               <DropdownMenuItem

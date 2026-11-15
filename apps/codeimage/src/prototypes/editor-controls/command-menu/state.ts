@@ -11,9 +11,10 @@ const makeWay = new Set<() => void>();
 const closing = new Set<() => void>();
 
 // A list, a menu or a popover that is open, or a modal dialog. Each keeps
-// focus to itself, so a menu opened over one would fight it for focus.
+// focus to itself, so a menu opened over one would fight it for focus. A
+// dialog still fading out has already let focus go.
 const OPEN_POPUP =
-  '[aria-haspopup]:not([aria-haspopup="false"])[aria-expanded="true"], [role="alertdialog"], [data-control-overlay]';
+  '[aria-haspopup]:not([aria-haspopup="false"])[aria-expanded="true"], [role="alertdialog"]:not([data-closed]), [data-control-overlay]';
 
 /**
  * One command menu for the page. The harness mounts it once for every layout

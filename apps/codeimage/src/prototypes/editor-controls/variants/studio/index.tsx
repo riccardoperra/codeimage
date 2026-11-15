@@ -1,7 +1,6 @@
 import {useI18n} from '@codeimage/locale';
 import {signatureEditor} from '@codeimage/store/frame/signatureEditor';
 import {Button, IconButton} from '@codeui/kit';
-import {useModality} from '@core/hooks/isMobile';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 import {
   createMemo,
@@ -16,6 +15,7 @@ import {ColorSwatchIcon} from '../../../../components/Icons/ColorSwatch';
 import {SparklesIcon} from '../../../../components/Icons/SparklesIcon';
 import {ShareButton} from '../../../../components/Toolbar/ShareButton';
 import type {AppLocaleEntries} from '../../../../i18n';
+import {CommandMenuButton} from '../../command-menu/CommandMenuButton';
 import {commandMenu} from '../../command-menu/state';
 import type {VariantMeta, VariantProps} from '../../contract';
 import {controlOverlay} from '../../controls/ControlOverlay';
@@ -77,8 +77,6 @@ function RailSettings() {
 export default function Studio(props: VariantProps) {
   const [t] = useI18n<AppLocaleEntries>();
   keepMarkToolbarAboveSelection();
-  // The production header and buttons pick their layout once, at load.
-  const modality = useModality();
   const compactQuery = matchMedia(styles.COMPACT_QUERY);
   const [isPhone, setIsPhone] = createSignal(compactQuery.matches);
   const [openId, setOpenId] = createSignal<PanelId | null>(
@@ -310,20 +308,22 @@ export default function Studio(props: VariantProps) {
             )}
           </For>
           <Show when={!isPhone()}>
-            <button
-              type="button"
-              class={`${styles.railButton} ${styles.railSearch}`}
-              aria-haspopup="dialog"
-              aria-expanded={commandMenu.isOpen()}
-              title={`${t('editor.searchOptions')} (${commandMenu.shortcut})`}
-              onClick={commandMenu.open}
-            >
-              <span class={styles.railIcon}>
-                <SearchIcon />
-              </span>
-              {t('editor.search')}
-              <kbd class={styles.railHint}>{commandMenu.shortcut}</kbd>
-            </button>
+            <CommandMenuButton>
+              {trigger => (
+                <button
+                  {...trigger}
+                  type="button"
+                  class={`${styles.railButton} ${styles.railSearch}`}
+                  title={`${t('editor.searchOptions')} (${commandMenu.shortcut})`}
+                >
+                  <span class={styles.railIcon}>
+                    <SearchIcon />
+                  </span>
+                  {t('editor.search')}
+                  <kbd class={styles.railHint}>{commandMenu.shortcut}</kbd>
+                </button>
+              )}
+            </CommandMenuButton>
             <RailSettings />
           </Show>
           <ShortcutHelp />
@@ -396,7 +396,7 @@ export default function Studio(props: VariantProps) {
             <props.stage.Canvas />
           </div>
           <Show
-            when={modality === 'full'}
+            when={!props.stage.compact()}
             fallback={
               <div class={styles.compactActions}>
                 <ShareButton showLabel={false} />
