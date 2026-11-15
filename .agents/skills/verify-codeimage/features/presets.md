@@ -12,7 +12,7 @@ Switch Settings → Experiments → Layout to Studio, then choose Presets from t
 
 ## Driving it with Playwright
 
-The audit saves Studio as the layout preference, opens `/`, clicks button Presets, then the first Add preset button (the empty state exposes a second). Scope to alertdialog Add a new preset, fill its textbox and click Confirm. Assert the `li` containing Verification preset. Reload the same context, reopen Presets and click the saved item. Capture before/after and exported appearance. For an application regression, change a conspicuous theme before applying, then assert the previous theme returns while code remains unchanged. Menu actions (Update, Rename, Share, Delete) live under each item's `Preset menu`; Share copies a `?share_preset=` link.
+The audit saves Studio as the layout preference, opens `/`, clicks button Presets, then the first Add preset button (the empty state exposes a second). Scope to alertdialog Add a new preset, fill its textbox and click Confirm. Assert the `li` containing Verification preset. Reload the same context, reopen Presets and click the saved item; the case takes one `preset-reopened` screenshot and does not check that the appearance changed or export. For an application regression, change a conspicuous theme before applying, then assert the previous theme returns while code remains unchanged. Menu actions (Update, Rename, Share, Delete) live under each item's `Preset menu`; Share copies a `?share_preset=` link.
 
 Source: `pages/UnifiedEditor/variants/studio/panels.tsx`, `pages/UnifiedEditor/localized/PresetSwitcher.tsx`, `state/presets/bridge.ts`.
 

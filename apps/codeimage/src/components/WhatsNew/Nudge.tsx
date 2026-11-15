@@ -46,10 +46,8 @@ export function Nudge(props: {
   const [instant, setInstant] = createSignal(initialEntry === 'keyboard');
   const step = createMemo(() => view().step);
   const highlight = () => props.release.highlights[step()];
-  const located = () => {
-    const item = highlight();
-    return item.where !== null && news.canShowMe(item.id) ? item : null;
-  };
+  const located = (item: (typeof RELEASES)[number]['highlights'][number]) =>
+    item.where !== null && news.canShowMe(item.id) ? item : null;
   const count = (): number => props.release.highlights.length;
   const last = () => step() === count() - 1;
   // Only the newest step change fades. Stepping faster drops the older one.
@@ -211,6 +209,18 @@ export function Nudge(props: {
                       <p class={styles.body}>
                         {t(`whatsNew.highlights.${item().id}.body`)}
                       </p>
+                      <Show when={located(item())}>
+                        {target => (
+                          <Button
+                            class={styles.reveal}
+                            size="xs"
+                            theme="secondary"
+                            onClick={() => news.showMe(target().id, 'nudge')}
+                          >
+                            {t('whatsNew.showMe')}
+                          </Button>
+                        )}
+                      </Show>
                     </div>
                   </div>
                 );
@@ -235,17 +245,6 @@ export function Nudge(props: {
                 )}
               </For>
             </div>
-            <Show when={located()}>
-              {item => (
-                <Button
-                  size="sm"
-                  theme="secondary"
-                  onClick={() => news.showMe(item().id, 'nudge')}
-                >
-                  {t('whatsNew.showMe')}
-                </Button>
-              )}
-            </Show>
             <Button
               ref={element => {
                 primary = element;
@@ -257,16 +256,18 @@ export function Nudge(props: {
             >
               {t(last() ? 'whatsNew.done' : 'whatsNew.next')}
             </Button>
-            <IconButton
-              size="sm"
-              theme="secondary"
-              variant="ghost"
-              aria-label={t('whatsNew.dismiss')}
-              onClick={event => close(fromKeyboard(event))}
-            >
-              <icons.CloseIcon />
-            </IconButton>
           </div>
+          {/* Last in tab order, but drawn in the corner, away from Next. */}
+          <IconButton
+            class={`${styles.nudgeClose} ${styles.revealed}`}
+            size="xs"
+            theme="secondary"
+            variant="ghost"
+            aria-label={t('whatsNew.dismiss')}
+            onClick={event => close(fromKeyboard(event))}
+          >
+            <icons.CloseIcon />
+          </IconButton>
         </div>
       </Show>
     </aside>
