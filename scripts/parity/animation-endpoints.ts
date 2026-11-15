@@ -129,7 +129,9 @@ async function main() {
         name && value ? name + normalizeGradients(value) : match,
       ),
     );
-  const pageCss = (css: string) => [stylesheet, css].map(normalizeGradients);
+  // The CodeMirror rules come first, as on the web, so marks.css can show
+  // the bands that reach out of the gutter and the scroller.
+  const pageCss = (css: string) => [css, stylesheet].map(normalizeGradients);
 
   const decode = (bytes: Uint8Array) => PNG.sync.read(Buffer.from(bytes));
 
@@ -258,21 +260,29 @@ async function main() {
       /<div class="cm-(?:line|gutterElement)\b[^>]*>/g,
       tag => `${tag}<span style="display:inline-block"></span>`,
     );
-  const isLineStart = (node: Measured) =>
+  const isEmpty = (node: Measured) =>
     !node.width && !node.height && !node.runs.length && !node.children.length;
+  const emptyNodes = (node: Measured): Measured[] => [
+    ...(isEmpty(node) ? [node] : []),
+    ...node.children.flatMap(emptyNodes),
+  ];
 
+  // A marked line draws its band into the window inset with pseudo-elements.
+  // Takumi then wraps the text in an anonymous box, and the band leaves an
+  // empty node where the text ends, so the marker is the leftmost empty node.
   function lineGlyphs(lines: Measured[]): Glyph[] {
     return lines.flatMap(line => {
-      const [start, ...children] = line.children;
-      if (!start || !isLineStart(start)) {
+      const [start] = emptyNodes(line).sort(
+        (a, b) => a.transform[4] - b.transform[4],
+      );
+      if (!start) {
         throw new Error(`no line start before "${textOf(line)}"`);
       }
-      const text = {...line, children};
-      const [first] = runsOf(text);
+      const [first] = runsOf(line);
       if (!first) return [];
       const [node, run] = first;
       const [a, , c, , e] = node.transform;
-      return glyphsOf([text], start.transform[4] - (a * run.x + c * run.y + e));
+      return glyphsOf([line], start.transform[4] - (a * run.x + c * run.y + e));
     });
   }
 
