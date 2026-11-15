@@ -235,9 +235,10 @@ Every highlight names its place in `state/whats-new/registry.ts` as `where`. The
 To add a highlight for an existing place:
 
 1. Add its entry and precise `where` to the registry, in editorial order. Use `null` for a feature with no control, which has neither a dot nor Show me.
-2. Add its illustration in `components/WhatsNew/illustrations.tsx`, with `play`, `still`, and `thumb` modes.
-3. Call `seen(id)` where the feature is used.
-4. Run the typecheck. `places.ts` rejects a registry place that names a missing model control, settings row, or Export item. Setting row IDs come from the actual definitions in `shell/sections.tsx`.
+2. Add its title and body under the highlight id in every locale in `src/i18n/whatsNew.ts`. For a new release, add its title under the release id too. The registry holds metadata only. Missing translations fail the typecheck.
+3. Add its illustration in `components/WhatsNew/illustrations.tsx`, with `play`, `still`, and `thumb` modes. Translate any explanatory UI labels with the existing locale keys. Code samples and geometric pictures stay unchanged.
+4. Call `seen(id)` where the feature is used.
+5. Run the typecheck. `places.ts` rejects a registry place that names a missing model control, settings row, or Export item. Setting row IDs come from the actual definitions in `shell/sections.tsx`.
 
 No layout or dot JSX changes for an existing place. To introduce a new kind, extend the registry vocabulary and `places.ts`, then render `NewDot at` once in its shared owner. Controls that bypass `ControlRow` do not receive dots. This includes Dock's background, padding, language, and font family, Inspector's background and image, and Studio's system-font fallback.
 

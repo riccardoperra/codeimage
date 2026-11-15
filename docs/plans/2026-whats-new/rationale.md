@@ -30,7 +30,7 @@ onChange={value => { preferences.setLayout(value); whatsNew.seen('layouts'); }}
 
 ## Shape
 
-- **`registry.ts`** is content with zero imports. Releases newest first, each with ordered highlights. `HighlightId`, `ReleaseId`, `LocatedHighlightId`, and `ShippedWhere` are derived from the data. `where` is the precise place, such as `export:tabs` or `setting:layout`, and `null` means no dot or Show me. `places.ts` checks shipped places against model controls, Export items, and setting IDs derived from real row definitions.
+- **`registry.ts`** is release and highlight metadata with zero imports. Releases newest first, each with ordered highlights. `HighlightId`, `ReleaseId`, `LocatedHighlightId`, and `ShippedWhere` are derived from the data. `where` is the precise place, such as `export:tabs` or `setting:layout`, and `null` means no dot or Show me. `places.ts` checks shipped places against model controls, Export items, and setting IDs derived from real row definitions.
 - **`decide.ts`** is the whole policy as one pure function, `decide(releases, facts, now)`. It returns the single pending announcement, at most three dots in registry order, and the set of fresh highlights. It never reads the clock or the app version (boundary-discipline).
 - **Facts** are two grow-only sets, `seen` highlight ids and `dismissed` release ids. Merging is a union, so marking seen is idempotent and two tabs converge without locks (separate-before-serializing-shared-state, make-operations-idempotent).
 - **The store** (`apps/codeimage/src/state/whats-new/whats-new.store.ts`) is the thin shell. It owns the one IndexedDB key, the one Umami call site, and the map of location openers.
@@ -79,7 +79,7 @@ The development-only query `?whatsNew=nudge` or `?whatsNew=showcase` forces a re
 
 ## Remaining limits
 
-- News copy is English only.
+- News copy uses the app locale in English, Italian, German and Spanish. `i18n/whatsNew.ts` owns the words, keyed by persisted release and highlight ids. Its records require translations for every shipped id. The registry keeps no duplicate English copy. Dates use the active locale and UTC, so a date never moves to the previous day west of UTC. The command-menu illustration translates its explanatory labels through existing editor keys. Code samples, geometric pictures and the Aa mark stay unchanged.
 - Facts remain per device. Tabs merge facts on focus, with transactional union writes to one IndexedDB key.
 - IndexedDB writes are asynchronous. Browser checks wait for the dismissal write before reloading.
 - Floating announcements cover editor controls beneath them. They can be dismissed without changing the layout.
