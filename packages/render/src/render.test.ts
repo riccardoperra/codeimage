@@ -217,6 +217,62 @@ describe('renderSnapshot', {timeout: 30_000}, () => {
     ]);
     expect(faces.every(font => font.unicodeRange?.length)).toBe(true);
   });
+  it('renders terminal and shell aliases identically', async () => {
+    const render = (type: string) =>
+      renderSnapshot({
+        ...sampleDocument,
+        terminal: {...sampleDocument.terminal, type, surface: 'wash'},
+      });
+    expect(await render('terminal')).toEqual(await render('shell'));
+  });
+  it('falls back to initials for corrupt avatar bytes', async () => {
+    const fetch = vi.spyOn(globalThis, 'fetch').mockImplementation(
+      async () =>
+        new Response('invalid image', {
+          headers: {'content-type': 'image/png'},
+        }),
+    );
+    try {
+      const markup = await snapshotMarkup({
+        ...sampleDocument,
+        frame: {
+          ...sampleDocument.frame,
+          signature: {
+            handle: 'octocat',
+            style: 'card',
+            platform: 'github',
+            avatar: 'profile',
+          },
+        },
+      });
+      expect(markup.images).toEqual([]);
+      expect(markup.html).toContain('>O</div>');
+    } finally {
+      fetch.mockRestore();
+    }
+  });
+  it.each([
+    {style: 'minimal', avatar: 'profile'},
+    {style: 'pill', avatar: 'profile'},
+    {style: 'card', avatar: 'asset:uploaded'},
+  ])('does no profile I/O for $style with $avatar', async signature => {
+    const fetch = vi
+      .spyOn(globalThis, 'fetch')
+      .mockRejectedValue(new TypeError('offline'));
+    try {
+      const markup = await snapshotMarkup({
+        ...sampleDocument,
+        frame: {
+          ...sampleDocument.frame,
+          signature: {handle: 'octocat', platform: 'github', ...signature},
+        },
+      });
+      expect(markup.images).toEqual([]);
+      expect(fetch).not.toHaveBeenCalled();
+    } finally {
+      fetch.mockRestore();
+    }
+  });
   it('defaults an omitted surface to the same pixels as solid', async () => {
     const {surface, ...terminal} = sampleDocument.terminal;
     expect(await renderSnapshot({...sampleDocument, terminal})).toEqual(

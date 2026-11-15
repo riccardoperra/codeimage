@@ -26,7 +26,10 @@ import {
   frameMediaRequest,
   resolveFrameMedia,
 } from '../components/Frame/frameMedia';
-import {TONE_SAMPLE_SIZE} from '../components/Frame/signatureTone';
+import {
+  TONE_SAMPLE_SIZE,
+  toneSampleMarkup,
+} from '../components/Frame/signatureTone';
 import {getEditorStore} from '@codeimage/store/editor';
 import {getThemeStore} from '@codeimage/store/theme/theme.store';
 import {THEME_REGISTRY} from '@codeimage/store/theme/themeRegistry';
@@ -124,9 +127,9 @@ export async function composeFrame(
     image =>
       host.pixels(
         {
-          html: '<img src="sample" style="display:block;width:24px;height:24px"/>',
+          html: toneSampleMarkup(image.src),
           css: [],
-          images: [{...image, src: 'sample'}],
+          images: [image],
           fontFamily: font.name,
         },
         TONE_SAMPLE_SIZE,

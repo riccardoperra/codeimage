@@ -1,3 +1,9 @@
+import {createServer} from 'node:http';
+import pixelmatch from 'pixelmatch';
+import {
+  createAmbientBackground,
+  createWindowPalette,
+} from '../../apps/codeimage/src/components/Terminal/windowPalette';
 import assert from 'node:assert/strict';
 import {mkdir, readFile, writeFile} from 'node:fs/promises';
 import {extname, join} from 'node:path';
@@ -54,6 +60,7 @@ interface Cell {
   name: string;
   document: SnapshotInput;
   maxDiffPercent?: number;
+  avatar?: 'fixture' | 'offline';
 }
 
 function snapshot(
@@ -115,9 +122,124 @@ function snapshot(
   };
 }
 
-async function matrix(): Promise<Cell[]> {
+async function matrix(fixtureUrl: string): Promise<Cell[]> {
   const themes = await supportedThemeIds();
+  const p10: Cell[] = [];
+  for (const themeId of ['githubDark', 'githubLight']) {
+    for (const type of ['card', 'editor', 'shell']) {
+      for (const surface of ['solid', 'wash'])
+        p10.push({
+          name: `P10 ${type} ${themeId} ${surface}`,
+          document: snapshot(themeId, {
+            terminal: {type, surface},
+            editor: {tabName: 'src/app/index.tsx'},
+          }),
+        });
+    }
+    p10.push({
+      name: `P10 macOs ${themeId} wash hairline`,
+      document: snapshot(themeId, {
+        terminal: {surface: 'wash', borderType: 'hairline'},
+      }),
+    });
+    for (const style of ['minimal', 'pill', 'card']) {
+      for (const icon of [false, true])
+        p10.push({
+          name: `P10 ${style} ${themeId} icon-${icon}`,
+          document: snapshot(themeId, {
+            frame: {
+              background: themeId === 'githubDark' ? '#121212' : '#f5f5f5',
+              exportTarget: 'x-landscape',
+              signature: {
+                handle: 'octocat',
+                name: 'Zoë Łukasz',
+                style,
+                platform: icon ? 'github' : null,
+              },
+            },
+          }),
+        });
+    }
+  }
+  const card = {
+    handle: 'octocat',
+    name: 'The Octocat',
+    style: 'card',
+    platform: 'github',
+    avatar: 'profile',
+    position: 'bottom-center',
+  };
+  p10.push(
+    {
+      name: 'P10 card fixture avatar bottom-center',
+      avatar: 'fixture',
+      document: snapshot('githubDark', {
+        frame: {exportTarget: 'x-landscape', signature: card},
+      }),
+    },
+    {
+      name: 'P10 card offline initials',
+      avatar: 'offline',
+      document: snapshot('githubDark', {
+        frame: {exportTarget: 'x-landscape', signature: card},
+      }),
+    },
+    ...['light', 'dark'].map(tone => ({
+      name: `P10 signature over ${tone} image`,
+      document: snapshot('githubDark', {
+        frame: {
+          background: `link:${fixtureUrl}/${tone}.png`,
+          exportTarget: 'x-landscape',
+          signature: {...card, avatar: null},
+        },
+      }),
+    })),
+    {
+      name: 'P10 terminal alias',
+      document: snapshot('githubDark', {
+        terminal: {type: 'terminal', surface: 'wash'},
+      }),
+    },
+    {
+      name: 'P10 bare padding zero',
+      document: snapshot('githubDark', {
+        terminal: {type: 'card', showHeader: false},
+        frame: {padding: 0, radius: 0},
+      }),
+    },
+    {
+      name: 'P10 ambient two tabs',
+      document: (() => {
+        const document = snapshot('githubDark', {
+          frame: {
+            background: createAmbientBackground(
+              createWindowPalette({
+                background: '#0d1117',
+                text: '#c9d1d9',
+                accent: '#58a6ff',
+              }),
+            ),
+          },
+          terminal: {type: 'editor', surface: 'wash'},
+        });
+        document.editor.editors.push({
+          ...document.editor.editors[0],
+          id: 'second',
+          tabName: 'other.ts',
+        });
+        return document;
+      })(),
+    },
+    {
+      name: 'P10 square sixty lines',
+      document: snapshot('githubDark', {
+        frame: {exportTarget: 'square', signature: {...card, avatar: null}},
+        editor: {code: 'const value = 1;\n'.repeat(60)},
+      }),
+    },
+  );
   return [
+    ...p10,
     ...themes.map(themeId => ({
       name: `${themeId} / macOs`,
       document: snapshot(themeId),
@@ -240,7 +362,7 @@ async function fontFace(font: SnapshotFont): Promise<string> {
     '@font-face {',
     `font-family: ${JSON.stringify(font.family)};`,
     `src: url(data:${mime};base64,${data}) format('${format}');`,
-    `font-weight: ${font.weight ?? '1 1000'};`,
+    `font-weight: ${font.weight ?? '100 900'};`,
     ranges ? `unicode-range: ${ranges};` : '',
     '}',
   ].join('');
@@ -250,13 +372,27 @@ async function renderInChrome(
   browser: Browser,
   markup: SnapshotMarkup,
   output: {width: number; height: number},
-): Promise<Buffer> {
+): Promise<{
+  bytes: Buffer;
+  crop: {x: number; y: number; width: number; height: number} | null;
+}> {
   const page = await browser.newPage({viewport: null});
   try {
+    await page.route('**/*', async route => {
+      const source = markup.images.find(
+        image => image.src === route.request().url(),
+      );
+      if (source)
+        await route.fulfill({
+          contentType: 'image/png',
+          body: Buffer.from(new Uint8Array(source.data)),
+        });
+      else await route.continue();
+    });
     const faces = await Promise.all(markup.fonts.map(fontFace));
     // The web app loads marks.css after CodeMirror. Keep this reference independent
     // of the Node renderer's CSS order so clipping regressions remain visible.
-    const head = [...faces, ...markup.naturalCss, await webMarksCss]
+    const head = [...markup.naturalCss, await webMarksCss, ...faces]
       .map(css => `<style>${css}</style>`)
       .join('');
     await page.setContent(
@@ -272,14 +408,34 @@ async function renderInChrome(
     });
     assert.deepEqual(
       output,
-      {width: clip.width * SCALE, height: clip.height * SCALE},
+      {
+        width: clip.width * markup.document.scale,
+        height: clip.height * markup.document.scale,
+      },
       'Node output must match the natural Chrome client box times scale',
     );
-    return await page.screenshot({
-      clip,
-      omitBackground: true,
-      animations: 'disabled',
-    });
+    await page
+      .locator('img')
+      .evaluateAll(images => Promise.all(images.map(image => image.decode())));
+    const mark = page.locator('[data-frame-signature] > div').first();
+    const bounds = (await mark.count()) ? await mark.boundingBox() : null;
+    const scale = markup.document.scale;
+    const crop = bounds
+      ? {
+          x: Math.max(0, Math.floor((bounds.x - clip.x - 8) * scale)),
+          y: Math.max(0, Math.floor((bounds.y - clip.y - 8) * scale)),
+          width: Math.ceil((bounds.width + 16) * scale),
+          height: Math.ceil((bounds.height + 16) * scale),
+        }
+      : null;
+    return {
+      crop,
+      bytes: await page.screenshot({
+        clip,
+        omitBackground: true,
+        animations: 'disabled',
+      }),
+    };
   } finally {
     await page.close();
   }
@@ -289,20 +445,54 @@ const slug = (name: string) => name.replace(/[^a-z0-9]+/gi, '-').toLowerCase();
 
 async function main() {
   await mkdir(args.out, {recursive: true});
-  const browser = await launchChrome(SCALE);
+  const fixture = new PNG({width: 192, height: 192});
+  const fixtureBytes = (light: boolean) => {
+    for (let i = 0; i < fixture.data.length; i += 4) {
+      fixture.data[i] = light ? 245 : 20;
+      fixture.data[i + 1] = light ? 245 : 40;
+      fixture.data[i + 2] = light ? 245 : 60;
+      fixture.data[i + 3] = 255;
+    }
+    return PNG.sync.write(fixture);
+  };
+  const server = createServer((request, response) => {
+    response.setHeader('Content-Type', 'image/png');
+    response.end(fixtureBytes(request.url?.includes('light') ?? false));
+  });
+  await new Promise<void>(resolve => server.listen(0, '127.0.0.1', resolve));
+  const address = server.address();
+  assert.ok(address && typeof address !== 'string');
+  const fixtureUrl = `http://127.0.0.1:${address.port}`;
+  const browsers = await Promise.all([launchChrome(1), launchChrome(SCALE)]);
+  const originalFetch = globalThis.fetch;
   const rows: string[] = [];
   let failed = 0;
   try {
-    for (const cell of await matrix()) {
+    for (const cell of await matrix(fixtureUrl)) {
       if (args.only && !cell.name.includes(args.only)) continue;
+      globalThis.fetch = (input, init) => {
+        if (
+          String(input).startsWith('https://avatars.githubusercontent.com/')
+        ) {
+          if (cell.avatar === 'offline')
+            return Promise.reject(new TypeError('offline fixture'));
+          return originalFetch(`${fixtureUrl}/avatar.png`, init);
+        }
+        return originalFetch(input, init);
+      };
       const markup = await snapshotMarkup(cell.document);
       const takumiBytes = (await renderSnapshot(cell.document)) as Uint8Array;
       const {width, height} = PNG.sync.read(Buffer.from(takumiBytes));
-      const chromeBytes = await renderInChrome(browser, markup, {
-        width,
-        height,
-      });
+      const {bytes: chromeBytes, crop} = await renderInChrome(
+        browsers[markup.document.scale === 1 ? 0 : 1],
+        markup,
+        {
+          width,
+          height,
+        },
+      );
       const base = join(args.out, slug(cell.name));
+      await writeFile(`${base}.json`, JSON.stringify(cell.document, null, 2));
       await writeFile(`${base}-takumi.png`, takumiBytes);
       await writeFile(`${base}-chrome.png`, chromeBytes);
       const percent = await diffPng(
@@ -310,20 +500,48 @@ async function main() {
         `${base}-takumi.png`,
         `${base}-diff.png`,
       );
-      const pass = percent <= (cell.maxDiffPercent ?? MAX_DIFF_PERCENT);
+      let cropPercent: number | null = null;
+      if (crop) {
+        const chrome = PNG.sync.read(chromeBytes);
+        const takumi = PNG.sync.read(Buffer.from(takumiBytes));
+        const width = Math.min(crop.width, chrome.width - crop.x);
+        const height = Math.min(crop.height, chrome.height - crop.y);
+        const extract = (image: PNG) => {
+          const out = new PNG({width, height});
+          PNG.bitblt(image, out, crop.x, crop.y, width, height, 0, 0);
+          return out;
+        };
+        const reference = extract(chrome);
+        const actual = extract(takumi);
+        const diff = new PNG({width, height});
+        cropPercent =
+          (pixelmatch(reference.data, actual.data, diff.data, width, height, {
+            threshold: PIXELMATCH_THRESHOLD,
+          }) /
+            (width * height)) *
+          100;
+        await writeFile(`${base}-signature-diff.png`, PNG.sync.write(diff));
+      }
+      const pass =
+        percent <= (cell.maxDiffPercent ?? MAX_DIFF_PERCENT) &&
+        (cropPercent === null || cropPercent <= MAX_DIFF_PERCENT);
       if (!pass) failed++;
       rows.push(
-        `| ${cell.name} | ${width}x${height} | ${percent.toFixed(2)}% | ${pass ? 'pass' : 'FAIL'} |`,
+        `| ${cell.name} | ${width}x${height} | ${percent.toFixed(2)}% | ${cropPercent === null ? '-' : `${cropPercent.toFixed(2)}%`} | ${pass ? 'pass' : 'FAIL'} |`,
       );
       console.log(rows.at(-1));
     }
   } finally {
-    await browser.close();
+    globalThis.fetch = originalFetch;
+    await Promise.all(browsers.map(browser => browser.close()));
+    await new Promise<void>((resolve, reject) =>
+      server.close(error => (error ? reject(error) : resolve())),
+    );
   }
 
   const table = [
-    '| Cell | Size | Diff | Result |',
-    '| --- | --- | --- | --- |',
+    '| Cell | Size | Diff | Signature crop | Result |',
+    '| --- | --- | --- | --- | --- |',
     ...rows,
   ].join('\n');
   await writeFile(join(args.out, 'table.md'), `${table}\n`);

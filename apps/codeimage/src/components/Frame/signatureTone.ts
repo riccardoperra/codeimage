@@ -28,3 +28,8 @@ export async function canvasSample(url: string): Promise<Uint8ClampedArray> {
   context.drawImage(image, 0, 0, TONE_SAMPLE_SIZE, TONE_SAMPLE_SIZE);
   return context.getImageData(0, 0, TONE_SAMPLE_SIZE, TONE_SAMPLE_SIZE).data;
 }
+
+export function toneSampleMarkup(src: string): string {
+  const escaped = src.replaceAll('&', '&amp;').replaceAll('"', '&quot;');
+  return `<img src="${escaped}" style="display:block;width:${TONE_SAMPLE_SIZE}px;height:${TONE_SAMPLE_SIZE}px"/>`;
+}
