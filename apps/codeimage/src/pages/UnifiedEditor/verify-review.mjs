@@ -17,6 +17,173 @@ const check = (ok, message) => {
 };
 const source = path => readFileSync(new URL(path, import.meta.url), 'utf8');
 
+async function verifyStartup(browser, layout, width, delayed) {
+  const tag = `startup-${layout}-${width}-${delayed ? 'delayed' : 'normal'}`;
+  const ctx = await browser.newContext({
+    viewport: {width, height: width === 390 ? 844 : 900},
+  });
+  let page;
+  const errors = [];
+  try {
+    let delayedRequests = 0;
+    await ctx.addInitScript(layout => {
+      localStorage.setItem(
+        'codeimage:editor-settings',
+        JSON.stringify({layout}),
+      );
+      localStorage.setItem(
+        '@store/ui',
+        JSON.stringify({themeMode: 'dark', locale: 'en'}),
+      );
+      window.__startup = JSON.parse(
+        sessionStorage.getItem('review:startup') ?? '[]',
+      );
+      window.addEventListener('beforeunload', () =>
+        sessionStorage.setItem(
+          'review:startup',
+          JSON.stringify(window.__startup),
+        ),
+      );
+      const measure = element => {
+        if (!element) return null;
+        const surface =
+          element.querySelector('[data-frame-content]') ??
+          element.firstElementChild ??
+          element;
+        let painted = getComputedStyle(surface).visibility !== 'hidden';
+        for (
+          let ancestor = element;
+          ancestor;
+          ancestor = ancestor.parentElement
+        ) {
+          const style = getComputedStyle(ancestor);
+          if (style.opacity === '0' || style.display === 'none')
+            painted = false;
+        }
+        return {
+          box: element.getBoundingClientRect().toJSON(),
+          painted,
+          tabs: element.querySelectorAll('[data-host-index][data-active]')
+            .length,
+          tabNames: [
+            ...element.querySelectorAll('[data-host-index][data-active]'),
+          ].map(tab => tab.querySelector('input')?.value ?? tab.textContent),
+          header: element
+            .querySelector('[data-header-visible]')
+            ?.getAttribute('data-header-visible'),
+        };
+      };
+      const sample = time => {
+        window.__startup.push({
+          time,
+          placeholder: measure(
+            document.querySelector('[data-frame-placeholder]'),
+          ),
+          frame: measure(
+            document.querySelector('[data-fit-scale] [data-frame-content]')
+              ?.parentElement,
+          ),
+        });
+        window.__startupRAF = requestAnimationFrame(sample);
+      };
+      window.__startupRAF = requestAnimationFrame(sample);
+    }, layout);
+    if (delayed)
+      await ctx.route('**/components/Frame/ManagedFrame.tsx*', async route => {
+        delayedRequests++;
+        await new Promise(resolve => setTimeout(resolve, 1500));
+        await route.continue();
+      });
+    page = await ctx.newPage();
+    page.on('pageerror', error => errors.push(error.message));
+    page.on('requestfailed', request =>
+      errors.push(`${request.url()}: ${request.failure()?.errorText}`),
+    );
+    await page.goto(base, {waitUntil: 'domcontentloaded', timeout: 120000});
+    await page
+      .locator('[data-fit-scale] .cm-content[contenteditable=true]')
+      .waitFor({timeout: 120000});
+    await page.waitForFunction(
+      () => {
+        if (
+          !document.querySelector(
+            '[data-fit-scale] .cm-content[contenteditable=true]',
+          ) ||
+          document.fonts.status !== 'loaded'
+        ) {
+          window.__editorReadyAt = undefined;
+          return false;
+        }
+        window.__editorReadyAt ??= performance.now();
+        return performance.now() - window.__editorReadyAt >= 2000;
+      },
+      null,
+      {timeout: 120000},
+    );
+    const samples = await page.evaluate(() => {
+      cancelAnimationFrame(window.__startupRAF);
+      return window.__startup;
+    });
+    writeFileSync(`${out}/${tag}.json`, JSON.stringify(samples));
+    const final = samples.at(-1).frame;
+    assert.equal(final.tabs, 1, `${tag}: the complete tab header is visible`);
+    assert.equal(final.header, 'true', `${tag}: the window header is visible`);
+    let maxDelta = 0,
+      placeholders = 0,
+      frames = 0;
+    for (const sample of samples) {
+      for (const [kind, item] of Object.entries(sample)) {
+        if (!item?.painted || !item.box.width || !item.box.height) continue;
+        for (const key of ['x', 'y', 'width', 'height'])
+          maxDelta = Math.max(
+            maxDelta,
+            Math.abs(item.box[key] - final.box[key]),
+          );
+        if (kind === 'placeholder') placeholders++;
+        else {
+          frames++;
+          assert.equal(
+            item.tabs,
+            final.tabs,
+            `${tag}: intermediate tab structure`,
+          );
+          assert.deepEqual(
+            item.tabNames,
+            final.tabNames,
+            `${tag}: intermediate tab names`,
+          );
+          assert.equal(
+            item.header,
+            final.header,
+            `${tag}: intermediate window structure`,
+          );
+        }
+      }
+    }
+    check(
+      frames > 0 &&
+        maxDelta <= 1 &&
+        (!delayed || (delayedRequests > 0 && placeholders > 0)),
+      `${tag}: ${samples.length} animation frames, ${placeholders} placeholder / ${frames} live, maximum drift ${maxDelta.toFixed(3)}px`,
+    );
+  } catch (error) {
+    const state = await page
+      ?.evaluate(() => ({
+        text: document.body.innerText,
+        fonts: document.fonts.status,
+        samples: window.__startup,
+      }))
+      .catch(() => null);
+    writeFileSync(
+      `${out}/${tag}-failure.json`,
+      JSON.stringify({error: String(error), errors, state}),
+    );
+    throw error;
+  } finally {
+    await ctx.close();
+  }
+}
+
 async function verifyExportParity(page, tag) {
   await page.evaluate(async () => {
     window.__terminal = (
@@ -156,6 +323,7 @@ check(
 );
 const browser = await chromium.launch();
 try {
+  const startupChecks = [];
   for (const layout of ['inspector', 'dock', 'studio'])
     for (const width of [1440, 390]) {
       if (process.env.REVIEW_LAYOUT && layout !== process.env.REVIEW_LAYOUT)
@@ -165,6 +333,28 @@ try {
         width !== Number(process.env.REVIEW_WIDTH)
       )
         continue;
+      for (const delayed of [false, true]) {
+        if (
+          process.env.REVIEW_STARTUP_DELAY &&
+          Number(delayed) !== Number(process.env.REVIEW_STARTUP_DELAY)
+        )
+          continue;
+        if (process.env.REVIEW_STARTUP_CONCURRENT)
+          startupChecks.push(verifyStartup(browser, layout, width, delayed));
+        else await verifyStartup(browser, layout, width, delayed);
+      }
+    }
+  await Promise.all(startupChecks);
+  for (const layout of ['inspector', 'dock', 'studio'])
+    for (const width of [1440, 390]) {
+      if (process.env.REVIEW_LAYOUT && layout !== process.env.REVIEW_LAYOUT)
+        continue;
+      if (
+        process.env.REVIEW_WIDTH &&
+        width !== Number(process.env.REVIEW_WIDTH)
+      )
+        continue;
+      if (process.env.REVIEW_STARTUP_ONLY) continue;
       const tag = `${platform}-${layout}-${width}`;
       const ctx = await browser.newContext({
         viewport: {width, height: width === 390 ? 844 : 900},

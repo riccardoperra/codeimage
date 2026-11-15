@@ -7,10 +7,12 @@ import {TERMINAL_SHADOWS} from '@core/configuration/shadow';
 import {useModality} from '@core/hooks/isMobile';
 import {
   createEffect,
+  createResource,
   createSignal,
   lazy,
   onCleanup,
   onMount,
+  Show,
   Suspense,
 } from 'solid-js';
 import type {Accessor, Component} from 'solid-js';
@@ -114,17 +116,26 @@ function FramePlaceholder(props: {frame: Accessor<HTMLElement | undefined>}) {
     const element = props.frame();
     if (!element) return;
     let frame = 0;
+    let fontsReady = false;
     const measure = () => {
       const box = element.getBoundingClientRect();
       if (!box.width || !box.height) return;
       setSize({width: box.width, height: box.height});
+      setSettled(false);
       cancelAnimationFrame(frame);
-      frame = requestAnimationFrame(() => setSettled(true));
+      if (fontsReady) frame = requestAnimationFrame(() => setSettled(true));
     };
     const observer = new ResizeObserver(measure);
     observer.observe(element);
     measure();
+    let disposed = false;
+    void document.fonts.ready.then(() => {
+      if (disposed) return;
+      fontsReady = true;
+      measure();
+    });
     onCleanup(() => {
+      disposed = true;
       cancelAnimationFrame(frame);
       observer.disconnect();
     });
@@ -137,7 +148,7 @@ function FramePlaceholder(props: {frame: Accessor<HTMLElement | undefined>}) {
       style={{
         width: `${size()?.width ?? 0}px`,
         height: `${size()?.height ?? 0}px`,
-        visibility: settled() ? undefined : 'hidden',
+        opacity: settled() ? 1 : 0,
       }}
     >
       <FrameSkeleton />
@@ -166,13 +177,20 @@ export function createStage(): Stage {
     compact,
     Canvas: () => {
       onMount(() => getExportCanvasStore().initCanvas(exportRef));
+      const [fontsReady] = createResource(exportRef, element => {
+        // Layout starts loading the preview's code font before awaiting it.
+        element.getBoundingClientRect();
+        return document.fonts.ready.then(() => true);
+      });
       // Every placeholder sits inside FitFrame, where the frame will be. The
       // export copy renders into a portal, so its place in the tree is free.
       return (
         <FitFrame onScaleChange={setScale}>
           <SuspenseEditorItem fallback={null}>
             <Suspense fallback={<FramePlaceholder frame={exportRef} />}>
-              <ManagedFrame />
+              <Show when={fontsReady()}>
+                <ManagedFrame />
+              </Show>
             </Suspense>
             <PreviewFrame ref={setExportRef} />
           </SuspenseEditorItem>
