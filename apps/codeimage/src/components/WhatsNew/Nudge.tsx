@@ -40,7 +40,7 @@ export function Nudge(props: {
     return item.where !== null && news.canShowMe(item.id) ? item : null;
   };
   const count = (): number => props.release.highlights.length;
-  const last = () => step() === props.release.highlights.length - 1;
+  const last = () => step() === count() - 1;
   // Only the newest step change fades. Stepping faster drops the older one.
   const slides = () => {
     const {step, leaving} = view();
@@ -113,7 +113,7 @@ export function Nudge(props: {
             <div class={styles.summary}>
               <strong>
                 {t(count() === 1 ? 'whatsNew.newOne' : 'whatsNew.newMany', {
-                  count: String(props.release.highlights.length),
+                  count: String(count()),
                 })}
               </strong>
               <span class={styles.muted}>
@@ -166,7 +166,7 @@ export function Nudge(props: {
                       <span class={styles.tag}>
                         {t(
                           'experimental' in item()
-                            ? 'whatsNew.experiment'
+                            ? 'editor.experimental'
                             : 'common.new',
                         )}
                       </span>
@@ -188,7 +188,7 @@ export function Nudge(props: {
               role="img"
               aria-label={t('whatsNew.step', {
                 step: String(step() + 1),
-                count: String(props.release.highlights.length),
+                count: String(count()),
               })}
             >
               <For each={props.release.highlights}>

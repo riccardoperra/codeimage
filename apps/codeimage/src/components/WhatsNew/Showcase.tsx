@@ -78,7 +78,7 @@ export function Showcase(props: {
                   <span class={styles.tag}>
                     {t(
                       'experimental' in highlight
-                        ? 'whatsNew.experiment'
+                        ? 'editor.experimental'
                         : 'common.new',
                     )}
                   </span>

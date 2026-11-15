@@ -43,7 +43,7 @@ function Row(props: {row: SettingRow}) {
         <span id={titleId()} class={styles.rowTitle}>
           {props.row.title}
           <Show when={props.row.experimental}>
-            <span class={styles.tag}>{t('whatsNew.experiment')}</span>
+            <span class={styles.tag}>{t('editor.experimental')}</span>
           </Show>
           <NewDot at={`setting:${props.row.id}`} />
           <Show when={props.row.fresh && getWhatsNew().isNew(props.row.fresh)}>
