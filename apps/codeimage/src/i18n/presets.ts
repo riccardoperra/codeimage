@@ -97,35 +97,36 @@ export const presets = {
   },
   de: {
     presets: {
-      userPresets: 'Your presets',
+      share: {label: 'Teilen', confirm: 'Vorlagenlink kopiert'},
+      userPresets: 'Deine Vorlagen',
       updatePreset: {
-        label: 'Update',
-        dialogTitle: 'Update preset',
+        label: 'Aktualisieren',
+        dialogTitle: 'Vorlage aktualisieren',
         dialogMessage:
-          'Confirm to update the selected preset to the current editor state',
-        old: 'Old',
-        new: 'New',
+          'Bestätige, um die ausgewählte Vorlage mit dem aktuellen Editorzustand zu aktualisieren.',
+        old: 'Alt',
+        new: 'Neu',
       },
       renamePreset: {
-        label: 'Rename',
-        confirmTitle: 'Rename preset',
-        confirmMessage: 'Enter a new name for the preset.',
+        label: 'Umbenennen',
+        confirmTitle: 'Vorlage umbenennen',
+        confirmMessage: 'Gib einen neuen Namen für die Vorlage ein.',
       },
       addPreset: {
-        label: 'Add preset',
-        confirmTitle: 'Add a new preset',
-        confirmMessage: 'Enter a name for your preset',
+        label: 'Vorlage hinzufügen',
+        confirmTitle: 'Neue Vorlage hinzufügen',
+        confirmMessage: 'Gib einen Namen für deine Vorlage ein.',
       },
       deletePreset: {
-        label: 'Delete',
-        confirmTitle: 'Delete preset',
-        confirmMessage: 'This action is not reversible.',
+        label: 'Löschen',
+        confirmTitle: 'Vorlage löschen',
+        confirmMessage: 'Diese Aktion kann nicht rückgängig gemacht werden.',
       },
       sync: {
-        label: 'Save in your account',
+        label: 'In deinem Konto speichern',
       },
       openPreset: {
-        label: 'Show your presets',
+        label: 'Deine Vorlagen anzeigen',
       },
       limit: {
         user: {
@@ -140,35 +141,36 @@ export const presets = {
   },
   es: {
     presets: {
-      userPresets: 'Your presets',
+      share: {label: 'Compartir', confirm: 'Enlace del preajuste copiado'},
+      userPresets: 'Tus preajustes',
       updatePreset: {
-        label: 'Update',
-        dialogTitle: 'Update preset',
+        label: 'Actualizar',
+        dialogTitle: 'Actualizar preajuste',
         dialogMessage:
-          'Confirm to update the selected preset to the current editor state',
-        old: 'Old',
-        new: 'New',
+          'Confirma para actualizar el preajuste seleccionado con el estado actual del editor.',
+        old: 'Anterior',
+        new: 'Nuevo',
       },
       renamePreset: {
-        label: 'Rename',
-        confirmTitle: 'Rename preset',
-        confirmMessage: 'Enter a new name for the preset.',
+        label: 'Renombrar',
+        confirmTitle: 'Renombrar preajuste',
+        confirmMessage: 'Introduce un nuevo nombre para el preajuste.',
       },
       addPreset: {
-        label: 'Add preset',
-        confirmTitle: 'Add a new preset',
-        confirmMessage: 'Enter a name for your preset',
+        label: 'Añadir preajuste',
+        confirmTitle: 'Añadir un nuevo preajuste',
+        confirmMessage: 'Introduce un nombre para el preajuste.',
       },
       deletePreset: {
-        label: 'Delete',
-        confirmTitle: 'Delete preset',
-        confirmMessage: 'This action is not reversible.',
+        label: 'Eliminar',
+        confirmTitle: 'Eliminar preajuste',
+        confirmMessage: 'Esta acción no se puede deshacer.',
       },
       sync: {
-        label: 'Save in your account',
+        label: 'Guardar en tu cuenta',
       },
       openPreset: {
-        label: 'Show your presets',
+        label: 'Mostrar tus preajustes',
       },
       limit: {
         user: {

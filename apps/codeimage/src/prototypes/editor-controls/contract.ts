@@ -1,3 +1,5 @@
+import type {LocaleKeys} from '@codeimage/locale';
+import type {AppLocaleEntries} from '../../i18n';
 import type {Component} from 'solid-js';
 import type {EditorControlsModel} from './model';
 import type {Stage} from './stage';
@@ -15,7 +17,7 @@ export interface VariantProps {
 
 export interface VariantMeta {
   /** The layout's name, as the settings show it. */
-  readonly name: string;
+  readonly name: LocaleKeys<AppLocaleEntries>;
   /** The design axis this variant explores, in a phrase. */
   readonly axis: string;
 }

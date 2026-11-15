@@ -1,3 +1,5 @@
+import type {AppLocaleEntries} from '../../../i18n';
+import {useI18n} from '@codeimage/locale';
 import type {Accessor, JSX} from 'solid-js';
 import {createMemo, createSignal} from 'solid-js';
 import type {EditorControlsModel, ThemeEntry} from '../model';
@@ -92,6 +94,7 @@ export function createThemeBrowser(
   model: EditorControlsModel,
   options: ThemeBrowserOptions = {},
 ): ThemeBrowser {
+  const [t] = useI18n<AppLocaleEntries>();
   const [query, setQuery] = createSignal('');
   const [mode, setMode] = createSignal<ThemeMode>('all');
   let list: HTMLElement | undefined;
@@ -107,8 +110,8 @@ export function createThemeBrowser(
 
   const groups = createMemo(() =>
     [
-      {label: 'Dark', themes: themes().filter(theme => theme.dark)},
-      {label: 'Light', themes: themes().filter(theme => !theme.dark)},
+      {label: t('editor.dark'), themes: themes().filter(theme => theme.dark)},
+      {label: t('editor.light'), themes: themes().filter(theme => !theme.dark)},
     ].filter(group => group.themes.length > 0),
   );
 
@@ -159,7 +162,9 @@ export function createThemeBrowser(
     listProps: {
       ref: (el: HTMLDivElement) => (list = el),
       role: 'listbox',
-      'aria-label': 'Themes',
+      get 'aria-label'() {
+        return t('bottomBar.themes');
+      },
       onMouseLeave: settle,
       onFocusOut: event => {
         const next = event.relatedTarget;

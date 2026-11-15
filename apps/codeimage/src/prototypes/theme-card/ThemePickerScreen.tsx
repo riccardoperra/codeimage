@@ -1,3 +1,5 @@
+import type {AppLocaleEntries} from '../../i18n';
+import {useI18n} from '@codeimage/locale';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 import {Toolbar} from '../../components/Toolbar/Toolbar';
 import type {VariantProps} from '../editor-controls/contract';
@@ -13,6 +15,7 @@ interface ThemePickerScreenProps extends VariantProps {
 
 /** The real header, the live canvas, and one theme picker in an island beside it. */
 export function ThemePickerScreen(props: ThemePickerScreenProps) {
+  const [t] = useI18n<AppLocaleEntries>();
   return (
     <div class={styles.screen}>
       <Toolbar canvasRef={props.stage.exportRef()} />
@@ -23,9 +26,9 @@ export function ThemePickerScreen(props: ThemePickerScreenProps) {
         <aside
           class={styles.themeIsland}
           style={assignInlineVars({[styles.islandWidth]: `${props.width}px`})}
-          aria-label="Themes"
+          aria-label={t('bottomBar.themes')}
         >
-          <span class={styles.islandTitle}>Theme</span>
+          <span class={styles.islandTitle}>{t('frame.theme')}</span>
           <div class={styles.picker}>
             <ThemePicker
               model={props.model}

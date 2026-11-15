@@ -1,3 +1,5 @@
+import type {AppLocaleEntries} from '../../../../i18n';
+import {useI18n} from '@codeimage/locale';
 import {keepMarkToolbarAboveSelection} from '../../controls/mark-toolbar';
 import {Button, IconButton} from '@codeui/kit';
 import {useModality} from '@core/hooks/isMobile';
@@ -6,7 +8,7 @@ import {assignInlineVars} from '@vanilla-extract/dynamic';
 import type {JSX} from 'solid-js';
 import {createSignal, For, onCleanup, onMount, Show} from 'solid-js';
 import {Dynamic} from 'solid-js/web';
-import {Footer} from '../../../../components/Footer/Footer';
+import {Footer} from '../../localized/Footer';
 import {sidebarTheme} from '../../../../components/PropertyEditor/EditorSidebar.css';
 import {shownTheme} from '../../command-menu/listed-model';
 import {commandMenu} from '../../command-menu/state';
@@ -35,7 +37,7 @@ import {Sheet} from './Sheet';
 import * as styles from './dock.css';
 
 export const meta: VariantMeta = {
-  name: 'Dock',
+  name: 'editor.dock',
   axis: 'Interaction model: a dock that floats over the canvas, popovers that preview, and a command menu',
 };
 
@@ -72,6 +74,7 @@ interface DockItemHost {
 }
 
 function DockItem(props: DockItemProps & {host: DockItemHost}) {
+  const [t] = useI18n<AppLocaleEntries>();
   const [instant, setInstant] = createSignal(false);
   const isOpen = () => props.host.open(props.panel);
   const text = () =>
@@ -82,7 +85,7 @@ function DockItem(props: DockItemProps & {host: DockItemHost}) {
   // keeps one width whatever is applied. A dock that grew would wrap its row
   // on a narrow window and move the frame.
   const ItemText = () => (
-    <span class={styles.itemText}>
+    <span class={styles.itemText} data-dock-label>
       <span class={styles.itemCell}>{text()}</span>
       <Show when={!props.host.compact()}>
         <For each={props.values}>
@@ -146,7 +149,7 @@ function DockItem(props: DockItemProps & {host: DockItemHost}) {
         <Popover.Portal mount={props.host.mount()}>
           <Popover.Content
             class={`${styles.popover} ${sidebarTheme}`}
-            aria-label={PANELS[props.panel].title}
+            aria-label={t(PANELS[props.panel].title)}
             data-panel={props.panel}
             data-instant={instant() ? '' : undefined}
             style={{
@@ -179,6 +182,7 @@ function DockItem(props: DockItemProps & {host: DockItemHost}) {
 
 /** The settings entry in the floating bar, beside Search. */
 function BarSettings() {
+  const [t] = useI18n<AppLocaleEntries>();
   claimSettingsEntry();
   return (
     <IconButton
@@ -186,8 +190,8 @@ function BarSettings() {
       theme={'secondary'}
       variant={'ghost'}
       size={'sm'}
-      aria-label="Settings"
-      title="Settings"
+      aria-label={t('editor.settings')}
+      title={t('editor.settings')}
       aria-haspopup="dialog"
       aria-expanded={settings.isOpen()}
       data-settings-trigger
@@ -199,6 +203,7 @@ function BarSettings() {
 }
 
 export default function Dock(props: VariantProps) {
+  const [t] = useI18n<AppLocaleEntries>();
   keepMarkToolbarAboveSelection();
   const fields = createFields(props.model);
   // The production header shows Export only when the page loaded on a wide
@@ -340,12 +345,12 @@ export default function Dock(props: VariantProps) {
               ref={bar}
               class={`${styles.bar} ${styles.float}`}
               role="toolbar"
-              aria-label="Editor controls"
+              aria-label={t('editor.editorControls')}
             >
               <DockItem
                 host={host}
                 panel="themes"
-                label={label('editor.theme', 'Theme')}
+                label={label('editor.theme', t('frame.theme'))}
                 value={shownTheme(props.model)?.name}
                 values={props.model.themes().map(theme => theme.name)}
                 icon={
@@ -357,7 +362,7 @@ export default function Dock(props: VariantProps) {
               <DockItem
                 host={host}
                 panel="background"
-                label={label('frame.background', 'Background')}
+                label={label('frame.background', t('frame.background'))}
                 icon={
                   <span
                     class={styles.fill}
@@ -373,14 +378,14 @@ export default function Dock(props: VariantProps) {
                     <DockItem
                       host={host}
                       panel="padding"
-                      label={label('frame.padding', 'Padding')}
+                      label={label('frame.padding', t('frame.padding'))}
                       value={optionLabel('frame.padding')}
                       icon={<PaddingIcon />}
                     />
                     <DockItem
                       host={host}
                       panel="language"
-                      label={label('editor.language', 'Language')}
+                      label={label('editor.language', t('frame.language'))}
                       value={optionLabel('editor.language')}
                       icon={<CodeIcon />}
                     />
@@ -426,7 +431,7 @@ export default function Dock(props: VariantProps) {
               <DockItem
                 host={host}
                 panel="font"
-                label={label('font.family', 'Font')}
+                label={label('font.family', t('frame.font'))}
                 value={fields.fontName()}
                 quiet
                 icon={
@@ -443,7 +448,7 @@ export default function Dock(props: VariantProps) {
               <DockItem
                 host={host}
                 panel="more"
-                label="More"
+                label={t('editor.more')}
                 icon={<SlidersIcon />}
               />
               <Show when={!compact()}>
@@ -453,7 +458,7 @@ export default function Dock(props: VariantProps) {
                   variant={'ghost'}
                   size={'sm'}
                   leftIcon={<SearchIcon />}
-                  aria-label="Search themes and options"
+                  aria-label={t('editor.searchOptions')}
                   aria-haspopup="dialog"
                   aria-expanded={commandMenu.isOpen()}
                   onClick={commandMenu.open}

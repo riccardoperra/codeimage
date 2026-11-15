@@ -1,3 +1,6 @@
+import type {LocaleKeys} from '@codeimage/locale';
+import type {AppLocaleEntries} from '../../../../i18n';
+import {useI18n} from '@codeimage/locale';
 import {getRootEditorStore} from '@codeimage/store/editor';
 import {EditorConfigStore} from '@codeimage/store/editor/config.store';
 import {SegmentedField} from '@ui/SegmentedField/SegmentedField';
@@ -11,8 +14,8 @@ import {
   PanelRow,
   TwoColumnPanelRow,
 } from '../../../../components/PropertyEditor/PanelRow';
-import {FontSystemPicker} from '../../../../components/PropertyEditor/controls/FontPicker/FontSystemPicker';
-import {PresetSwitcher} from '../../../../components/Presets/PresetSwitcher/PresetSwitcher';
+import {FontSystemPicker} from '../../localized/FontSystemPicker';
+import {PresetSwitcher} from '../../localized/PresetSwitcher';
 import type {VariantProps} from '../../contract';
 import {SignatureRow} from '../../controls/ControlOverlay';
 import {ControlRow} from '../../controls/ControlRow';
@@ -39,7 +42,7 @@ export interface PanelProps extends VariantProps {
 
 export interface Panel {
   readonly id: PanelId;
-  readonly label: string;
+  readonly label: LocaleKeys<AppLocaleEntries>;
   readonly Icon: IconComponent;
   /** The theme gallery needs room for three columns of roomy cards. */
   readonly wide?: boolean;
@@ -105,17 +108,18 @@ function FramePanel(props: PanelProps) {
 }
 
 function WindowPanel(props: PanelProps) {
+  const [t] = useI18n<AppLocaleEntries>();
   return (
     <Form>
       <section class={styles.section}>
-        <PanelHeader label="Title bar" />
+        <PanelHeader label={t('editor.titleBar')} />
         <Rows
           {...props}
           ids={['window.header', 'window.style', 'window.accent']}
         />
       </section>
       <section class={styles.section}>
-        <PanelHeader label="Surface" />
+        <PanelHeader label={t('frame.windowSurface')} />
         <Rows
           {...props}
           ids={[
@@ -139,6 +143,7 @@ type FontSource = 'web' | 'system';
  * bundled fonts are a kit select and the system fonts use the production list.
  */
 function FontRows(props: PanelProps) {
+  const [t] = useI18n<AppLocaleEntries>();
   const editor = getRootEditorStore();
   const config = provideState(EditorConfigStore);
   const [source, setSource] = createSignal<FontSource>(
@@ -149,7 +154,7 @@ function FontRows(props: PanelProps) {
 
   return (
     <>
-      <PanelRow for="studio-font-source" label="Source">
+      <PanelRow for="studio-font-source" label={t('editor.source')}>
         <TwoColumnPanelRow>
           <SegmentedField<FontSource>
             adapt
@@ -158,8 +163,8 @@ function FontRows(props: PanelProps) {
             value={source()}
             onChange={setSource}
             items={[
-              {label: 'Bundled', value: 'web'},
-              {label: 'System', value: 'system'},
+              {label: t('editor.bundled'), value: 'web'},
+              {label: t('editor.system'), value: 'system'},
             ]}
           />
         </TwoColumnPanelRow>
@@ -183,7 +188,7 @@ function FontRows(props: PanelProps) {
           control={{
             kind: 'select',
             id: 'font.family',
-            label: () => family()?.label() ?? 'Font',
+            label: () => family()?.label() ?? t('frame.font'),
             visible: () => true,
             disabled: () => false,
             options: () =>
@@ -203,10 +208,11 @@ function FontRows(props: PanelProps) {
 }
 
 function CodePanel(props: PanelProps) {
+  const [t] = useI18n<AppLocaleEntries>();
   return (
     <Form>
       <section class={styles.section}>
-        <PanelHeader label="Language" />
+        <PanelHeader label={t('frame.language')} />
         <Rows
           {...props}
           ids={['editor.language', 'editor.theme', 'editor.formatter']}
@@ -218,7 +224,7 @@ function CodePanel(props: PanelProps) {
       </section>
       <section class={styles.section}>
         <PanelHeader
-          label={props.model.control('font.family')?.label() ?? 'Font'}
+          label={props.model.control('font.family')?.label() ?? t('frame.font')}
         />
         <FontRows {...props} />
         <Rows {...props} ids={['font.weight', 'font.ligatures']} />
@@ -238,18 +244,18 @@ function PresetsPanel(props: PanelProps) {
 export const PANELS: readonly Panel[] = [
   {
     id: 'themes',
-    label: 'Themes',
+    label: 'bottomBar.themes',
     Icon: ThemesIcon,
     wide: true,
     sheet: 'tall',
     Body: ThemesPanel,
   },
-  {id: 'frame', label: 'Frame', Icon: FrameIcon, Body: FramePanel},
-  {id: 'window', label: 'Window', Icon: WindowIcon, Body: WindowPanel},
-  {id: 'code', label: 'Code', Icon: CodeIcon, Body: CodePanel},
+  {id: 'frame', label: 'frame.frame', Icon: FrameIcon, Body: FramePanel},
+  {id: 'window', label: 'frame.terminal', Icon: WindowIcon, Body: WindowPanel},
+  {id: 'code', label: 'editor.code', Icon: CodeIcon, Body: CodePanel},
   {
     id: 'presets',
-    label: 'Presets',
+    label: 'editor.presets',
     Icon: PresetsIcon,
     ownHeader: true,
     Body: PresetsPanel,

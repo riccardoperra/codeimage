@@ -1,8 +1,11 @@
+import type {AppLocaleEntries} from '../../../i18n';
+import {useI18n} from '@codeimage/locale';
 import {Show} from 'solid-js';
 import {modeIcon} from './picker.css';
 
 /** A moon for a dark theme, a sun for a light one. */
 export function ModeIcon(props: {dark: boolean; size?: number}) {
+  const [t] = useI18n<AppLocaleEntries>();
   return (
     <svg
       class={modeIcon}
@@ -15,7 +18,7 @@ export function ModeIcon(props: {dark: boolean; size?: number}) {
       stroke-linecap="round"
       stroke-linejoin="round"
       role="img"
-      aria-label={props.dark ? 'Dark theme' : 'Light theme'}
+      aria-label={props.dark ? t('editor.darkTheme') : t('editor.lightTheme')}
     >
       <Show
         when={props.dark}

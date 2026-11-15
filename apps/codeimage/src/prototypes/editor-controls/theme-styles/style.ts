@@ -1,10 +1,12 @@
+import type {LocaleKeys} from '@codeimage/locale';
+import type {AppLocaleEntries} from '../../../i18n';
 import {createSignal} from 'solid-js';
 import type {SwatchVariant} from '../ThemeSwatch';
 
 export interface ThemeStyle {
   readonly id: string;
   /** Shown in the theme style picker. */
-  readonly name: string;
+  readonly name: LocaleKeys<AppLocaleEntries>;
   readonly axis: string;
   /** The swatch other places draw for a theme while this style is chosen. */
   readonly mark: SwatchVariant;
@@ -13,19 +15,19 @@ export interface ThemeStyle {
 export const THEME_STYLES = [
   {
     id: 'window',
-    name: 'Window',
+    name: 'frame.terminal',
     axis: 'Miniature: the frame and window you export, with bars for code',
     mark: 'window',
   },
   {
     id: 'orb',
-    name: 'Orb',
+    name: 'editor.orb',
     axis: 'Identity: one soft mark per theme on roomy cards',
     mark: 'syntax-orb',
   },
   {
     id: 'aa',
-    name: 'Aa list',
+    name: 'editor.aa',
     axis: 'Density: one text row per theme, grouped by dark and light',
     mark: 'aa',
   },

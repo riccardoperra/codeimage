@@ -27,7 +27,7 @@ import {createOverlayPlacement} from './overlays';
 import * as styles from './inspector.css';
 
 export const meta: VariantMeta = {
-  name: 'Inspector',
+  name: 'editor.inspector',
   axis: 'Everything in one panel',
 };
 
@@ -251,7 +251,10 @@ export default function Inspector(props: VariantProps) {
     return `${displayHandle(signature)} · ${summary(props.model.control('signature.style'))}`;
   };
   const summaries: Record<SectionId, () => string> = {
-    frame: () => `${summary(props.model.control('frame.padding'))} px padding`,
+    frame: () =>
+      t('editor.paddingSummary', {
+        value: summary(props.model.control('frame.padding')),
+      }),
     signature: () => signatureSummary(),
     window: () => summary(props.model.control('window.shadow')),
     editor: () => summary(props.model.control('editor.language')),
@@ -273,7 +276,7 @@ export default function Inspector(props: VariantProps) {
       <div class={styles.workspace}>
         <main
           class={styles.canvas}
-          aria-label="Image preview"
+          aria-label={t('editor.imagePreview')}
           ref={element => {
             canvas = element;
           }}
@@ -307,7 +310,7 @@ export default function Inspector(props: VariantProps) {
                   aria-expanded={commandMenu.isOpen()}
                   onClick={commandMenu.open}
                 >
-                  Search
+                  {t('editor.search')}
                   <kbd class={styles.commandKey}>{commandMenu.shortcut}</kbd>
                 </Button>
               }
@@ -318,7 +321,7 @@ export default function Inspector(props: VariantProps) {
         </main>
         <aside
           class={styles.panel}
-          aria-label="Image inspector"
+          aria-label={t('editor.imageInspector')}
           ref={element => {
             panel = element;
           }}
@@ -329,7 +332,9 @@ export default function Inspector(props: VariantProps) {
             theme="secondary"
             variant="ghost"
             aria-label={
-              sheet() === 'short' ? 'Expand inspector' : 'Collapse inspector'
+              sheet() === 'short'
+                ? t('editor.expandInspector')
+                : t('editor.collapseInspector')
             }
             aria-expanded={sheet() === 'tall'}
             ref={element => {
@@ -397,7 +402,7 @@ export default function Inspector(props: VariantProps) {
               variant="ghost"
               onClick={() => openQuickControl('themes')}
             >
-              Theme
+              {t('frame.theme')}
             </Button>
             <Button
               theme="secondary"
@@ -405,7 +410,7 @@ export default function Inspector(props: VariantProps) {
               variant="ghost"
               onClick={() => openQuickControl('frame', 'frame.background')}
             >
-              Background
+              {t('frame.background')}
             </Button>
             <Button
               theme="secondary"
@@ -413,7 +418,7 @@ export default function Inspector(props: VariantProps) {
               variant="ghost"
               onClick={() => openQuickControl('frame', 'frame.padding')}
             >
-              Padding
+              {t('frame.padding')}
             </Button>
             <Button
               theme="secondary"
@@ -421,7 +426,7 @@ export default function Inspector(props: VariantProps) {
               variant="ghost"
               onClick={() => openQuickControl('editor', 'editor.language')}
             >
-              Language
+              {t('frame.language')}
             </Button>
           </div>
           <div
@@ -441,7 +446,7 @@ export default function Inspector(props: VariantProps) {
           >
             <Section
               id="themes"
-              title="Theme"
+              title={t('frame.theme')}
               summary={selectedTheme()?.name}
               open={openSection() === 'themes'}
               onOpenChange={open => toggleSection('themes', open)}
@@ -461,9 +466,9 @@ export default function Inspector(props: VariantProps) {
                   id={section.id}
                   title={
                     section.id === 'editor'
-                      ? 'Code'
+                      ? t('editor.code')
                       : section.id === 'window'
-                        ? 'Window'
+                        ? t('frame.terminal')
                         : section.label()
                   }
                   summary={summaries[section.id]()}

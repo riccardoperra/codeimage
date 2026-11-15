@@ -1,3 +1,5 @@
+import type {AppLocaleEntries} from '../../../i18n';
+import {useI18n} from '@codeimage/locale';
 import {getFrameState} from '@codeimage/store/editor/frame';
 import type {Control, ControlId, EditorControlsModel} from '../model';
 import type {ListedModel} from './listed-model';
@@ -31,6 +33,7 @@ function controlCommands(
   model: EditorControlsModel,
   reveal: ((id: ControlId) => void) | undefined,
 ): Command[] {
+  const [t] = useI18n<AppLocaleEntries>();
   const label = control.label();
 
   if (control.kind === 'toggle') {
@@ -39,8 +42,8 @@ function controlCommands(
       {
         group,
         id: control.id,
-        label: `Toggle ${label.toLowerCase()}`,
-        note: on ? 'On' : 'Off',
+        label: t('editor.toggle', {label}),
+        note: on ? t('editor.on') : t('editor.off'),
         preview: () => control.preview(!on),
         run: () => control.set(!on),
       },
@@ -82,7 +85,7 @@ function controlCommands(
     const fills = [
       ...control.gradients.map((fill, index) => ({
         fill,
-        name: `gradient ${index + 1}`,
+        name: t('editor.gradient', {number: String(index + 1)}),
       })),
       ...control.colors.map(fill => ({fill, name: fill})),
     ];
@@ -126,13 +129,14 @@ export function buildCommands(input: {
   settings: readonly Command[];
   reveal: ((id: ControlId) => void) | undefined;
 }): Command[] {
+  const [t] = useI18n<AppLocaleEntries>();
   const {model, listed, actions, settings, reveal} = input;
   const shown = shownTheme(model);
 
   return [
     ...actions.map((action, index): Command => ({
       id: `action=${index}`,
-      group: 'Actions',
+      group: t('editor.actions'),
       label: action.label,
       note: action.note,
       run: action.run,
@@ -140,8 +144,8 @@ export function buildCommands(input: {
     ...settings,
     ...model.themes().map((theme): Command => ({
       id: `theme=${theme.id}`,
-      group: 'Theme',
-      label: `Theme: ${theme.name}`,
+      group: t('frame.theme'),
+      label: `${t('frame.theme')}: ${theme.name}`,
       current: theme.id === shown?.id,
       preview: theme.preview,
       run: theme.apply,
@@ -160,7 +164,7 @@ export function buildCommands(input: {
                 {
                   id: `${control.id}.picker`,
                   group: section.label(),
-                  label: `${control.label()}…`, // i18n
+                  label: `${control.label()}…`,
                   run: () => reveal(control.id),
                 },
               ]
