@@ -14,7 +14,7 @@ Retire a script only after its assertions have a passing replacement. Keep revie
 | App `verify-locale-parity.mjs` and `verify-i18n.mjs` | Dictionary parity and all locales/layouts/viewports | Keep |
 | App `verify-review.mjs` | Every image entry point, focus and overlay geometry across layouts and viewports | Keep |
 
-The app scripts above live in `apps/codeimage/src/prototypes/editor-controls/`. None of these commands is invoked by the current package scripts or GitHub workflows. Reusable commands from the retired reports are in [specialist checks](specialist-checks.md). The historical reports remain in Git history.
+The app scripts above live in `apps/codeimage/src/pages/UnifiedEditor/`. None of these commands is invoked by the current package scripts or GitHub workflows. Reusable commands from the retired reports are in [specialist checks](specialist-checks.md). The historical reports remain in Git history.
 
 ## Execution order
 

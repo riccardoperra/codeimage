@@ -14,7 +14,7 @@ Fresh eligible visitors receive an announcement; all unified users can open Sett
 
 Audit opens `[data-settings-section="whats-new"]`, asserts `[data-setting^="news-"]` archive rows, captures the archive, clicks Show me scoped to `[data-setting="news-command-menu"]` and checks `[data-command-menu]`. Capture destination as well as closed Settings. For nudge, a fresh profile with eligible release shows complementary What's new; See expands, Next advances, dismiss persists across reload.
 
-Source: `components/WhatsNew/WhatsNewHost.tsx`, `Nudge.tsx`, `state/whats-new/registry.ts`, `prototypes/editor-controls/shell/sections.tsx`.
+Source: `components/WhatsNew/WhatsNewHost.tsx`, `Nudge.tsx`, `state/whats-new/registry.ts`, `pages/UnifiedEditor/shell/sections.tsx`.
 
 ## Gotchas
 

@@ -1,4 +1,4 @@
-// node apps/codeimage/src/prototypes/editor-controls/verify-locale-parity.mjs
+// node apps/codeimage/src/pages/UnifiedEditor/verify-locale-parity.mjs
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {fileURLToPath} from 'node:url';
@@ -218,10 +218,10 @@ function hardcodedMessages(source) {
   return found;
 }
 const {readdirSync} = await import('node:fs');
-const prototypeDirectory = fileURLToPath(new URL('../', import.meta.url));
-for (const entry of readdirSync(prototypeDirectory, {recursive: true})) {
+const editorDirectory = fileURLToPath(new URL('./', import.meta.url));
+for (const entry of readdirSync(editorDirectory, {recursive: true})) {
   if (!/\.tsx?$/.test(entry) || entry.endsWith('.css.ts')) continue;
-  const path = `${prototypeDirectory}/${entry}`;
+  const path = `${editorDirectory}/${entry}`;
   const contents = readFileSync(path, 'utf8');
   assert(!contents.includes('// i18n'), `${entry}: unresolved i18n marker`);
   assert.deepEqual(
@@ -251,5 +251,5 @@ assert.deepEqual(
   ['Settings', 'Settings'],
 );
 console.log(
-  'PASS: prototype text, labels, hints and accessible names use locale keys; hard-coded-message negative control passed.',
+  'PASS: unified editor text, labels, hints and accessible names use locale keys; hard-coded-message negative control passed.',
 );

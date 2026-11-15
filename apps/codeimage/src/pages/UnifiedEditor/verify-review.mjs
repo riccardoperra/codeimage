@@ -1,4 +1,4 @@
-// node apps/codeimage/src/prototypes/editor-controls/verify-review.mjs <base> <screenshots>
+// node apps/codeimage/src/pages/UnifiedEditor/verify-review.mjs <base> <screenshots>
 import assert from 'node:assert/strict';
 import {mkdirSync, readFileSync, writeFileSync} from 'node:fs';
 import {chromium} from 'playwright';
@@ -35,11 +35,7 @@ check(
 );
 const browser = await chromium.launch();
 try {
-  for (const [layout, v] of [
-    ['inspector', 2],
-    ['dock', 3],
-    ['studio', 4],
-  ])
+  for (const layout of ['inspector', 'dock', 'studio'])
     for (const width of [1440, 390]) {
       if (process.env.REVIEW_LAYOUT && layout !== process.env.REVIEW_LAYOUT)
         continue;
@@ -62,7 +58,11 @@ try {
         outputs++;
         void popup.close();
       });
-      await page.addInitScript(() => {
+      await page.addInitScript(layout => {
+        localStorage.setItem(
+          'codeimage:editor-settings',
+          JSON.stringify({layout}),
+        );
         localStorage.setItem(
           '@store/ui',
           JSON.stringify({themeMode: 'dark', locale: 'en'}),
@@ -88,10 +88,14 @@ try {
           configurable: true,
           value: () => true,
         });
-      });
-      await page.goto(`${base}/prototypes/editor-controls?v=${v}`);
+      }, layout);
+      await page.goto(`${base}/`);
       await page.reload();
       await page.waitForSelector('[data-fit-scale] .cm-content');
+      const nudge = page.locator('[data-whats-new=nudge]');
+      await nudge.waitFor();
+      await nudge.getByRole('button', {name: "Dismiss what's new"}).click();
+      await nudge.waitFor({state: 'hidden'});
       await page
         .getByRole('button', {name: /^close$/i})
         .first()
@@ -105,7 +109,7 @@ try {
           await import('/src/state/editor/frame.ts')
         ).getFrameState();
         window.__overlay = (
-          await import('/src/prototypes/editor-controls/controls/ControlOverlay.tsx')
+          await import('/src/pages/UnifiedEditor/controls/ControlOverlay.tsx')
         ).controlOverlay;
         window.__assets = (
           await import('/src/state/assets/assets.ts')
@@ -151,6 +155,10 @@ try {
         const count = outputs;
         await action();
         await warning.waitFor();
+        // Finish the previous menu's focus cleanup before closing this dialog.
+        await page
+          .locator('[data-cui=dropdown-menu-content]')
+          .waitFor({state: 'detached'});
         if (label === 'Export button')
           await page.screenshot({path: `${out}/${tag}-secrets.png`});
         check(
