@@ -1,6 +1,6 @@
 import {themeVars, withThemeMode} from '@codeimage/ui';
 import {darkGrayScale} from '@codeimage/ui/themes/darkTheme';
-import {style} from '@vanilla-extract/css';
+import {globalStyle, style} from '@vanilla-extract/css';
 
 // Floats over the canvas above the frame toolbar, which is 50px tall and
 // 20px from the bottom.
@@ -59,8 +59,9 @@ export const timing = style({
 
 export const time = style({
   flexShrink: 0,
-  minWidth: '76px',
-  textAlign: 'right',
+  display: 'grid',
+  justifyItems: 'end',
+  whiteSpace: 'nowrap',
   fontSize: themeVars.fontSize.sm,
   fontVariantNumeric: 'tabular-nums',
   color: themeVars.dynamicColors.descriptionTextColor,
@@ -70,6 +71,10 @@ export const time = style({
     },
   },
 });
+
+globalStyle(`${time} > *`, {gridArea: '1 / 1'});
+
+export const timeSizer = style({visibility: 'hidden'});
 
 export const steps = style({
   display: 'flex',

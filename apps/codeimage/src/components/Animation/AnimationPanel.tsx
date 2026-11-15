@@ -39,6 +39,13 @@ export function AnimationPanel() {
   const [drag, setDrag] = createSignal<StepDrag | null>(null);
   const stepIds = () => settings().steps.map(step => step.editorId);
 
+  // The longest time up to the end. Its digits are as wide as any, so the
+  // label, and the track beside it, keep their width while the playhead
+  // moves, and a drag ends at the time it showed.
+  const widestTime = () => {
+    const end = animation.durationMs();
+    return `${(end / 1000).toFixed(2)} s / ${formatSeconds(end)}`;
+  };
   const timingSummary = () =>
     [
       formatSeconds(settings().transitionMs),
@@ -84,8 +91,13 @@ export function AnimationPanel() {
         </Show>
         <Timeline />
         <span class={styles.time}>
-          {formatSeconds(animation.playhead())} /{' '}
-          {formatSeconds(animation.durationMs())}
+          <span>
+            {formatSeconds(animation.playhead())} /{' '}
+            {formatSeconds(animation.durationMs())}
+          </span>
+          <span class={styles.timeSizer} aria-hidden={true}>
+            {widestTime()}
+          </span>
         </span>
         <Popover placement={'top-end'}>
           <PopoverTrigger
