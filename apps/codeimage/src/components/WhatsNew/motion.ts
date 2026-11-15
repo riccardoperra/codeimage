@@ -1,8 +1,7 @@
 /**
  * The motion of What's new. Its styles and the timers that wait for an exit
  * read these values, so the two cannot drift apart. The curves are the ones
- * the editor already uses for `easeOut` and for its drawers. The README of
- * the editor-controls prototype says which element uses which.
+ * the editor already uses for `easeOut` and for its drawers.
  */
 export const curve = {
   /** Anything that answers a click, and every exit. */

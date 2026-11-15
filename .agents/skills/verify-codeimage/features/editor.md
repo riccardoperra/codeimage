@@ -14,7 +14,7 @@ Guests open `/`; `/classic` opens the older editor. Signed-in `/` is the dashboa
 
 Run the audit editor journey. Fill `.cm-content[contenteditable="true"]`, type a character and undo with `ControlOrMeta+z`; assert original text on both routes. The editor also has aria-label `codeimage-editor`. On unified Inspector expand `[data-section="editor"] > button` (titled Code), then choose language with `#inspector-editor-language-trigger`. Classic uses `button[aria-label="Language"]`. Capture selected language and code when checking language/format behavior.
 
-Source: `components/CustomEditor/CustomEditor.tsx`, `prototypes/editor-controls/model.tsx`, `controls/fields.tsx` (paths relative to `apps/codeimage/src`).
+Source: `components/CustomEditor/CustomEditor.tsx`, `pages/UnifiedEditor/model.tsx`, `controls/fields.tsx` (paths relative to `apps/codeimage/src`).
 
 The `editor-options` journey changes language to Python without changing the document, restores TypeScript, formats unformatted code and asserts formatted text. Formatter undo is not claimed.
 

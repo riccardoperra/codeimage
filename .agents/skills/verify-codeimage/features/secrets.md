@@ -14,7 +14,7 @@ Enter a synthetic api_key assignment, then press Export or another image action.
 
 Audit fills a synthetic key, clicks `[data-export-image]`, awaits alertdialog and captures review before closing. The journey then reopens review, chooses Redact all, asserts the code is masked and downloads the result. Check no download occurs before confirmation. Never use real credentials in fixtures or evidence.
 
-Source: `components/CustomEditor/plugins/secrets/index.ts`, `prototypes/editor-controls/shell/export.tsx`, `shell/ExportControl.tsx`.
+Source: `components/CustomEditor/plugins/secrets/index.ts`, `pages/UnifiedEditor/shell/export.tsx`, `shell/ExportControl.tsx`.
 
 The executable secrets journey counts real download events. It closes review and asserts zero downloads, reopens it, chooses Redact all, asserts bullets and absence of the synthetic key, then confirms and decodes exactly one downloaded PNG.
 

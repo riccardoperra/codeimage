@@ -1,26 +1,23 @@
 import {getWhatsNew} from '../../../state/whats-new';
 import {createSignal} from 'solid-js';
-import {setThemeStyle, THEME_STYLES, themeStyle} from '../theme-styles/style';
+import {setThemeStyle, themeStyle} from '../theme-styles/style';
 
-/** The layouts a user can choose. `param` is the value of the `v` URL parameter. */
+/** The layouts a user can choose. */
 export const LAYOUTS = [
   {
     id: 'inspector',
     name: 'editor.inspector',
     hint: 'editor.inspectorHint',
-    param: '2',
   },
   {
     id: 'dock',
     name: 'editor.dock',
     hint: 'editor.dockHint',
-    param: '3',
   },
   {
     id: 'studio',
     name: 'editor.studio',
     hint: 'editor.studioHint',
-    param: '4',
   },
 ] as const;
 
@@ -42,7 +39,7 @@ interface Stored {
   themeCards?: ThemeCardsId;
 }
 
-const STORAGE_KEY = 'codeimage:prototype-settings';
+const STORAGE_KEY = 'codeimage:editor-settings';
 /** What the editor shows before any choice. The other layouts and cards are experiments. */
 export const DEFAULT_LAYOUT: LayoutId = 'inspector';
 const DEFAULT_SIDE: InspectorSide = 'right';
@@ -72,47 +69,16 @@ function readStored(): Stored {
   }
 }
 
-const params = () => new URLSearchParams(location.search);
-
-/** Writes a URL parameter only where the link already carries it, so `/` stays clean. */
-function syncParam(name: string, value: string) {
-  const url = new URL(location.href);
-  if (!url.searchParams.has(name)) return;
-  url.searchParams.set(name, value);
-  history.replaceState(history.state, '', url);
-}
-
-/**
- * `setThemeStyle` always writes the `t` parameter. Where the link had none,
- * it is taken out again, so that a stored choice does not rewrite the URL.
- */
-function showThemeCards(id: ThemeCardsId) {
-  const url = new URL(location.href);
-  const linked = url.searchParams.has('t');
-  setThemeStyle(id);
-  if (!linked) history.replaceState(history.state, '', url);
-}
-
 const stored = readStored();
-const linkedLayout = LAYOUTS.find(layout => layout.param === params().get('v'));
 
 const [layout, setLayoutId] = createSignal<LayoutId>(
-  linkedLayout?.id ?? stored.layout ?? DEFAULT_LAYOUT,
+  stored.layout ?? DEFAULT_LAYOUT,
 );
 const [inspectorSide, setSide] = createSignal<InspectorSide>(
   stored.inspectorSide ?? DEFAULT_SIDE,
 );
 
-// A `t` in the link wins and is already what `themeStyle()` holds.
-if (!params().has('t')) {
-  const cards = stored.themeCards ?? DEFAULT_CARDS;
-  if (
-    cards !== themeStyle() &&
-    THEME_STYLES.some(style => style.id === cards)
-  ) {
-    showThemeCards(cards);
-  }
-}
+setThemeStyle(stored.themeCards ?? DEFAULT_CARDS);
 
 function save(change: Stored) {
   try {
@@ -127,8 +93,7 @@ function save(change: Stored) {
 
 /**
  * What a user chooses about the editor's own interface, kept in local storage
- * under one key. The `v` and `t` URL parameters win when a link carries them,
- * and a choice made here updates the ones the link carries.
+ * under one key.
  */
 export const preferences = {
   layout,
@@ -136,18 +101,17 @@ export const preferences = {
     getWhatsNew().seen('layouts');
     setLayoutId(id);
     save({layout: id});
-    syncParam('v', LAYOUTS.find(entry => entry.id === id)?.param ?? '');
   },
   inspectorSide,
   setInspectorSide: (side: InspectorSide) => {
     setSide(side);
     save({inspectorSide: side});
   },
-  /** The theme card style in use, which a link can set to one outside `THEME_CARDS`. */
+  /** The theme card style in use. */
   themeCards: themeStyle,
   setThemeCards: (id: ThemeCardsId) => {
     getWhatsNew().seen('theme-cards');
-    showThemeCards(id);
+    setThemeStyle(id);
     save({themeCards: id});
   },
   /** True while a layout or a theme card style that is not the default is on. */

@@ -1,4 +1,4 @@
-import type {UnifiedWhere} from '../../prototypes/editor-controls/places';
+import type {UnifiedWhere} from '../../pages/UnifiedEditor/places';
 import type * as registry from './registry';
 import type * as solid from 'solid-js';
 import {createRoot} from 'solid-js';

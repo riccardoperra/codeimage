@@ -58,9 +58,9 @@ For head/base matrices and the additional export cases, follow `scripts/parity/R
 The production editor source owns dictionary parity, the locale/layout/viewport matrix and the shared export/focus review checks:
 
 ```sh
-node apps/codeimage/src/prototypes/editor-controls/verify-locale-parity.mjs
-node apps/codeimage/src/prototypes/editor-controls/verify-i18n.mjs http://127.0.0.1:4200 /tmp/codeimage-verification/locales
-node apps/codeimage/src/prototypes/editor-controls/verify-review.mjs http://127.0.0.1:4200 /tmp/codeimage-verification/shared-ui
+node apps/codeimage/src/pages/UnifiedEditor/verify-locale-parity.mjs
+node apps/codeimage/src/pages/UnifiedEditor/verify-i18n.mjs http://127.0.0.1:4200 /tmp/codeimage-verification/locales
+node apps/codeimage/src/pages/UnifiedEditor/verify-review.mjs http://127.0.0.1:4200 /tmp/codeimage-verification/shared-ui
 ```
 
 Keep those checks until their unique assertions have replacements. The source README documents their remaining controls and prerequisites.
