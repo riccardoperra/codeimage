@@ -4,33 +4,10 @@ import {createSignal, onCleanup, Show} from 'solid-js';
 import {Dynamic} from 'solid-js/web';
 import type {LocatedHighlightId} from '../../state/whats-new';
 import {getWhatsNew, RELEASES} from '../../state/whats-new';
+import {tabbableBeside} from './focus';
 import {illustrations} from './illustrations';
 import {duration, fromKeyboard} from './motion';
 import * as styles from './whats-new.css';
-
-const TABBABLE =
-  'button:not([disabled]), [href], input:not([disabled]), [tabindex]:not([tabindex="-1"])';
-
-function tabbableBeside(
-  from: Element,
-  side: 'before' | 'after',
-  skip?: Element,
-): HTMLElement | undefined {
-  const position =
-    side === 'before'
-      ? Node.DOCUMENT_POSITION_PRECEDING
-      : Node.DOCUMENT_POSITION_FOLLOWING;
-  const candidates = [
-    ...document.querySelectorAll<HTMLElement>(TABBABLE),
-  ].filter(
-    element =>
-      !from.contains(element) &&
-      !skip?.contains(element) &&
-      from.compareDocumentPosition(element) & position &&
-      element.getClientRects().length > 0,
-  );
-  return side === 'before' ? candidates.at(-1) : candidates[0];
-}
 
 export function NewDot(props: {highlight: LocatedHighlightId}) {
   const news = getWhatsNew();

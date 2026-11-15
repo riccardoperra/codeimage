@@ -10,6 +10,7 @@ import {
 } from 'solid-js';
 import {Dynamic} from 'solid-js/web';
 import {getWhatsNew, type RELEASES} from '../../state/whats-new';
+import {tabbableBeside} from './focus';
 import {illustrations} from './illustrations';
 import {duration, fromKeyboard} from './motion';
 import * as styles from './whats-new.css';
@@ -47,22 +48,10 @@ export function Nudge(props: {
   let bar: HTMLDivElement | undefined;
   let barHeight = 0;
   let timer: number | undefined;
+  // Focus inside the card would fall to the page when it leaves.
   const restoreFocus = () => {
-    if (!card?.contains(document.activeElement)) return;
-    const target = [
-      ...document.querySelectorAll<HTMLElement>(
-        '.cm-content[contenteditable="true"]',
-      ),
-      ...document.querySelectorAll<HTMLButtonElement>(
-        'button:not(:disabled):not([tabindex="-1"])',
-      ),
-    ].find(
-      element =>
-        element.getClientRects().length > 0 &&
-        !card?.contains(element) &&
-        !element.closest('[inert], [aria-hidden="true"]'),
-    );
-    target?.focus({preventScroll: true});
+    if (card?.contains(document.activeElement))
+      tabbableBeside(card, 'before')?.focus({preventScroll: true});
   };
   onCleanup(() => {
     clearTimeout(timer);
