@@ -1054,8 +1054,42 @@ export async function audit({page, context, base, out, server}) {
             await page.setViewportSize(viewport);
             await page.reload();
             await editor().waitFor();
+            await page.evaluate(() => {
+              window.__animationFirstFrames = [];
+              let samples = 0;
+              const sample = () => {
+                const viewport = document.querySelector(
+                  '[data-animation-scroller]',
+                );
+                if (
+                  viewport &&
+                  getComputedStyle(viewport).visibility !== 'hidden'
+                ) {
+                  window.__animationFirstFrames.push({
+                    viewport: viewport.clientWidth - 8,
+                    axis: viewport.firstElementChild.getBoundingClientRect()
+                      .width,
+                  });
+                }
+                if (++samples < 60) requestAnimationFrame(sample);
+              };
+              requestAnimationFrame(sample);
+            });
             await page.locator('[data-animate-toggle]').click();
             await page.locator('[data-animate-panel]').waitFor();
+            await page.waitForFunction(
+              () => window.__animationFirstFrames.length > 0,
+            );
+            const firstFrames = await page.evaluate(
+              () => window.__animationFirstFrames,
+            );
+            assert.ok(
+              firstFrames.every(
+                frame =>
+                  frame.axis > 0 && Math.abs(frame.axis - frame.viewport) < 1,
+              ),
+              'first visible strip frame already fits',
+            );
             await run({layout, viewport, name});
             assert.deepEqual(errors, [], `${name}: no page errors`);
             assert.deepEqual(
@@ -1116,6 +1150,11 @@ export async function audit({page, context, base, out, server}) {
           'phone has no draggable strip',
         );
         assert.equal(await page.locator('[data-segment-resize]').count(), 0);
+        assert.equal(
+          await page.locator('[data-animation-tick]').count(),
+          0,
+          'overview has no labels',
+        );
         assert.equal(
           await page.getByRole('button', {name: 'Steps', exact: true}).count(),
           0,
@@ -1197,10 +1236,33 @@ export async function audit({page, context, base, out, server}) {
         const rulerBox = await ruler.boundingBox();
         const x = segmentBox.x + segmentBox.width / 2;
         const y = rulerBox.y + rulerBox.height / 2;
-        await page.mouse.move(rulerBox.x + 2, y);
-        await page.mouse.down();
-        await page.mouse.move(x, y, {steps: 5});
-        await page.mouse.up();
+        const durations = await rows.allTextContents();
+        const touch = await page.context().newCDPSession(page);
+        try {
+          await touch.send('Input.dispatchTouchEvent', {
+            type: 'touchStart',
+            touchPoints: [{x: rulerBox.x + 2, y}],
+          });
+          for (let i = 1; i <= 5; i++) {
+            await touch.send('Input.dispatchTouchEvent', {
+              type: 'touchMove',
+              touchPoints: [
+                {x: rulerBox.x + 2 + ((x - rulerBox.x - 2) * i) / 5, y},
+              ],
+            });
+          }
+          await touch.send('Input.dispatchTouchEvent', {
+            type: 'touchEnd',
+            touchPoints: [],
+          });
+        } finally {
+          await touch.detach();
+        }
+        assert.deepEqual(
+          await rows.allTextContents(),
+          durations,
+          'horizontal overview swipe never changes a duration',
+        );
         assert.equal(
           await rows.last().getAttribute('data-selected'),
           '',
@@ -1393,6 +1455,27 @@ export async function audit({page, context, base, out, server}) {
       await page.mouse.up();
       assert.equal(await hold.getAttribute('aria-valuenow'), '0');
       assert.equal(await durationInput().inputValue(), '0');
+      assert.equal(
+        await page
+          .locator('[data-animation-tick="0"]')
+          .evaluate(el => parseFloat(getComputedStyle(el).left)),
+        0,
+        'zero tick stays at the origin after a zero hold',
+      );
+      const tickBoxes = await page
+        .locator('[data-animation-tick]')
+        .evaluateAll(ticks =>
+          ticks.map(tick => {
+            const box = tick.getBoundingClientRect();
+            return {left: box.left, right: box.right};
+          }),
+        );
+      assert.ok(
+        tickBoxes.every(
+          (box, index) => index === 0 || box.left >= tickBoxes[index - 1].right,
+        ),
+        'tick labels do not collide after a zero first hold',
+      );
       assert.ok(
         (await hold.boundingBox()).width >= 8,
         'zero hold keeps a visible slot',

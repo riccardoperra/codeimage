@@ -117,3 +117,19 @@ test('labels collapse before they overlap', () => {
   );
   assert.ok(numbered.entries.some(entry => entry.label === 'number'));
 });
+
+for (const width of [320, 390, 1000]) {
+  test(`zero first hold anchors time zero at the origin at ${width}px`, () => {
+    const timeline = segments(3).map((segment, index) => ({
+      ...segment,
+      startMs: index === 0 ? 0 : segment.startMs - 10000,
+      durationMs: index === 0 ? 0 : segment.durationMs,
+    }));
+    const geometry = timelineGeometry(timeline, width);
+    assert.equal(geometry.timeToX(0), 0);
+    assert.equal(geometry.timeToX(-1), 0);
+    assert.equal(geometry.xToTime(geometry.entries[0].width / 2), 0);
+    assert.ok(geometry.timeToX(1) > geometry.entries[1].x);
+    assert.ok(Math.abs(geometry.xToTime(geometry.timeToX(1)) - 1) < 1e-8);
+  });
+}

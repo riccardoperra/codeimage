@@ -40,6 +40,7 @@ export function timelineGeometry(
   });
   const timeToX = (ms: number) => {
     const time = clamp(ms, 0, durationMs);
+    if (time === 0) return 0;
     const entry = entries.find(
       ({segment}) => time < segment.startMs + segment.durationMs,
     );

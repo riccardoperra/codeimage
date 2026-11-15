@@ -130,14 +130,11 @@ export function StripTimeline(props: {overview?: boolean}) {
   let track!: HTMLDivElement;
   let scroller!: HTMLDivElement;
   const [width, setWidth] = createSignal(0);
-  onMount(() =>
-    createResizeObserver(
-      () => scroller,
-      () => {
-        setWidth(scroller.clientWidth - 8);
-      },
-    ),
-  );
+  const measure = () => setWidth(scroller.clientWidth - 8);
+  onMount(() => {
+    measure();
+    createResizeObserver(() => scroller, measure);
+  });
   const axis = animation.durationMs;
   const geometry = createMemo(() =>
     timelineGeometry(animation.segments(), width(), {
@@ -249,6 +246,7 @@ export function StripTimeline(props: {overview?: boolean}) {
       ref={scroller}
       data-animation-scroller
       data-overview={props.overview ? '' : undefined}
+      style={{visibility: width() > 0 ? undefined : 'hidden'}}
     >
       <div class={styles.axis} style={{width: `${geometry().width}px`}}>
         <div
