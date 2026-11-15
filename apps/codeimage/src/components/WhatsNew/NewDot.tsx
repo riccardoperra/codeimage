@@ -1,7 +1,7 @@
 import {Button} from '@codeui/kit';
 import {Popover} from '@kobalte/core/popover';
 import type {JSX} from 'solid-js';
-import {createSignal, onCleanup, Show} from 'solid-js';
+import {batch, createSignal, onCleanup, Show} from 'solid-js';
 import {Dynamic} from 'solid-js/web';
 import type {LocatedHighlightId, Where} from '../../state/whats-new';
 import {getWhatsNew, RELEASES} from '../../state/whats-new';
@@ -61,14 +61,18 @@ function Dot(props: {at: Where}) {
     if (anchor && (side !== undefined || !news.dotAt(props.at)))
       returnTo = tabbableBeside(anchor, side ?? 'before', content);
     clearTimeout(closed);
-    setClosing(!instant());
-    const unpin = () => {
-      setPinned(undefined);
-      setClosing(false);
-    };
-    setOpen(false);
-    if (instant()) unpin();
-    else closed = window.setTimeout(unpin, duration.coachmarkOut);
+    const unpin = () =>
+      batch(() => {
+        setPinned(undefined);
+        setClosing(false);
+      });
+    // Keyboard closes have no exit animation to keep the trigger mounted.
+    batch(() => {
+      setClosing(!instant());
+      setOpen(false);
+      if (instant()) unpin();
+      else closed = window.setTimeout(unpin, duration.coachmarkOut);
+    });
     returnTo?.focus();
   };
   const highlight = () =>
