@@ -211,10 +211,8 @@ try {
 
         await page.locator('[data-export-menu]:visible').first().click();
         await page
-          .getByRole('menuitem', {
-            name: messages.editor.exportSettings,
-            exact: true,
-          })
+          .locator('[data-export-action="settings"]')
+          .getByText(messages.editor.exportSettings, {exact: true})
           .waitFor();
         await noEnglish(page, locale, `${layout}/${width} export menu`);
         await page.keyboard.press('Escape');
