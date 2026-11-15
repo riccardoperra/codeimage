@@ -97,7 +97,10 @@ export const TerminalHost: FlowComponent<TerminalHostProps> = props => {
       data-surface={props.surface ?? 'solid'}
       style={assignInlineVars({
         ...paletteVars(),
-        [windowVars.background]: background(),
+        // A tab painting a translucent window's fill again would stack it
+        // into a darker patch, so it lets the window show through instead.
+        [windowVars.background]:
+          background() === props.background ? background() : 'transparent',
         [styles.terminalVars.headerBackgroundColor]: tabTheme()?.background,
         [styles.terminalVars.backgroundColor]: background(),
         [styles.terminalVars.textColor]: props.textColor,

@@ -127,7 +127,7 @@ The What's new surfaces keep their own table of durations in `components/WhatsNe
 - Every control works from the keyboard, and a list previews on focus as it does on hover.
 - Closing a dialog or a menu returns focus to what opened it.
 - Opening a dialog on a phone does not focus a text field, so the keyboard does not cover it.
-- The page must allow zoom. `index.html` still sets `user-scalable=no`, which is an open defect and not a decision.
+- Page zoom is off on purpose. `index.html` sets `maximum-scale=1.0, user-scalable=no`. This is the maintainer's decision, not a leftover. The frame fits itself to the screen.
 
 ## Screenshots
 

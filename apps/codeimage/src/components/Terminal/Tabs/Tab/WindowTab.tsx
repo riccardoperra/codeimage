@@ -39,6 +39,7 @@ export function WindowTab(
 
   return (
     <div
+      data-watermark-obstacle
       data-active={props.active}
       data-window-tab={props.appearance}
       data-host-index={props.index}

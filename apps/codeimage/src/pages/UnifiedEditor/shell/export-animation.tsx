@@ -13,6 +13,7 @@ import {
   type CodeStyle,
   type PreviewTab,
 } from '../../../components/Animation/planPreview';
+import {prepareWatermarks} from '../../../core/watermark/browser';
 import {frameRules} from '../../../core/animation/timeline';
 import type {
   AnimationSettings,
@@ -84,15 +85,35 @@ export function animationSnapshot() {
     const config = mp4Config(contentSize, fps);
     const host = document.createElement('div');
     host.style.cssText =
-      'position:fixed;left:0;top:0;visibility:hidden;pointer-events:none';
+      'position:fixed;left:0;top:0;opacity:0;pointer-events:none;z-index:-9999';
     document.body.append(host);
     const disposers: (() => void)[] = [];
+    const scope = `video-${crypto.randomUUID()}`;
+    const scopedCss = (value: string) =>
+      value.replace(/\bt(\d+)-/g, `${scope}-t$1-`);
+    const motionCss = scopedCss(timeline.css);
+    const windowCss = target
+      ? `[data-video-capture="${scope}"] [data-animation-window]{display:block!important;min-width:${FITTED_WINDOW_MIN_WIDTH}px;width:max-content}`
+      : '';
+    const frameCss = timeline.scenes.map((scene, index) =>
+      scopedCss(
+        frameRules(scene, {
+          frame: `[data-video-capture="${scope}"][data-video-scene="${index}"] [data-animation-frame]`,
+          window: `[data-video-capture="${scope}"][data-video-scene="${index}"] [data-animation-window]`,
+        }),
+      ),
+    );
+    const captureStyle = document.createElement('style');
+    captureStyle.textContent = [motionCss, windowCss, ...frameCss].join('\n');
+    host.append(captureStyle);
     try {
-      for (const scene of timeline.scenes) {
+      for (const [index, scene] of timeline.scenes.entries()) {
         const tab = tabs[scene.step];
         const view = () => (
           <div
             data-video-root
+            data-video-capture={scope}
+            data-video-scene={index}
             style={{
               position: 'relative',
               overflow: 'hidden',
@@ -139,6 +160,10 @@ export function animationSnapshot() {
         const dispose = runWithOwner(owner, () => render(view, mount));
         if (dispose) disposers.push(dispose);
       }
+      for (const element of host.querySelectorAll<HTMLElement>('[style]')) {
+        if (element.style.animationName)
+          element.style.animationName = scopedCss(element.style.animationName);
+      }
       await document.fonts.ready;
       // Mount transitions (such as the watermark) need two paint turns to
       // switch from their enter-from classes to their static appearance.
@@ -148,6 +173,20 @@ export function animationSnapshot() {
       const roots = [
         ...host.querySelectorAll<HTMLElement>('[data-video-root]'),
       ];
+      for (const root of roots) {
+        for (const playing of root.getAnimations({subtree: true})) {
+          if (
+            'animationName' in playing &&
+            typeof playing.animationName === 'string' &&
+            playing.animationName.startsWith(scope)
+          ) {
+            playing.pause();
+            playing.currentTime = 0;
+          }
+        }
+      }
+      await prepareWatermarks(host);
+      captureStyle.remove();
       const collecting = collectRasterizeResources(host, font);
       // Capture every scene before the user can edit a frame setting. The
       // shared collector includes the font runs of every hold and transition.
@@ -155,10 +194,7 @@ export function animationSnapshot() {
         return {
           html: cloneExportNode(roots[index]).html,
           durationMs: scene.durationMs,
-          css: frameRules(scene, {
-            frame: '[data-video-root] [data-animation-frame]',
-            window: '[data-video-root] [data-animation-window]',
-          }),
+          css: frameCss[index],
         };
       });
       return {
@@ -169,10 +205,8 @@ export function animationSnapshot() {
         contentSize,
         css: [
           `html,body{margin:0;padding:0;background:transparent} [data-video-root]{position:relative;overflow:hidden;width:${config.width / pixelRatio}px!important;height:${config.height / pixelRatio}px!important} .cm-editor .cm-scroller{overflow:hidden}`,
-          target
-            ? `[data-video-root] [data-animation-window]{display:block!important;min-width:${FITTED_WINDOW_MIN_WIDTH}px;width:max-content}`
-            : '',
-          timeline.css,
+          windowCss,
+          motionCss,
         ].join('\n'),
       };
     } finally {

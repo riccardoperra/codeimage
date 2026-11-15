@@ -16,11 +16,9 @@ import {
 } from 'solid-js';
 import type {ParentProps} from 'solid-js';
 import type {AppLocaleEntries} from '../../../../i18n';
-import {CommandMenuButton} from '../../command-menu/CommandMenuButton';
-import {commandMenu} from '../../command-menu/state';
 import type {VariantMeta, VariantProps} from '../../contract';
 import {controlOverlay, SignatureRow} from '../../controls/ControlOverlay';
-import {FrameActions} from '../../controls/FrameActions';
+import {CanvasToolbar} from '../../controls/CanvasToolbar';
 import {keepMarkToolbarAboveSelection} from '../../controls/mark-toolbar';
 import {ShortcutHelp} from '../../controls/ShortcutHelp';
 import type {Control, ControlId, SectionId} from '../../model';
@@ -263,7 +261,13 @@ export default function Inspector(props: VariantProps) {
         value: summary(props.model.control('frame.padding')),
       }),
     signature: () => signatureSummary(),
-    window: () => summary(props.model.control('window.shadow')),
+    // The style is what changes the window most, while it has a title bar.
+    window: () => {
+      const style = props.model.control('window.style');
+      return summary(
+        style?.visible() ? style : props.model.control('window.shadow'),
+      );
+    },
     editor: () => summary(props.model.control('editor.language')),
     font: () => summary(props.model.control('font.weight')),
   };
@@ -296,32 +300,8 @@ export default function Inspector(props: VariantProps) {
           </div>
           <props.stage.AnimatePanel />
           <div class={styles.frameActions}>
-            <Show when={!mobile()}>
-              <ShortcutHelp />
-            </Show>
-            <FrameActions>
-              <props.stage.AnimateToggle />
-            </FrameActions>
-            <Show
-              when={props.stage.compact()}
-              fallback={
-                <CommandMenuButton>
-                  {trigger => (
-                    <Button
-                      {...trigger}
-                      class={styles.command}
-                      size="sm"
-                      theme="secondary"
-                    >
-                      {t('editor.search')}
-                      <kbd class={styles.commandKey}>
-                        {commandMenu.shortcut}
-                      </kbd>
-                    </Button>
-                  )}
-                </CommandMenuButton>
-              }
-            >
+            <CanvasToolbar stage={props.stage} help={!mobile()} />
+            <Show when={props.stage.compact()}>
               <props.stage.ExportButton />
             </Show>
           </div>

@@ -4,23 +4,31 @@ Download current code through the direct unified export action.
 
 ## Sub-features
 
-PNG/JPEG/SVG; per-tab ZIP; clipboard image and alt text; new tab; conditional Web Share; scale 1x/2x/3x/6x and JPEG quality; Redact all from the menu when secrets are found; optional Takumi. MP4 animation at 24/30/50/60 fps, current frame or 1920 × 1080 output, estimated size and duration, worker progress, cancellation, automatic download and conditional file sharing.
+PNG/JPEG/SVG; per-tab ZIP; clipboard image and alt text; new tab; conditional Web Share; scale/quality; optional Takumi.
 
 ## How to get to it (user POV)
 
-At `/`, Export downloads immediately. The arrow button `More ways to export` (`[data-export-menu]`) opens menu items Export image, Export one image per tab (disabled with hint "Needs two tabs or more" until there are two tabs), Copy to clipboard, Open in new tab, Copy alt text, Redact all (only when a secret is detected) and Export settings…. Share your code appears only when `navigator.share` exists; headless Chromium has none. Classic Export opens a confirmation dialog. After Animate has saved at least two steps, the unified menu also offers Export animation. MP4 is selected by default. The dialog saves its frame rate to the animation settings; Current frame respects an existing social target. The 1920 × 1080 option plans the same fitted-window layout at that resolution. Even-size padding extends only the last pixel row or column, preserving the frame background and opacity. During rendering the nonmodal dialog moves to the corner so code can still be edited. Cancel terminates the worker and closes the dialog without a download. A completed job downloads with the same downloadjs path as images; Share is a separate user action when navigator.canShare accepts the MP4 file.
+At `/`, Export downloads immediately. Arrow More ways to export opens actions and Export settings…. Classic Export opens a confirmation dialog.
 
 ## Driving it with Playwright
 
-Baseline waits for a download before clicking `[data-export-image]` and decodes actual PNG. Audit changes `[data-setting="export-format"]` in Settings → Export to SVG, downloads and parses it, restores PNG, focuses `#settings-rendering-engine` and presses Space to enable it (the visible switch wrapper intercepts pointer clicks on its input) in Experiments, downloads Takumi PNG and rejects the renderer-fallback console error, then restores the engine. Tabs journey decodes ZIP members. For classic choose Export → PNG/SVG/JPEG → Confirm. Unified shortcuts are the literal Control key on every platform: Control+S exports, Control+O opens a new tab, Control+C copies the image when focus is outside the editor and inputs. Cmd+S does nothing on macOS. Exercise each when claiming shortcut coverage.
+Baseline waits for a download before clicking `[data-export-image]` and decodes actual PNG. Audit changes `[data-setting="export-format"]` in Settings → Export to SVG, downloads and parses it, restores PNG, focuses `#settings-rendering-engine` and presses Space to enable it (the visible switch wrapper intercepts pointer clicks on its input) in Experiments, downloads Takumi PNG and rejects the renderer-fallback console error, then restores the engine. Tabs journey decodes ZIP members. For classic choose Export → PNG/SVG/JPEG → Confirm. Unified shortcuts come from `controls/shortcuts.ts` and are bound in ExportControl. On Apple platforms, Cmd+S downloads, Cmd+O opens a new tab and Cmd+Shift+C copies the image; Control+S/O/C remain supported. Elsewhere Ctrl+S/O/C keep those actions. Cmd+C stays text copy, and Control+C stays text copy while an editable field is focused. Exercise every combo and the secrets review when claiming shortcut coverage.
 
-Source: `pages/UnifiedEditor/shell/ExportControl.tsx`, `shell/export.tsx`, `shell/sections.tsx`, `core/rasterize/takumi.ts`, `shell/export-animation.tsx`, `shell/export-animation-dialog.tsx`, `hooks/use-export-animation.ts`, `workers/animation.worker.ts`, `core/video/`.
+Source: `pages/UnifiedEditor/shell/ExportControl.tsx`, `shell/export.tsx`, `shell/sections.tsx`, `core/rasterize/takumi.ts`.
 
 Run `export-options` for actual 1x and 2x PNG dimensions, JPEG magic bytes and alt-text clipboard contents. It restores PNG and 1x afterward. The Takumi case asserts the switch is checked before exporting and rejects fallback diagnostics.
 
 ## Gotchas
 
-Clipboard is available for PNG/SVG and needs permission. Share requires navigator.share. Do not mock those browser APIs to claim native sharing. Redaction modifies documents. Animation export is available in the guest unified editor. The classic editor has no animation export. Both opening the video dialog and starting the job pass through the secrets review. The document is recaptured after review so redaction is included. MP4 needs the exact WebCodecs H.264 configuration to pass isConfigSupported. Unsupported or missing encoders disable MP4 with a localized reason; no WebM fallback is offered. A WASM failure is shown in the dialog with its cause. Native mobile sharing and real Safari still need platform checks.
+Clipboard is available for PNG/SVG and needs permission. Share requires navigator.share. Do not mock those browser APIs to claim native sharing. Redaction modifies documents. Animation core exists but no animation editor UI is wired at this HEAD; CLI and animation preview on other branches are excluded.
+
+## MP4 animation
+
+After Animate has saved at least two steps, the shared export action list offers Export animation in both the panel and the sheet. `[data-export-action="animation"]` opens its MP4 dialog through secrets review. MP4 is selected by default. The dialog saves 24/30/50/60 fps in the animation settings. Current frame respects a social target; 1920 × 1080 uses the same fitted-window layout at that resolution. Even-size padding extends only the last pixel row or column, preserving the frame background and opacity.
+
+The nonmodal progress dialog moves into the corner while the worker renders and encodes. Cancel terminates the worker and closes without a download. A completed job downloads through downloadjs. Share is a separate action when navigator.canShare accepts the MP4 file. Starting export passes through secrets review again and recaptures the document, including redaction. An unsupported or missing WebCodecs H.264 configuration disables MP4 with a localized reason. A WASM failure shows its cause; animation has no DOM-export or WebM fallback.
+
+Video fields are buttons named Frame rate and Output size, with kit listbox options. `[data-animation-export]` is the dialog; its progress element reports frames completed and total. Its alert includes preparation, WASM or encoder causes. Reopen the dialog or change a field to retry. FPS stays out of Animate. Native mobile sharing and real Safari still need platform checks.
 
 ## Animation audit
 
