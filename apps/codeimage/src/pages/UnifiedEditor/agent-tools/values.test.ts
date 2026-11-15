@@ -244,8 +244,31 @@ describe('resolveTab', () => {
     }
   });
 
-  it('takes exactly one of index and name', () => {
-    expect(resolveTab(tabs, {}).ok).toBe(false);
-    expect(resolveTab(tabs, {index: 0, name: 'main.py'}).ok).toBe(false);
+  it('reads nothing, a blank or "current" as the active tab', () => {
+    for (const input of [
+      {},
+      {name: ''},
+      {name: '  '},
+      {name: 'current'},
+      {name: 'Active'},
+      {name: 'current', index: 1},
+    ])
+      expect(resolveTab(tabs, input)).toEqual({ok: true, value: tabs[0]});
+  });
+
+  it('prefers a matching name over the index, and an index over a wrong name', () => {
+    expect(resolveTab(tabs, {index: 0, name: 'main.py'})).toEqual({
+      ok: true,
+      value: tabs[1],
+    });
+    expect(resolveTab(tabs, {index: 1, name: 'nope.ts'})).toEqual({
+      ok: true,
+      value: tabs[1],
+    });
+  });
+
+  it('fails without an active tab when nothing names one', () => {
+    const idle = tabs.map(tab => ({...tab, active: false}));
+    expect(resolveTab(idle, {}).ok).toBe(false);
   });
 });

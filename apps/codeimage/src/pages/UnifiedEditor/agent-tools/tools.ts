@@ -342,7 +342,7 @@ export function createAgentTools(context: AgentToolsContext): AgentTool[] {
     tool({
       name: 'duplicate_tab',
       title: 'Duplicate a tab',
-      description: `Copy a tab, with its code and language, into a new tab after the others and make it active. Use it for any duplicate or copy request; the code is copied for you. Omit name and index to copy the active tab. At most ${MAX_EDITOR_TABS} tabs. Example: {}. Returns {tab: {id, index, name, language, active}}. Also for: duplicate, copy, clone.`,
+      description: `Copy a tab, with its code and language, into a new tab after the others and make it active. Use it for any duplicate or copy request; the code is copied for you. For the current tab pass nothing, or name "current". At most ${MAX_EDITOR_TABS} tabs. Example: {}. Returns {tab: {id, index, name, language, active}}. Also for: duplicate, copy, clone.`,
       inputSchema: {
         type: 'object',
         properties: {
@@ -370,11 +370,7 @@ export function createAgentTools(context: AgentToolsContext): AgentTool[] {
           (typeof newName !== 'string' || !newName.trim())
         )
           return fail('"newName" must be a non-empty string.');
-        const current = activeTab();
-        const found =
-          input.name === undefined && input.index === undefined && current
-            ? {ok: true as const, value: current}
-            : resolveTab(tabs(), input);
+        const found = resolveTab(tabs(), input);
         if (!found.ok) return fail(found.error, {tabs: tabs()});
         if (!editors.computed.canAddEditor())
           return fail(
@@ -429,7 +425,7 @@ export function createAgentTools(context: AgentToolsContext): AgentTool[] {
     tool({
       name: 'read_tab',
       title: 'Read a tab',
-      description: `Read a tab's code, name and language without switching tabs. Omit name and index to read the active tab; pass name or index for another one. Example: {} or {"name":"index.tsx"}. Returns {tab: {index, name, language, active}, code}; an unknown tab lists the tabs. Also for: read, show, view code.`,
+      description: `Read a tab's code, name and language without switching tabs. For the current tab pass nothing, or name "current"; pass a tab name or index for another one. Example: {} or {"name":"index.tsx"}. Returns {tab: {index, name, language, active}, code}; an unknown tab lists the tabs. Also for: read, show, view code.`,
       inputSchema: {
         type: 'object',
         properties: {
@@ -446,11 +442,7 @@ export function createAgentTools(context: AgentToolsContext): AgentTool[] {
       },
       annotations: {readOnlyHint: true, untrustedContentHint: true},
       execute: async input => {
-        const current = activeTab();
-        const found =
-          input.name === undefined && input.index === undefined && current
-            ? {ok: true as const, value: current}
-            : resolveTab(tabs(), input);
+        const found = resolveTab(tabs(), input);
         if (!found.ok) return fail(found.error, {tabs: tabs()});
         return {
           ok: true,

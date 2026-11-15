@@ -253,27 +253,34 @@ export function resolveTab(
   tabs: readonly TabEntry[],
   input: {readonly index?: unknown; readonly name?: unknown},
 ): Parsed<TabEntry> {
-  const {index, name} = input;
   const missing = (what: string): Parsed<TabEntry> => ({
     ok: false,
     error: `${what} Tabs: ${describeTabs(tabs)}.`,
   });
-  if ((index === undefined) === (name === undefined))
-    return missing('Pass either "index" or "name".');
-  if (index !== undefined) {
-    const tab =
-      typeof index === 'number' && Number.isInteger(index)
-        ? tabs[index]
-        : undefined;
-    return tab
-      ? {ok: true, value: tab}
-      : missing(`No tab at index ${String(index)}.`);
-  }
-  const tab =
-    typeof name === 'string'
-      ? tabs.find(tab => normalize(tab.name) === normalize(name))
+  // Small models fill every optional field, send blanks or say "current", so
+  // nothing given, a blank or a name for the active tab all mean that tab.
+  const name =
+    typeof input.name === 'string' && input.name.trim()
+      ? input.name
       : undefined;
-  return tab
-    ? {ok: true, value: tab}
-    : missing(`No tab named "${String(name)}".`);
+  const index = typeof input.index === 'number' ? input.index : undefined;
+  const active = tabs.find(tab => tab.active);
+  const byName =
+    name === undefined
+      ? undefined
+      : CURRENT.has(normalize(name))
+        ? active
+        : tabs.find(tab => normalize(tab.name) === normalize(name));
+  if (byName) return {ok: true, value: byName};
+  const byIndex = Number.isInteger(index) ? tabs[index as number] : undefined;
+  if (byIndex) return {ok: true, value: byIndex};
+  if (name === undefined && index === undefined && active)
+    return {ok: true, value: active};
+  return missing(
+    name !== undefined
+      ? `No tab named "${name}".`
+      : `No tab at index ${String(index)}.`,
+  );
 }
+
+const CURRENT = new Set(['current', 'active', 'this', 'current tab']);
