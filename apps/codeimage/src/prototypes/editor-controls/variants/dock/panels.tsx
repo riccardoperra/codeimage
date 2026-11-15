@@ -259,10 +259,13 @@ function PhoneActions() {
   );
 }
 
+// Kept outside the panel, so that the dock can open More at a given group.
+const [group, setGroup] = createSignal<GroupId>(GROUPS[0].id);
+export const showMoreGroup = setGroup;
+
 /** Frame, Window and Code, one group at a time, so the panel stays as narrow as a popover. */
 function MorePanel() {
   const dock = useDock();
-  const [group, setGroup] = createSignal<GroupId>(GROUPS[0].id);
   return (
     <div class="dock-panel dock-more">
       <div class="dock-segmented">

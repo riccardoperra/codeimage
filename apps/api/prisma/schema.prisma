@@ -16,6 +16,7 @@ model User {
   email     String    @unique
   projects  Project[]
   presets   Preset[]
+  signatures Signature[]
 }
 
 model Project {
@@ -37,7 +38,32 @@ model Project {
   @@index([name, ownerId])
 }
 
+model Signature {
+  id        String   @id @default(uuid())
+  name      String
+  data      Json
+  isDefault Boolean  @default(false)
+  version   BigInt   @default(1)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  owner     User     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  ownerId   String
+
+  @@unique([id, ownerId])
+  @@index([ownerId])
+}
+
 model SnippetFrame {
+  exportTarget String?
+  aspectRatio String?
+  signatureHandle String?
+  signaturePosition String?
+  signatureStyle String?
+  signaturePlatform String?
+  signatureName String?
+  signatureAvatar String?
+  signatureProfile String?
+  signatureId String?
   id         String   @id @default(uuid())
   project    Project?
   background String?

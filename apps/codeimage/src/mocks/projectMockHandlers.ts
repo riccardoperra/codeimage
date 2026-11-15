@@ -147,6 +147,18 @@ const handlers: RequestHandler[] = [
           },
           frame: {
             background: body?.frame.background,
+            aspectRatio:
+              body?.frame.aspectRatio === undefined
+                ? (data?.frame.aspectRatio ?? null)
+                : body.frame.aspectRatio,
+            exportTarget:
+              body?.frame.exportTarget === undefined
+                ? (data?.frame.exportTarget ?? null)
+                : body.frame.exportTarget,
+            signature:
+              body?.frame.signature === undefined
+                ? (data?.frame.signature ?? null)
+                : body.frame.signature,
             opacity: body?.frame.opacity ?? 100,
             padding: body?.frame.padding ?? 32,
             radius: body?.frame.radius ?? 24,
@@ -211,6 +223,9 @@ const handlers: RequestHandler[] = [
       },
       frame: {
         id: randUuid(),
+        aspectRatio: body?.frame.aspectRatio ?? null,
+        exportTarget: body?.frame.exportTarget ?? null,
+        signature: body?.frame.signature ?? null,
         background: body?.frame.background,
         opacity: body?.frame.opacity ?? 100,
         padding: body?.frame.padding ?? 32,

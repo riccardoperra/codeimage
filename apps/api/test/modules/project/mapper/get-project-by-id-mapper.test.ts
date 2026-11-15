@@ -14,6 +14,9 @@ test('should map Prisma ProjectGetByIdResponse to schema ProjectGetByIdResponse'
     createdAt: date2,
     frame: {
       id: 'frameId',
+      aspectRatio: null,
+      exportTarget: 'x-landscape',
+      signature: {handle: '@me', position: 'bottom-left'},
       visible: true,
       radius: 24,
       padding: 32,
@@ -58,6 +61,9 @@ test('should map Prisma ProjectGetByIdResponse to schema ProjectGetByIdResponse'
     editorTabs: [],
     frame: {
       id: 'frameId',
+      aspectRatio: null,
+      exportTarget: 'x-landscape',
+      signature: {handle: '@me', position: 'bottom-left'},
       background: '',
       visible: true,
       padding: 32,
