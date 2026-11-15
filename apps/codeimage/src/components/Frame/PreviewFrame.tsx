@@ -1,4 +1,4 @@
-import type {AnimationHeader} from '@core/animation/model';
+import type {AnimationHeader, Size} from '@core/animation/model';
 import {FittedWindow} from './FittedWindow';
 import {FrameSignature, framePadding, signatureScale} from './FrameSignature';
 import {getAssetsStore, isAssetUrl} from '@codeimage/store/assets/assets';
@@ -80,6 +80,7 @@ export function useFrameCodeStyle() {
 }
 
 export interface FrameViewProps {
+  targetSize?: Size;
   header?: AnimationHeader;
   ref?: Ref<HTMLDivElement>;
   activeTabId?: string;
@@ -95,7 +96,15 @@ export interface FrameViewProps {
 // The frame as the export draws it, around any code view.
 export function FrameView(props: VoidProps<FrameViewProps>) {
   const frame = getFrameState().store;
-  const target = () => getFrameState().exportTarget();
+  const target = () =>
+    props.targetSize
+      ? {
+          resolution: [
+            props.targetSize.width,
+            props.targetSize.height,
+          ] satisfies [number, number],
+        }
+      : getFrameState().exportTarget();
   const scale = () => signatureScale(target()?.resolution[0] ?? frame.width);
   const terminal = getTerminalState().state;
   const editor = getRootEditorStore();

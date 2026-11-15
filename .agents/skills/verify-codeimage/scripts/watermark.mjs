@@ -275,7 +275,7 @@ export async function verifyWatermark({
   await section('frame');
   await page
     .locator('[data-control="frame.aspectRatio"]')
-    .getByRole('button')
+    .getByRole('button', {name: 'Aspect ratio', exact: true})
     .click();
   await page
     .getByRole('option', {name: 'LinkedIn portrait', exact: true})
@@ -287,7 +287,7 @@ export async function verifyWatermark({
   assert.equal(social.height, 1350);
   await page
     .locator('[data-control="frame.aspectRatio"]')
-    .getByRole('button')
+    .getByRole('button', {name: 'Aspect ratio', exact: true})
     .click();
   await page.getByRole('option', {name: 'Free size', exact: true}).click();
   await page.keyboard.press('Escape');

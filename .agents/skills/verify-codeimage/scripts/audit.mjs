@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import assert from 'node:assert/strict';
 import {createMockContext} from './mock-context.mjs';
+import {animationMp4Cases} from './animation-mp4.mjs';
 import {auditSnippets} from './snippets.mjs';
 import {writeFile, readFile} from 'node:fs/promises';
 import {resolve} from 'node:path';
@@ -34,7 +35,10 @@ export async function audit({page, context, base, out, server}) {
   ) {
     assert.equal(server.exitCode, null);
     assert.ok((await fetch(base)).ok);
-    await target.goto(base + route);
+    await target.goto(base + route, {
+      waitUntil: 'domcontentloaded',
+      timeout: 60000,
+    });
     const changed =
       layout !== undefined &&
       (await target.evaluate(layout => {
@@ -56,8 +60,33 @@ export async function audit({page, context, base, out, server}) {
       .locator('.cm-content[contenteditable="true"]')
       .first()
       .waitFor({timeout: 60000});
-    const close = target.getByRole('button', {name: 'close', exact: true});
+    await target.evaluate(() => document.fonts.ready);
+    const firstVisit = await target.evaluate(
+      () => !sessionStorage.getItem('verify:startup-dismissed'),
+    );
+    if (firstVisit)
+      await target
+        .locator('[data-whats-new="showcase"], [data-whats-new="nudge"]')
+        .first()
+        .waitFor({timeout: 15000});
+    const close = target.getByRole('button', {name: /^close$/i});
     if (await close.isVisible()) await close.click();
+    await target
+      .locator('[data-whats-new="showcase"]')
+      .waitFor({state: 'hidden'});
+    const dismiss = target.getByRole('button', {
+      name: "Dismiss what's new",
+      exact: true,
+    });
+    if (await dismiss.isVisible()) {
+      await dismiss.click();
+      await target
+        .locator('[data-whats-new="nudge"]')
+        .waitFor({state: 'hidden'});
+    }
+    await target.evaluate(() =>
+      sessionStorage.setItem('verify:startup-dismissed', 'true'),
+    );
     await target.evaluate(() => document.fonts.ready);
     assert.ok(
       await target
@@ -493,13 +522,16 @@ export async function audit({page, context, base, out, server}) {
       .click();
     await closeSettings();
     await settings('experiments');
-    await page.locator('#settings-rendering-engine').focus();
-    await page.keyboard.press('Space');
-    assert.equal(
-      await page
-        .locator('#settings-rendering-engine')
-        .getAttribute('aria-checked'),
-      'true',
+    const renderer = page.locator('#settings-rendering-engine');
+    if ((await renderer.getAttribute('aria-checked')) !== 'true') {
+      await renderer.focus();
+      await page.keyboard.press('Space');
+    }
+    await page.waitForFunction(
+      () =>
+        document
+          .querySelector('#settings-rendering-engine')
+          ?.getAttribute('aria-checked') === 'true',
     );
     await closeSettings();
     PNG.sync.read(await download('takumi.png'));
@@ -816,6 +848,21 @@ export async function audit({page, context, base, out, server}) {
     await page.getByRole('button', {name: 'Presets', exact: true}).click();
     assert.equal(await item('Renamed preset').count(), 0);
   });
+  const mp4 = animationMp4Cases({
+    page,
+    context,
+    out,
+    base,
+    doctor,
+    editor,
+    shot,
+    section,
+  });
+  await feature('animation-mp4', mp4.layouts);
+  await feature('animation-mp4-errors', mp4.errors);
+  await feature('animation-mp4-compositing', mp4.compositing);
+  await feature('animation-mp4-modes', mp4.modes);
+  await feature('animation-mp4-parity', mp4.parity);
   await feature('animate', async () => {
     // The Editor window names its Add tab button; the default one does not.
     await windowStyle('Editor');
@@ -984,11 +1031,12 @@ export async function audit({page, context, base, out, server}) {
             await page.setViewportSize({width: 1440, height: 900});
             await doctor('/', 'editor', 'inspector');
             const nudge = page.locator('[data-whats-new="nudge"]');
-            await nudge.waitFor();
-            await nudge
-              .getByRole('button', {name: "Dismiss what's new", exact: true})
-              .click();
-            await nudge.waitFor({state: 'hidden'});
+            if (await nudge.isVisible()) {
+              await nudge
+                .getByRole('button', {name: "Dismiss what's new", exact: true})
+                .click();
+              await nudge.waitFor({state: 'hidden'});
+            }
             await animationFixture();
             await page.evaluate(
               layout =>

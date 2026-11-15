@@ -1,6 +1,50 @@
 export const animationLocale = {
   en: {
     animation: {
+      export: {
+        title: 'Export animation',
+        description: 'MP4 video, rendered on your device.',
+        retry: 'Retry',
+        share: 'Share MP4',
+        fpsValue: '{{fps}} fps',
+        errors: {
+          renderer:
+            'The video renderer (WASM) could not load or render a frame. Check your connection and retry.',
+          fonts:
+            'A required export font could not load. Check your connection and retry.',
+          encoder:
+            'The H.264 encoder or MP4 writer failed. Retry or choose a smaller size.',
+          workerLoad:
+            'The video worker could not load. A file may be unavailable after an update, or you may be offline. Reconnect and retry; reload the page if needed.',
+          workerMessage:
+            'The video worker returned an unreadable message. Retry the export.',
+          export:
+            'Rendering or encoding failed. Check your connection for fonts and renderer files, then retry.',
+        },
+        scale: 'Scale',
+        background: 'Solid background',
+        backgroundHint:
+          'MP4 has no transparency. This colour fills the canvas.',
+        video: 'Export video',
+        asImage: 'Export as image',
+        colorInvalid: 'Use an opaque hex colour, such as #f0a020.',
+        format: 'Format',
+        fps: 'Frame rate',
+        outputSize: 'Output size',
+        currentSize: 'Current frame',
+        checking: 'Checking video support and preparing fonts…',
+        missing:
+          'MP4 needs WebCodecs. Try a current Chrome, Firefox or Safari.',
+        unsupported:
+          'MP4 is unavailable at this size and frame rate. Try a current Chrome, Firefox or Safari.',
+        failed: 'Video export failed: {{cause}}',
+        progress: 'Video export progress',
+        frames: '{{done}} / {{total}} frames',
+        done: 'Ready · {{size}} · {{duration}}',
+        cancel: 'Cancel',
+        start: 'Export MP4',
+        download: 'Download MP4',
+      },
       increaseDuration: 'Increase duration by 100 ms',
       decreaseDuration: 'Decrease duration by 100 ms',
       addStep: 'Add to animation',
@@ -54,6 +98,50 @@ export const animationLocale = {
   },
   it: {
     animation: {
+      export: {
+        title: 'Esporta animazione',
+        description: 'Video MP4, generato sul tuo dispositivo.',
+        retry: 'Riprova',
+        share: 'Condividi MP4',
+        fpsValue: '{{fps}} fps',
+        errors: {
+          renderer:
+            'Il renderer video (WASM) non è riuscito a caricarsi o a generare un fotogramma. Controlla la connessione e riprova.',
+          fonts:
+            'Impossibile caricare un carattere necessario per il video. Controlla la connessione e riprova.',
+          encoder:
+            'Errore del codificatore H.264 o del file MP4. Riprova o scegli dimensioni inferiori.',
+          workerLoad:
+            'Impossibile caricare il worker video. Un file potrebbe non essere disponibile dopo un aggiornamento, oppure sei offline. Riconnettiti e riprova; se necessario ricarica la pagina.',
+          workerMessage:
+            'Il worker video ha restituito un messaggio illeggibile. Riprova l’esportazione.',
+          export:
+            'Rendering o codifica non riusciti. Controlla la connessione per i caratteri e il renderer, poi riprova.',
+        },
+        scale: 'Scala',
+        background: 'Sfondo pieno',
+        backgroundHint:
+          'MP4 non supporta la trasparenza. Questo colore riempie il video.',
+        video: 'Esporta video',
+        asImage: 'Esporta come immagine',
+        colorInvalid: 'Usa un colore esadecimale opaco, ad esempio #f0a020.',
+        format: 'Formato',
+        fps: 'Fotogrammi al secondo',
+        outputSize: 'Dimensioni video',
+        currentSize: 'Riquadro corrente',
+        checking: 'Verifica del video e preparazione dei caratteri…',
+        missing:
+          'MP4 richiede WebCodecs. Prova una versione recente di Chrome, Firefox o Safari.',
+        unsupported:
+          'MP4 non disponibile con queste dimensioni e frequenza. Prova una versione recente di Chrome, Firefox o Safari.',
+        failed: 'Esportazione video non riuscita: {{cause}}',
+        progress: 'Avanzamento esportazione video',
+        frames: '{{done}} / {{total}} fotogrammi',
+        done: 'Pronto · {{size}} · {{duration}}',
+        cancel: 'Annulla',
+        start: 'Esporta MP4',
+        download: 'Scarica MP4',
+      },
       increaseDuration: 'Aumenta la durata di 100 ms',
       decreaseDuration: 'Riduci la durata di 100 ms',
       addStep: 'Aggiungi all’animazione',
@@ -108,6 +196,50 @@ export const animationLocale = {
   },
   de: {
     animation: {
+      export: {
+        title: 'Animation exportieren',
+        description: 'MP4-Video, auf deinem Gerät gerendert.',
+        retry: 'Erneut versuchen',
+        share: 'MP4 teilen',
+        fpsValue: '{{fps}} Bilder/s',
+        errors: {
+          renderer:
+            'Der Video-Renderer (WASM) konnte nicht geladen werden oder kein Bild rendern. Prüfe die Verbindung und versuche es erneut.',
+          fonts:
+            'Eine benötigte Schriftart konnte nicht geladen werden. Prüfe die Verbindung und versuche es erneut.',
+          encoder:
+            'Der H.264-Encoder oder MP4-Writer ist fehlgeschlagen. Versuche es erneut oder wähle eine kleinere Größe.',
+          workerLoad:
+            'Der Video-Worker konnte nicht geladen werden. Nach einem Update fehlt möglicherweise eine Datei, oder du bist offline. Verbinde dich und versuche es erneut; lade bei Bedarf die Seite neu.',
+          workerMessage:
+            'Der Video-Worker hat eine unlesbare Nachricht gesendet. Versuche den Export erneut.',
+          export:
+            'Rendering oder Kodierung fehlgeschlagen. Prüfe die Verbindung für Schriftarten und Renderer-Dateien und versuche es erneut.',
+        },
+        scale: 'Skalierung',
+        background: 'Einfarbiger Hintergrund',
+        backgroundHint:
+          'MP4 unterstützt keine Transparenz. Diese Farbe füllt die Videofläche.',
+        video: 'Video exportieren',
+        asImage: 'Als Bild exportieren',
+        colorInvalid: 'Verwende eine deckende Hex-Farbe, zum Beispiel #f0a020.',
+        format: 'Format',
+        fps: 'Bildrate',
+        outputSize: 'Videoabmessungen',
+        currentSize: 'Aktueller Rahmen',
+        checking: 'Videounterstützung prüfen und Schriftarten vorbereiten…',
+        missing:
+          'MP4 benötigt WebCodecs. Versuche eine aktuelle Version von Chrome, Firefox oder Safari.',
+        unsupported:
+          'MP4 ist bei dieser Größe und Bildrate nicht verfügbar. Versuche eine aktuelle Version von Chrome, Firefox oder Safari.',
+        failed: 'Videoexport fehlgeschlagen: {{cause}}',
+        progress: 'Fortschritt des Videoexports',
+        frames: '{{done}} / {{total}} Bilder',
+        done: 'Fertig · {{size}} · {{duration}}',
+        cancel: 'Abbrechen',
+        start: 'MP4 exportieren',
+        download: 'MP4 herunterladen',
+      },
       increaseDuration: 'Dauer um 100 ms erhöhen',
       decreaseDuration: 'Dauer um 100 ms verringern',
       addStep: 'Zur Animation hinzufügen',
@@ -162,6 +294,50 @@ export const animationLocale = {
   },
   es: {
     animation: {
+      export: {
+        title: 'Exportar animación',
+        description: 'Vídeo MP4, renderizado en tu dispositivo.',
+        retry: 'Reintentar',
+        share: 'Compartir MP4',
+        fpsValue: '{{fps}} fps',
+        errors: {
+          renderer:
+            'El renderizador de vídeo (WASM) no pudo cargarse o generar un fotograma. Comprueba la conexión y reintenta.',
+          fonts:
+            'No se pudo cargar una fuente necesaria para el vídeo. Comprueba la conexión y reintenta.',
+          encoder:
+            'Error del codificador H.264 o del archivo MP4. Reintenta o elige un tamaño menor.',
+          workerLoad:
+            'No se pudo cargar el worker de vídeo. Puede faltar un archivo tras una actualización, o puede que estés sin conexión. Conéctate y reintenta; recarga la página si es necesario.',
+          workerMessage:
+            'El worker de vídeo devolvió un mensaje ilegible. Reintenta la exportación.',
+          export:
+            'Error de renderizado o codificación. Comprueba la conexión para las fuentes y el renderizador, y reintenta.',
+        },
+        scale: 'Escala',
+        background: 'Fondo sólido',
+        backgroundHint:
+          'MP4 no admite transparencia. Este color rellena el vídeo.',
+        video: 'Exportar vídeo',
+        asImage: 'Exportar como imagen',
+        colorInvalid: 'Usa un color hexadecimal opaco, como #f0a020.',
+        format: 'Formato',
+        fps: 'Fotogramas por segundo',
+        outputSize: 'Dimensiones del vídeo',
+        currentSize: 'Marco actual',
+        checking: 'Comprobando el vídeo y preparando las fuentes…',
+        missing:
+          'MP4 necesita WebCodecs. Prueba una versión reciente de Chrome, Firefox o Safari.',
+        unsupported:
+          'MP4 no está disponible con este tamaño y frecuencia. Prueba una versión reciente de Chrome, Firefox o Safari.',
+        failed: 'Error al exportar el vídeo: {{cause}}',
+        progress: 'Progreso de exportación del vídeo',
+        frames: '{{done}} / {{total}} fotogramas',
+        done: 'Listo · {{size}} · {{duration}}',
+        cancel: 'Cancelar',
+        start: 'Exportar MP4',
+        download: 'Descargar MP4',
+      },
       increaseDuration: 'Aumentar la duración en 100 ms',
       decreaseDuration: 'Reducir la duración en 100 ms',
       addStep: 'Añadir a la animación',

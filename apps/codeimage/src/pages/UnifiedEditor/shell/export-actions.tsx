@@ -24,6 +24,7 @@ import {
 import {settings} from './settings-state';
 
 export type ExportItem =
+  | 'animation'
   | 'image'
   | 'copy'
   | 'tabs'
@@ -69,6 +70,15 @@ export function createExportActions(
       visible: always,
       disabled: () => exporter().busy(),
       run: () => exporter().image(choice()),
+    },
+    {
+      id: 'animation',
+      icon: ExportIcon,
+      title: () => t('animation.export.title'),
+      description: () => t('animation.export.description'),
+      visible: () => exporter().animation.available(),
+      disabled: () => exporter().busy() || exporter().animation.busy(),
+      run: () => exporter().exportAnimation(),
     },
     {
       id: 'copy',

@@ -106,8 +106,17 @@ try {
   await page.goto(base);
   const editor = page.locator('.cm-content[contenteditable="true"]').first();
   await editor.waitFor();
-  const close = page.getByRole('button', {name: 'close', exact: true});
+  // What's new waits 700 ms before announcing itself. Let its exit finish before typing.
+  await page
+    .locator('[data-whats-new="showcase"], [data-whats-new="nudge"]')
+    .first()
+    .waitFor({timeout: 15000});
+  const close = page.getByRole('button', {name: /^close$/i});
   if (await close.isVisible()) await close.click();
+  await page.locator('[data-whats-new="showcase"]').waitFor({state: 'hidden'});
+  await page.evaluate(() =>
+    sessionStorage.setItem('verify:startup-dismissed', 'true'),
+  );
   await page.evaluate(() => document.fonts.ready);
   await writeFile(
     resolve(out, 'doctor.json'),
@@ -141,6 +150,12 @@ try {
   const code =
     'const verification = "CodeImage user journey";\nconsole.log(verification);';
   await editor.fill(code);
+  await page.waitForFunction(
+    code =>
+      document.querySelector('.cm-content[contenteditable="true"]')
+        ?.innerText === code,
+    code,
+  );
   assert.equal(await editor.innerText(), code);
   actions.push(
     'Filled visible CodeMirror editor and asserted exact two-line text',

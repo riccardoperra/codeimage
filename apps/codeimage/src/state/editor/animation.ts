@@ -400,6 +400,9 @@ export function createAnimationStore(
           steps: settings.steps.map(({transition: _, ...step}) => step),
         }));
       },
+      setFps(fps: AnimationSettings['fps']) {
+        update(settings => ({...settings, fps}));
+      },
       setHeader(header: Partial<AnimationHeader>) {
         update(settings => ({
           ...settings,
