@@ -67,14 +67,25 @@ const WindowStyleTerminal: ParentComponent<
                 <div class={styles.dot} />
               </div>
             </Show>
+            <Show when={!props.showTab && props.title}>
+              <span class={baseStyles.title} data-animation-title>
+                {props.title}
+              </span>
+            </Show>
             <Show when={props.showTab && (!props.lite || props.preview)}>
               {tabList()}
             </Show>
-            <Show when={props.windowStyle === 'card'}>
+            <Show when={props.showTab && props.windowStyle === 'card'}>
               <span class={styles.language}>{language()}</span>
             </Show>
           </div>
-          <Show when={props.windowStyle === 'editor' && name().includes('/')}>
+          <Show
+            when={
+              props.showTab &&
+              props.windowStyle === 'editor' &&
+              name().includes('/')
+            }
+          >
             <div class={styles.breadcrumb}>
               <For each={name().split('/')}>
                 {(part, index) => (
@@ -96,7 +107,7 @@ const WindowStyleTerminal: ParentComponent<
               </For>
             </div>
           </Show>
-          <Show when={props.windowStyle === 'shell' && name()}>
+          <Show when={props.showTab && props.windowStyle === 'shell' && name()}>
             <div class={styles.prompt}>
               <span class={styles.promptSign} aria-hidden="true" />
               <span>cat {name()}</span>
@@ -112,7 +123,11 @@ const WindowStyleTerminal: ParentComponent<
             <div class={styles.codeBody}>{props.children}</div>
           </div>
         </Show>
-        <Show when={props.showHeader && props.windowStyle === 'editor'}>
+        <Show
+          when={
+            props.showHeader && props.showTab && props.windowStyle === 'editor'
+          }
+        >
           <div class={styles.status}>
             <span class={styles.statusLanguage}>
               <span class={styles.mark} />

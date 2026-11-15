@@ -1,3 +1,4 @@
+import type {AnimationHeader, Size} from '@core/animation/model';
 import {FittedWindow} from './FittedWindow';
 import {FrameSignature, framePadding, signatureScale} from './FrameSignature';
 import {getAssetsStore, isAssetUrl} from '@codeimage/store/assets/assets';
@@ -15,7 +16,7 @@ import {getTerminalState} from '@codeimage/store/editor/terminal';
 import {dispatchCopyToClipboard} from '@codeimage/store/effects/onCopyToClipboard';
 import {createRef} from '@core/helpers/create-ref';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
-import type {ParentProps, Ref, VoidProps} from 'solid-js';
+import type {JSX, ParentProps, Ref, VoidProps} from 'solid-js';
 import {
   createEffect,
   createMemo,
@@ -25,15 +26,16 @@ import {
   Show,
   Suspense,
 } from 'solid-js';
+import {
+  bindWatermarkExport,
+  createWatermarkScope,
+  WatermarkContext,
+} from '../../core/watermark/scope';
 import {Portal} from 'solid-js/web';
 import {provideState} from 'statebuilder';
 import {isKeyOwnedByFocus, useHotkey} from '../../hooks/use-hotkey';
 import {DynamicTerminal} from '../Terminal/DynamicTerminal/DynamicTerminal';
 import StaticCodeView from '../CustomEditor/StaticCodeView';
-import {
-  bindWatermarkExport,
-  createWatermarkScope,
-} from '../../core/watermark/scope';
 import * as styles from './Frame.css';
 import {FrameSkeleton} from './FrameSkeleton';
 
@@ -57,13 +59,185 @@ function PreviewPortal(props: ParentProps) {
   );
 }
 
+// The terminal theme and code font that every static or animated view of the
+// frame draws with.
+export function useFrameCodeStyle() {
+  const editor = getRootEditorStore();
+  const theme = createMemo(() => {
+    const themes = getThemeStore().themeArray();
+    return (
+      themes.find(theme => theme()?.id === editor.state.options.themeId)?.() ??
+      themes[0]()
+    );
+  });
+  return {
+    theme,
+    fontFamily: () => editor.computed.selectedFont().name,
+    fontWeight: () => editor.state.options.fontWeight,
+    enableLigatures: () => editor.state.options.enableLigatures,
+    showLineNumbers: () => editor.state.options.showLineNumbers,
+  };
+}
+
+export interface FrameViewProps {
+  targetSize?: Size;
+  header?: AnimationHeader;
+  ref?: Ref<HTMLDivElement>;
+  activeTabId?: string;
+  code: JSX.Element;
+  // Marks the frame and its window for the rules of an animation scene, and
+  // takes the window out of FittedWindow so those rules can place it.
+  animated?: boolean;
+  // Sizes the frame from its code, as the static export of one animation
+  // step, instead of from the editor frame on screen.
+  natural?: boolean;
+}
+
+// The frame as the export draws it, around any code view.
+export function FrameView(props: VoidProps<FrameViewProps>) {
+  const frame = getFrameState().store;
+  const target = () =>
+    props.targetSize
+      ? {
+          resolution: [
+            props.targetSize.width,
+            props.targetSize.height,
+          ] satisfies [number, number],
+        }
+      : getFrameState().exportTarget();
+  const scale = () => signatureScale(target()?.resolution[0] ?? frame.width);
+  const terminal = getTerminalState().state;
+  const editor = getRootEditorStore();
+  const assetsStore = getAssetsStore();
+  const watermark = createWatermarkScope();
+  createEffect(on(() => frame.signature?.position, watermark.invalidate));
+  const exportCanvasStore = getExportCanvasStore();
+
+  const terminalView = () => (
+    <DynamicTerminal
+      type={terminal.type}
+      activeTabId={props.activeTabId}
+      readonlyTab={true}
+      staticTabs={!!props.header}
+      headerMode={props.header?.mode}
+      title={props.header?.mode === 'title' ? props.header.title : undefined}
+      showTab={props.header?.mode !== 'title'}
+      showOnlyActiveTab={
+        props.header
+          ? props.header.mode === 'tab'
+          : exportCanvasStore.get.showOnlyActiveTab
+      }
+      shadow={terminal.shadow}
+      background={terminal.background}
+      accentVisible={terminal.accentVisible}
+      textColor={terminal.textColor}
+      showHeader={terminal.showHeader}
+      showGlassReflection={terminal.showGlassReflection}
+      showWatermark={terminal.showWatermark}
+      opacity={terminal.opacity}
+      alternativeTheme={terminal.alternativeTheme}
+      borderType={terminal.borderType}
+      surface={terminal.surface}
+      themeId={editor.state.options.themeId}
+    >
+      {props.code}
+    </DynamicTerminal>
+  );
+
+  return (
+    <div
+      class={styles.previewWrapper}
+      ref={createRef<'div'>(props, element =>
+        bindWatermarkExport(element, watermark),
+      )}
+    >
+      <div
+        class={styles.container}
+        ref={element => watermark.attach('frame', element)}
+        data-watermark-frame
+        data-animation-frame={props.animated ? '' : undefined}
+        style={assignInlineVars({
+          overflow: 'hidden',
+          [styles.frameVars.radius]: `${frame.radius}px`,
+          [styles.frameVars.width]: target()
+            ? `${target()!.resolution[0]}px`
+            : frame.width && !props.natural
+              ? `${frame.width}px`
+              : 'auto',
+          [styles.frameVars.height]: target()
+            ? `${target()!.resolution[1]}px`
+            : frame.height && !props.natural
+              ? `${frame.height}px`
+              : 'auto',
+          [styles.frameVars.minWidth]: target() ? '0' : 'max-content',
+          [styles.frameVars.minHeight]:
+            target() || props.animated ? '0' : '100%',
+          [styles.frameVars.padding]: framePadding(
+            frame.padding,
+            frame.signature,
+            scale(),
+          ),
+        })}
+      >
+        <div
+          class={styles.previewOverlay}
+          ref={element => watermark.attach('background', element)}
+          data-watermark-background
+          style={assignInlineVars({
+            [styles.frameVars.backgroundColor]: assetsStore.isAssetUrl(
+              frame.background,
+            )
+              ? 'transparent'
+              : (frame.background ?? 'transparent'),
+            [styles.frameVars.opacity]: `${frame.opacity}%`,
+            [styles.frameVars.visibility]: `${
+              frame.visible ? 'visible' : 'hidden'
+            }`,
+          })}
+        >
+          <Show when={isAssetUrl(frame.background) && frame.background}>
+            {assetId => (
+              <AssetsImage
+                style={{
+                  position: 'absolute',
+                  left: 0,
+                  top: 0,
+                  'object-fit': 'cover',
+                }}
+                assetId={assetId()}
+              />
+            )}
+          </Show>
+        </div>
+
+        <Show
+          when={props.animated}
+          fallback={
+            <FittedWindow active={!!target()} watermark={watermark}>
+              {terminalView()}
+            </FittedWindow>
+          }
+        >
+          <div data-animation-window style={{display: 'contents'}}>
+            <WatermarkContext.Provider value={watermark}>
+              {terminalView()}
+            </WatermarkContext.Provider>
+          </div>
+        </Show>
+        <FrameSignature
+          signature={frame.signature}
+          background={frame.background}
+          scale={scale()}
+          markRef={element => watermark.attach('signature', element)}
+        />
+      </div>
+    </div>
+  );
+}
+
 export function PreviewFrame(props: VoidProps<PreviewFrameProps>) {
   const config = provideState(EditorConfigStore);
   let ref!: HTMLDivElement;
-  const frame = getFrameState().store;
-  const target = () => getFrameState().exportTarget();
-  const scale = () => signatureScale(target()?.resolution[0] ?? frame.width);
-  const terminal = getTerminalState().state;
   const editor = getRootEditorStore();
   const tab = () => props.tab ?? getActiveEditorStore().editor();
   const [language] = createResource(
@@ -76,17 +250,7 @@ export function PreviewFrame(props: VoidProps<PreviewFrameProps>) {
     ({languageId, tabName}) => loadLanguage(languageId, tabName),
     {initialValue: null},
   );
-  const assetsStore = getAssetsStore();
-  const watermark = createWatermarkScope();
-  createEffect(on(() => frame.signature?.position, watermark.invalidate));
-  const exportCanvasStore = getExportCanvasStore();
-  const theme = createMemo(() => {
-    const themes = getThemeStore().themeArray();
-    return (
-      themes.find(theme => theme()?.id === editor.state.options.themeId)?.() ??
-      themes[0]()
-    );
-  });
+  const style = useFrameCodeStyle();
 
   const filterHotKey = () =>
     editor.state.options.focused || isKeyOwnedByFocus();
@@ -104,120 +268,32 @@ export function PreviewFrame(props: VoidProps<PreviewFrameProps>) {
 
   return (
     <PreviewPortal>
-      <div
-        class={styles.previewWrapper}
-        ref={createRef<'div'>(props, el => {
-          ref = el;
-          bindWatermarkExport(el, watermark);
-        })}
-      >
-        <div
-          class={styles.container}
-          ref={element => watermark.attach('frame', element)}
-          data-watermark-frame
-          style={assignInlineVars({
-            overflow: 'hidden',
-            [styles.frameVars.radius]: `${frame.radius}px`,
-            [styles.frameVars.width]: target()
-              ? `${target()!.resolution[0]}px`
-              : frame.width
-                ? `${frame.width}px`
-                : 'auto',
-            [styles.frameVars.height]: target()
-              ? `${target()!.resolution[1]}px`
-              : frame.height
-                ? `${frame.height}px`
-                : 'auto',
-            [styles.frameVars.minWidth]: target() ? '0' : 'max-content',
-            [styles.frameVars.minHeight]: target() ? '0' : '100%',
-            [styles.frameVars.padding]: framePadding(
-              frame.padding,
-              frame.signature,
-              scale(),
-            ),
-          })}
-        >
-          <div
-            class={styles.previewOverlay}
-            ref={element => watermark.attach('background', element)}
-            data-watermark-background
-            style={assignInlineVars({
-              [styles.frameVars.backgroundColor]: assetsStore.isAssetUrl(
-                frame.background,
-              )
-                ? 'transparent'
-                : (frame.background ?? 'transparent'),
-              [styles.frameVars.opacity]: `${frame.opacity}%`,
-              [styles.frameVars.visibility]: `${
-                frame.visible ? 'visible' : 'hidden'
-              }`,
-            })}
-          >
-            <Show when={isAssetUrl(frame.background) && frame.background}>
-              {assetId => (
-                <AssetsImage
-                  style={{
-                    position: 'absolute',
-                    left: 0,
-                    top: 0,
-                    'object-fit': 'cover',
-                  }}
-                  assetId={assetId()}
-                />
-              )}
-            </Show>
-          </div>
-
-          <FittedWindow active={!!target()} watermark={watermark}>
-            <DynamicTerminal
-              type={terminal.type}
-              activeTabId={props.tab?.id}
-              readonlyTab={true}
-              showTab={true}
-              showOnlyActiveTab={exportCanvasStore.get.showOnlyActiveTab}
-              shadow={terminal.shadow}
-              background={terminal.background}
-              accentVisible={terminal.accentVisible}
-              textColor={terminal.textColor}
-              showHeader={terminal.showHeader}
-              showGlassReflection={terminal.showGlassReflection}
-              showWatermark={terminal.showWatermark}
-              opacity={terminal.opacity}
-              alternativeTheme={terminal.alternativeTheme}
-              borderType={terminal.borderType}
-              surface={terminal.surface}
-              themeId={editor.state.options.themeId}
-            >
-              <Show when={tab()}>
-                {active => (
-                  <StaticCodeView
-                    code={active().code}
-                    marks={active().marks}
-                    languageId={active().languageId}
-                    language={
-                      props.language === undefined
-                        ? language.latest
-                        : props.language
-                    }
-                    theme={theme()!}
-                    showLineNumbers={editor.state.options.showLineNumbers}
-                    lineNumberStart={active().lineNumberStart ?? 1}
-                    fontFamily={editor.computed.selectedFont().name}
-                    fontWeight={editor.state.options.fontWeight}
-                    enableLigatures={editor.state.options.enableLigatures}
-                  />
-                )}
-              </Show>
-            </DynamicTerminal>
-          </FittedWindow>
-          <FrameSignature
-            signature={frame.signature}
-            background={frame.background}
-            scale={scale()}
-            markRef={element => watermark.attach('signature', element)}
-          />
-        </div>
-      </div>
+      <FrameView
+        ref={createRef<'div'>(props, el => (ref = el))}
+        activeTabId={props.tab?.id}
+        code={
+          <Show when={tab()}>
+            {active => (
+              <StaticCodeView
+                code={active().code}
+                marks={active().marks}
+                languageId={active().languageId}
+                language={
+                  props.language === undefined
+                    ? language.latest
+                    : props.language
+                }
+                theme={style.theme()!}
+                showLineNumbers={style.showLineNumbers()}
+                lineNumberStart={active().lineNumberStart ?? 1}
+                fontFamily={style.fontFamily()}
+                fontWeight={style.fontWeight()}
+                enableLigatures={style.enableLigatures()}
+              />
+            )}
+          </Show>
+        }
+      />
     </PreviewPortal>
   );
 }

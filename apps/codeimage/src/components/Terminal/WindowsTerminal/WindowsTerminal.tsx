@@ -25,9 +25,16 @@ export const WindowsTerminal: ParentComponent<BaseTerminalProps> = props => {
           data-watermark-header
           data-accent-visible={showTab()}
         >
+          <Show when={!props.showTab && props.title}>
+            <span class={baseStyles.title} data-animation-title>
+              {props.title}
+            </span>
+          </Show>
           <Show when={props.showTab && (!props.lite || props.preview)}>
             <TerminalWindowTabList
+              staticTabs={props.staticTabs}
               activeTabId={props.activeTabId}
+              showOnlyActiveTab={props.headerMode === 'tab'}
               lite={props.lite}
               preview={props.preview ?? false}
               readOnly={props.readonlyTab}

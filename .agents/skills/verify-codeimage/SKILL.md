@@ -20,13 +20,13 @@ pnpm exec playwright install chromium
 node .agents/skills/verify-codeimage/scripts/verify.mjs
 ```
 
-The executable helper starts the same Vite app as `pnpm dev`, bound to `127.0.0.1:4437` with strict port ownership, and runs launch → doctor → editor/export → cleanup. Override with `VERIFY_PORT=4438`; select a persistent evidence directory with `ARTIFACT_DIR=/tmp/codeimage-proof`. Use a new directory for each run.
+The executable helper starts the same Vite app as `pnpm dev`, bound to `127.0.0.1:4437` with strict port ownership, and runs launch → doctor → editor/export → cleanup. Override with `VERIFY_PORT=4438`; use `VERIFY_BROWSER_CHANNEL=chrome` for installed Google Chrome (default: Playwright Chromium); select a persistent evidence directory with `ARTIFACT_DIR=/tmp/codeimage-proof`. Use a new directory for each run.
 
-It sets `VITE_ENABLE_MSW=true`, `VITE_MOCK_AUTH=true`, `VITE_API_BASE_URL=''`, and preset limits in the child environment. It creates an empty browser context (English, 1440×1000), with no user storage or project seed. No DB migration or Docker is needed for this supported mock boundary. Auth0 and project HTTP traffic use the app's existing development adapters; real authentication, PostgreSQL persistence and production API behavior remain unverified. No private credentials are needed.
+It sets `VITE_ENABLE_MSW=true`, `VITE_MOCK_AUTH=true`, `VITE_API_BASE_URL=''`, and preset limits in the child environment. It creates an empty browser context (English, 1440×1000), with no user storage or project seed. An owned blank page keeps MSW’s controlled-client registration alive across app reloads; it runs no app code or document writes and closes with the context. No DB migration or Docker is needed for this supported mock boundary. Auth0 and project HTTP traffic use the app's existing development adapters; real authentication, PostgreSQL persistence and production API behavior remain unverified. No private credentials are needed.
 
 Ready means MSW has enabled AND the actual editable CodeMirror surface is visible, fonts loaded, and the welcome dialog dismissed. An HTTP 200 alone is insufficient. The checked-in worker is older than installed MSW; the helper serves the installed `msw/mockServiceWorker.js` from a temporary public directory containing copies of the app assets. This scaffolding never edits `public/`. The helper uses Vite’s createServer API with the repository configuration to override only publicDir, host and port.
 
-Two runs can coexist on distinct ports and browser contexts. Never drive the user's existing browser profile or occupied port. Workspace dependencies and library builds are shared: finish setup before concurrent runs; do not run competing builds.
+Two runs can coexist on distinct ports and browser contexts. Each helper run uses its own temporary Vite dependency cache, so another checkout cannot invalidate its optimized dependencies mid-journey. Never drive the user's existing browser profile or occupied port. Workspace dependencies and library builds are shared: finish setup before concurrent runs; do not run competing builds.
 
 ## Doctor
 
@@ -52,7 +52,7 @@ The helper's `finally` closes its browser/context and terminates only its own Vi
 
 `node .agents/skills/verify-codeimage/scripts/verify.mjs` runs the full baseline. It is executable and accepts `VERIFY_PORT` and `ARTIFACT_DIR` environment overrides. To re-run selected journeys, set `VERIFY_CASES=export-options,settings-persistence` together with `VERIFY_AUDIT=1`. Omit `VERIFY_CASES` for the complete pass. Unknown names fail the run. `audit.json` lists only the journeys actually selected.
 
-Select `VERIFY_CASES=frame-cold-start,export-screen-parity` for frame startup and downloaded-PNG/screen regressions. Browser regressions belong to this audit; the app-folder verification scripts are retained legacy checks. The cold-start case clears the dependency cache before this helper launches its owned Vite instance, then uses two fresh contexts per layout and viewport (normal and delayed modules). `VERIFY_COLD_START_STRESS=1` expands that case to 120 starts: twenty per layout/viewport pair, with two seconds of sampling after readiness instead of the default half-second. Both modes use the same owned server and MSW boundary, with evidence under `ARTIFACT_DIR`.
+Select `VERIFY_CASES=frame-cold-start,export-screen-parity` for frame startup and downloaded-PNG/screen regressions. Browser regressions belong to this audit; the app-folder verification scripts are retained legacy checks. The cold-start case starts with the helper’s empty, isolated dependency cache, then uses two fresh contexts per layout and viewport (normal and delayed modules). `VERIFY_COLD_START_STRESS=1` expands that case to 120 starts: twenty per layout/viewport pair, with two seconds of sampling after readiness instead of the default half-second. Both modes use the same owned server and MSW boundary, with evidence under `ARTIFACT_DIR`.
 
 The audit helper `scripts/audit.mjs` is invoked by the main helper when `VERIFY_AUDIT=1`; it is not a standalone server command. It resolves fflate from the app workspace for ZIP checks. All dependencies come from this workspace. Chromium clipboard permissions are granted for real paste and image-copy journeys. The snippet Share check supplies a Web Share input fixture because headless Chromium has no OS share sheet. Native sharing remains a separate integration check. Keep feature files aligned using `/maintain-verification-skill`.
 
@@ -60,7 +60,7 @@ The audit helper `scripts/audit.mjs` is invoked by the main helper when `VERIFY_
 
 ## Scope and maintenance
 
-The feature map follows this checkout, not proposals or unmerged branches. Source readers must check recent commits for new user-facing paths before claiming completeness. Current animation core does not expose an animation editor and there is no CLI package in this checkout. Live runs use the real local web app with its existing MSW/Auth0 boundary; production OAuth, PostgreSQL and platform-native sharing remain separate integration checks. Audit assertions prove selected journeys, not every format, control, language or viewport.
+The feature map follows this checkout, not proposals or unmerged branches. Source readers must check recent commits for new user-facing paths before claiming completeness. The Animate panel of the guest editor is mapped in [features/animate.md](features/animate.md); there is no CLI package in this checkout. Live runs use the real local web app with its existing MSW/Auth0 boundary; production OAuth, PostgreSQL and platform-native sharing remain separate integration checks. Audit assertions prove selected journeys, not every format, control, language or viewport.
 
 ## Legacy check migration
 

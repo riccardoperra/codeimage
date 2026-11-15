@@ -53,6 +53,8 @@ export const shortcutHelpKey = '?';
 type Shortcut = {label: LocaleKeys<AppLocaleEntries>; key: string[]};
 // One list for the unified editor, including the production line-mark bindings.
 export const shortcuts: readonly Shortcut[] = [
+  {label: 'animation.shortcut.togglePlayback', key: ['Space']},
+  {label: 'animation.shortcut.backToEditor', key: ['Esc']},
   {label: 'shortcut.focusCodeEditor', key: ['F']},
   {label: 'shortcut.unFocusCodeEditor', key: ['Esc']},
   {label: 'shortcut.toggleBackground', key: ['B']},

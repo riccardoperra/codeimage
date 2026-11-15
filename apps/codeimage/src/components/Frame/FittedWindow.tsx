@@ -10,6 +10,16 @@ import {
 import type {WatermarkScope} from '../../core/watermark/scope';
 import {WatermarkContext} from '../../core/watermark/scope';
 
+export const FITTED_WINDOW_MIN_WIDTH = 480;
+
+interface Size {
+  width: number;
+  height: number;
+}
+
+export const fitScale = (viewport: Size, content: Size) =>
+  Math.min(1, viewport.width / content.width, viewport.height / content.height);
+
 function fitFrameWindow(frame: HTMLElement) {
   const content = frame.querySelector<HTMLElement>('[data-fitted-window]');
   const viewport = content?.parentElement;
@@ -17,10 +27,9 @@ function fitFrameWindow(frame: HTMLElement) {
     return false;
   const width = Math.max(content.offsetWidth, content.scrollWidth);
   const height = Math.max(content.offsetHeight, content.scrollHeight);
-  const scale = Math.min(
-    1,
-    viewport.clientWidth / width,
-    viewport.clientHeight / height,
+  const scale = fitScale(
+    {width: viewport.clientWidth, height: viewport.clientHeight},
+    {width, height},
   );
   const transform = `translate(-50%, -50%) scale(${scale})`;
   if (content.style.transform === transform) return false;
@@ -80,7 +89,7 @@ export function FittedWindow(
                 left: '50%',
                 top: '50%',
                 width: 'max-content',
-                'min-width': '480px',
+                'min-width': `${FITTED_WINDOW_MIN_WIDTH}px`,
                 'transform-origin': 'center',
               }
             : {display: 'contents', transform: 'none'}
