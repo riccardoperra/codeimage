@@ -2,10 +2,10 @@ import type {AppLocaleEntries} from '../../../i18n';
 import {useI18n} from '@codeimage/locale';
 import {getAuth0State} from '@codeimage/store/auth/auth0';
 import {getEditorSyncAdapter} from '@codeimage/store/editor/createEditorSync';
-import {buttonStyles, IconButton, Link} from '@codeui/kit';
+import {Button, buttonStyles, IconButton, Link} from '@codeui/kit';
 import {useModality} from '@core/hooks/isMobile';
 import {A as LocalLink} from '@solidjs/router';
-import {Show} from 'solid-js';
+import {createEffect, createSignal, onCleanup, Show, untrack} from 'solid-js';
 import {CodeImageLogoV2} from '../../../components/Icons/CodeImageLogoV2';
 import {CollectionIcon} from '../../../components/Icons/Collection';
 import {ShareButton} from '../../../components/Toolbar/ShareButton';
@@ -14,7 +14,12 @@ import {UserBadge} from '../localized/UserBadge';
 import type {Stage} from '../stage';
 import * as styles from './header.css';
 import {SparkleIcon} from '../../../components/WhatsNew/SparkleIcon';
-import {fromKeyboard} from '../../../components/WhatsNew/motion';
+import {
+  curve,
+  duration,
+  fromKeyboard,
+  reduceMotion,
+} from '../../../components/WhatsNew/motion';
 import * as newsStyles from '../../../components/WhatsNew/whats-new.css';
 import {getWhatsNew} from '../../../state/whats-new';
 import {ExperimentsIcon, SettingsIcon} from './icons';
@@ -30,7 +35,6 @@ export function Header(props: {stage: Stage}) {
   const [t] = useI18n<AppLocaleEntries>();
   // The production buttons pick their size once, at load, from this.
   const modality = useModality();
-  const news = getWhatsNew();
   const loggedIn = () => getAuth0State().loggedIn();
   const isRemote = () => !!getEditorSyncAdapter()?.snippetId();
 
@@ -65,40 +69,7 @@ export function Header(props: {stage: Stage}) {
       </Show>
 
       <div class={styles.actions}>
-        <Show when={news.headerEntry()}>
-          <IconButton
-            class={styles.extraButton}
-            size="sm"
-            theme="secondary"
-            variant="ghost"
-            aria-label={t('editor.whatsNew')}
-            title={t('editor.whatsNew')}
-            aria-controls={
-              news.current()?.surface === 'nudge'
-                ? 'whats-new-nudge'
-                : undefined
-            }
-            data-whats-new-trigger
-            onClick={event => {
-              const nudge = document.querySelector<HTMLElement>(
-                '[data-whats-new="nudge"]',
-              );
-              if (nudge) nudge.focus({preventScroll: true});
-              else news.reopen(fromKeyboard(event));
-            }}
-          >
-            <SparkleIcon />
-            <Show when={news.headerUnread()}>
-              <span
-                class={styles.headerDot}
-                aria-hidden="true"
-                data-whats-new-unread
-              >
-                <span class={newsStyles.unreadDot} />
-              </span>
-            </Show>
-          </IconButton>
-        </Show>
+        <WhatsNewButton />
         <IconButton
           class={styles.extraButton}
           size="sm"
@@ -135,5 +106,81 @@ export function Header(props: {stage: Stage}) {
         <UserBadge />
       </div>
     </header>
+  );
+}
+
+/** First in a right-aligned row: its width never moves the other actions. */
+function WhatsNewButton() {
+  const [t] = useI18n<AppLocaleEntries>();
+  const news = getWhatsNew();
+  const [present, setPresent] = createSignal(false);
+  let button: HTMLButtonElement | undefined;
+
+  createEffect(() => {
+    const visible = news.headerEntry();
+    const pointer = untrack(news.interaction) === 'pointer';
+    let animation: Animation | undefined;
+    let cancelled = false;
+    if (visible) setPresent(true);
+    if (!pointer) setPresent(visible);
+    else {
+      // Let Show mount its button before starting the compositor animation.
+      queueMicrotask(() => {
+        if (cancelled || !button) return;
+        const reduced = matchMedia(reduceMotion).matches;
+        const hidden = reduced
+          ? {opacity: 0}
+          : {opacity: 0, transform: 'scale(.96)'};
+        const shown = reduced
+          ? {opacity: 1}
+          : {opacity: 1, transform: 'scale(1)'};
+        animation = button.animate(
+          visible ? [hidden, shown] : [shown, hidden],
+          {
+            duration: visible ? duration.coachmarkIn : duration.coachmarkOut,
+            easing: curve.out,
+            fill: 'both',
+          },
+        );
+        animation.onfinish = () => {
+          if (!visible) setPresent(false);
+          animation?.cancel();
+        };
+      });
+    }
+    onCleanup(() => {
+      cancelled = true;
+      animation?.cancel();
+    });
+  });
+
+  return (
+    <Show when={present()}>
+      <Button
+        ref={button}
+        class={styles.extraButton}
+        size="sm"
+        theme="secondary"
+        variant="ghost"
+        aria-controls="whats-new-nudge"
+        inert={!news.headerEntry() || undefined}
+        data-whats-new-trigger
+        onClick={(event: MouseEvent) => news.reopen(fromKeyboard(event))}
+      >
+        <span class={styles.newsIcon}>
+          <SparkleIcon />
+          <Show when={news.headerUnread()}>
+            <span
+              class={styles.headerDot}
+              aria-hidden="true"
+              data-whats-new-unread
+            >
+              <span class={newsStyles.unreadDot} />
+            </span>
+          </Show>
+        </span>
+        {t('editor.whatsNew')}
+      </Button>
+    </Show>
   );
 }

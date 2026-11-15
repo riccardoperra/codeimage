@@ -136,11 +136,17 @@ Shared controls render the dots and bind reveal actions.
 Layouts do not import What's new modules. The root oxlint override enforces that boundary.
 
 The shared header offers a permanent Experiments button that opens Settings on that section.
-Its What's new button remains available for `NEW_FOR_DAYS` (45 days) from the newest release's date,
-even after dismissal or after every highlight is seen. The entry is hidden while the Showcase is open.
-It focuses an existing Nudge or reopens the newest release expanded for this session, without resetting stored facts.
-Closing a reopened Nudge returns focus to its header trigger; reloading respects the stored dismissal.
-A still unread dot appears only with unseen highlights while the Nudge is absent, outside the three feature-dot slots.
+Its labelled, secondary ghost What's new button is available for `NEW_FOR_DAYS` (45 days)
+from the newest release's date, only while neither Nudge nor Showcase is on screen.
+It reopens the newest release expanded for this session, without resetting stored facts.
+Keyboard dismissal focuses the header entry when visible; keyboard reopening focuses the Nudge.
+Pointer dismissal restores nearby non-text-field focus and, after the Nudge's exit, fades and
+scales the header entry from 0.96. Reopening fades it out as the Nudge enters.
+The entry is first in the right-aligned action row, retaining its width through its exit and
+reserving nothing afterwards, so Settings and Experiments keep their positions throughout.
+Page-load entries and keyboard handovers are instant; reduced motion uses opacity only.
+Reloading respects the stored dismissal. A still unread dot on the sparkle icon appears with
+unseen highlights, outside the three feature-dot slots.
 Both extra buttons hide at widths of 768px and below; the mobile header stays unchanged.
 After expiry, the Settings archive remains available.
 

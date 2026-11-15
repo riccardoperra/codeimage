@@ -41,9 +41,11 @@ export interface WhatsNew {
   readonly current: Accessor<Announcement>;
   readonly headerEntry: Accessor<boolean>;
   readonly headerUnread: Accessor<boolean>;
+  /** Last explicit header/Nudge interaction; null on a fresh page load. */
+  readonly interaction: Accessor<'pointer' | 'keyboard' | null>;
   /** Reopens the newest release for this session without changing facts. */
   reopen(keyboard?: boolean): void;
-  dismiss(): void;
+  dismiss(keyboard?: boolean): void;
   dotAt(at: Where): LocatedHighlightId | undefined;
   isNew(id: HighlightId): boolean;
   opened(id: HighlightId, on: Surface): void;
@@ -85,11 +87,17 @@ export function createWhatsNew(
   const [facts, setFacts] = createSignal<Facts>(NO_FACTS);
   const [loaded, setLoaded] = createSignal(false);
   const [announcement, setAnnouncement] = createSignal<Announcement>(null);
+  const [interaction, setInteraction] = createSignal<
+    'pointer' | 'keyboard' | null
+  >(null);
   const [locations, setLocations] = createSignal<
     ReadonlyMap<Place | Where, (item: string | undefined) => void>
   >(new Map());
   const decision = createMemo(() =>
     decide(loaded() ? RELEASES : [], facts(), now()),
+  );
+  const headerEntry = createMemo(
+    () => decision().headerEntry && !announcement(),
   );
   const pending = createMemo(() => decision().announcement, null, {
     equals: (a, b) => a?.release.id === b?.release.id,
@@ -151,16 +159,16 @@ export function createWhatsNew(
 
   return {
     current: announcement,
-    headerEntry: () =>
-      decision().headerEntry && announcement()?.surface !== 'showcase',
+    headerEntry,
+    interaction,
     headerUnread: () =>
-      !announcement() &&
       RELEASES[0].highlights.some(highlight =>
         decision().fresh.has(highlight.id),
       ),
     reopen(keyboard = false) {
       if (!decision().headerEntry || announcement()) return;
       const release = RELEASES[0];
+      setInteraction(keyboard ? 'keyboard' : 'pointer');
       setAnnouncement({
         surface: 'nudge',
         release,
@@ -192,9 +200,16 @@ export function createWhatsNew(
       });
       return announcement;
     },
-    dismiss() {
+    dismiss(keyboard = false) {
       const current = announcement();
       if (!current) return;
+      setInteraction(
+        current.surface === 'nudge'
+          ? keyboard
+            ? 'keyboard'
+            : 'pointer'
+          : null,
+      );
       record({seen: new Set(), dismissed: new Set([current.release.id])});
       setAnnouncement(null);
       track('dismissed', {

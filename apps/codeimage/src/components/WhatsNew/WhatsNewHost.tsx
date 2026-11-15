@@ -60,7 +60,7 @@ export function WhatsNewHost(props: {quiet?: Accessor<boolean>}) {
     () => watchQuiet(props.quiet),
     forced === 'nudge' || forced === 'showcase' ? forced : undefined,
   );
-  const dismiss = () => news.dismiss();
+  const dismiss = (keyboard = false) => news.dismiss(keyboard);
 
   return (
     <Show when={current()}>

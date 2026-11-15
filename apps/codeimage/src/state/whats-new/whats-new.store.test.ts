@@ -46,11 +46,20 @@ describe('release discovery across visits', () => {
     });
     await settle();
     expect(app.announcement()).toBeNull();
+    expect(app.store.interaction()).toBeNull();
     app.setQuiet(true);
     expect(app.announcement()?.surface).toBe('nudge');
+    expect(app.store.headerEntry()).toBe(false);
     app.setQuiet(false);
     expect(app.announcement()?.surface).toBe('nudge');
     app.store.dismiss();
+    expect(app.store.headerEntry()).toBe(true);
+    expect(app.store.interaction()).toBe('pointer');
+    app.store.reopen();
+    expect(app.store.headerEntry()).toBe(false);
+    app.store.dismiss(true);
+    expect(app.store.headerEntry()).toBe(true);
+    expect(app.store.interaction()).toBe('keyboard');
     await settle();
     const next = createRoot(dispose => {
       const store = createWhatsNew(db, () => Date.parse('2026-11-14'));
@@ -89,7 +98,8 @@ describe('release discovery across visits', () => {
         release: {id: '2026-11'},
         entry: 'keyboard',
       });
-      expect(app.store.headerUnread()).toBe(false);
+      expect(app.store.headerEntry()).toBe(false);
+      expect(app.store.interaction()).toBe('keyboard');
       expect(update).not.toHaveBeenCalled();
       expect(await db.get('whats-new')).toEqual(stored);
       app.store.reopen();
@@ -151,6 +161,8 @@ describe('release discovery across visits', () => {
     expect(app.store.headerEntry()).toBe(false);
     app.store.reopen();
     expect(app.store.current()).toBeNull();
+    app.store.dismiss();
+    expect(app.store.headerEntry()).toBe(false);
     app.dispose();
   });
 
@@ -164,6 +176,7 @@ describe('release discovery across visits', () => {
     expect(app.store.headerEntry()).toBe(false);
     app.store.dismiss();
     expect(app.store.headerEntry()).toBe(true);
+    expect(app.store.interaction()).toBeNull();
     app.store.reopen();
     expect(app.store.current()?.surface).toBe('nudge');
     app.dispose();

@@ -1,5 +1,6 @@
 import {themeVars} from '@codeimage/ui';
 import {globalStyle, style} from '@vanilla-extract/css';
+import {curve, duration, ms} from '../../../components/WhatsNew/motion';
 
 const c = themeVars.dynamicColors;
 
@@ -86,7 +87,8 @@ export const actions = style({
 export const extraButton = style({
   position: 'relative',
   flexShrink: 0,
-  transition: 'transform 120ms cubic-bezier(0.23, 1, 0.32, 1)',
+  whiteSpace: 'nowrap',
+  transition: `transform ${ms(duration.press)} ${curve.out}`,
   selectors: {'&:active': {transform: 'scale(.97)'}},
   '@media': {
     [phone]: {display: 'none'},
@@ -97,10 +99,15 @@ export const extraButton = style({
   },
 });
 
+export const newsIcon = style({
+  position: 'relative',
+  display: 'flex',
+});
+
 export const headerDot = style({
   position: 'absolute',
-  top: '3px',
-  right: '3px',
+  top: '-2px',
+  right: '-2px',
   display: 'flex',
   color: c.primary,
   pointerEvents: 'none',
