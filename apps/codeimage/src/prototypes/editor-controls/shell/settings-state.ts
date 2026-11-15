@@ -30,10 +30,19 @@ export const settings = {
   setSection,
   /** Opens the dialog, on a section when one is given. */
   open: (target?: unknown) => {
-    const active = document.activeElement;
-    opener = active instanceof HTMLElement ? active : undefined;
     // A click handler passes its event here, which is not a section.
     const found = SECTIONS.find(entry => entry.id === target);
+    if (isOpen()) {
+      if (found) setSection(found.id);
+      // As on opening, the section on screen takes the focus, here from a
+      // control of the section it replaced.
+      document
+        .querySelector<HTMLElement>(`[data-settings-section="${section()}"]`)
+        ?.focus();
+      return;
+    }
+    const active = document.activeElement;
+    opener = active instanceof HTMLElement ? active : undefined;
     if (found) setSection(found.id);
     setOpen(true);
   },
