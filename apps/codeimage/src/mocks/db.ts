@@ -1,3 +1,8 @@
+import type {
+  SignaturePlatform,
+  SignaturePosition,
+  SignatureStyle,
+} from '@codeimage/store/frame/model';
 import type {ExportTargetId} from '@codeimage/config';
 import {factory, nullable, primaryKey} from '@mswjs/data';
 
@@ -24,6 +29,8 @@ export const db = factory({
       type: String,
       showWatermark: Boolean,
       alternativeTheme: Boolean,
+      surface: () => 'solid',
+      borderType: nullable(String),
       showHeader: Boolean,
       showGlassReflection: Boolean,
       opacity: Number,
@@ -35,7 +42,13 @@ export const db = factory({
       signature: nullable(
         {
           handle: String,
-          position: (): 'bottom-left' | 'bottom-right' => 'bottom-right',
+          position: (): SignaturePosition => 'bottom-right',
+          style: (): SignatureStyle => 'minimal',
+          platform: nullable((): SignaturePlatform | null => null),
+          name: nullable(String),
+          avatar: nullable(String),
+          profile: nullable(String),
+          savedId: nullable(String),
         },
         {defaultsToNull: true},
       ),

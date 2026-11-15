@@ -1,0 +1,141 @@
+{
+  "beforeDpr1": {
+    "geometry": {
+      "displayDpr": 1,
+      "codeX": 136.8125,
+      "gutterX": 80,
+      "top": 462.90625,
+      "codeLineHeight": "22.4px",
+      "gutterHeight": 22.390625
+    },
+    "crossovers": [
+      {
+        "displayDpr": 1,
+        "ratio": 1,
+        "drift": 0,
+        "firstOffset": 1,
+        "lastOffset": 1,
+        "minOffset": 0,
+        "maxOffset": 2,
+        "chrome": {
+          "percent": 0.2594215311635262,
+          "width": 496,
+          "height": 7589
+        }
+      },
+      {
+        "displayDpr": 1,
+        "ratio": 2,
+        "drift": -5,
+        "firstOffset": 1,
+        "lastOffset": -4,
+        "minOffset": -5,
+        "maxOffset": 2,
+        "chrome": null
+      }
+    ]
+  },
+  "displayDpr1": {
+    "geometry": {
+      "displayDpr": 1,
+      "codeX": 136.8125,
+      "gutterX": 80,
+      "top": 462.90625,
+      "codeLineHeight": "22.4px",
+      "gutterHeight": 22.390625
+    },
+    "crossovers": [
+      {
+        "displayDpr": 1,
+        "ratio": 1,
+        "drift": 0,
+        "firstOffset": 1,
+        "lastOffset": 1,
+        "minOffset": 0,
+        "maxOffset": 2,
+        "chrome": {
+          "percent": 0.2594215311635262,
+          "width": 496,
+          "height": 7589
+        }
+      },
+      {
+        "displayDpr": 1,
+        "ratio": 2,
+        "drift": 0,
+        "firstOffset": 1,
+        "lastOffset": 1,
+        "minOffset": 0,
+        "maxOffset": 2,
+        "chrome": null
+      }
+    ]
+  },
+  "displayDpr2": {
+    "geometry": {
+      "displayDpr": 2,
+      "codeX": 136.8046875,
+      "gutterX": 80,
+      "top": 462.734375,
+      "codeLineHeight": "22.4px",
+      "gutterHeight": 22.3984375
+    },
+    "crossovers": [
+      {
+        "displayDpr": 2,
+        "ratio": 1,
+        "drift": 1,
+        "firstOffset": 0,
+        "lastOffset": 1,
+        "minOffset": 0,
+        "maxOffset": 2,
+        "chrome": null
+      },
+      {
+        "displayDpr": 2,
+        "ratio": 2,
+        "drift": 0,
+        "firstOffset": 1,
+        "lastOffset": 1,
+        "minOffset": 0,
+        "maxOffset": 2,
+        "chrome": {
+          "percent": 0.005358372180978324,
+          "width": 992,
+          "height": 15182
+        }
+      }
+    ]
+  },
+  "blockedFont": {
+    "diff": {
+      "percent": 0,
+      "width": 1184,
+      "height": 936
+    },
+    "messages": [
+      "[CodeImage] Takumi export failed. Using dom-export. Error: Export font unavailable: JetBrains Mono\n    at http://localhost:4435/src/core/rasterize/takumi.ts?t=1794663281907:39:10"
+    ],
+    "recovered": {
+      "percent": 0.0316722972972973,
+      "width": 1184,
+      "height": 936
+    }
+  },
+  "matrix": {
+    "count": 104,
+    "worst": 0.07164616539616539,
+    "median": 0.031491828366828366,
+    "errors": [],
+    "fallback": [],
+    "fontIssues": []
+  },
+  "validation": {
+    "tests": 18,
+    "lintErrors": 0,
+    "lintWarnings": 33,
+    "typecheck": "passed after Prisma generation and API build",
+    "productionBuild": "passed",
+    "performance": "not rerun"
+  }
+}

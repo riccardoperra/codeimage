@@ -12,11 +12,16 @@ import {
   Show,
   Suspense,
 } from 'solid-js';
+import {useI18n} from '@codeimage/locale';
+import type {AppLocaleEntries} from '../../../../i18n';
+import type {WindowStyle} from '../../WindowStyles/WindowStyles';
+import * as modern from './WindowTabStyle.css';
 import {CloseIcon} from '../../../Icons/CloseIcon';
 import * as styles from './Tab.css';
 import {WindowTab, WindowTabContentText} from './WindowTab';
 
 export interface WindowTabProps {
+  readonly appearance?: WindowStyle;
   readonly id: string;
   readonly index: number;
   readonly tabName?: string | null;
@@ -31,6 +36,26 @@ export interface WindowTabProps {
 }
 
 const TabName = lazy(() => import('../TabName/TabName'));
+
+function TabCloseButton(props: {onClose: () => void}) {
+  const [t] = useI18n<AppLocaleEntries>();
+  return (
+    <button
+      class={modern.close}
+      aria-label={t('frame.closeTab')}
+      onPointerDown={event => event.stopPropagation()}
+      onMouseDown={event => event.stopPropagation()}
+      data-export-exclude={true}
+      onClick={event => {
+        props.onClose();
+        event.stopPropagation();
+        event.preventDefault();
+      }}
+    >
+      ×
+    </button>
+  );
+}
 
 export function DraggableWindowTab(props: VoidProps<WindowTabProps>) {
   let ref!: HTMLDivElement;
@@ -56,6 +81,7 @@ export function DraggableWindowTab(props: VoidProps<WindowTabProps>) {
       }}
       id={props.id}
       index={props.index}
+      appearance={props.appearance}
       active={props.active}
       accentMode={props.accentMode}
       tabIcon={props.tabIcon}
@@ -69,7 +95,14 @@ export function DraggableWindowTab(props: VoidProps<WindowTabProps>) {
       content={
         <Show
           fallback={
-            <WindowTabContentText>{props.tabName}</WindowTabContentText>
+            <Show
+              when={props.appearance}
+              fallback={
+                <WindowTabContentText>{props.tabName}</WindowTabContentText>
+              }
+            >
+              <span>{props.tabName || 'Untitled'}</span>
+            </Show>
           }
           when={!props.readonlyTab}
         >
@@ -84,17 +117,24 @@ export function DraggableWindowTab(props: VoidProps<WindowTabProps>) {
       }
       rightContent={
         <Show when={props.onClose && hasEnoughSpace()}>
-          <CloseIcon
-            class={styles.tabCloseIcon}
-            onClick={evt => {
-              props.onClose?.();
-              evt.stopPropagation();
-              evt.preventDefault();
-            }}
-            size={'xs'}
-            stroke-width={3}
-            data-export-exclude={true}
-          />
+          <Show
+            when={props.appearance}
+            fallback={
+              <CloseIcon
+                class={styles.tabCloseIcon}
+                onClick={evt => {
+                  props.onClose?.();
+                  evt.stopPropagation();
+                  evt.preventDefault();
+                }}
+                size={'xs'}
+                stroke-width={3}
+                data-export-exclude={true}
+              />
+            }
+          >
+            <TabCloseButton onClose={() => props.onClose?.()} />
+          </Show>
         </Show>
       }
     />

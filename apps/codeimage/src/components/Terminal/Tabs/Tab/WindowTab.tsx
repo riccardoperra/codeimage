@@ -4,9 +4,12 @@ import {assignInlineVars} from '@vanilla-extract/dynamic';
 import type {FlowProps, JSX, JSXElement, ParentProps, Ref} from 'solid-js';
 import {mergeProps, Show, splitProps, Suspense} from 'solid-js';
 import {TabIcon} from '../TabIcon/TabIcon';
+import type {WindowStyle} from '../../WindowStyles/WindowStyles';
+import * as modern from './WindowTabStyle.css';
 import * as styles from './Tab.css';
 
 export interface WindowTabProps {
+  readonly appearance?: WindowStyle;
   readonly active: boolean;
   readonly index: number;
   readonly accentMode: boolean;
@@ -26,19 +29,30 @@ export function WindowTab(
     'style',
     'rightContent',
     'content',
+    'appearance',
+    'active',
+    'index',
+    'accentMode',
+    'lite',
+    'tabIcon',
   ]);
 
   return (
     <div
       data-active={props.active}
+      data-window-tab={props.appearance}
       data-host-index={props.index}
       data-lite={props.lite}
       data-accent-visible={props.accentMode}
-      class={styles.tab({
-        accent: props.accentMode,
-        active: props.active,
-        lite: props.lite,
-      })}
+      class={
+        props.appearance
+          ? modern.tab
+          : styles.tab({
+              accent: props.accentMode,
+              active: props.active,
+              lite: props.lite,
+            })
+      }
       ref={props.ref}
       style={assignInlineVars({
         [styles.tabVars.tabIndex]: String(props.index),
@@ -46,12 +60,17 @@ export function WindowTab(
       {...others}
     >
       <Suspense fallback={<Loading size={'sm'} />}>
-        <Show when={props.tabIcon} keyed>
+        <Show when={props.appearance && props.appearance !== 'shell'}>
+          <span class={modern.mark} />
+        </Show>
+        <Show when={!props.appearance && props.tabIcon} keyed>
           {icon => (
             <TabIcon delay={0} size={props.lite ? 'xs' : 'md'} content={icon} />
           )}
         </Show>
-        <div class={styles.tabTextContent}>{props.content}</div>
+        <div class={props.appearance ? modern.text : styles.tabTextContent}>
+          {props.content}
+        </div>
       </Suspense>
       <Show when={props.rightContent}>{props.rightContent}</Show>
     </div>

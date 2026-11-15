@@ -59,7 +59,7 @@ const appApi: FastifyPluginAsync = async fastify => {
           },
         };
       });
-      for (const module of ['preset', 'project']) {
+      for (const module of ['preset', 'project', 'signature']) {
         await api.register(AutoLoad, {
           dir: join(import.meta.dirname, '../modules', module, 'routes'),
           dirNameRoutePrefix: false,

@@ -1,0 +1,142 @@
+{
+  "warm": {
+    "domExport": {
+      "runs": 10,
+      "median": 6670.400000020862,
+      "min": 5599.799999982119,
+      "max": 9558.59999999404,
+      "values": [
+        5970.0999999940395, 5599.799999982119, 5922.899999976158,
+        7965.799999982119, 9000.700000017881, 9558.59999999404,
+        6905.700000017881, 6308.600000023842, 6435.100000023842,
+        7960.9000000059605
+      ]
+    },
+    "takumi": {
+      "runs": 10,
+      "median": 576.5,
+      "min": 501.90000000596046,
+      "max": 713.2000000178814,
+      "values": [
+        527.6999999880791, 501.90000000596046, 589.5, 680, 713.2000000178814,
+        669.1999999880791, 605.0999999940395, 550, 563.5, 548.8999999761581
+      ]
+    }
+  },
+  "cold": {
+    "runs": 5,
+    "median": 927.8999999761581,
+    "min": 882.0999999940395,
+    "max": 937.9000000059605,
+    "values": [
+      882.0999999940395, 927.8999999761581, 937.9000000059605,
+      934.7000000178814, 890.7000000178814
+    ]
+  },
+  "profiles": [
+    {
+      "engine": "dom-export",
+      "hot": [
+        {
+          "name": "setAttribute",
+          "url": "",
+          "hits": 853
+        },
+        {
+          "name": "setProperty",
+          "url": "",
+          "hits": 757
+        },
+        {
+          "name": "(program)",
+          "url": "",
+          "hits": 749
+        },
+        {
+          "name": "getPropertyValue",
+          "url": "",
+          "hits": 314
+        },
+        {
+          "name": "_e",
+          "url": "http://localhost:4423/@fs/Users/riccardoperra/.t3/worktrees/codeimage/t3-40dad6c6-84c18bc3a70f9fa4/packages/dom-export/dist/dom-export.js",
+          "hits": 216
+        },
+        {
+          "name": "O",
+          "url": "http://localhost:4423/@fs/Users/riccardoperra/.t3/worktrees/codeimage/t3-40dad6c6-84c18bc3a70f9fa4/packages/dom-export/dist/dom-export.js",
+          "hits": 177
+        },
+        {
+          "name": "getAttribute",
+          "url": "",
+          "hits": 177
+        },
+        {
+          "name": "(garbage collector)",
+          "url": "",
+          "hits": 172
+        }
+      ]
+    },
+    {
+      "engine": "takumi",
+      "hot": [
+        {
+          "name": "wasm-function[1373]",
+          "url": "http://localhost:4423/@fs/Users/riccardoperra/.t3/worktrees/codeimage/t3-40dad6c6-84c18bc3a70f9fa4/node_modules/.pnpm/@takumi-rs+wasm@2.19.0_csstype@3.2.3_react@19.2.4/node_modules/@takumi-rs/wasm/pkg/takumi_wasm_bg.wasm",
+          "hits": 49
+        },
+        {
+          "name": "wasm-function[880]",
+          "url": "http://localhost:4423/@fs/Users/riccardoperra/.t3/worktrees/codeimage/t3-40dad6c6-84c18bc3a70f9fa4/node_modules/.pnpm/@takumi-rs+wasm@2.19.0_csstype@3.2.3_react@19.2.4/node_modules/@takumi-rs/wasm/pkg/takumi_wasm_bg.wasm",
+          "hits": 33
+        },
+        {
+          "name": "wasm-function[356]",
+          "url": "http://localhost:4423/@fs/Users/riccardoperra/.t3/worktrees/codeimage/t3-40dad6c6-84c18bc3a70f9fa4/node_modules/.pnpm/@takumi-rs+wasm@2.19.0_csstype@3.2.3_react@19.2.4/node_modules/@takumi-rs/wasm/pkg/takumi_wasm_bg.wasm",
+          "hits": 31
+        },
+        {
+          "name": "wasm-function[206]",
+          "url": "http://localhost:4423/@fs/Users/riccardoperra/.t3/worktrees/codeimage/t3-40dad6c6-84c18bc3a70f9fa4/node_modules/.pnpm/@takumi-rs+wasm@2.19.0_csstype@3.2.3_react@19.2.4/node_modules/@takumi-rs/wasm/pkg/takumi_wasm_bg.wasm",
+          "hits": 28
+        },
+        {
+          "name": "wasm-function[1373]",
+          "url": "http://localhost:4423/@fs/Users/riccardoperra/.t3/worktrees/codeimage/t3-40dad6c6-84c18bc3a70f9fa4/node_modules/.pnpm/@takumi-rs+wasm@2.19.0_csstype@3.2.3_react@19.2.4/node_modules/@takumi-rs/wasm/pkg/takumi_wasm_bg.wasm",
+          "hits": 23
+        },
+        {
+          "name": "wasm-function[603]",
+          "url": "http://localhost:4423/@fs/Users/riccardoperra/.t3/worktrees/codeimage/t3-40dad6c6-84c18bc3a70f9fa4/node_modules/.pnpm/@takumi-rs+wasm@2.19.0_csstype@3.2.3_react@19.2.4/node_modules/@takumi-rs/wasm/pkg/takumi_wasm_bg.wasm",
+          "hits": 22
+        },
+        {
+          "name": "wasm-function[650]",
+          "url": "http://localhost:4423/@fs/Users/riccardoperra/.t3/worktrees/codeimage/t3-40dad6c6-84c18bc3a70f9fa4/node_modules/.pnpm/@takumi-rs+wasm@2.19.0_csstype@3.2.3_react@19.2.4/node_modules/@takumi-rs/wasm/pkg/takumi_wasm_bg.wasm",
+          "hits": 20
+        },
+        {
+          "name": "(garbage collector)",
+          "url": "",
+          "hits": 17
+        }
+      ]
+    }
+  ],
+  "machine": {
+    "at": "2026-11-14T12:08:36.479Z",
+    "cpu": "Apple M3",
+    "logicalCores": 8,
+    "loadAverageStart": "13:05  up 2 days, 12:43, 1 user, load averages: 8.68 12.27 15.40",
+    "loadAverageEnd": "13:08  up 2 days, 12:46, 1 user, load averages: 25.08 18.50 17.37",
+    "platform": "darwin",
+    "architecture": "arm64",
+    "app": "Vite development server",
+    "browser": "Chromium 1200 with --force-device-scale-factor=2, Playwright 1.57.0",
+    "wasm": "@takumi-rs/wasm 2.19.0",
+    "pixelRatio": 2,
+    "codeLines": 300
+  }
+}

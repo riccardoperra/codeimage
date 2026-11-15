@@ -1,4 +1,7 @@
 import {useI18n} from '@codeimage/locale';
+import {EditorConfigStore} from '@codeimage/store/editor/config.store';
+import {provideState} from 'statebuilder';
+import {ExperimentalChip} from '@ui/ExperimentalChip/ExperimentalChip';
 import {getUiStore} from '@codeimage/store/ui';
 import {
   Box,
@@ -33,6 +36,7 @@ type SettingsDialogProps = ControlledDialogProps;
 export function SettingsDialog(props: SettingsDialogProps) {
   const [page] = createSignal<'general' | 'account'>('general');
   const ui = getUiStore();
+  const config = provideState(EditorConfigStore);
   const {locales} = appEnvironment;
   const modality = useModality();
 
@@ -135,6 +139,61 @@ export function SettingsDialog(props: SettingsDialogProps) {
                         </Box>
                       </RadioBlock>
                     </Group>
+                  </FlexField>
+                  <FlexField>
+                    <HStack spacing={'2'} alignItems={'center'}>
+                      <FieldLabel size={'sm'} for={'rendering-engine'}>
+                        {t('rendering.engine')}
+                      </FieldLabel>
+                      <ExperimentalChip />
+                    </HStack>
+                    <HStack spacing={'3'} alignItems={'center'}>
+                      <button
+                        id={'rendering-engine'}
+                        type={'button'}
+                        role={'switch'}
+                        aria-label={t('rendering.useTakumi')}
+                        aria-checked={config.get.renderer === 'takumi'}
+                        onClick={() =>
+                          config.setRenderer(
+                            config.get.renderer === 'takumi'
+                              ? 'dom-export'
+                              : 'takumi',
+                          )
+                        }
+                        style={{
+                          position: 'relative',
+                          width: '55px',
+                          height: '25px',
+                          border: 'none',
+                          'border-radius': '999px',
+                          cursor: 'pointer',
+                          'background-color':
+                            config.get.renderer === 'takumi'
+                              ? themeVars.backgroundColor.indigo['500']
+                              : themeVars.backgroundColor.indigo['300'],
+                        }}
+                      >
+                        <span
+                          aria-hidden={'true'}
+                          style={{
+                            position: 'absolute',
+                            left: '5px',
+                            top: '5px',
+                            width: '15px',
+                            height: '15px',
+                            'border-radius': '50%',
+                            background: 'white',
+                            transition: 'transform .2s',
+                            transform:
+                              config.get.renderer === 'takumi'
+                                ? 'translateX(27.5px)'
+                                : 'none',
+                          }}
+                        />
+                      </button>
+                      <Text>{t('rendering.takumi')}</Text>
+                    </HStack>
                   </FlexField>
                   <FlexField size={'lg'}>
                     <RadioList

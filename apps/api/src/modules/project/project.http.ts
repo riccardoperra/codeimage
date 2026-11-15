@@ -32,6 +32,7 @@ export function toProjectResponse(view: ProjectView): ProjectGetByIdResponse {
       alternativeTheme: view.terminal.alternativeTheme,
       shadow: view.terminal.shadow,
       borderType: view.terminal.borderType,
+      surface: view.terminal.surface,
     },
     editorOptions: {
       id: view.editorOptions.id,

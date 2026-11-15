@@ -9,6 +9,7 @@ export const holiTheme = createTheme({
     label: 'Holi Dark',
     previewBackground: '#122f6d',
     terminal: {
+      accent: '#0fe468',
       main: '#030314',
       text: '#FFF',
     },
