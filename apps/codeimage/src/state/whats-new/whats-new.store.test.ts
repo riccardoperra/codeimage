@@ -47,9 +47,9 @@ describe('release discovery across visits', () => {
     await settle();
     expect(app.announcement()).toBeNull();
     app.setQuiet(true);
-    expect(app.announcement()?.surface).toBe('nudge');
+    expect(app.announcement()?.surface).toBe('showcase');
     app.setQuiet(false);
-    expect(app.announcement()?.surface).toBe('nudge');
+    expect(app.announcement()?.surface).toBe('showcase');
     app.store.dismiss();
     await settle();
     const next = createRoot(dispose => {
@@ -98,6 +98,15 @@ describe('release discovery across visits', () => {
     const a = boot(db);
     const b = boot(db);
     await settle();
+    for (const id of [
+      'tabs',
+      'social',
+      'signature',
+      'marks',
+      'alt',
+      'window-styles',
+    ] as const)
+      a.store.seen(id);
     a.store.seen('command-menu');
     b.store.seen('layouts');
     const reloaded = boot(db);
@@ -195,7 +204,7 @@ describe('release discovery across visits', () => {
       return {store, announcement: store.announce(() => () => true), dispose};
     });
     await settle();
-    expect(app.announcement()?.surface).toBe('nudge');
+    expect(app.announcement()?.surface).toBe('showcase');
     expect(() => app.store.seen('command-menu')).not.toThrow();
     expect(app.store.dotAt('command-menu')).toBeUndefined();
     expect(() => app.store.dismiss()).not.toThrow();
@@ -217,7 +226,9 @@ describe('release discovery across visits', () => {
     expect(app.store.canShowMe('command-menu')).toBe(true);
     app.store.showMe('command-menu', 'nudge');
     expect(revealed).toBe(true);
-    expect(app.store.dotAt('command-menu')).toBe('command-menu');
+    await settle();
+    expect(app.store.revealedAt('command-menu')).toBe('command-menu');
+    expect(app.store.isNew('command-menu')).toBe(true);
     app.store.seen('command-menu');
     expect(app.store.dotAt('command-menu')).toBeUndefined();
     unbind();
@@ -284,5 +295,65 @@ it('hands a place to the owner that replaces another in the same update', async 
   expect(header).not.toHaveBeenCalled();
   dispose();
   expect(app.store.canShowMe('tabs')).toBe(false);
+  app.dispose();
+});
+
+it('waits for control panels to reveal, opens a temporary coachmark and preserves seen facts', async () => {
+  const app = boot(database());
+  await settle();
+  let finish!: () => void;
+  const reveal = vi.fn(
+    () =>
+      new Promise<void>(resolve => {
+        finish = resolve;
+      }),
+  );
+  const unbind = createRoot(dispose => {
+    app.store.bindLocation('control', reveal);
+    return dispose;
+  });
+  expect(app.store.canShowMe('window-styles')).toBe(true);
+  app.store.showMe('window-styles', 'showcase');
+  expect(reveal).toHaveBeenCalledWith('window.style');
+  expect(app.store.revealedAt('control:window.style')).toBeUndefined();
+  finish();
+  await settle();
+  expect(app.store.revealedAt('control:window.style')).toBe('window-styles');
+  expect(app.store.isNew('window-styles')).toBe(true);
+  expect(app.store.dotAt('control:signature.saved')).toBe('signature');
+  expect(app.store.dotAt('control:window.style')).toBeUndefined();
+  app.store.endReveal('window-styles');
+  expect(app.store.dotAt('control:signature.saved')).toBe('signature');
+  unbind();
+  expect(app.store.canShowMe('window-styles')).toBe(false);
+  app.dispose();
+});
+
+it('binds editor places and lets the most recent Show me request win', async () => {
+  const app = boot(database());
+  await settle();
+  let finish!: () => void;
+  const unbind = createRoot(dispose => {
+    app.store.bindLocation(
+      'control',
+      () =>
+        new Promise<void>(resolve => {
+          finish = resolve;
+        }),
+    );
+    app.store.bindLocation('editor', vi.fn());
+    return dispose;
+  });
+  app.store.showMe('social', 'library');
+  app.store.showMe('marks', 'library');
+  await settle();
+  finish();
+  await settle();
+  expect(app.store.revealedAt('editor:line-marks')).toBe('marks');
+  expect(app.store.revealedAt('control:frame.aspectRatio')).toBeUndefined();
+  app.store.seen('marks');
+  expect(app.store.revealedAt('editor:line-marks')).toBeUndefined();
+  expect(app.store.isNew('marks')).toBe(false);
+  unbind();
   app.dispose();
 });

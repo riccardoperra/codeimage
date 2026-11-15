@@ -167,6 +167,7 @@ export default function CanvasEditor(props: CanvasEditorProps) {
         ),
         importDiff.of({before, after}),
       ],
+      userEvent: 'input.diff-import',
       annotations: isolateHistory.of('full'),
     });
     toast.dismiss(toastId);

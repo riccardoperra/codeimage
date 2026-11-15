@@ -182,7 +182,10 @@ export function createExporter(
     if (!activeEditor || !navigator.clipboard?.writeText) return;
     const text = altText(activeEditor);
     navigator.clipboard.writeText(text).then(
-      () => toast.success(() => t('altText.copied')),
+      () => {
+        getWhatsNew().seen('alt');
+        toast.success(() => t('altText.copied'));
+      },
       () => toast.error(() => t('altText.copyError')),
     );
   };

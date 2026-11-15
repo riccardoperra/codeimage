@@ -39,6 +39,9 @@ export interface WhatsNew {
   /** True while the component that owns the highlight's place is mounted. */
   canShowMe(id: LocatedHighlightId): boolean;
   showMe(id: LocatedHighlightId, from: Surface): void;
+  /** An explicit reveal may open a coachmark on an invisible anchor, without changing dot priority. */
+  revealedAt(at: Where): LocatedHighlightId | undefined;
+  endReveal(id: LocatedHighlightId): void;
   /**
    * Binds once the caller is mounted and unbinds when it is disposed. A
    * placement or route that replaces another is created before the old one
@@ -46,7 +49,7 @@ export interface WhatsNew {
    */
   bindLocation(
     place: Place | Where,
-    reveal: (item: string | undefined) => void,
+    reveal: (item: string | undefined) => void | Promise<void>,
   ): void;
 }
 
@@ -69,12 +72,17 @@ export function createWhatsNew(
   storage: Storage = idb,
   clock = Date.now,
 ): WhatsNew {
+  const [revealed, setRevealed] = createSignal<LocatedHighlightId>();
+  let revealRequest = 0;
   const [now, setNow] = createSignal(clock());
   const [facts, setFacts] = createSignal<Facts>(NO_FACTS);
   const [loaded, setLoaded] = createSignal(false);
   const [announcement, setAnnouncement] = createSignal<Announcement>(null);
   const [locations, setLocations] = createSignal<
-    ReadonlyMap<Place | Where, (item: string | undefined) => void>
+    ReadonlyMap<
+      Place | Where,
+      (item: string | undefined) => void | Promise<void>
+    >
   >(new Map());
   const decision = createMemo(() =>
     decide(loaded() ? RELEASES : [], facts(), now()),
@@ -161,6 +169,14 @@ export function createWhatsNew(
         release: current.release.id,
       });
     },
+    revealedAt: at => {
+      const id = revealed();
+      const where = id && whereOf(id);
+      return where && holds(at, where) ? id : undefined;
+    },
+    endReveal: id => {
+      if (revealed() === id) setRevealed(undefined);
+    },
     dotAt: at =>
       RELEASES.flatMap(release => release.highlights)
         .filter(highlight => highlight.where !== null)
@@ -172,13 +188,19 @@ export function createWhatsNew(
     isNew: id => decision().fresh.has(id),
     opened: (id, surface) => track('opened', {surface, highlight: id}),
     seen(id) {
+      if (revealed() === id) setRevealed(undefined);
       record({seen: new Set([id]), dismissed: new Set()});
     },
     canShowMe: id => bound(id) !== undefined,
     showMe(id, surface) {
       track('show-me', {surface, highlight: id});
       const location = bound(id);
-      location?.reveal(location.item);
+      if (!location) return;
+      const request = ++revealRequest;
+      setRevealed(undefined);
+      Promise.resolve(location.reveal(location.item)).then(() => {
+        if (request === revealRequest) setRevealed(id);
+      });
     },
     bindLocation(where, reveal) {
       onMount(() => {

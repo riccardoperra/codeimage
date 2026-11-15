@@ -24,8 +24,8 @@ const en = {
   intro: 'Features added to CodeImage, newest first.',
   older: 'Older releases on GitHub',
   releases: {
-    '2026-11': {
-      title: 'CodeImage 2026',
+    '2.0': {
+      title: 'CodeImage 2.0',
     },
   } satisfies Record<ReleaseId, {title: string}>,
   highlights: {
@@ -36,6 +36,26 @@ const en = {
     tabs: {
       title: 'One image per tab',
       body: 'Export each tab as its own image, together in one zip. It needs two tabs or more.',
+    },
+    social: {
+      title: 'Social sizes',
+      body: 'Choose an exact export size for a social post. The whole code window fits inside the frame.',
+    },
+    signature: {
+      title: 'Signatures',
+      body: 'Add your handle in Minimal, Pill or Card style. Save up to three signatures and choose a default.',
+    },
+    marks: {
+      title: 'Line marks',
+      body: 'Mark lines as added, removed, highlighted or focused. Pasted diffs bring their marks with them.',
+    },
+    alt: {
+      title: 'Copy alt text',
+      body: 'Copy the snippet’s language, tab name, line range and code to paste alongside your image.',
+    },
+    'window-styles': {
+      title: 'Window styles',
+      body: 'Choose Card, Editor or Terminal, with Accent wash surfaces, Hairline borders and Ambient frame colours.',
     },
     'command-menu': {
       title: 'Command menu',
@@ -68,8 +88,8 @@ const it = {
   intro: 'Le funzioni aggiunte a CodeImage, dalle più recenti.',
   older: 'Versioni precedenti su GitHub',
   releases: {
-    '2026-11': {
-      title: 'CodeImage 2026',
+    '2.0': {
+      title: 'CodeImage 2.0',
     },
   },
   highlights: {
@@ -80,6 +100,26 @@ const it = {
     tabs: {
       title: "Un'immagine per scheda",
       body: "Esporta ogni scheda come un'immagine separata, tutte in uno zip. Servono almeno due schede.",
+    },
+    social: {
+      title: 'Formati social',
+      body: 'Scegli le dimensioni esatte per un post sui social. L’intera finestra del codice si adatta alla cornice.',
+    },
+    signature: {
+      title: 'Firme',
+      body: 'Aggiungi il tuo handle con lo stile Minimal, Pill o Card. Salva fino a tre firme e scegli quella predefinita.',
+    },
+    marks: {
+      title: 'Segni sulle righe',
+      body: 'Segna le righe come aggiunte, rimosse, evidenziate o in primo piano. I diff incollati mantengono i loro segni.',
+    },
+    alt: {
+      title: 'Copia il testo alternativo',
+      body: 'Copia il linguaggio, il nome della scheda, l’intervallo di righe e il codice da accompagnare all’immagine.',
+    },
+    'window-styles': {
+      title: 'Stili della finestra',
+      body: 'Scegli Card, Editor o Terminal, con superfici Accent wash, bordi Hairline e colori Ambient per la cornice.',
     },
     'command-menu': {
       title: 'Menu dei comandi',
@@ -112,8 +152,8 @@ const de = {
   intro: 'Neue Funktionen in CodeImage, die neuesten zuerst.',
   older: 'Ältere Versionen auf GitHub',
   releases: {
-    '2026-11': {
-      title: 'CodeImage 2026',
+    '2.0': {
+      title: 'CodeImage 2.0',
     },
   },
   highlights: {
@@ -124,6 +164,26 @@ const de = {
     tabs: {
       title: 'Ein Bild pro Tab',
       body: 'Exportiere jeden Tab als eigenes Bild, zusammen in einer ZIP-Datei. Dafür brauchst du mindestens zwei Tabs.',
+    },
+    social: {
+      title: 'Formate für soziale Medien',
+      body: 'Wähle eine genaue Exportgröße für einen Beitrag. Das ganze Codefenster passt in den Rahmen.',
+    },
+    signature: {
+      title: 'Signaturen',
+      body: 'Füge deinen Handle im Stil Minimal, Pill oder Card hinzu. Speichere bis zu drei Signaturen und wähle einen Standard.',
+    },
+    marks: {
+      title: 'Zeilenmarkierungen',
+      body: 'Markiere Zeilen als hinzugefügt, entfernt, hervorgehoben oder fokussiert. Eingefügte Diffs übernehmen ihre Markierungen.',
+    },
+    alt: {
+      title: 'Alternativtext kopieren',
+      body: 'Kopiere Sprache, Tab-Namen, Zeilenbereich und Code des Snippets als Text zu deinem Bild.',
+    },
+    'window-styles': {
+      title: 'Fensterstile',
+      body: 'Wähle Card, Editor oder Terminal mit Accent-wash-Oberflächen, Hairline-Rändern und Ambient-Rahmenfarben.',
     },
     'command-menu': {
       title: 'Befehlsmenü',
@@ -156,8 +216,8 @@ const es = {
   intro: 'Las funciones añadidas a CodeImage, de más recientes a más antiguas.',
   older: 'Versiones anteriores en GitHub',
   releases: {
-    '2026-11': {
-      title: 'CodeImage 2026',
+    '2.0': {
+      title: 'CodeImage 2.0',
     },
   },
   highlights: {
@@ -168,6 +228,26 @@ const es = {
     tabs: {
       title: 'Una imagen por pestaña',
       body: 'Exporta cada pestaña como una imagen separada, todas en un archivo zip. Se necesitan al menos dos pestañas.',
+    },
+    social: {
+      title: 'Formatos para redes sociales',
+      body: 'Elige un tamaño de exportación exacto para una publicación. Toda la ventana de código cabe en el marco.',
+    },
+    signature: {
+      title: 'Firmas',
+      body: 'Añade tu nombre de usuario con el estilo Minimal, Pill o Card. Guarda hasta tres firmas y elige una predeterminada.',
+    },
+    marks: {
+      title: 'Marcas de línea',
+      body: 'Marca líneas como añadidas, eliminadas, resaltadas o enfocadas. Los diffs pegados conservan sus marcas.',
+    },
+    alt: {
+      title: 'Copiar texto alternativo',
+      body: 'Copia el lenguaje, el nombre de la pestaña, el intervalo de líneas y el código para acompañar tu imagen.',
+    },
+    'window-styles': {
+      title: 'Estilos de ventana',
+      body: 'Elige Card, Editor o Terminal, con superficies Accent wash, bordes Hairline y colores Ambient para el marco.',
     },
     'command-menu': {
       title: 'Menú de comandos',

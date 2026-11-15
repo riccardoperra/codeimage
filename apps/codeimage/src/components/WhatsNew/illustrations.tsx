@@ -412,10 +412,317 @@ function ThemeIllustration(props: IllustrationProps) {
   );
 }
 
+function SocialIllustration(props: IllustrationProps) {
+  return (
+    <Frame mode={props.mode}>
+      <svg viewBox="0 0 250 100">
+        <g class={styles.themeStyle[0]}>
+          <rect
+            class={styles.wireCanvas}
+            x="10"
+            y="14"
+            width="72"
+            height="72"
+            rx="8"
+          />
+          <rect
+            class={styles.wireFrame}
+            x="21"
+            y="32"
+            width="50"
+            height="36"
+            rx="4"
+          />
+          <path
+            d="M30 44h30m-30 12h20"
+            stroke="currentColor"
+            stroke-width="3"
+          />
+        </g>
+        <g class={styles.themeStyle[1]}>
+          <rect
+            class={styles.wireCanvas}
+            x="96"
+            y="4"
+            width="50"
+            height="92"
+            rx="8"
+          />
+          <rect
+            class={styles.wireFrame}
+            x="102"
+            y="30"
+            width="38"
+            height="40"
+            rx="4"
+          />
+          <path
+            d="M108 44h26m-26 12h18"
+            stroke="currentColor"
+            stroke-width="3"
+          />
+        </g>
+        <g class={styles.themeStyle[2]}>
+          <rect
+            class={styles.wireCanvas}
+            x="160"
+            y="26"
+            width="80"
+            height="48"
+            rx="8"
+          />
+          <rect
+            class={styles.wireFrame}
+            x="172"
+            y="34"
+            width="56"
+            height="32"
+            rx="4"
+          />
+          <path
+            d="M180 44h32m-32 12h20"
+            stroke="currentColor"
+            stroke-width="3"
+          />
+        </g>
+      </svg>
+    </Frame>
+  );
+}
+
+function SignatureIllustration(props: IllustrationProps) {
+  return (
+    <Frame mode={props.mode}>
+      <svg viewBox="0 0 250 100">
+        <rect
+          class={styles.wireCanvas}
+          x="12"
+          y="5"
+          width="226"
+          height="90"
+          rx="8"
+        />
+        <path class={styles.wireFrame} d="M28 20h112v4H28zm0 12h76v4H28z" />
+        <g class={styles.themeStyle[0]}>
+          <text x="27" y="73" fill="currentColor" font-size="12">
+            @you
+          </text>
+        </g>
+        <g class={styles.themeStyle[1]}>
+          <rect
+            class={styles.wireFrame}
+            x="79"
+            y="53"
+            width="62"
+            height="28"
+            rx="14"
+          />
+          <text x="89" y="72" fill="currentColor" font-size="12">
+            @you
+          </text>
+        </g>
+        <g class={styles.themeStyle[2]}>
+          <rect
+            class={styles.wireFrame}
+            x="152"
+            y="48"
+            width="72"
+            height="38"
+            rx="6"
+          />
+          <circle fill="currentColor" cx="165" cy="67" r="7" />
+          <path
+            d="M178 61h34m-34 10h24"
+            stroke="currentColor"
+            stroke-width="3"
+          />
+        </g>
+      </svg>
+    </Frame>
+  );
+}
+
+function MarksIllustration(props: IllustrationProps) {
+  return (
+    <Frame mode={props.mode}>
+      <svg viewBox="0 0 250 100">
+        <rect
+          class={styles.wireCanvas}
+          x="30"
+          y="4"
+          width="190"
+          height="92"
+          rx="8"
+        />
+        <g class={styles.themeStyle[0]}>
+          <rect
+            fill="#45b883"
+            opacity=".2"
+            x="38"
+            y="16"
+            width="174"
+            height="18"
+            rx="3"
+          />
+          <path
+            d="M48 25h10m-5-5v10m16-5h95"
+            stroke="#45b883"
+            stroke-width="3"
+          />
+        </g>
+        <g class={styles.themeStyle[1]}>
+          <rect
+            fill="#f07178"
+            opacity=".2"
+            x="38"
+            y="40"
+            width="174"
+            height="18"
+            rx="3"
+          />
+          <path d="M48 49h10m11 0h65" stroke="#f07178" stroke-width="3" />
+        </g>
+        <g class={styles.themeStyle[2]}>
+          <rect
+            class={styles.wireFrame}
+            x="38"
+            y="64"
+            width="174"
+            height="18"
+            rx="3"
+          />
+          <path d="M48 69v8m21-4h110" stroke="currentColor" stroke-width="3" />
+        </g>
+      </svg>
+    </Frame>
+  );
+}
+
+function AltIllustration(props: IllustrationProps) {
+  return (
+    <Frame mode={props.mode}>
+      <svg viewBox="0 0 250 100">
+        <rect
+          class={styles.wireCanvas}
+          x="15"
+          y="18"
+          width="90"
+          height="64"
+          rx="8"
+        />
+        <path
+          d="M28 36h54m-54 12h34m-34 12h45"
+          stroke="currentColor"
+          stroke-width="3"
+        />
+        <path
+          d="M115 50h22m-7-7 7 7-7 7"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="3"
+        />
+        <g class={styles.themeStyle[1]}>
+          <rect
+            class={styles.wireCanvas}
+            x="151"
+            y="10"
+            width="84"
+            height="80"
+            rx="8"
+          />
+          <rect
+            class={styles.wireFrame}
+            x="173"
+            y="5"
+            width="40"
+            height="14"
+            rx="5"
+          />
+          <path
+            d="M164 34h56m-56 12h44m-44 12h56m-56 12h30"
+            stroke="currentColor"
+            stroke-width="3"
+          />
+        </g>
+      </svg>
+    </Frame>
+  );
+}
+
+function WindowStylesIllustration(props: IllustrationProps) {
+  return (
+    <Frame mode={props.mode}>
+      <svg viewBox="0 0 250 100">
+        <g class={styles.themeStyle[0]}>
+          <rect
+            class={styles.wireCanvas}
+            x="6"
+            y="19"
+            width="72"
+            height="62"
+            rx="10"
+          />
+          <circle fill="currentColor" cx="19" cy="31" r="3" />
+          <circle fill="currentColor" cx="29" cy="31" r="3" />
+          <path
+            d="M18 49h44m-44 12h28"
+            stroke="currentColor"
+            stroke-width="3"
+          />
+        </g>
+        <g class={styles.themeStyle[1]}>
+          <rect
+            class={styles.wireCanvas}
+            x="89"
+            y="19"
+            width="72"
+            height="62"
+            rx="4"
+          />
+          <rect
+            class={styles.wireFrame}
+            x="89"
+            y="19"
+            width="72"
+            height="18"
+            rx="4"
+          />
+          <path
+            d="M99 49h44m-44 12h28"
+            stroke="currentColor"
+            stroke-width="3"
+          />
+        </g>
+        <g class={styles.themeStyle[2]}>
+          <rect
+            class={styles.wireCanvas}
+            x="172"
+            y="19"
+            width="72"
+            height="62"
+            rx="4"
+          />
+          <path
+            d="m183 37 8 6-8 6m14 0h14m-28 14h42"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="3"
+          />
+        </g>
+      </svg>
+    </Frame>
+  );
+}
+
 export const illustrations: Record<
   HighlightId,
   Component<IllustrationProps>
 > = {
+  social: SocialIllustration,
+  signature: SignatureIllustration,
+  marks: MarksIllustration,
+  alt: AltIllustration,
+  'window-styles': WindowStylesIllustration,
   redact: RedactIllustration,
   tabs: TabsIllustration,
   'command-menu': CommandIllustration,

@@ -1,3 +1,4 @@
+import {getWhatsNew} from '../../../state/whats-new';
 import {useI18n} from '@codeimage/locale';
 import {getAssetsStore, isAssetUrl} from '@codeimage/store/assets/assets';
 import {getFrameState} from '@codeimage/store/editor/frame';
@@ -53,6 +54,7 @@ export function SignatureHandleField(props: {id?: string}) {
       frame.setSignature(null);
       return;
     }
+    getWhatsNew().seen('signature');
     const base = current ?? remembered() ?? createSignature(handle);
     frame.setSignature({
       ...base,

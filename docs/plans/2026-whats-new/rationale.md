@@ -37,7 +37,7 @@ onChange={value => { preferences.setLayout(value); whatsNew.seen('layouts'); }}
 - **Seen means located.** Only opening the coachmark or using the feature marks a highlight seen. Nudge steps, archive rows and "Show me" do not, so the dot is still on the control when the user arrives.
 - **The registry lists only features that are in the bundle.** Highlights for features that land later are added together in one final PR for the release, not by each feature PR.
 
-Other folders import only `state/whats-new/index.ts`. The public interface is the registry plus nine store members. Callers never see a fact, a storage key or an event name.
+Other folders import only `state/whats-new/index.ts`. The public interface is the registry and the store methods. Callers never see a fact, a storage key or an event name.
 
 ## Synthesis decision
 
@@ -63,17 +63,19 @@ Two candidates, one on Opus and one on Fable. No cross-judge ran, because no mod
 
 ## Implementation
 
-The first release is `2026-11`, dated `2026-11-14`. Change its date on shipping day. It announces Hide secrets, One image per tab, Command menu, Editor layouts, and Theme card styles, in that order. Layouts and theme card styles are experiments. Four located highlights compete for three dots, so a first visit holds dots for One image per tab, Command menu, and Editor layouts, and the Theme card styles dot waits until one of those is seen. A bundle never announces a feature that it does not contain.
+The first release is `2.0`, titled "CodeImage 2.0", dated `2026-11-14`, with `major: true`. Set the date to the real release day before publishing. It announces Hide secrets, One image per tab, Social sizes, Signatures, Line marks, Copy alt text, Window styles, Command menu, Editor layouts, and Theme card styles, in that order. Layouts and theme card styles remain experiments. The major changeset is `.changeset/codeimage-2-0.md`. The id can change because this registry has not shipped in app 1.10.0.
 
-`WhatsNewHost` mounts once in the unified editor and once in the classic editor. While a release waits to be shown, and only then, it lets the editor settle for a moment and then watches the DOM for visible dialogs, menus, and expanded popup triggers, at most once a frame. The watcher stops as soon as the announcement shows, so a visit with nothing pending observes nothing. Inline listboxes, including the theme picker, do not block announcements. The announcement then remains latched until dismissal. A major release uses the scrollable Showcase sheet. This release uses the Nudge. Dismiss and Done move focus to the visible control before the card in tab order, before the card becomes inert or unmounts, only if focus is inside the card. Coachmarks use the same rule. It skips text fields, because focus in one, the code editor included, opens a phone's keyboard over the editor for a user who only closed a card. Escape inside the expanded Nudge dismisses it instantly with the same persisted fact; Escape elsewhere leaves it alone. Its native key listener stops the key before document-level shortcuts.
+The first three eligible dots are tabs, social, and signature. A Show me request can use an invisible anchor for a later highlight, so its coachmark remains reachable without changing the three dots or their registry order. Show me opens a coachmark without recording seen. Clicking a dot or acknowledging its coachmark records seen, as does real use. Export reveals its menu and keeps the dot on its arrow because the menu owns focus. Its dot opens a coachmark after the menu closes.
 
-Only opening a coachmark or using a feature records a seen fact. Running a command counts as command-menu use. Choosing a layout or theme card style counts as use of that experiment. Exporting one image per tab counts as its use in the unified editor, and turning its checkbox on counts in the classic editor. Redact secrets in the Export menu, Redact all in the classic export dialog, or Redact on an editor warning, counts as Hide secrets use. Hide secrets has no dot or Show me because its warning appears when needed, and a conditional anchor would waste one of the three dot slots. Opening the menu through Show me does not consume the One image per tab dot. The Settings archive renders rows from the same registry, with New tags from `isNew()`. Its Show me buttons reveal a location without changing facts.
+`WhatsNewHost` mounts once in the unified editor and once in the classic editor. While a release waits to be shown, and only then, it lets the editor settle for a moment and then watches the DOM for visible dialogs, menus, and expanded popup triggers, at most once a frame. The watcher stops as soon as the announcement shows, so a visit with nothing pending observes nothing. Inline listboxes, including the theme picker, do not block announcements. The announcement then remains latched until dismissal. A major release uses the scrollable Showcase sheet. This release uses the Showcase. Dismiss and Done move focus to the visible control before the card in tab order, before the card becomes inert or unmounts, only if focus is inside the card. Coachmarks use the same rule. It skips text fields, because focus in one, the code editor included, opens a phone's keyboard over the editor for a user who only closed a card. Escape inside the expanded Nudge dismisses it instantly with the same persisted fact; Escape elsewhere leaves it alone. Its native key listener stops the key before document-level shortcuts.
+
+Only deliberately opening or acknowledging a coachmark, or using a feature, records a seen fact. Running a command counts as command-menu use. Choosing a layout or theme card style counts as use of that experiment. Exporting one image per tab counts as its use in the unified editor, and turning its checkbox on counts in the classic editor. Redact secrets in the Export menu, Redact all in the classic export dialog, or Redact on an editor warning, counts as Hide secrets use. Hide secrets has no dot or Show me because its warning appears when needed, and a conditional anchor would waste one of the three dot slots. Opening the menu through Show me does not consume the One image per tab dot. The Settings archive renders rows from the same registry, with New tags from `isNew()`. Its Show me buttons reveal a location without changing facts.
 
 Coachmarks inside a modal mount their portal inside that dialog. A body portal would be hidden from assistive technology by the modal. Dots remain mounted as invisible anchors until their coachmark closes, so opening one can record the seen fact without destroying the popover. The selected highlight stays pinned through the close animation when another highlight shares its place. The next then takes over the same trigger. When no highlight remains, focus moves to the control before the dot on close. Tab moves to the next control and Shift+Tab to the previous one.
 
 In the unified editor, Export is one control: a button that exports at once and an arrow whose menu offers one image per tab and, while the code holds a possible secret, Redact secrets. The One image per tab dot sits on the arrow. It stays outside the menu because an open menu keeps Tab for itself and the dot could not be reached from the keyboard. Show me opens the menu. The stage owns one reactive phone breakpoint shared by the header and all layouts. Export moves between their complementary placements on resize. Solid creates the new placement before it disposes the old one, so a place is bound when its owner mounts, after that disposal. In the classic editor, the One image per tab dot sits beside its checkbox.
 
-The classic editor has the Nudge and Showcase, with no Settings archive. The Export control binds `export` in the unified editor and the production `ExportButton` binds it in the classic editor, so classic shows Show me and dots for One image per tab only. `holds(at, where)` resolves both dots and reveals. `dotAt(place)` replaces per-highlight dot queries and chooses the first eligible highlight at that place. `bindLocation` binds a kind or a precise place and passes its item to the most specific reveal owner. `CommandMenu` owns its binding and Settings owns `setting`, clearing search before opening the section that contains the row. No `control` reveal is bound here; `canShowMe` is false without a reveal. Layouts use `CommandMenuButton` and carry no What's new imports, enforced by lint. `ControlRow` uses the generic `PanelRow.labelAccessory` sibling slot so the dot is outside the label. A second location owner is rejected in development. A binding ends when its Solid owner is disposed. Its Footer and Toolbar link directly to GitHub releases. The former version gate, Changelog, MDX notes and renderer, and the old FeatureBadge are removed together. The unrelated compatibility banner remains.
+The classic editor has the Nudge and Showcase, with no Settings archive. The Export control binds `export` in the unified editor and the production `ExportButton` binds it in the classic editor, so classic shows Show me and dots for One image per tab and Copy alt text. `holds(at, where)` resolves both dots and reveals. `dotAt(place)` replaces per-highlight dot queries and chooses the first eligible highlight at that place. `bindLocation` binds a kind or a precise place and passes its item to the most specific reveal owner. `CommandMenu` owns its binding and Settings owns `setting`, clearing search before opening the section that contains the row. The harness binds `control` through the model's generic control revealer. Each layout registers how to open its panel. The shared revealer waits for a visible row to settle, scrolls it into view, and then the store requests its coachmark. Layouts know no highlight ids or What's new modules. Layouts use `CommandMenuButton` and carry no What's new imports, enforced by lint. `ControlRow` uses the generic `PanelRow.labelAccessory` sibling slot so the dot is outside the label. A second location owner is rejected in development. A binding ends when its Solid owner is disposed. Its Footer and Toolbar link directly to GitHub releases. The former version gate, Changelog, MDX notes and renderer, and the old FeatureBadge are removed together. The unrelated compatibility banner remains.
 
 The development-only query `?whatsNew=nudge` or `?whatsNew=showcase` forces a review view. `await window.resetWhatsNew()` clears the persisted record. Reload after resetting. Production builds remove these aids.
 
@@ -83,35 +85,36 @@ The development-only query `?whatsNew=nudge` or `?whatsNew=showcase` forces a re
 - Facts remain per device. Tabs merge facts on focus, with transactional union writes to one IndexedDB key.
 - IndexedDB writes are asynchronous. Browser checks wait for the dismissal write before reloading.
 - Floating announcements cover editor controls beneath them. They can be dismissed without changing the layout.
-- The Showcase is built and available for review, but this release is not major.
+- The Showcase scrolls the full ten-highlight list inside a height that reserves room for its header at 390px. Release titles are read by id from the locale records because the translation resolver splits dotted ids such as `2.0`.
 
-## Highlights for the 2.0 PR
+## Highlights shipped in 2.0
 
-The first release becomes "CodeImage 2.0" in one final PR, opened when the features below are on trunk. That PR renames the release, decides `major`, and adds each highlight with its dot and its illustration. The copy is a draft to check against the shipped behaviour.
+| Id              | Place                       | Real use                                                         |
+| --------------- | --------------------------- | ---------------------------------------------------------------- |
+| `redact`        | `null`                      | Redact in the editor or export review                            |
+| `tabs`          | `export:tabs`               | Run the per-tab export, or enable its classic checkbox           |
+| `social`        | `control:frame.aspectRatio` | Apply a social export target, including through the command menu |
+| `signature`     | `control:signature.saved`   | Enter a nonempty handle or apply a saved signature               |
+| `marks`         | `editor:line-marks`         | Change a line mark or import pasted annotations or a diff        |
+| `alt`           | `export:alt`                | Successfully copy alt text                                       |
+| `window-styles` | `control:window.style`      | Apply a window style, including through the command menu         |
+| `command-menu`  | `command-menu`              | Run a command                                                    |
+| `layouts`       | `setting:layout`            | Choose a layout                                                  |
+| `theme-cards`   | `setting:theme-cards`       | Choose a theme card style                                        |
 
-| Id        | Title           | Draft copy                                                                           | Intended place                           | Source PR                      |
-| --------- | --------------- | ------------------------------------------------------------------------------------ | ---------------------------------------- | ------------------------------ |
-| `social`  | Social sizes    | Frame presets sized for the networks you post on, with an optional handle signature. | `control:frame.aspectRatio`              | #696                           |
-| `alt`     | Alt text        | Copy a description of your snippet to paste along with the image.                    | `export:alt`                             | #693                           |
-| `marks`   | Line marks      | Mark lines as added, removed, highlighted or focused.                                | No panel row. Needs a new kind of place. | #698                           |
-| `takumi`  | New renderer    | A faster export engine. Experimental.                                                | `setting:renderer`, when that row lands  | #701                           |
-| `cli`     | codeimage CLI   | Render the same image from your terminal or CI.                                      | `null`, with a documentation link        | #702                           |
-| `animate` | Code animations | Animate between code steps and export the result.                                    | No control yet. Add a kind with its UI.  | #707 and the PRs stacked on it |
+`signature.saved` is always visible even when the signature is off. Dock draws it in More's Signature group. Inspector and Studio draw it in the shared signature dialog reached from the Frame panel. The handle is not a consistent panel anchor across layouts. The generic reveal opens that shared dialog when necessary.
 
-Where these features live in the unified editor as of `feat/ui-prototypes` at 08737514, checked by pointing a fixture highlight at each place:
+Two line-marks designs were considered before implementation:
 
-- Social sizes are values of `frame.aspectRatio`, which now lists the export targets. `ControlRow` draws it in all three layouts, so `control:frame.aspectRatio` gets its dot in Inspector, in Dock's More panel and in Studio's Frame panel.
-- Signatures are the `signature.*` controls, drawn by `ControlRow`. The `signature.handle` dot shows in Dock's More panel. Inspector and Studio render the handle row only once a signature is on.
-- Alt text is Copy alt text in the Export menu and in the classic export dialog. `export:alt` puts its dot on the Export arrow. Classic draws only `export:tabs`, so it shows no dot for alt text.
-- Line marks have no panel control and no `ControlId`. They live in the CodeMirror editor, as a gutter button per line ("Line 1: No mark") and a toolbar over a selection, from `components/CustomEditor/plugins/lineMarks`. A dot needs a new place kind drawn by that plugin's UI, or `where: null`.
-- Code animations are core only: `core/animation` and `components/CustomEditor/AnimatedCodeView.tsx`. Nothing in the unified editor mounts them yet, and no control or command opens them.
-- The renderer has no Settings row yet, so `setting:renderer` does not compile.
+- Put a dot inside a gutter marker. It is close to the action, but the marker is a button, and nesting another button is invalid. Its scaled gutter DOM is also inside the captured editor.
+- Let the interactive plugin render a separate badge beside the active line, into `document.body`. This keeps its own keyboard target and leaves code geometry unchanged. The read-only export extension never mounts it.
 
-Open for that PR:
+The second design is implemented as `editor:line-marks`. The plugin owns the binding, the position measurement, and disposal. `places.ts` accepts only that editor place. The badge moves with the active line and hides when another UI covers its anchor. Changing marks emits user transaction metadata; loading marks and undoing them do not consume the highlight.
 
-- Whether 2.0 announces with the Showcase (`major: true`) or the Nudge.
-- Which PR carries the `major` changeset for `@codeimage/app`.
+`window.style` remains visible with the header off because the style also controls the window body. Controls that bypass `ControlRow` still need a shared renderer before they can be highlighted. None of the 2.0 targets bypasses it.
 
-- Which shared owner and place kind Line marks and the Animate panel expose.
-- How the first `control` highlight reveals a real visible target in each layout. The command callback alone does not guarantee this.
-- Whether layout-specific controls that bypass `ControlRow` need a shared renderer when one becomes a highlight target.
+Classic frame and window controls also record social-size, signature, and window-style use through their user change handlers. Loading a project does not record use.
+
+## Future highlights
+
+Code animations, the Takumi renderer, and the CLI are outside this release content. Code animations have core code but no mounted editor UI or command. Takumi has no shipped Settings row, so `setting:renderer` must still fail the place check. The CLI can use `where: null` with a documentation link when it ships. Their release copy and, for animation UI, a new shared place remain future work.

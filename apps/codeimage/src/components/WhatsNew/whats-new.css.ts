@@ -416,14 +416,14 @@ export const sheetTitle = style({
   fontWeight: 500,
 });
 export const sheet = style({
-  maxHeight: 'min(760px, calc(100dvh - 32px))',
+  maxHeight: 'min(760px, calc(100dvh - 112px))',
   overflowY: 'auto',
   padding: '24px',
   color: c.baseText,
   '@media': {
     'screen and (max-width: 768px)': {
       padding: '16px',
-      maxHeight: 'calc(100dvh - 32px)',
+      maxHeight: 'calc(100dvh - 112px)',
     },
   },
 });

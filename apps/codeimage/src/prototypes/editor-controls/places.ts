@@ -4,6 +4,7 @@ import type {ExportItem} from './shell/ExportControl';
 import type {SettingRowId} from './shell/sections';
 
 export type UnifiedWhere =
+  | 'editor:line-marks'
   | 'command-menu'
   | 'export'
   | `export:${ExportItem}`

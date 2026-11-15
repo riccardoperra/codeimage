@@ -1,4 +1,5 @@
 import {useI18n} from '@codeimage/locale';
+import {getWhatsNew} from '../../state/whats-new';
 import {getFrameState} from '@codeimage/store/editor/frame';
 import {createSignature, SIGNATURE_STYLES} from '@codeimage/store/frame/model';
 import type {FrameSignature} from '@codeimage/store/frame/model';
@@ -22,6 +23,7 @@ export const FrameStyleForm: ParentComponent = () => {
   const {editorPadding, editorRadius} = appEnvironment;
   const frame = getFrameState();
   const changeHandle = (handle: string) => {
+    if (handle.trim()) getWhatsNew().seen('signature');
     frame.setSignature(
       handle
         ? {...(frame.store.signature ?? createSignature(handle)), handle}
@@ -30,11 +32,17 @@ export const FrameStyleForm: ParentComponent = () => {
   };
   const changePosition = (position: FrameSignature['position']) => {
     const signature = frame.store.signature;
-    if (signature) frame.setSignature({...signature, position});
+    if (signature) {
+      frame.setSignature({...signature, position});
+      getWhatsNew().seen('signature');
+    }
   };
   const changeStyle = (style: FrameSignature['style']) => {
     const signature = frame.store.signature;
-    if (signature) frame.setSignature({...signature, style});
+    if (signature) {
+      frame.setSignature({...signature, style});
+      getWhatsNew().seen('signature');
+    }
   };
 
   const paddingOptions = createSelectOptions(
@@ -209,7 +217,10 @@ export const FrameStyleForm: ParentComponent = () => {
           >
             <AspectRatioPicker
               target={frame.exportTarget()}
-              onTargetChange={frame.setExportTarget}
+              onTargetChange={target => {
+                frame.setExportTarget(target);
+                getWhatsNew().seen('social');
+              }}
               value={frame.store.aspectRatio}
               onChange={ratio => {
                 frame.setAspectRatio(ratio);

@@ -1,4 +1,5 @@
 import {useI18n} from '@codeimage/locale';
+import {getWhatsNew} from '../../state/whats-new';
 import {getTerminalState} from '@codeimage/store/editor/terminal';
 import {createSelectOptions, Select} from '@codeui/kit';
 import {shadowsLabel} from '@core/configuration/shadow';
@@ -89,6 +90,7 @@ export const WindowStyleForm: ParentComponent = () => {
               selectedTerminal={terminal.state.type}
               onTerminalChange={type => {
                 terminal.setType(type);
+                getWhatsNew().seen('window-styles');
                 getUmami().track('change-terminal-type', {
                   type,
                 });

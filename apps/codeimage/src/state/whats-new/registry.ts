@@ -1,13 +1,19 @@
 // Pure metadata with zero imports. Policy and presentation share these ids.
 
-export type Place = 'command-menu' | 'export' | 'control' | 'setting';
+export type Place =
+  | 'command-menu'
+  | 'export'
+  | 'control'
+  | 'setting'
+  | 'editor';
 
 export type Where =
   | 'command-menu'
   | 'export'
   | `export:${string}`
   | `control:${string}`
-  | `setting:${string}`;
+  | `setting:${string}`
+  | `editor:${string}`;
 
 export interface Highlight {
   /**
@@ -38,9 +44,10 @@ export interface Release {
  */
 export const RELEASES = [
   {
-    id: '2026-11',
+    id: '2.0',
+    // Set this to the real release day before publishing.
     date: '2026-11-14',
-    major: false,
+    major: true,
     highlights: [
       {
         id: 'redact',
@@ -50,6 +57,11 @@ export const RELEASES = [
         id: 'tabs',
         where: 'export:tabs',
       },
+      {id: 'social', where: 'control:frame.aspectRatio'},
+      {id: 'signature', where: 'control:signature.saved'},
+      {id: 'marks', where: 'editor:line-marks'},
+      {id: 'alt', where: 'export:alt'},
+      {id: 'window-styles', where: 'control:window.style'},
       {
         id: 'command-menu',
         where: 'command-menu',

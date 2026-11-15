@@ -64,7 +64,9 @@ export const ExportButton: Component<ExportButtonProps> = props => {
   const [data, notify] = useExportSnippet();
 
   const label = () => t('toolbar.export');
-  getWhatsNew().bindLocation('export', () => setOpen(true));
+  getWhatsNew().bindLocation('export', () => {
+    setOpen(true);
+  });
 
   createEffect(() => {
     if (data.error) {
@@ -370,7 +372,9 @@ export function ExportDialog(props: ExportDialogProps & DialogProps) {
       <DialogPanelFooter>
         <div class={styles.footer}>
           <div class={styles.footerSecondary}>
-            <CopyAltTextButton class={styles.altTextAction} />
+            <NewDot at="export:alt">
+              <CopyAltTextButton class={styles.altTextAction} />
+            </NewDot>
           </div>
           <div class={styles.footerActions}>
             <Button

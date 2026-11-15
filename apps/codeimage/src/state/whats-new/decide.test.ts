@@ -163,3 +163,21 @@ describe('registry', () => {
     expect(new Set(highlightIds).size).toBe(highlightIds.length);
   });
 });
+
+it('announces 2.0 as a Showcase and advances all located highlights within three dots', () => {
+  const seen = new Set<string>();
+  const located = RELEASES[0].highlights.filter(
+    highlight => highlight.where !== null,
+  );
+  for (const highlight of located) {
+    const result = decide(
+      RELEASES,
+      {seen, dismissed: new Set()},
+      Date.parse('2026-11-14'),
+    );
+    expect(result.announcement?.surface).toBe('showcase');
+    expect(result.dots.length).toBeLessThanOrEqual(3);
+    expect(result.dots[0]).toBe(highlight.id);
+    seen.add(highlight.id);
+  }
+});

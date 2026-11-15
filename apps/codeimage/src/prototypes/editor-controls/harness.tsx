@@ -1,3 +1,4 @@
+import {getWhatsNew} from '../../state/whats-new';
 import {WhatsNewHost} from '../../components/WhatsNew/WhatsNewHost';
 import {commandMenu} from './command-menu/state';
 import {settings} from './shell/settings-state';
@@ -22,6 +23,14 @@ export {PickerRoute as PrototypeRoute} from './picker/PickerRoute';
 function Editor() {
   const model = createEditorControlsModel();
   let page!: HTMLDivElement;
+  getWhatsNew().bindLocation('control', item => {
+    const control = model.sections
+      .flatMap(section => section.controls)
+      .find(control => control.id === item);
+    if (!control) return;
+    settings.close();
+    return model.controls.reveal(control.id);
+  });
 
   const side = () =>
     preferences.layout() === 'inspector'

@@ -32,7 +32,14 @@ import {
 } from '@codemirror/view';
 import {createCodeMirror, createEditorReadonly} from 'solid-codemirror';
 import type {VoidProps} from 'solid-js';
-import {createEffect, createMemo, createResource, on, untrack} from 'solid-js';
+import {
+  createEffect,
+  createMemo,
+  createResource,
+  getOwner,
+  on,
+  untrack,
+} from 'solid-js';
 import {baseEditorTheme} from './editorTheme';
 import {createTabIcon} from '../../hooks/use-tab-icon';
 import {mapLines} from '../../core/diff/mapLines';
@@ -75,6 +82,7 @@ interface CustomEditorProps {
 export default function CustomEditor(props: VoidProps<CustomEditorProps>) {
   const {themeArray: themes} = getThemeStore();
   const [t] = useI18n<AppLocaleEntries>();
+  const owner = getOwner();
   const languages = SUPPORTED_LANGUAGES;
   const {
     state: editorState,
@@ -212,23 +220,28 @@ export default function CustomEditor(props: VoidProps<CustomEditorProps>) {
     const offset = editorState.options.showLineNumbers
       ? (lineNumberStart() ?? 1) - 1
       : 0;
-    return lineMarksExtension(!props.readOnly, initialMarks, {
-      toolbar: t('lineMarks.toolbar'),
-      highlight: t('lineMarks.highlight'),
-      added: t('lineMarks.added'),
-      removed: t('lineMarks.removed'),
-      clear: t('lineMarks.clear'),
-      focus: t('lineMarks.focus'),
-      focusHint: t('lineMarks.focusHint'),
-      removeMark: t('lineMarks.removeMark'),
-      unmarked: t('lineMarks.unmarked'),
-      line: line => t('lineMarks.line', {line: String(line + offset)}),
-      selection: (from, to) =>
-        t('lineMarks.selection', {
-          from: String(from + offset),
-          to: String(to + offset),
-        }),
-    });
+    return lineMarksExtension(
+      !props.readOnly,
+      initialMarks,
+      {
+        toolbar: t('lineMarks.toolbar'),
+        highlight: t('lineMarks.highlight'),
+        added: t('lineMarks.added'),
+        removed: t('lineMarks.removed'),
+        clear: t('lineMarks.clear'),
+        focus: t('lineMarks.focus'),
+        focusHint: t('lineMarks.focusHint'),
+        removeMark: t('lineMarks.removeMark'),
+        unmarked: t('lineMarks.unmarked'),
+        line: line => t('lineMarks.line', {line: String(line + offset)}),
+        selection: (from, to) =>
+          t('lineMarks.selection', {
+            from: String(from + offset),
+            to: String(to + offset),
+          }),
+      },
+      owner ?? undefined,
+    );
   });
   createExtension(() => EditorState.readOnly.of(props.readOnly));
 

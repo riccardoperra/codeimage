@@ -156,6 +156,25 @@ export default function Studio(props: VariantProps) {
     exit.onfinish = () => finishClose(id, returnFocus);
   };
 
+  onMount(() => {
+    onCleanup(
+      props.model.controls.register(id => {
+        const group = id.split('.')[0];
+        const panel = PANELS.find(
+          panel =>
+            panel.id ===
+            (group === 'signature'
+              ? 'frame'
+              : group === 'editor' || group === 'font'
+                ? 'code'
+                : group),
+        );
+        if (panel) open(panel);
+        setStop('tall');
+        if (group === 'signature') controlOverlay.open('signature');
+      }),
+    );
+  });
   // Canvas clicks and the Frame row share the same signature editor.
   onCleanup(signatureEditor.register(() => controlOverlay.open('signature')));
 

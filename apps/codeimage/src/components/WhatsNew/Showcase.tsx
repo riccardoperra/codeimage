@@ -2,12 +2,12 @@ import {useI18n} from '@codeimage/locale';
 import type {AppLocaleEntries} from '../../i18n';
 import {Button, Dialog, IconButton, icons} from '@codeui/kit';
 import {Dialog as KDialog} from '@kobalte/core/dialog';
-import {createEffect, For, Show} from 'solid-js';
+import {createEffect, For, onCleanup, Show} from 'solid-js';
 import {Dynamic} from 'solid-js/web';
 import {getWhatsNew, type RELEASES} from '../../state/whats-new';
 import {illustrations} from './illustrations';
 import {ms, showcaseAt} from './motion';
-import {releaseDate} from './releaseDate';
+import {releaseDate, releaseTitle} from './releaseDate';
 import * as styles from './whats-new.css';
 
 const at = (start: number) => ({'--whats-new-at': ms(start)});
@@ -22,6 +22,22 @@ export function Showcase(props: {
   dismiss: () => void;
 }) {
   const news = getWhatsNew();
+  onCleanup(() =>
+    requestAnimationFrame(() => {
+      // An announcement has no opener for the modal to restore focus to.
+      // A reveal may already have focused its target in the meantime.
+      if (document.activeElement === document.body)
+        [...document.querySelectorAll<HTMLElement>('button:not([disabled])')]
+          .find(
+            element =>
+              element.checkVisibility({visibilityProperty: true}) &&
+              !element.closest(
+                '[inert], [aria-hidden="true"], [data-news-dot]',
+              ),
+          )
+          ?.focus({preventScroll: true});
+    }),
+  );
   const [t, {locale}] = useI18n<AppLocaleEntries>();
   createEffect(() =>
     props.release.highlights.forEach(highlight =>
@@ -60,7 +76,7 @@ export function Showcase(props: {
             class={`${styles.heroTitle} ${styles.lead}`}
             style={at(showcaseAt.title)}
           >
-            {t(`whatsNew.releases.${props.release.id}.title`)}
+            {releaseTitle(props.release, locale())}
           </h2>
           <p
             class={`${styles.body} ${styles.support}`}

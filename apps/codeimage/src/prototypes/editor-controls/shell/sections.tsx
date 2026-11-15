@@ -14,7 +14,10 @@ import type {Component, JSX} from 'solid-js';
 import {createMemo, For, Match, Show, Switch} from 'solid-js';
 import {Dynamic} from 'solid-js/web';
 import {illustrations} from '../../../components/WhatsNew/illustrations';
-import {releaseDate} from '../../../components/WhatsNew/releaseDate';
+import {
+  releaseDate,
+  releaseTitle,
+} from '../../../components/WhatsNew/releaseDate';
 import {getWhatsNew, RELEASES} from '../../../state/whats-new';
 import type {HighlightId} from '../../../state/whats-new';
 import {CopyAltTextButton} from '../../../components/Toolbar/CopyAltTextButton';
@@ -527,7 +530,7 @@ export function createSettingSections(model: EditorControlsModel) {
     ),
     groups: createMemo(() =>
       RELEASES.map(release => ({
-        title: `${t(`whatsNew.releases.${release.id}.title`)} · ${releaseDate(release, locale())}`,
+        title: `${releaseTitle(release, locale())} · ${releaseDate(release, locale())}`,
         rows: release.highlights.map(highlight => ({
           id: `news-${highlight.id}` as const,
           title: t(`whatsNew.highlights.${highlight.id}.title`),

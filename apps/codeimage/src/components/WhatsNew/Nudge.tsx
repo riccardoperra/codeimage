@@ -12,6 +12,7 @@ import {
 } from 'solid-js';
 import {Dynamic} from 'solid-js/web';
 import {getWhatsNew, type RELEASES} from '../../state/whats-new';
+import {releaseTitle} from './releaseDate';
 import {tabbableBeside} from './focus';
 import {illustrations} from './illustrations';
 import {duration, fromKeyboard} from './motion';
@@ -28,7 +29,7 @@ export function Nudge(props: {
   dismiss: () => void;
 }) {
   const news = getWhatsNew();
-  const [t] = useI18n<AppLocaleEntries>();
+  const [t, {locale}] = useI18n<AppLocaleEntries>();
   const [expanded, setExpanded] = createSignal(false);
   const [view, setView] = createSignal<View>({step: 0});
   const [closing, setClosing] = createSignal(false);
@@ -117,7 +118,7 @@ export function Nudge(props: {
                 })}
               </strong>
               <span class={styles.muted}>
-                {t(`whatsNew.releases.${props.release.id}.title`)}
+                {releaseTitle(props.release, locale())}
               </span>
             </div>
             <Button
