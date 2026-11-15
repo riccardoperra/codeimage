@@ -7,6 +7,7 @@ import {
 } from '../core/video/encode';
 import type {
   AnimationEvent,
+  AnimationFailure,
   AnimationExport,
   AnimationRequest,
 } from '../core/video/protocol';
@@ -20,7 +21,7 @@ export type AnimationJob =
   | {kind: 'done'; blob: Blob; size: number; durationMs: number}
   | {
       kind: 'failed';
-      reason: 'workerLoad' | 'workerMessage' | 'export';
+      reason: AnimationFailure;
       cause: string;
     }
   | {kind: 'cancelled'};
@@ -56,10 +57,7 @@ export function createAnimationExport(
     }
     worker = undefined;
   };
-  const fail = (
-    cause: string,
-    reason: 'workerLoad' | 'workerMessage' | 'export' = 'export',
-  ) => {
+  const fail = (cause: string, reason: AnimationFailure = 'export') => {
     ++generation;
     release();
     set({kind: 'failed', reason, cause});
@@ -91,7 +89,7 @@ export function createAnimationExport(
           return;
         }
         case 'failed':
-          fail(data.cause);
+          fail(data.cause, data.reason);
           return;
         case 'cancelled':
           release();

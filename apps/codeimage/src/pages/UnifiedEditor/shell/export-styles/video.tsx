@@ -1,5 +1,6 @@
 import {useI18n} from '@codeimage/locale';
 import {Button, IconButton, icons} from '@codeui/kit';
+import {onCleanup} from 'solid-js';
 import {Popover} from '@kobalte/core/popover';
 import type {AppLocaleEntries} from '../../../../i18n';
 import {DownloadIcon} from '../../../../components/Icons/Download';
@@ -20,6 +21,7 @@ export function VideoExport(props: ExportControlProps & {onImage: () => void}) {
     if (animation().busy() || props.exporter.confirming())
       event.preventDefault();
   };
+  onCleanup(() => animation().close());
   const disabled = () => !props.exporter.ready() || !animation().available();
   return (
     <div

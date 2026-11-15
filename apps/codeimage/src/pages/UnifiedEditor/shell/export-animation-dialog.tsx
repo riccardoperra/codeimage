@@ -43,8 +43,9 @@ export function createAnimationExporter() {
     setSummary(undefined);
     const frameRate = fps();
     const output = size() === '1080p' ? {width: 1920, height: 1080} : undefined;
+    const outputScale = scale();
     await job.check(async () => {
-      const value = await snapshot.describe(frameRate, output, scale());
+      const value = await snapshot.describe(frameRate, output, outputScale);
       if (current === generation) setSummary(value);
       return value.config;
     });
@@ -86,8 +87,10 @@ export function createAnimationExporter() {
     // Read again after the secrets review, including any redaction it made.
     const frameRate = fps();
     const output = size() === '1080p' ? {width: 1920, height: 1080} : undefined;
+    const outputScale = scale();
+    const background = solidBackground();
     void job.start(() =>
-      snapshot.capture(frameRate, output, scale(), solidBackground()),
+      snapshot.capture(frameRate, output, outputScale, background),
     );
   };
   return {

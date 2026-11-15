@@ -9,6 +9,7 @@ import {
 } from '../core/video/encode';
 import type {
   AnimationEvent,
+  AnimationFailure,
   AnimationExport,
   AnimationRequest,
 } from '../core/video/protocol';
@@ -20,6 +21,8 @@ let warming = Promise.resolve();
 
 async function exportAnimation(job: AnimationExport) {
   const started = performance.now();
+  let reason: Extract<AnimationFailure, 'renderer' | 'fonts' | 'encoder'> =
+    'renderer';
   let encoder: Awaited<ReturnType<typeof createMp4Encoder>> | undefined;
   try {
     await warming;
@@ -29,7 +32,9 @@ async function exportAnimation(job: AnimationExport) {
       throw new Error(`Takumi WASM: ${errorMessage(error)}`);
     }
     const renderer = new Renderer();
+    reason = 'fonts';
     for (const font of job.resources.fonts) await renderer.registerFont(font);
+    reason = 'encoder';
     const support = await checkMp4Support(job.config);
     if (support.kind === 'unsupported')
       throw new Error(`H.264 configuration unavailable (${support.reason})`);
@@ -59,6 +64,7 @@ async function exportAnimation(job: AnimationExport) {
       ) {
         sceneStart += job.scenes[sceneIndex++].durationMs;
       }
+      reason = 'renderer';
       const before = performance.now();
       const rgba = await renderer.render(job.scenes[sceneIndex].html, {
         ...options,
@@ -68,6 +74,7 @@ async function exportAnimation(job: AnimationExport) {
       });
       renderMs += performance.now() - before;
       padVideoFrame(rgba, job.contentSize, job.config);
+      reason = 'encoder';
       await encoder.add(rgba, index);
       if (index % 3 === 0 || index === total - 1)
         send({kind: 'progress', done: index + 1, total});
@@ -85,6 +92,8 @@ async function exportAnimation(job: AnimationExport) {
         },
         [buffer],
       );
+  } catch (error) {
+    if (!cancelled) send({kind: 'failed', reason, cause: errorMessage(error)});
   } finally {
     await encoder?.close();
   }
@@ -104,9 +113,7 @@ self.onmessage = ({data}: MessageEvent<AnimationRequest>) => {
       break;
     case 'export':
       cancelled = false;
-      void exportAnimation(data.job).catch(error =>
-        send({kind: 'failed', cause: errorMessage(error)}),
-      );
+      void exportAnimation(data.job);
       break;
   }
 };

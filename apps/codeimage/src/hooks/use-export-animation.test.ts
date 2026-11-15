@@ -100,10 +100,14 @@ describe('animation job and worker protocol', () => {
   it('passes worker failure causes to the UI and releases the worker', async () => {
     const f = fixture();
     await f.controller.check(config);
-    f.event({kind: 'failed', cause: 'Cannot load WASM: 404'});
+    f.event({
+      kind: 'failed',
+      reason: 'renderer',
+      cause: 'Cannot load WASM: 404',
+    });
     expect(f.changed).toHaveBeenLastCalledWith({
       kind: 'failed',
-      reason: 'export',
+      reason: 'renderer',
       cause: 'Cannot load WASM: 404',
     });
     expect(f.worker.terminate).toHaveBeenCalledOnce();
@@ -111,7 +115,11 @@ describe('animation job and worker protocol', () => {
   it('reports uncaught worker errors and message decoding failures', async () => {
     const f = fixture();
     await f.controller.check(config);
-    f.worker.onerror?.(Object.assign(new Event('error'), {message: 'Worker crashed'}) as ErrorEvent);
+    f.worker.onerror?.(
+      Object.assign(new Event('error'), {
+        message: 'Worker crashed',
+      }) as ErrorEvent,
+    );
     expect(f.controller.state()).toEqual({
       kind: 'failed',
       reason: 'workerLoad',

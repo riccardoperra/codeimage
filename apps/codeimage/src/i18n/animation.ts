@@ -8,6 +8,12 @@ export const animationLocale = {
         share: 'Share MP4',
         fpsValue: '{{fps}} fps',
         errors: {
+          renderer:
+            'The video renderer (WASM) could not load or render a frame. Check your connection and retry.',
+          fonts:
+            'A required export font could not load. Check your connection and retry.',
+          encoder:
+            'The H.264 encoder or MP4 writer failed. Retry or choose a smaller size.',
           workerLoad:
             'The video worker could not load. A file may be unavailable after an update, or you may be offline. Reconnect and retry; reload the page if needed.',
           workerMessage:
@@ -98,6 +104,12 @@ export const animationLocale = {
         share: 'Condividi MP4',
         fpsValue: '{{fps}} fps',
         errors: {
+          renderer:
+            'Il renderer video (WASM) non è riuscito a caricarsi o a generare un fotogramma. Controlla la connessione e riprova.',
+          fonts:
+            'Impossibile caricare un carattere necessario per il video. Controlla la connessione e riprova.',
+          encoder:
+            'Errore del codificatore H.264 o del file MP4. Riprova o scegli dimensioni inferiori.',
           workerLoad:
             'Impossibile caricare il worker video. Un file potrebbe non essere disponibile dopo un aggiornamento, oppure sei offline. Riconnettiti e riprova; se necessario ricarica la pagina.',
           workerMessage:
@@ -189,6 +201,12 @@ export const animationLocale = {
         share: 'MP4 teilen',
         fpsValue: '{{fps}} Bilder/s',
         errors: {
+          renderer:
+            'Der Video-Renderer (WASM) konnte nicht geladen werden oder kein Bild rendern. Prüfe die Verbindung und versuche es erneut.',
+          fonts:
+            'Eine benötigte Schriftart konnte nicht geladen werden. Prüfe die Verbindung und versuche es erneut.',
+          encoder:
+            'Der H.264-Encoder oder MP4-Writer ist fehlgeschlagen. Versuche es erneut oder wähle eine kleinere Größe.',
           workerLoad:
             'Der Video-Worker konnte nicht geladen werden. Nach einem Update fehlt möglicherweise eine Datei, oder du bist offline. Verbinde dich und versuche es erneut; lade bei Bedarf die Seite neu.',
           workerMessage:
@@ -280,6 +298,12 @@ export const animationLocale = {
         share: 'Compartir MP4',
         fpsValue: '{{fps}} fps',
         errors: {
+          renderer:
+            'El renderizador de vídeo (WASM) no pudo cargarse o generar un fotograma. Comprueba la conexión y reintenta.',
+          fonts:
+            'No se pudo cargar una fuente necesaria para el vídeo. Comprueba la conexión y reintenta.',
+          encoder:
+            'Error del codificador H.264 o del archivo MP4. Reintenta o elige un tamaño menor.',
           workerLoad:
             'No se pudo cargar el worker de vídeo. Puede faltar un archivo tras una actualización, o puede que estés sin conexión. Conéctate y reintenta; recarga la página si es necesario.',
           workerMessage:
