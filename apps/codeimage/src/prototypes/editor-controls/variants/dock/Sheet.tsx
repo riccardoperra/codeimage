@@ -1,3 +1,5 @@
+import type {AppLocaleEntries} from '../../../../i18n';
+import {useI18n} from '@codeimage/locale';
 import {Dialog} from '@kobalte/core/dialog';
 import {createEffect, createMemo, createSignal, on, Show} from 'solid-js';
 import {Dynamic} from 'solid-js/web';
@@ -33,6 +35,7 @@ interface SheetProps {
  * preview stays in view above it. A drag on its handle closes it.
  */
 export function Sheet(props: SheetProps) {
+  const [t] = useI18n<AppLocaleEntries>();
   const dock = useDock();
   const [slot, setSlot] = createSignal<HTMLDivElement>();
   let content: HTMLDivElement | undefined;
@@ -135,7 +138,7 @@ export function Sheet(props: SheetProps) {
                 content = element;
               }}
               class={`${styles.sheet} ${sidebarTheme}`}
-              aria-label={PANELS[shown() ?? 'more'].title}
+              aria-label={t(PANELS[shown() ?? 'more'].title)}
               data-panel={shown()}
               onOpenAutoFocus={event => event.preventDefault()}
               onCloseAutoFocus={event => {
@@ -157,7 +160,7 @@ export function Sheet(props: SheetProps) {
               <button
                 type="button"
                 class={styles.grabber}
-                aria-label="Close"
+                aria-label={t('common.close')}
                 onPointerDown={onGrab}
                 onPointerMove={onDrag}
                 onPointerUp={onRelease}

@@ -1,6 +1,8 @@
 import {commandMenu} from '../command-menu/state';
 import {NewDot} from '../../../components/WhatsNew/NewDot';
 import {getWhatsNew} from '../../../state/whats-new';
+import type {AppLocaleEntries} from '../../../i18n';
+import {useI18n} from '@codeimage/locale';
 import {Dialog, IconButton, TextField} from '@codeui/kit';
 import {useModality} from '@core/hooks/isMobile';
 import {Dialog as KDialog} from '@kobalte/core/dialog';
@@ -66,6 +68,7 @@ function Group(props: SettingGroup) {
 }
 
 function Panel(props: {sections: readonly SettingSection[]}) {
+  const [t] = useI18n<AppLocaleEntries>();
   const modality = useModality();
   const query = settings.query;
   const setQuery = settings.setQuery;
@@ -162,11 +165,13 @@ function Panel(props: {sections: readonly SettingSection[]}) {
         </span>
         <TextField
           size={modality === 'full' ? 'sm' : 'md'}
-          placeholder="Search settings"
+          placeholder={t('editor.searchSettings')}
           // The kit labels its root, not the input.
           ref={input => {
             search = input;
-            input.setAttribute('aria-label', 'Search settings');
+            createEffect(() =>
+              input.setAttribute('aria-label', t('editor.searchSettings')),
+            );
           }}
           value={query()}
           onChange={setQuery}
@@ -178,7 +183,7 @@ function Panel(props: {sections: readonly SettingSection[]}) {
 
       <nav
         class={styles.nav}
-        aria-label="Settings sections"
+        aria-label={t('editor.settingsSections')}
         on:keydown={(event: KeyboardEvent) => {
           const step =
             event.key === 'ArrowDown' || event.key === 'ArrowRight'
@@ -216,16 +221,16 @@ function Panel(props: {sections: readonly SettingSection[]}) {
 
       <header class={styles.head}>
         <KDialog.Title class={styles.crumbs}>
-          <span class={styles.crumbRoot}>Settings</span>
+          <span class={styles.crumbRoot}>{t('editor.settings')}</span>
           <span class={styles.crumbSlash} aria-hidden="true">
             /
           </span>
-          <span>{searching() ? 'Search' : current().name}</span>
+          <span>{searching() ? t('editor.search') : current().name}</span>
         </KDialog.Title>
         <KDialog.CloseButton
           as={IconButton}
           class={styles.close}
-          aria-label={'Close'}
+          aria-label={t('common.close')}
           size={modality === 'full' ? 'sm' : 'md'}
           theme={'secondary'}
           variant={'ghost'}
@@ -255,7 +260,7 @@ function Panel(props: {sections: readonly SettingSection[]}) {
             when={results().length > 0}
             fallback={
               <p class={styles.empty} role="status">
-                No settings match “{query().trim()}”.
+                {t('editor.noSettings', {query: query().trim()})}
               </p>
             }
           >

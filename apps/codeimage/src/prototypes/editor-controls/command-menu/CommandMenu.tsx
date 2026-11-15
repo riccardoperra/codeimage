@@ -80,7 +80,7 @@ function Commands(
 
   const commands = untrack(() => {
     const actions: Action[] = [
-      {label: 'Randomize theme and style', run: props.stage.randomize},
+      {label: t('editor.randomize'), run: props.stage.randomize},
       {label: t('shortcut.buttonAction'), note: '?', run: shortcutHelp.open},
       ...markCommands.map(command => ({
         label: t(`lineMarks.shortcut.${command.id}`),
@@ -95,7 +95,7 @@ function Commands(
     ];
     if (props.stage.canFormat()) {
       actions.push({
-        label: 'Format code',
+        label: t('editor.formatCode'),
         run: () => void props.stage.format(),
       });
     }
@@ -103,14 +103,14 @@ function Commands(
     const fromOldMenu: Command[] = [
       {
         id: 'whats-new',
-        group: 'Settings',
+        group: t('editor.settings'),
         label: "What's new",
         run: () => settings.open('whats-new'),
       },
       {
         id: 'github',
-        group: 'Settings',
-        label: 'CodeImage on GitHub',
+        group: t('editor.settings'),
+        label: t('editor.github'),
         run: () =>
           window.open('https://github.com/riccardoperra/codeimage', '_blank'),
       },
@@ -118,8 +118,8 @@ function Commands(
     if (auth.loggedIn()) {
       fromOldMenu.push({
         id: 'logout',
-        group: 'Settings',
-        label: 'Logout',
+        group: t('editor.settings'),
+        label: t('editor.logout'),
         run: () => void auth.signOut().then(() => navigate('/')),
       });
     }
@@ -210,8 +210,8 @@ function Commands(
           aria-activedescendant={
             results().length > 0 ? optionId(active()) : undefined
           }
-          aria-label="Search themes and options"
-          placeholder="Search themes and options"
+          aria-label={t('editor.searchOptions')}
+          placeholder={t('editor.searchOptions')}
           autocomplete="off"
           spellcheck={false}
           enterkeyhint="go"
@@ -228,14 +228,14 @@ function Commands(
           }}
           onKeyDown={onKeyDown}
         />
-        <span class={styles.hint}>↑↓ preview · ↵ apply · esc cancel</span>
+        <span class={styles.hint}>{t('editor.commandHint')}</span>
       </label>
       <div
         ref={list}
         id={listId}
         class={styles.list}
         role="listbox"
-        aria-label="Commands"
+        aria-label={t('editor.commands')}
       >
         <For each={groups()}>
           {group => (
@@ -274,7 +274,7 @@ function Commands(
           )}
         </For>
         <Show when={results().length === 0}>
-          <p class={styles.empty}>No theme or option matches “{query()}”.</p>
+          <p class={styles.empty}>{t('editor.noCommand', {query: query()})}</p>
         </Show>
       </div>
     </>
@@ -288,6 +288,7 @@ function Commands(
  * no motion, because it is opened from the keyboard many times a session.
  */
 export function CommandMenu(props: CommandMenuProps) {
+  const [t] = useI18n<AppLocaleEntries>();
   getWhatsNew().bindLocation('command-menu', () => {
     settings.close();
     requestAnimationFrame(commandMenu.open);
@@ -330,7 +331,7 @@ export function CommandMenu(props: CommandMenuProps) {
         <Dialog.Portal>
           <Dialog.Content
             class={styles.menu}
-            aria-label="Search themes and options"
+            aria-label={t('editor.searchOptions')}
             data-command-menu
             onCloseAutoFocus={event => {
               event.preventDefault();

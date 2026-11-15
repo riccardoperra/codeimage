@@ -37,12 +37,16 @@ export type ExportItem =
 
 /** What an export gives with the settings now, such as `PNG at 3x`. */
 export function exportSummary(): string {
+  const [t] = useI18n<AppLocaleEntries>();
   const canvas = getExportCanvasStore();
   const target = getFrameState().exportTarget();
   const size = target
     ? target.resolution.join(' × ')
     : `${canvas.get.devicePixelRatio}x`;
-  return `${canvas.get.extension.toUpperCase()} at ${size}`; // i18n
+  return t('editor.exportSummary', {
+    format: canvas.get.extension.toUpperCase(),
+    size,
+  });
 }
 
 /**
@@ -60,8 +64,8 @@ export function ExportControl(props: {exporter: Exporter; size?: 'sm' | 'xs'}) {
     settings.close();
     requestAnimationFrame(() => setMenuOpen(true));
   });
-  const copyLabel = 'Copy to clipboard'; // i18n
-  const redactedLabel = 'Secrets redacted. Ready to export.'; // i18n
+  const copyLabel = () => t('toolbar.copyToCliboard');
+  const redactedLabel = () => t('editor.redacted');
 
   const exportImage = () => exporter().image();
   const exportEachTab = () => exporter().eachTab();
@@ -106,7 +110,7 @@ export function ExportControl(props: {exporter: Exporter; size?: 'sm' | 'xs'}) {
           size={size()}
           loading={exporter().busy()}
           leftIcon={<DownloadIcon />}
-          title={`Export as ${exportSummary()}`}
+          title={t('editor.exportAs', {summary: exportSummary()})}
           data-export-image
           onClick={exportImage}
         >
@@ -123,7 +127,7 @@ export function ExportControl(props: {exporter: Exporter; size?: 'sm' | 'xs'}) {
               class={styles.more}
               theme={'primary'}
               size={size()}
-              aria-label="More ways to export"
+              aria-label={t('editor.moreExport')}
               data-export-menu
             >
               <icons.ChevronDownIcon />
@@ -136,7 +140,7 @@ export function ExportControl(props: {exporter: Exporter; size?: 'sm' | 'xs'}) {
                 onSelect={exportImage}
               >
                 <span class={styles.item}>
-                  Export image
+                  {t('export.title')}
                   <span class={styles.hint}>{exportSummary()}</span>
                 </span>
               </DropdownMenuItem>
@@ -145,11 +149,13 @@ export function ExportControl(props: {exporter: Exporter; size?: 'sm' | 'xs'}) {
                 onSelect={exportEachTab}
               >
                 <span class={styles.item}>
-                  Export one image per tab
+                  {t('editor.exportEachTab')}
                   <span class={styles.hint}>
                     {exporter().tabs() < 2
-                      ? 'Needs two tabs or more'
-                      : `${exporter().tabs()} images in a zip`}
+                      ? t('editor.needsTabs')
+                      : t('editor.zipImages', {
+                          count: String(exporter().tabs()),
+                        })}
                   </span>
                 </span>
               </DropdownMenuItem>
@@ -162,7 +168,7 @@ export function ExportControl(props: {exporter: Exporter; size?: 'sm' | 'xs'}) {
                 disabled={!exporter().canCopy() || exporter().busy()}
                 onSelect={copy}
               >
-                {copyLabel}
+                {copyLabel()}
               </DropdownMenuItem>
               <DropdownMenuItem disabled={exporter().busy()} onSelect={newTab}>
                 {t('toolbar.openNewTab')}
@@ -189,7 +195,7 @@ export function ExportControl(props: {exporter: Exporter; size?: 'sm' | 'xs'}) {
               </Show>
               <DropdownMenuSeparator />
               <DropdownMenuItem onSelect={openSettings}>
-                Export settings…
+                {t('editor.exportSettings')}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenuPortal>
@@ -215,7 +221,7 @@ export function ExportControl(props: {exporter: Exporter; size?: 'sm' | 'xs'}) {
               </Button>
             </Show>
             <Show when={exporter().secrets() === 0}>
-              <div role="status">{redactedLabel}</div>
+              <div role="status">{redactedLabel()}</div>
             </Show>
           </div>
         </DialogPanelContent>

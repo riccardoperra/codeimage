@@ -86,9 +86,6 @@ interface CardOption<T extends string> {
   readonly hint: string;
 }
 
-const nameOf = (id: SectionId) =>
-  SECTIONS.find(entry => entry.id === id)?.name ?? id;
-
 /** One choice out of a few, each with a picture of what it gives. */
 function ChoiceCards<T extends string>(props: {
   label: string;
@@ -99,6 +96,7 @@ function ChoiceCards<T extends string>(props: {
   onChange: (value: T) => void;
   preview: (option: CardOption<T>) => JSX.Element;
 }) {
+  const [t] = useI18n<AppLocaleEntries>();
   return (
     <RadioGroup
       class={styles.cards}
@@ -118,7 +116,7 @@ function ChoiceCards<T extends string>(props: {
                 <span class={styles.cardName}>
                   <span>{option.name}</span>
                   <Show when={option.id === props.default}>
-                    <span class={styles.tag}>Default</span>
+                    <span class={styles.tag}>{t('editor.default')}</span>
                   </Show>
                 </span>
                 <span class={styles.cardHint}>{option.hint}</span>
@@ -205,6 +203,8 @@ function LanguageChoice() {
  */
 export function createSettingSections(model: EditorControlsModel) {
   const [t] = useI18n<AppLocaleEntries>();
+  const nameOf = (id: SectionId) =>
+    t(SECTIONS.find(entry => entry.id === id)!.name);
   const ui = getUiStore();
   const auth = getAuth0State();
   const navigate = useNavigate();
@@ -218,17 +218,18 @@ export function createSettingSections(model: EditorControlsModel) {
 
   const general = {
     id: 'general' as const,
-    name: nameOf('general'),
+    get name() {
+      return nameOf('general');
+    },
     icon: GeneralIcon,
     groups: createMemo(() => [
       {
-        title: 'Interface',
+        title: t('editor.interface'),
         rows: [
           {
             id: 'language' as const,
-            title: 'Language',
-            description: () =>
-              'The language of the menus, labels and messages.',
+            title: t('editor.language'),
+            description: () => t('editor.languageHint'),
             control: () => <LanguageChoice />,
           },
         ],
@@ -238,24 +239,26 @@ export function createSettingSections(model: EditorControlsModel) {
 
   const appearance = {
     id: 'appearance' as const,
-    name: nameOf('appearance'),
+    get name() {
+      return nameOf('appearance');
+    },
     icon: AppearanceIcon,
     groups: createMemo(() => [
       {
-        title: 'Colours',
+        title: t('editor.colours'),
         rows: [
           {
             id: 'colour-mode' as const,
-            title: 'Colour mode',
-            description: () => 'Dark, light, or the same as your system.',
+            title: t('editor.colourMode'),
+            description: () => t('editor.colourModeHint'),
             control: () => (
               <Segmented
                 value={ui.get.themeMode}
                 onChange={ui.setThemeMode}
                 items={[
-                  {label: 'Dark', value: 'dark'},
-                  {label: 'Light', value: 'light'},
-                  {label: 'System', value: 'system'},
+                  {label: t('editor.dark'), value: 'dark'},
+                  {label: t('editor.light'), value: 'light'},
+                  {label: t('editor.system'), value: 'system'},
                 ]}
               />
             ),
@@ -263,22 +266,22 @@ export function createSettingSections(model: EditorControlsModel) {
         ],
       },
       {
-        title: 'Inspector',
+        title: t('editor.inspector'),
         rows: [
           {
             id: 'panel-side' as const,
-            title: 'Panel side',
+            title: t('editor.panelSide'),
             description: () =>
               preferences.layout() === 'inspector'
-                ? 'The side of the canvas the Inspector panel sits on.'
-                : 'The side of the canvas the Inspector panel sits on, once the Inspector layout is back on.',
+                ? t('editor.panelSideHint')
+                : t('editor.panelSideInactiveHint'),
             control: () => (
               <Segmented
                 value={preferences.inspectorSide()}
                 onChange={preferences.setInspectorSide}
                 items={[
-                  {label: 'Left', value: 'left'},
-                  {label: 'Right', value: 'right'},
+                  {label: t('signature.left'), value: 'left'},
+                  {label: t('signature.right'), value: 'right'},
                 ]}
               />
             ),
@@ -290,9 +293,13 @@ export function createSettingSections(model: EditorControlsModel) {
 
   const experiments = {
     id: 'experiments' as const,
-    name: nameOf('experiments'),
+    get name() {
+      return nameOf('experiments');
+    },
     icon: ExperimentsIcon,
-    intro: 'Previews of what may come next. They can change or go away.',
+    get intro() {
+      return t('editor.experimentsHint');
+    },
     action: () => (
       <Button
         size={'sm'}
@@ -302,23 +309,26 @@ export function createSettingSections(model: EditorControlsModel) {
         leftIcon={<RestoreIcon size={16} />}
         onClick={preferences.restoreDefaults}
       >
-        Restore defaults
+        {t('editor.restoreDefaults')}
       </Button>
     ),
     groups: createMemo(() => [
       {
-        title: 'Editor',
+        title: t('frame.editor'),
         rows: [
           {
             id: 'layout' as const,
-            title: 'Layout',
-            description: () =>
-              'Where the controls sit around the canvas. Inspector is the default, Dock and Studio are experiments.',
+            title: t('editor.layout'),
+            description: () => t('editor.layoutHint'),
             wide: true,
             control: () => (
               <ChoiceCards
-                label="Layout"
-                options={LAYOUTS}
+                label={t('editor.layout')}
+                options={LAYOUTS.map(option => ({
+                  ...option,
+                  name: t(option.name),
+                  hint: t(option.hint),
+                }))}
                 value={preferences.layout()}
                 default={DEFAULT_LAYOUT}
                 onChange={preferences.setLayout}
@@ -334,20 +344,23 @@ export function createSettingSections(model: EditorControlsModel) {
         ],
       },
       {
-        title: 'Theme picker',
+        title: t('editor.themePicker'),
         rows: [
           {
             id: 'theme-cards' as const,
-            title: 'Theme cards',
-            description: () =>
-              'How the theme picker draws each theme. Window is the default, Orb and Aa list are experiments.',
+            title: t('editor.themeCards'),
+            description: () => t('editor.themeCardsHint'),
             wide: true,
             control: () => (
               <Show when={theme()}>
                 {current => (
                   <ChoiceCards
-                    label="Theme cards"
-                    options={THEME_CARDS}
+                    label={t('editor.themeCards')}
+                    options={THEME_CARDS.map(option => ({
+                      ...option,
+                      name: t(option.name),
+                      hint: t(option.hint),
+                    }))}
                     value={preferences.themeCards()}
                     default={DEFAULT_CARDS}
                     onChange={preferences.setThemeCards}
@@ -370,20 +383,24 @@ export function createSettingSections(model: EditorControlsModel) {
   const target = () => getFrameState().exportTarget();
   const exportSection = {
     id: 'export' as const,
-    name: nameOf('export'),
+    get name() {
+      return nameOf('export');
+    },
     icon: ExportIcon,
-    intro: 'What Export gives. The Export button uses these at once.',
+    get intro() {
+      return t('editor.exportHint');
+    },
     groups: createMemo(() => [
       {
-        title: 'Image',
+        title: t('editor.image'),
         rows: [
           {
             id: 'export-format' as const,
-            title: 'Format',
+            title: t('editor.format'),
             description: () =>
               exportStore.get.extension === ExportExtension.jpeg
-                ? 'The file type. JPEG keeps no transparency.'
-                : 'The file type of the image.',
+                ? t('editor.jpegHint')
+                : t('editor.formatHint'),
             control: () => (
               <Segmented
                 value={exportStore.get.extension}
@@ -400,9 +417,11 @@ export function createSettingSections(model: EditorControlsModel) {
             ? [
                 {
                   id: 'export-quality' as const,
-                  title: 'Quality',
+                  title: t('export.quality'),
                   description: () =>
-                    `${exportStore.get.jpegQuality}%. Lower makes a smaller file.`,
+                    t('editor.qualityHint', {
+                      quality: String(exportStore.get.jpegQuality),
+                    }),
                   control: () => (
                     <div class={styles.range}>
                       <RangeField
@@ -421,11 +440,16 @@ export function createSettingSections(model: EditorControlsModel) {
             : []),
           {
             id: 'export-scale' as const,
-            title: 'Scale',
+            title: t('export.pixelRatio'),
             description: () =>
               target()
-                ? `${target()?.name}: ${target()?.resolution.join(' × ')} pixels.` // i18n
-                : `The image is ${exportStore.canvasResolution()} pixels.`,
+                ? t('editor.targetPixels', {
+                    name: target() ? t(`frame.targets.${target()!.id}`) : '',
+                    resolution: target()?.resolution.join(' × ') ?? '',
+                  })
+                : t('editor.imagePixels', {
+                    resolution: exportStore.canvasResolution(),
+                  }),
             control: () => (
               <Show
                 when={!target()}
@@ -461,18 +485,17 @@ export function createSettingSections(model: EditorControlsModel) {
         ],
       },
       {
-        title: 'Tabs',
+        title: t('editor.tabs'),
         rows: [
           {
             id: 'export-active-tab' as const,
-            title: 'Only the active tab',
-            description: () =>
-              'The window shows the active tab alone, without the other tabs.',
+            title: t('exportTabs.showOnlyActiveTab'),
+            description: () => t('editor.activeTabHint'),
             small: true,
             control: () => (
               <SwitchField
                 id="settings-export-active-tab"
-                label="Only the active tab"
+                label={t('exportTabs.showOnlyActiveTab')}
                 checked={exportStore.get.showOnlyActiveTab}
                 onChange={exportStore.setShowOnlyActiveTab}
               />
@@ -532,7 +555,9 @@ export function createSettingSections(model: EditorControlsModel) {
 
   const about = {
     id: 'about' as const,
-    name: nameOf('about'),
+    get name() {
+      return nameOf('about');
+    },
     icon: AboutIcon,
     groups: createMemo(() => [
       {
@@ -541,8 +566,8 @@ export function createSettingSections(model: EditorControlsModel) {
           {
             id: 'version' as const,
             small: true,
-            title: 'Version',
-            description: () => 'The release of CodeImage you are using.',
+            title: t('editor.version'),
+            description: () => t('editor.versionHint'),
             control: () => (
               <span class={styles.value}>{appEnvironment.version}</span>
             ),
@@ -551,7 +576,7 @@ export function createSettingSections(model: EditorControlsModel) {
             id: 'github' as const,
             small: true,
             title: 'GitHub',
-            description: () => 'The source code, issues and feedback.',
+            description: () => t('editor.githubHint'),
             control: () => (
               <a
                 class={buttonStyles.button({theme: 'secondary', size: 'sm'})}
@@ -559,9 +584,9 @@ export function createSettingSections(model: EditorControlsModel) {
                 target="_blank"
                 rel="noreferrer"
                 href="https://github.com/riccardoperra/codeimage"
-                aria-label="Open CodeImage on GitHub"
+                aria-label={t('editor.openGithub')}
               >
-                Open
+                {t('toolbar.openNewTab')}
                 <ExternalIcon size={14} />
               </a>
             ),
@@ -571,17 +596,17 @@ export function createSettingSections(model: EditorControlsModel) {
       ...(auth.loggedIn()
         ? [
             {
-              title: 'Account',
+              title: t('editor.account'),
               rows: [
                 {
                   id: 'logout' as const,
                   small: true,
-                  title: 'Log out',
+                  title: t('editor.logout'),
                   description: () => {
                     const name = auth.user()?.name;
                     return name
-                      ? `You are signed in as ${name}.`
-                      : 'You are signed in.';
+                      ? t('editor.signedInAs', {name})
+                      : t('editor.signedIn');
                   },
                   control: () => (
                     <Button
@@ -592,7 +617,7 @@ export function createSettingSections(model: EditorControlsModel) {
                         void auth.signOut().then(() => navigate('/'));
                       }}
                     >
-                      Log out
+                      {t('editor.logout')}
                     </Button>
                   ),
                 },

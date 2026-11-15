@@ -1,3 +1,5 @@
+import type {AppLocaleEntries} from '../../../i18n';
+import {useI18n} from '@codeimage/locale';
 import {getAuth0State} from '@codeimage/store/auth/auth0';
 import {getEditorSyncAdapter} from '@codeimage/store/editor/createEditorSync';
 import {buttonStyles, IconButton, Link} from '@codeui/kit';
@@ -8,7 +10,7 @@ import {CodeImageLogoV2} from '../../../components/Icons/CodeImageLogoV2';
 import {CollectionIcon} from '../../../components/Icons/Collection';
 import {ShareButton} from '../../../components/Toolbar/ShareButton';
 import {ToolbarSnippetName} from '../../../components/Toolbar/ToolbarSnippetName';
-import {UserBadge} from '../../../components/UserBadge/UserBadge';
+import {UserBadge} from '../localized/UserBadge';
 import type {Stage} from '../stage';
 import * as styles from './header.css';
 import {SettingsIcon} from './icons';
@@ -21,6 +23,7 @@ import {settings} from './settings-state';
  * The menu's other entries live in the settings dialog and the command menu.
  */
 export function Header(props: {stage: Stage}) {
+  const [t] = useI18n<AppLocaleEntries>();
   // The production buttons pick their size once, at load, from this.
   const modality = useModality();
   const loggedIn = () => getAuth0State().loggedIn();
@@ -46,7 +49,7 @@ export function Header(props: {stage: Stage}) {
           })}
         >
           <CollectionIcon />
-          Dashboard
+          {t('editor.dashboard')}
         </Link>
       </Show>
 
@@ -63,8 +66,8 @@ export function Header(props: {stage: Stage}) {
             size={'sm'}
             theme={'secondary'}
             variant={'ghost'}
-            aria-label={'Settings'}
-            title={'Settings'}
+            aria-label={t('editor.settings')}
+            title={t('editor.settings')}
             aria-haspopup="dialog"
             data-settings-trigger
             onClick={() => settings.open()}

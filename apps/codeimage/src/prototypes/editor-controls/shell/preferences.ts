@@ -6,20 +6,20 @@ import {setThemeStyle, THEME_STYLES, themeStyle} from '../theme-styles/style';
 export const LAYOUTS = [
   {
     id: 'inspector',
-    name: 'Inspector',
-    hint: 'One panel beside the canvas',
+    name: 'editor.inspector',
+    hint: 'editor.inspectorHint',
     param: '2',
   },
   {
     id: 'dock',
-    name: 'Dock',
-    hint: 'A dock floating over the canvas',
+    name: 'editor.dock',
+    hint: 'editor.dockHint',
     param: '3',
   },
   {
     id: 'studio',
-    name: 'Studio',
-    hint: 'A rail with one panel per area',
+    name: 'editor.studio',
+    hint: 'editor.studioHint',
     param: '4',
   },
 ] as const;
@@ -29,9 +29,9 @@ export type InspectorSide = 'left' | 'right';
 
 /** The theme card styles a user can choose, by their id in `theme-styles/`. */
 export const THEME_CARDS = [
-  {id: 'window', name: 'Window', hint: 'A miniature of the window'},
-  {id: 'orb', name: 'Orb', hint: 'One soft mark per theme'},
-  {id: 'aa', name: 'Aa list', hint: 'One compact row per theme'},
+  {id: 'window', name: 'frame.terminal', hint: 'editor.windowHint'},
+  {id: 'orb', name: 'editor.orb', hint: 'editor.orbHint'},
+  {id: 'aa', name: 'editor.aa', hint: 'editor.aaHint'},
 ] as const;
 
 export type ThemeCardsId = (typeof THEME_CARDS)[number]['id'];

@@ -1,13 +1,15 @@
+import type {AppLocaleEntries} from '../../../../i18n';
+import {useI18n} from '@codeimage/locale';
 import {Button} from '@codeui/kit';
 import {Show, createSignal, onCleanup, onMount} from 'solid-js';
 import type {JSX, ParentProps} from 'solid-js';
-import {ColorPickerPopover} from '../../../../components/PropertyEditor/controls/ColorPicker/ColorPicker';
+import {ColorPickerPopover} from '../../localized/ColorPicker';
 import {
   PanelRow,
   TwoColumnPanelRow,
 } from '../../../../components/PropertyEditor/PanelRow';
 import {SidebarPopover} from '../../../../components/PropertyEditor/SidebarPopover/SidebarPopover';
-import {SidebarPopoverTitle} from '../../../../components/PropertyEditor/SidebarPopover/SidebarPopoverTitle';
+import {SidebarPopoverTitle} from '../../localized/SidebarPopoverTitle';
 import {AmbientSwatch} from '../../controls/AmbientSwatch';
 import {ControlRow as SharedRow} from '../../controls/ControlRow';
 import * as shared from '../../controls/controls.css';
@@ -65,17 +67,21 @@ function Overlay(
 }
 
 function ColorPickerContent(props: {control: BackgroundControl}) {
+  const [t] = useI18n<AppLocaleEntries>();
   let content: HTMLDivElement | undefined;
   onMount(() => {
     const enhancePresets = () => {
       content
         ?.querySelector('input')
-        ?.setAttribute('aria-label', 'Color or gradient');
+        ?.setAttribute('aria-label', t('editor.colorOrGradient'));
       for (const item of content?.querySelectorAll<HTMLElement>('div[title]') ??
         []) {
         item.setAttribute('role', 'button');
         item.tabIndex = 0;
-        item.setAttribute('aria-label', `Background fill ${item.title}`);
+        item.setAttribute(
+          'aria-label',
+          t('editor.backgroundFill', {value: item.title}),
+        );
         item.setAttribute(
           'aria-pressed',
           String(item.title === props.control.value()),
@@ -123,12 +129,13 @@ function ColorPickerContent(props: {control: BackgroundControl}) {
 }
 
 function Background(props: {control: BackgroundControl}) {
+  const [t] = useI18n<AppLocaleEntries>();
   return (
     <Overlay
       id="inspector-background"
-      label="Background"
-      title="Background"
-      value="Color & image"
+      label={t('frame.background')}
+      title={t('frame.background')}
+      value={t('editor.colorImage')}
       swatch={props.control.value()}
     >
       <ColorPickerContent control={props.control} />
@@ -141,6 +148,7 @@ function Background(props: {control: BackgroundControl}) {
  * which open over the panel.
  */
 export function ControlRow(props: {control: Control}) {
+  const [t] = useI18n<AppLocaleEntries>();
   const control = props.control;
   if (control.kind === 'background' || control.id === 'frame.backgroundImage')
     return (
@@ -158,7 +166,7 @@ export function ControlRow(props: {control: Control}) {
                   id="inspector-background-image"
                   label={control.label()}
                   title={control.label()}
-                  value="Choose image"
+                  value={t('editor.chooseImage')}
                 >
                   <control.Control />
                 </Overlay>

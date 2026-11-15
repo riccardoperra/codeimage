@@ -1,3 +1,4 @@
+import type {LocaleKeys} from '@codeimage/locale';
 import {
   AVAILABLE_COLORS,
   AVAILABLE_GRADIENTS,
@@ -25,8 +26,8 @@ import {shadowsLabel} from '@core/configuration/shadow';
 import {getUmami} from '@core/constants/umami';
 import type {Accessor, Component} from 'solid-js';
 import {createMemo, createSelector} from 'solid-js';
-import {FontPicker} from '../../components/PropertyEditor/controls/FontPicker/FontPicker';
-import {ImagePicker} from '../../components/PropertyEditor/controls/ImagePicker/ImagePicker';
+import {FontPicker} from './localized/FontPicker';
+import {ImagePicker} from './localized/ImagePicker';
 import {SavedSignaturesField} from './controls/SavedSignatures';
 import {
   SignatureAvatarField,
@@ -44,6 +45,19 @@ import type {PreviewSession} from './preview';
 import {createPreviewSession} from './preview';
 import type {SyntaxColors} from './syntax';
 import {readSyntaxColors} from './syntax';
+
+const FONT_WEIGHT_KEYS: Partial<Record<number, LocaleKeys<AppLocaleEntries>>> =
+  {
+    100: 'editor.weightThin',
+    200: 'editor.weightExtraLight',
+    300: 'editor.weightLight',
+    400: 'editor.weightRegular',
+    500: 'editor.weightMedium',
+    600: 'editor.weightSemiBold',
+    700: 'editor.weightBold',
+    800: 'editor.weightExtraBold',
+    900: 'editor.weightBlack',
+  };
 
 export type SectionId = 'frame' | 'signature' | 'window' | 'editor' | 'font';
 
@@ -415,7 +429,7 @@ export function createEditorControlsModel(): EditorControlsModel {
         {
           kind: 'custom',
           id: 'frame.backgroundImage',
-          label: () => 'Background image',
+          label: () => t('editor.backgroundImage'),
           visible: frameVisible,
           Control: () => (
             <ImagePicker
@@ -538,8 +552,8 @@ export function createEditorControlsModel(): EditorControlsModel {
           id: 'window.backgroundType',
           label: () => t('frame.backgroundType'),
           options: () => [
-            {label: 'Default', value: false},
-            {label: 'Alternative', value: true},
+            {label: t('editor.default'), value: false},
+            {label: t('editor.alternative'), value: true},
           ],
           value: () => terminal.state.alternativeTheme,
           set: terminal.setAlternativeTheme,
@@ -710,7 +724,9 @@ export function createEditorControlsModel(): EditorControlsModel {
           label: () => t('frame.fontWeight'),
           options: () =>
             (editor.computed.selectedFont()?.types ?? []).map(type => ({
-              label: type.name,
+              label: FONT_WEIGHT_KEYS[type.weight]
+                ? t(FONT_WEIGHT_KEYS[type.weight]!)
+                : String(type.weight),
               value: type.weight,
             })),
           value: () => editor.state.options.fontWeight,

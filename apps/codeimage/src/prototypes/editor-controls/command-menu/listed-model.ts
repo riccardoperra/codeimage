@@ -1,3 +1,6 @@
+import type {LocaleKeys} from '@codeimage/locale';
+import type {AppLocaleEntries} from '../../../i18n';
+import {useI18n} from '@codeimage/locale';
 import {getRootEditorStore} from '@codeimage/store/editor';
 import {EditorConfigStore} from '@codeimage/store/editor/config.store';
 import {provideState} from 'statebuilder';
@@ -25,19 +28,22 @@ export function shownTheme(model: EditorControlsModel): ThemeEntry | undefined {
 
 // Two-option choices of the model that are an on/off question.
 const SWITCHES: Partial<
-  Record<ControlId, {label: string; on: string; off: string}>
+  Record<
+    ControlId,
+    {label: LocaleKeys<AppLocaleEntries>; on: string; off: string}
+  >
 > = {
   'window.backgroundType': {
-    label: 'Alternative background',
+    label: 'editor.alternativeBackground',
     on: 'true',
     off: 'false',
   },
 };
 
-const LABELS: Partial<Record<ControlId, string>> = {
-  'window.style': 'Window style',
+const LABELS: Partial<Record<ControlId, LocaleKeys<AppLocaleEntries>>> = {
+  'window.style': 'editor.windowStyle',
   // Picking a theme also sets the background. This one keeps it.
-  'editor.theme': 'Syntax theme',
+  'editor.theme': 'editor.syntaxTheme',
 };
 
 export interface ListedModel {
@@ -59,6 +65,7 @@ export interface ListedModel {
  * with a name that says what turns on.
  */
 export function createListedModel(model: EditorControlsModel): ListedModel {
+  const [t] = useI18n<AppLocaleEntries>();
   const editor = getRootEditorStore();
   const config = provideState(EditorConfigStore);
 
@@ -80,11 +87,11 @@ export function createListedModel(model: EditorControlsModel): ListedModel {
 
   const asSwitch = (
     base: ChoiceControl,
-    spec: {label: string; on: string; off: string},
+    spec: {label: LocaleKeys<AppLocaleEntries>; on: string; off: string},
   ): ToggleControl => ({
     kind: 'toggle',
     id: base.id,
-    label: () => spec.label,
+    label: () => t(spec.label),
     visible: base.visible,
     value: () => base.value() === spec.on,
     set: on => base.set(on ? spec.on : spec.off),
@@ -105,7 +112,7 @@ export function createListedModel(model: EditorControlsModel): ListedModel {
 
   const relabel = (control: Control): Control => {
     const label = LABELS[control.id];
-    return label ? {...control, label: () => label} : control;
+    return label ? {...control, label: () => t(label)} : control;
   };
 
   const sections = model.sections.map(section => ({

@@ -21,7 +21,7 @@ import {SuspenseEditorItem} from '../../components/PropertyEditor/SuspenseEditor
 import {TerminalHost} from '../../components/Terminal/TerminalHost';
 import {ThemeBoxSkeleton} from '../../components/ThemeSwitcher/ThemeBoxSkeleton';
 import {themeBoxTerminalHost} from '../../components/ThemeSwitcher/ThemeSwitcher.css';
-import {CopyToClipboardButton} from '../../components/Toolbar/CopyToClipboardButton';
+import {CopyToClipboardButton} from './localized/CopyToClipboardButton';
 import {FitFrame} from './FitFrame';
 import * as placeholderStyles from './frame-placeholder.css';
 import type {ThemeEntry} from './model';
@@ -29,15 +29,10 @@ import type {Exporter} from './shell/export';
 import {createExporter} from './shell/export';
 import {ExportControl} from './shell/ExportControl';
 
-// `?frame-delay=<ms>` holds the lazy frame back, to look at its placeholder
-// as a slow network shows it.
-const frameDelay =
-  Number(new URLSearchParams(location.search).get('frame-delay')) || 0;
-
 const ManagedFrame = lazy(() =>
-  new Promise(resolve => setTimeout(resolve, frameDelay))
-    .then(() => import('../../components/Frame/ManagedFrame'))
-    .then(m => ({default: m.ManagedFrame})),
+  import('../../components/Frame/ManagedFrame').then(m => ({
+    default: m.ManagedFrame,
+  })),
 );
 
 const CustomEditorPreview = lazy(

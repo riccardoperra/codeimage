@@ -1,8 +1,11 @@
+import type {LocaleKeys} from '@codeimage/locale';
+import type {AppLocaleEntries} from '../../../i18n';
+import {useI18n} from '@codeimage/locale';
 import {NewDot} from '../../../components/WhatsNew/NewDot';
 import {RangeField} from '@codeimage/ui';
 import {NumberField} from '@codeui/kit';
 import type {JSX} from 'solid-js';
-import {Show} from 'solid-js';
+import {createEffect, Show} from 'solid-js';
 import {Dynamic} from 'solid-js/web';
 import {
   PanelRow,
@@ -26,7 +29,7 @@ import {
 import {PickerField} from './ControlOverlay';
 
 interface Look {
-  readonly label?: string;
+  readonly label?: LocaleKeys<AppLocaleEntries>;
   /** A two-value choice drawn as a switch: the key that means on, and off. */
   readonly asSwitch?: {readonly on: string; readonly off: string};
 }
@@ -35,10 +38,10 @@ interface Look {
 // says what turns on, so they read the same in every layout.
 const LOOKS: Partial<Record<ControlId, Look>> = {
   'window.backgroundType': {
-    label: 'Alternative background',
+    label: 'editor.alternativeBackground',
     asSwitch: {on: 'true', off: 'false'},
   },
-  'window.style': {label: 'Window style'},
+  'window.style': {label: 'editor.windowStyle'},
 };
 
 export interface ControlRowProps {
@@ -56,6 +59,7 @@ export interface ControlRowProps {
  * which places the colour picker its own way.
  */
 export function ControlRow(props: ControlRowProps): JSX.Element {
+  const [t] = useI18n<AppLocaleEntries>();
   // The kind of a control never changes, so the branch runs once.
   const control = props.control;
   const look = LOOKS[control.id] ?? {};
@@ -174,7 +178,9 @@ export function ControlRow(props: ControlRowProps): JSX.Element {
               max={control.max}
               value={control.value()}
               ref={(element?: HTMLElement) =>
-                element?.setAttribute('aria-label', control.label())
+                createEffect(() =>
+                  element?.setAttribute('aria-label', control.label()),
+                )
               }
               onChange={value => {
                 if (typeof value === 'number') control.set(value);
@@ -209,7 +215,7 @@ export function ControlRow(props: ControlRowProps): JSX.Element {
       >
         <PanelRow
           for={labelFor}
-          label={look.label ?? control.label()}
+          label={look.label ? t(look.label) : control.label()}
           labelAccessory={<NewDot at={`control:${control.id}`} />}
         >
           <TwoColumnPanelRow>{element}</TwoColumnPanelRow>

@@ -82,6 +82,7 @@ export const dashboard = {
   },
   de: {
     dashboard: {
+      projectCreateSuccess: 'Projekt erfolgreich erstellt',
       myProjects: 'My projects',
       new: 'New',
       errorCreatingProject: 'An error occurred!',
@@ -121,6 +122,7 @@ export const dashboard = {
   },
   es: {
     dashboard: {
+      projectCreateSuccess: 'Proyecto creado correctamente',
       myProjects: 'My projects',
       new: 'New',
       created: 'Created',

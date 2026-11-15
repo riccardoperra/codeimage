@@ -23,7 +23,7 @@ export function WindowStyleTiles(props: {control: SelectControl}) {
   return (
     <RadioGroup
       class={styles.windowGrid}
-      aria-label="Window style"
+      aria-label={t('editor.windowStyle')}
       value={props.control.value()}
       onChange={props.control.set}
     >

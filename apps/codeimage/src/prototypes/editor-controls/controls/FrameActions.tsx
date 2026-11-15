@@ -1,3 +1,5 @@
+import type {AppLocaleEntries} from '../../../i18n';
+import {useI18n} from '@codeimage/locale';
 import {getActiveEditorStore} from '@codeimage/store/editor/activeEditor';
 import {dispatchRandomTheme} from '@codeimage/store/effects/onThemeChange';
 import {HStack} from '@codeimage/ui';
@@ -5,7 +7,7 @@ import {Button} from '@codeui/kit';
 import {createAsyncAction} from '@core/hooks/async-action';
 import {ColorSwatchIcon} from '../../../components/Icons/ColorSwatch';
 import {SparklesIcon} from '../../../components/Icons/SparklesIcon';
-import {CopyToClipboardButton} from '../../../components/Toolbar/CopyToClipboardButton';
+import {CopyToClipboardButton} from '../localized/CopyToClipboardButton';
 import {ExportInNewTabButton} from '../../../components/Toolbar/ExportNewTabButton';
 import * as styles from '../../../components/Toolbar/FrameToolbar.css';
 
@@ -15,6 +17,7 @@ import * as styles from '../../../components/Toolbar/FrameToolbar.css';
  * the Export control opens them.
  */
 export function FrameActions(props: {frameRef: HTMLElement | undefined}) {
+  const [t] = useI18n<AppLocaleEntries>();
   const activeEditor = getActiveEditorStore();
   const [formatAction, {notify: dispatchFormat}] = createAsyncAction(() =>
     activeEditor.format(),
@@ -30,7 +33,7 @@ export function FrameActions(props: {frameRef: HTMLElement | undefined}) {
           leftIcon={<ColorSwatchIcon />}
           onClick={() => dispatchRandomTheme()}
         >
-          Randomize
+          {t('editor.randomizeShort')}
         </Button>
         <Button
           size={'xs'}
@@ -40,7 +43,7 @@ export function FrameActions(props: {frameRef: HTMLElement | undefined}) {
           disabled={!activeEditor.canFormat()}
           onClick={() => dispatchFormat()}
         >
-          Format
+          {t('editor.formatShort')}
         </Button>
         <ExportInNewTabButton canvasRef={props.frameRef} size={'xs'} />
       </HStack>

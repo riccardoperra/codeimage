@@ -2,7 +2,7 @@ import {getFrameState} from '@codeimage/store/editor/frame';
 import {createSelectOptions, Select} from '@codeui/kit';
 import {Switch} from '@kobalte/core/switch';
 import {SegmentedField} from '@ui/SegmentedField/SegmentedField';
-import {AspectRatioPicker} from '../../../components/PropertyEditor/controls/AspectRatioPicker/AspectRatioPicker';
+import {AspectRatioPicker} from '../localized/AspectRatioPicker';
 import type {ControlId, SegmentedControl, SelectControl} from '../model';
 import * as styles from './controls.css';
 

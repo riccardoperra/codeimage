@@ -37,7 +37,7 @@ export const uiLocale = {
     colorPicker: {
       color: 'Farbe',
       gradient: 'Farbverlauf',
-      background: 'Custom',
+      background: 'Benutzerdefiniert',
     },
     shadows: {
       lg: 'Groß',
@@ -54,7 +54,7 @@ export const uiLocale = {
     colorPicker: {
       color: 'Color',
       gradient: 'Gradiente',
-      background: 'Custom',
+      background: 'Personalizado',
     },
     shadows: {
       lg: 'Larga',
