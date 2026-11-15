@@ -9,3 +9,6 @@ dist
 .idea
 .pnpm-store/
 .DS_STORE
+
+/docs/plans/media/
+/docs/ui-prototypes/screenshots/

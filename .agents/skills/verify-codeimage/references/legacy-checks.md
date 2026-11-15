@@ -1,6 +1,6 @@
 # Replace legacy checks without losing coverage
 
-Retire a script only after its assertions have a passing replacement. Keep historical screenshots and recorded measurements.
+Retire a script only after its assertions have a passing replacement. Keep reviewed fixtures beside their consuming checks. Store per-run screenshots and measurements outside the checkout.
 
 | Existing script | Replacement or reason to keep | Action |
 | --- | --- | --- |
@@ -14,7 +14,7 @@ Retire a script only after its assertions have a passing replacement. Keep histo
 | App `verify-locale-parity.mjs` and `verify-i18n.mjs` | Dictionary parity and all locales/layouts/viewports | Keep |
 | App `verify-review.mjs` | Every image entry point, focus and overlay geometry across layouts and viewports | Keep |
 
-The app scripts above live in `apps/codeimage/src/prototypes/editor-controls/`. None of these commands is invoked by the current package scripts or GitHub workflows. Historical evidence docs reference several commands and must remain intelligible after a retirement.
+The app scripts above live in `apps/codeimage/src/prototypes/editor-controls/`. None of these commands is invoked by the current package scripts or GitHub workflows. Reusable commands from the retired reports are in [specialist checks](specialist-checks.md). The historical reports remain in Git history.
 
 ## Execution order
 
