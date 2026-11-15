@@ -20,8 +20,10 @@ Only Inter and JetBrains Mono ship in `dist/fonts`. Other fonts come from a
 build-generated catalog of immutable URLs, sizes, cmap-narrowed Unicode ranges
 and SHA-256 hashes. Takumi selects the needed subsets. Each request owns its
 native renderer and verified buffers, so concurrent or earlier requests cannot
-change its font selection. The selected code font's Latin/default face loads
-before selection because its metrics affect CJK-only line boxes.
+change its font selection. The faces of the UI, signature and code fonts that
+cover U+0020 load before selection: a line box takes its height from that face
+even when it holds no text, so it never depends on the fallbacks other text
+needed.
 
 The fallback order is Twemoji, Noto Sans SC, then Noto Sans KR. Japanese text
 uses Noto Sans SC glyph shapes. Characters absent from these fonts retain the
