@@ -1,6 +1,11 @@
 export const animationLocale = {
   en: {
     animation: {
+      addStepRow: 'Add step',
+      closeStep: 'Close step settings',
+      tab: 'Tab',
+      transitionShort: 'Transition',
+      holdShort: 'Hold',
       increaseDuration: 'Increase duration by 100 ms',
       decreaseDuration: 'Decrease duration by 100 ms',
       addStep: 'Add to animation',
@@ -54,6 +59,11 @@ export const animationLocale = {
   },
   it: {
     animation: {
+      addStepRow: 'Aggiungi passaggio',
+      closeStep: 'Chiudi impostazioni passaggio',
+      tab: 'Scheda',
+      transitionShort: 'Transizione',
+      holdShort: 'Pausa',
       increaseDuration: 'Aumenta la durata di 100 ms',
       decreaseDuration: 'Riduci la durata di 100 ms',
       addStep: 'Aggiungi all’animazione',
@@ -108,6 +118,11 @@ export const animationLocale = {
   },
   de: {
     animation: {
+      addStepRow: 'Schritt hinzufügen',
+      closeStep: 'Schritteinstellungen schließen',
+      tab: 'Tab',
+      transitionShort: 'Übergang',
+      holdShort: 'Halten',
       increaseDuration: 'Dauer um 100 ms erhöhen',
       decreaseDuration: 'Dauer um 100 ms verringern',
       addStep: 'Zur Animation hinzufügen',
@@ -162,6 +177,11 @@ export const animationLocale = {
   },
   es: {
     animation: {
+      addStepRow: 'Añadir paso',
+      closeStep: 'Cerrar ajustes del paso',
+      tab: 'Pestaña',
+      transitionShort: 'Transición',
+      holdShort: 'Pausa',
       increaseDuration: 'Aumentar la duración en 100 ms',
       decreaseDuration: 'Reducir la duración en 100 ms',
       addStep: 'Añadir a la animación',
