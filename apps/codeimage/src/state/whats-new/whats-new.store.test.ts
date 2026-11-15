@@ -414,3 +414,57 @@ it('keeps upcoming ids out of every dot and the release consumed by all announce
   }
   app.dispose();
 });
+
+it('persists minimizing once, keeps every highlight fresh, and changes an already open tab on focus', async () => {
+  const db = database();
+  const track = vi.fn();
+  Object.assign(window, {umami: {track}});
+  const visit = () =>
+    createRoot(dispose => {
+      const store = createWhatsNew(db, () => Date.parse('2026-11-15'));
+      return {store, announcement: store.announce(() => () => true), dispose};
+    });
+  const a = visit();
+  const b = visit();
+  let reloaded: ReturnType<typeof visit> | undefined;
+  try {
+    await settle();
+    expect(a.announcement()?.surface).toBe('showcase');
+    expect(b.announcement()?.surface).toBe('showcase');
+    a.store.minimize('2.0');
+    a.store.minimize('2.0');
+    await settle();
+    expect(a.announcement()?.surface).toBe('nudge');
+    expect(await db.get('whats-new')).toEqual({
+      v: 1,
+      seen: [],
+      dismissed: [],
+      minimized: ['2.0'],
+    });
+    expect(
+      track.mock.calls.filter(([event]) => event === 'whats-new-minimized'),
+    ).toEqual([['whats-new-minimized', {surface: 'showcase', release: '2.0'}]]);
+    for (const h of RELEASES[0].highlights)
+      expect(a.store.isNew(h.id)).toBe(true);
+    window.dispatchEvent(new Event('focus'));
+    await settle();
+    expect(b.announcement()?.surface).toBe('nudge');
+    expect(
+      track.mock.calls.filter(([event]) => event === 'whats-new-minimized'),
+    ).toHaveLength(1);
+    reloaded = visit();
+    await settle();
+    expect(reloaded.announcement()?.surface).toBe('nudge');
+    a.store.dismiss();
+    await settle();
+    window.dispatchEvent(new Event('focus'));
+    await settle();
+    expect(b.announcement()).toBeNull();
+    expect(reloaded.announcement()).toBeNull();
+  } finally {
+    a.dispose();
+    b.dispose();
+    reloaded?.dispose();
+    Reflect.deleteProperty(window, 'umami');
+  }
+});

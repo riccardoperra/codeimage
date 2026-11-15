@@ -62,6 +62,7 @@ export function WhatsNewHost(props: {quiet?: Accessor<boolean>}) {
   // oxlint-disable-next-line solid/reactivity
   const announcement = news.announce(() => watchQuiet(props.quiet));
   const current = () => (reviewing ? review() : announcement());
+  const [minimizedWithKeyboard, setMinimizedWithKeyboard] = createSignal(false);
   const dismiss = () => {
     setReview(null);
     news.dismiss();
@@ -72,9 +73,24 @@ export function WhatsNewHost(props: {quiet?: Accessor<boolean>}) {
       {entry => (
         <Show
           when={entry().surface === 'nudge'}
-          fallback={<Showcase release={entry().release} dismiss={dismiss} />}
+          fallback={
+            <Showcase
+              release={entry().release}
+              dismiss={dismiss}
+              minimize={keyboard => {
+                setMinimizedWithKeyboard(keyboard);
+                news.minimize(entry().release.id);
+                if (reviewing)
+                  setReview({surface: 'nudge', release: entry().release});
+              }}
+            />
+          }
         >
-          <Nudge release={entry().release} dismiss={dismiss} />
+          <Nudge
+            release={entry().release}
+            dismiss={dismiss}
+            keyboardMinimize={minimizedWithKeyboard()}
+          />
         </Show>
       )}
     </Show>

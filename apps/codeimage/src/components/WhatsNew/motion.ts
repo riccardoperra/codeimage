@@ -16,6 +16,7 @@ export const curve = {
 /** Milliseconds. */
 export const duration = {
   press: 120,
+  minimize: 200,
   coachmarkIn: 180,
   coachmarkOut: 120,
   nudgeIn: 400,

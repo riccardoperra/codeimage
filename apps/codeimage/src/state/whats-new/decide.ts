@@ -8,8 +8,8 @@ export const DOT_LIMIT = 3;
 const DAY_MS = 86_400_000;
 
 /**
- * Everything one device remembers. Both sets only grow, so merging two copies
- * is a union and any order of writes from any number of tabs converges.
+ * Everything one device remembers. All three sets only grow. Merging copies
+ * is a union, so writes from any number of tabs converge in any order.
  *
  * Members are plain strings because another tab running a newer bundle may
  * have stored ids this bundle does not know, and they must survive a write.
@@ -17,15 +17,21 @@ const DAY_MS = 86_400_000;
 export interface Facts {
   readonly seen: ReadonlySet<string>;
   readonly dismissed: ReadonlySet<string>;
+  readonly minimized: ReadonlySet<string>;
 }
 
 export interface StoredFacts {
   readonly v: 1;
   readonly seen: readonly string[];
   readonly dismissed: readonly string[];
+  readonly minimized: readonly string[];
 }
 
-export const NO_FACTS: Facts = {seen: new Set(), dismissed: new Set()};
+export const NO_FACTS: Facts = {
+  seen: new Set(),
+  dismissed: new Set(),
+  minimized: new Set(),
+};
 
 type HighlightIdOf<R extends Release> = R['highlights'][number]['id'];
 
@@ -46,8 +52,8 @@ function isExpired(release: Release, now: number): boolean {
 }
 
 /**
- * Adding a fact can only shrink `fresh` and can only turn `announcement` into
- * null. Nothing a user does makes something new again.
+ * Adding a fact can shrink `fresh`, dismiss an announcement, or minimize it
+ * into the Nudge. Nothing a user does makes a highlight new again.
  */
 export function decide<R extends Release>(
   releases: readonly R[],
@@ -76,7 +82,13 @@ export function decide<R extends Release>(
 
   return {
     announcement: announce
-      ? {surface: latest.major ? 'showcase' : 'nudge', release: latest}
+      ? {
+          surface:
+            latest.major && !facts.minimized.has(latest.id)
+              ? 'showcase'
+              : 'nudge',
+          release: latest,
+        }
       : null,
     dots,
     fresh,
@@ -87,6 +99,7 @@ export function mergeFacts(a: Facts, b: Facts): Facts {
   return {
     seen: new Set([...a.seen, ...b.seen]),
     dismissed: new Set([...a.dismissed, ...b.dismissed]),
+    minimized: new Set([...a.minimized, ...b.minimized]),
   };
 }
 
@@ -106,6 +119,7 @@ export function parseFacts(raw: unknown): Facts {
   return {
     seen: new Set(strings(record.seen)),
     dismissed: new Set(strings(record.dismissed)),
+    minimized: new Set(strings(record.minimized)),
   };
 }
 
@@ -114,6 +128,7 @@ export function serializeFacts(facts: Facts): StoredFacts {
     v: 1,
     seen: [...facts.seen].sort(),
     dismissed: [...facts.dismissed].sort(),
+    minimized: [...facts.minimized].sort(),
   };
 }
 

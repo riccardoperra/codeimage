@@ -1,12 +1,19 @@
 import {useI18n} from '@codeimage/locale';
 import type {AppLocaleEntries} from '../../i18n';
-import {Button, Dialog, IconButton, icons} from '@codeui/kit';
+import {Button, Dialog, IconButton, icons, Tooltip} from '@codeui/kit';
 import {Dialog as KDialog} from '@kobalte/core/dialog';
-import {createEffect, For, onCleanup, Show} from 'solid-js';
+import {createEffect, For, onCleanup, onMount, Show, untrack} from 'solid-js';
 import {Dynamic} from 'solid-js/web';
 import {getWhatsNew, type RELEASES} from '../../state/whats-new';
 import {illustrations} from './illustrations';
-import {ms, showcaseAt} from './motion';
+import {
+  curve,
+  duration,
+  fromKeyboard,
+  ms,
+  reduceMotion,
+  showcaseAt,
+} from './motion';
 import {releaseDate, releaseTitle} from './releaseDate';
 import * as styles from './whats-new.css';
 
@@ -20,8 +27,66 @@ const cardAt = (index: number) => {
 export function Showcase(props: {
   release: (typeof RELEASES)[number];
   dismiss: () => void;
+  minimize: (keyboard: boolean) => void;
 }) {
   const news = getWhatsNew();
+  let title!: HTMLDivElement;
+  let exit: Animation | undefined;
+  let minimizing = false;
+  let disposed = false;
+  onMount(() => {
+    const panel = title.closest('[role="dialog"]');
+    // During the exit, Escape must reach dismissal before a tooltip consumes it.
+    const interrupt = (event: Event) => {
+      if (
+        !minimizing ||
+        !(event instanceof KeyboardEvent) ||
+        event.key !== 'Escape'
+      )
+        return;
+      event.preventDefault();
+      event.stopPropagation();
+      props.dismiss();
+    };
+    panel?.addEventListener('keydown', interrupt, true);
+    onCleanup(() => panel?.removeEventListener('keydown', interrupt, true));
+  });
+  const minimize = (event: MouseEvent) => {
+    if (minimizing) return;
+    const keyboard = fromKeyboard(event);
+    if (keyboard) return props.minimize(true);
+    const panel = title.closest<HTMLElement>('[role="dialog"]');
+    if (!panel) return props.minimize(false);
+    minimizing = true;
+    const box = panel.getBoundingClientRect();
+    const phone = matchMedia('(max-width: 768px)').matches;
+    const x = (phone ? 12 : 28) - box.left;
+    const scale = Math.min(0.94, 340 / box.width);
+    const y = window.innerHeight - (phone ? 76 : 28) - box.bottom;
+    panel.style.transformOrigin = 'bottom left';
+    const reduced = matchMedia(reduceMotion).matches;
+    exit = panel.animate(
+      reduced
+        ? [{opacity: 1}, {opacity: 0}]
+        : [
+            {opacity: 1, transform: getComputedStyle(panel).transform},
+            {
+              opacity: 0,
+              transform: `translate(${x}px, ${y}px) scale(${scale})`,
+            },
+          ],
+      {duration: duration.minimize, easing: curve.out, fill: 'forwards'},
+    );
+    void exit.finished
+      .then(() => {
+        if (!disposed) untrack(() => props.minimize(false));
+      })
+      .catch(() => {});
+  };
+  onCleanup(() => {
+    disposed = true;
+    exit?.cancel();
+  });
   onCleanup(() =>
     requestAnimationFrame(() => {
       // An announcement has no opener for the modal to restore focus to.
@@ -52,16 +117,41 @@ export function Showcase(props: {
         if (!open) props.dismiss();
       }}
     >
-      <div class={styles.sheetTitle}>
+      <div ref={title} class={styles.sheetTitle}>
         <KDialog.Title>{t('editor.whatsNew')}</KDialog.Title>
-        <KDialog.CloseButton
-          as={IconButton}
-          aria-label={t('common.close')}
-          size="xs"
-          theme="secondary"
-        >
-          <icons.CloseIcon />
-        </KDialog.CloseButton>
+        <div class={styles.headerActions}>
+          <Tooltip content={t('whatsNew.minimize')}>
+            <IconButton
+              size="xs"
+              theme="secondary"
+              aria-label={t('whatsNew.minimize')}
+              onClick={minimize}
+            >
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 16 16"
+                fill="none"
+                aria-hidden="true"
+              >
+                <path
+                  d="M3 8h10"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                />
+              </svg>
+            </IconButton>
+          </Tooltip>
+          <KDialog.CloseButton
+            as={IconButton}
+            aria-label={t('common.close')}
+            size="xs"
+            theme="secondary"
+          >
+            <icons.CloseIcon />
+          </KDialog.CloseButton>
+        </div>
       </div>
       <div class={styles.sheet} data-whats-new="showcase">
         <header class={styles.hero}>

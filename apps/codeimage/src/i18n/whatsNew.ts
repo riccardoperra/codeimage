@@ -9,6 +9,7 @@ type WhatsNewMessages = Record<
 };
 
 const en = {
+  minimize: "Minimize what's new",
   alsoNew: 'Also new',
   newOne: '1 new thing',
   newMany: '{{count}} new things',
@@ -86,6 +87,7 @@ const en = {
 };
 
 const it = {
+  minimize: 'Riduci le novità',
   alsoNew: 'Altre novità',
   newOne: '1 novità',
   newMany: '{{count}} novità',
@@ -163,6 +165,7 @@ const it = {
 } satisfies WhatsNewMessages;
 
 const de = {
+  minimize: 'Neuigkeiten minimieren',
   alsoNew: 'Außerdem neu',
   newOne: '1 Neuerung',
   newMany: '{{count}} Neuerungen',
@@ -240,6 +243,7 @@ const de = {
 } satisfies WhatsNewMessages;
 
 const es = {
+  minimize: 'Minimizar las novedades',
   alsoNew: 'Más novedades',
   newOne: '1 novedad',
   newMany: '{{count}} novedades',

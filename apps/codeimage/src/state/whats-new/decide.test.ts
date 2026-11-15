@@ -11,9 +11,14 @@ import type {Release} from './registry';
 import {RELEASES, UPCOMING} from './registry';
 
 const day = (iso: string) => Date.parse(iso);
-const facts = (seen: string[] = [], dismissed: string[] = []): Facts => ({
+const facts = (
+  seen: string[] = [],
+  dismissed: string[] = [],
+  minimized: string[] = [],
+): Facts => ({
   seen: new Set(seen),
   dismissed: new Set(dismissed),
+  minimized: new Set(minimized),
 });
 
 const latest = {
@@ -176,7 +181,7 @@ it('announces 2.0 as a Showcase and advances all located highlights within three
   for (const highlight of located) {
     const result = decide(
       RELEASES,
-      {seen, dismissed: new Set()},
+      {...NO_FACTS, seen},
       Date.parse('2026-11-14'),
     );
     expect(result.announcement?.surface).toBe('showcase');
@@ -225,4 +230,33 @@ it('never decides on upcoming content, even when stored facts mention it', () =>
       result.announcement?.release.highlights.map(highlight => highlight.id),
     ).not.toContain(id);
   }
+});
+
+it('minimizes a major release without consuming highlights or dismissing it', () => {
+  const before = decide([older], NO_FACTS, day('2026-10-21'));
+  const after = decide([older], facts([], [], ['r1']), day('2026-10-21'));
+  expect(after).toEqual({
+    ...before,
+    announcement: {surface: 'nudge', release: older},
+  });
+  expect(
+    decide([older], facts([], ['r1'], ['r1']), day('2026-10-21')).announcement,
+  ).toBeNull();
+});
+it('unions minimized releases across tabs and round trips them with unknown ids', () => {
+  const a = facts(['a'], ['r1'], ['r2']);
+  const b = facts(['b'], [], ['future-release']);
+  const merged = mergeFacts(a, b);
+  expect(merged).toEqual(facts(['a', 'b'], ['r1'], ['r2', 'future-release']));
+  expect(mergeFacts(a, b)).toEqual(mergeFacts(b, a));
+  expect(mergeFacts(merged, merged)).toEqual(merged);
+  expect(parseFacts(serializeFacts(merged))).toEqual(merged);
+});
+it('reads old records without minimized releases and drops malformed members', () => {
+  expect(parseFacts({v: 1, seen: ['a'], dismissed: ['r1']})).toEqual(
+    facts(['a'], ['r1']),
+  );
+  expect(parseFacts({minimized: ['r2', null, 3]})).toEqual(
+    facts([], [], ['r2']),
+  );
 });

@@ -32,6 +32,7 @@ export const nudge = style({
   transition: `opacity ${ms(duration.nudgeIn)} ${curve.toast}, transform ${ms(duration.nudgeIn)} ${curve.toast}`,
   '@starting-style': {opacity: 0, transform: 'translateY(100%)'},
   selectors: {
+    '&[data-instant]': {transition: 'none'},
     '&[data-closing]': {
       opacity: 0,
       transform: 'translateY(100%)',
@@ -43,7 +44,7 @@ export const nudge = style({
   '@media': {
     'screen and (max-width: 768px)': {
       left: '12px',
-      bottom: 'calc(12px + env(safe-area-inset-bottom, 0px))',
+      bottom: 'calc(76px + env(safe-area-inset-bottom, 0px))',
     },
     [reduce]: {
       transitionProperty: 'opacity',
@@ -369,3 +370,9 @@ export const accessoryBody = style([
   body,
   {whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis'},
 ]);
+
+export const headerActions = style({
+  display: 'flex',
+  alignItems: 'center',
+  gap: '4px',
+});

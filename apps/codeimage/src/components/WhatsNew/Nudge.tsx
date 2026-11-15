@@ -8,6 +8,7 @@ import {
   createUniqueId,
   For,
   onCleanup,
+  onMount,
   Show,
 } from 'solid-js';
 import {Dynamic} from 'solid-js/web';
@@ -27,6 +28,7 @@ interface View {
 export function Nudge(props: {
   release: (typeof RELEASES)[number];
   dismiss: () => void;
+  keyboardMinimize?: boolean;
 }) {
   const news = getWhatsNew();
   const [t, {locale}] = useI18n<AppLocaleEntries>();
@@ -53,6 +55,14 @@ export function Nudge(props: {
   let bar: HTMLDivElement | undefined;
   let barHeight = 0;
   let timer: number | undefined;
+  onMount(() => {
+    if (props.keyboardMinimize) {
+      setInstant(true);
+      card
+        ?.querySelector<HTMLButtonElement>('button')
+        ?.focus({preventScroll: true});
+    }
+  });
   // Focus inside the card would fall to the page when it leaves.
   const restoreFocus = () => {
     if (card?.contains(document.activeElement))

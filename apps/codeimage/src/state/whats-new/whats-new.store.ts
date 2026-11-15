@@ -18,7 +18,13 @@ import {
   parseFacts,
   serializeFacts,
 } from './decide';
-import type {HighlightId, LocatedHighlightId, Place, Where} from './registry';
+import type {
+  HighlightId,
+  LocatedHighlightId,
+  Place,
+  ReleaseId,
+  Where,
+} from './registry';
 import {RELEASES} from './registry';
 
 export type Surface = 'nudge' | 'showcase' | 'coachmark' | 'library';
@@ -32,6 +38,7 @@ export interface WhatsNew {
    */
   announce(watchQuiet: () => Accessor<boolean>): Accessor<Announcement>;
   dismiss(): void;
+  minimize(id: ReleaseId): void;
   dotAt(at: Where): LocatedHighlightId | undefined;
   isNew(id: HighlightId): boolean;
   opened(id: HighlightId, on: Surface): void;
@@ -60,7 +67,7 @@ interface Storage {
 }
 
 function track(
-  event: 'shown' | 'dismissed' | 'opened' | 'show-me',
+  event: 'shown' | 'dismissed' | 'minimized' | 'opened' | 'show-me',
   data:
     | {surface: Surface; release: string}
     | {surface: Surface; highlight: HighlightId},
@@ -88,7 +95,8 @@ export function createWhatsNew(
     decide(loaded() ? RELEASES : [], facts(), now()),
   );
   const pending = createMemo(() => decision().announcement, null, {
-    equals: (a, b) => a?.release.id === b?.release.id,
+    equals: (a, b) =>
+      a?.release.id === b?.release.id && a?.surface === b?.surface,
   });
   const whereOf = (id: HighlightId) =>
     RELEASES.flatMap(release => release.highlights).find(
@@ -119,6 +127,8 @@ export function createWhatsNew(
       const current = announcement();
       if (current && facts().dismissed.has(current.release.id)) {
         setAnnouncement(null);
+      } else if (current && facts().minimized.has(current.release.id)) {
+        setAnnouncement({...current, surface: 'nudge'});
       }
     } catch {
       // No stored facts: the worst case is one repeated announcement.
@@ -162,12 +172,20 @@ export function createWhatsNew(
     dismiss() {
       const current = announcement();
       if (!current) return;
-      record({seen: new Set(), dismissed: new Set([current.release.id])});
+      record({...NO_FACTS, dismissed: new Set([current.release.id])});
       setAnnouncement(null);
       track('dismissed', {
         surface: current.surface,
         release: current.release.id,
       });
+    },
+    minimize(id) {
+      if (facts().minimized.has(id)) return;
+      record({...NO_FACTS, minimized: new Set([id])});
+      const current = announcement();
+      if (current?.release.id === id)
+        setAnnouncement({...current, surface: 'nudge'});
+      track('minimized', {surface: 'showcase', release: id});
     },
     revealedAt: at => {
       const id = revealed();
@@ -189,7 +207,7 @@ export function createWhatsNew(
     opened: (id, surface) => track('opened', {surface, highlight: id}),
     seen(id) {
       if (revealed() === id) setRevealed(undefined);
-      record({seen: new Set([id]), dismissed: new Set()});
+      record({...NO_FACTS, seen: new Set([id])});
     },
     canShowMe: id => bound(id) !== undefined,
     showMe(id, surface) {
