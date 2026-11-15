@@ -220,7 +220,7 @@ function appendStyle(element: Element, declaration: string) {
   );
 }
 
-function cloneExportNode(node: HTMLElement) {
+export function cloneExportNode(node: HTMLElement) {
   const clone = node.cloneNode(true);
   if (!(clone instanceof HTMLElement)) throw new Error('Invalid export node.');
   // Chrome sized the frame with its own text metrics, and Takumi ignores

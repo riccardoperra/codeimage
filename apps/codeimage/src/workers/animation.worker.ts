@@ -1,6 +1,7 @@
 import init, {Renderer} from '@takumi-rs/wasm';
 import wasmUrl from '@takumi-rs/wasm/wasm-url';
 import {
+  checkMp4Support,
   createMp4Encoder,
   errorMessage,
   warmEncoder,
@@ -21,9 +22,16 @@ async function exportAnimation(job: AnimationExport) {
   let encoder: Awaited<ReturnType<typeof createMp4Encoder>> | undefined;
   try {
     await warming;
-    await init({module_or_path: wasmUrl});
+    try {
+      await init({module_or_path: wasmUrl});
+    } catch (error) {
+      throw new Error(`Takumi WASM: ${errorMessage(error)}`);
+    }
     const renderer = new Renderer();
     for (const font of job.resources.fonts) await renderer.registerFont(font);
+    const support = await checkMp4Support(job.config);
+    if (support.kind === 'unsupported')
+      throw new Error(`H.264 configuration unavailable (${support.reason})`);
     encoder = await createMp4Encoder(job.config);
     const durationMs = job.scenes.reduce(
       (sum, scene) => sum + scene.durationMs,

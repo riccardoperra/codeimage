@@ -23,6 +23,7 @@ import {getWhatsNew} from '../../../state/whats-new';
 import {useHotkey} from '../../../hooks/use-hotkey';
 import type {AppLocaleEntries} from '../../../i18n';
 import type {Exporter} from './export';
+import {AnimationExportDialog} from './export-animation-dialog';
 import * as styles from './export.css';
 import {settings} from './settings-state';
 
@@ -69,6 +70,8 @@ export function ExportControl(props: {exporter: Exporter; size?: 'sm' | 'xs'}) {
   const redactedLabel = () => t('editor.redacted');
 
   const exportImage = () => exporter().image();
+  const exportAnimation = () => exporter().exportAnimation();
+  const startAnimation = () => exporter().startAnimation();
   const exportEachTab = () => exporter().eachTab();
   const share = () => exporter().share();
   const copy = () => exporter().copy();
@@ -215,6 +218,14 @@ export function ExportControl(props: {exporter: Exporter; size?: 'sm' | 'xs'}) {
                   </span>
                 </DropdownMenuItem>
               </Show>
+              <Show when={exporter().animation.available()}>
+                <DropdownMenuItem
+                  disabled={exporter().busy() || exporter().animation.busy()}
+                  onSelect={exportAnimation}
+                >
+                  {t('animation.export.title')}
+                </DropdownMenuItem>
+              </Show>
               <DropdownMenuSeparator />
               <DropdownMenuItem onSelect={openSettings}>
                 {t('editor.exportSettings')}
@@ -223,6 +234,10 @@ export function ExportControl(props: {exporter: Exporter; size?: 'sm' | 'xs'}) {
           </DropdownMenuPortal>
         </DropdownMenu>
       </div>
+      <AnimationExportDialog
+        exporter={exporter().animation}
+        onStart={startAnimation}
+      />
       <Dialog open={exporter().confirming()} onOpenChange={closeConfirmation}>
         <Dialog.Portal>
           <Dialog.Overlay class={styles.backdrop} />

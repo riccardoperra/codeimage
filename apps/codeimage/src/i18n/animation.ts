@@ -1,6 +1,27 @@
 export const animationLocale = {
   en: {
     animation: {
+      export: {
+        title: 'Export animation',
+        description: 'MP4 video, rendered on your device.',
+        format: 'Format',
+        fps: 'Frame rate',
+        outputSize: 'Output size',
+        currentSize: 'Current frame',
+        estimated: 'About {{size}} MB',
+        checking: 'Checking video support and preparing fonts…',
+        missing:
+          'MP4 needs WebCodecs. Try a current Chrome, Firefox or Safari.',
+        unsupported:
+          'MP4 is unavailable at this size and frame rate. Try a current Chrome, Firefox or Safari.',
+        failed: 'Video export failed: {{cause}}',
+        progress: 'Video export progress',
+        frames: '{{done}} / {{total}} frames',
+        done: 'Ready · {{size}} MB · {{duration}} s',
+        cancel: 'Cancel',
+        start: 'Export MP4',
+        download: 'Download MP4',
+      },
       addStep: 'Add to animation',
       duplicate: 'Duplicate as next step',
       remove: 'Remove step',
@@ -52,6 +73,27 @@ export const animationLocale = {
   },
   it: {
     animation: {
+      export: {
+        title: 'Esporta animazione',
+        description: 'Video MP4, generato sul tuo dispositivo.',
+        format: 'Formato',
+        fps: 'Fotogrammi al secondo',
+        outputSize: 'Dimensioni video',
+        currentSize: 'Riquadro corrente',
+        estimated: 'Circa {{size}} MB',
+        checking: 'Verifica del video e preparazione dei caratteri…',
+        missing:
+          'MP4 richiede WebCodecs. Prova una versione recente di Chrome, Firefox o Safari.',
+        unsupported:
+          'MP4 non disponibile con queste dimensioni e frequenza. Prova una versione recente di Chrome, Firefox o Safari.',
+        failed: 'Esportazione video non riuscita: {{cause}}',
+        progress: 'Avanzamento esportazione video',
+        frames: '{{done}} / {{total}} fotogrammi',
+        done: 'Pronto · {{size}} MB · {{duration}} s',
+        cancel: 'Annulla',
+        start: 'Esporta MP4',
+        download: 'Scarica MP4',
+      },
       addStep: 'Aggiungi all’animazione',
       duplicate: 'Duplica come passaggio successivo',
       remove: 'Rimuovi passaggio',
@@ -104,6 +146,27 @@ export const animationLocale = {
   },
   de: {
     animation: {
+      export: {
+        title: 'Animation exportieren',
+        description: 'MP4-Video, auf deinem Gerät gerendert.',
+        format: 'Format',
+        fps: 'Bildrate',
+        outputSize: 'Videoabmessungen',
+        currentSize: 'Aktueller Rahmen',
+        estimated: 'Etwa {{size}} MB',
+        checking: 'Videounterstützung prüfen und Schriftarten vorbereiten…',
+        missing:
+          'MP4 benötigt WebCodecs. Versuche eine aktuelle Version von Chrome, Firefox oder Safari.',
+        unsupported:
+          'MP4 ist bei dieser Größe und Bildrate nicht verfügbar. Versuche eine aktuelle Version von Chrome, Firefox oder Safari.',
+        failed: 'Videoexport fehlgeschlagen: {{cause}}',
+        progress: 'Fortschritt des Videoexports',
+        frames: '{{done}} / {{total}} Bilder',
+        done: 'Fertig · {{size}} MB · {{duration}} s',
+        cancel: 'Abbrechen',
+        start: 'MP4 exportieren',
+        download: 'MP4 herunterladen',
+      },
       addStep: 'Zur Animation hinzufügen',
       duplicate: 'Als nächsten Schritt duplizieren',
       remove: 'Schritt entfernen',
@@ -156,6 +219,27 @@ export const animationLocale = {
   },
   es: {
     animation: {
+      export: {
+        title: 'Exportar animación',
+        description: 'Vídeo MP4, renderizado en tu dispositivo.',
+        format: 'Formato',
+        fps: 'Fotogramas por segundo',
+        outputSize: 'Dimensiones del vídeo',
+        currentSize: 'Marco actual',
+        estimated: 'Unos {{size}} MB',
+        checking: 'Comprobando el vídeo y preparando las fuentes…',
+        missing:
+          'MP4 necesita WebCodecs. Prueba una versión reciente de Chrome, Firefox o Safari.',
+        unsupported:
+          'MP4 no está disponible con este tamaño y frecuencia. Prueba una versión reciente de Chrome, Firefox o Safari.',
+        failed: 'Error al exportar el vídeo: {{cause}}',
+        progress: 'Progreso de exportación del vídeo',
+        frames: '{{done}} / {{total}} fotogramas',
+        done: 'Listo · {{size}} MB · {{duration}} s',
+        cancel: 'Cancelar',
+        start: 'Exportar MP4',
+        download: 'Descargar MP4',
+      },
       addStep: 'Añadir a la animación',
       duplicate: 'Duplicar como siguiente paso',
       remove: 'Eliminar paso',

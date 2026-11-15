@@ -29,11 +29,25 @@ import {
   ExportMode,
   exportImage,
 } from '../../../hooks/use-export-image';
+import {
+  createAnimationExporter,
+  type AnimationExporter,
+} from './export-animation-dialog';
 import type {AppLocaleEntries} from '../../../i18n';
 
-type ExportAction = 'image' | 'eachTab' | 'share' | 'newTab' | 'copy';
+type ExportAction =
+  | 'image'
+  | 'eachTab'
+  | 'share'
+  | 'newTab'
+  | 'copy'
+  | 'animation'
+  | 'animationStart';
 
 export interface Exporter {
+  readonly animation: AnimationExporter;
+  readonly exportAnimation: () => void;
+  readonly startAnimation: () => void;
   /** True while an export runs. */
   readonly busy: Accessor<boolean>;
   /** The number of tabs of the snippet. */
@@ -71,6 +85,7 @@ export function createExporter(
   const canvas = getExportCanvasStore();
   const editor = getRootEditorStore();
   const owner = getOwner();
+  const animation = createAnimationExporter();
   const [busy, setBusy] = createSignal(false);
   const [pending, setPending] = createSignal<ExportAction>();
   const secrets = () =>
@@ -130,6 +145,14 @@ export function createExporter(
 
   const run = async (action: ExportAction) => {
     if (busy() || dispatchCopyToClipboard.loading()) return;
+    if (action === 'animation') {
+      animation.show();
+      return;
+    }
+    if (action === 'animationStart') {
+      animation.start();
+      return;
+    }
     if (action === 'copy') {
       const element = ref();
       if (element)
@@ -198,6 +221,9 @@ export function createExporter(
   };
 
   return {
+    animation,
+    exportAnimation: () => request('animation'),
+    startAnimation: () => request('animationStart'),
     busy: () => busy() || dispatchCopyToClipboard.loading(),
     tabs: () => editor.state.editors.length,
     image: () => request('image'),

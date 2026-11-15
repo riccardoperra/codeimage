@@ -61,6 +61,9 @@ export const confirmation = style({
   placeItems: 'center',
   padding: themeVars.spacing['4'],
   pointerEvents: 'none',
+  selectors: {
+    '&[data-video-running]': {alignItems: 'end', justifyItems: 'end'},
+  },
 });
 
 export const confirmationPanel = style({
@@ -72,3 +75,25 @@ export const confirmationPanel = style({
   color: c.baseText,
   boxShadow: c.dialog.panelShadow,
 });
+
+export const videoFields = style({
+  display: 'flex',
+  flexDirection: 'column',
+  gap: themeVars.spacing['3'],
+});
+export const videoRow = style({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  minHeight: '40px',
+  gap: themeVars.spacing['3'],
+});
+export const videoProgress = style({
+  width: '100%',
+  height: '8px',
+  accentColor: c.baseText,
+});
+
+// Kit selects portal at layer 50, above the video dialog and below secrets review.
+export const videoDialog = style([confirmation, {zIndex: 49}]);
+export const videoBackdrop = style([backdrop, {zIndex: 48}]);
