@@ -36,12 +36,12 @@ export const projectSnapshotSchema = z.looseObject({
       .nullable()
       .optional(),
     aspectRatio: z.string().nullable().optional(),
-    signature: z.unknown().transform(parseSignature),
+    signature: z.unknown().optional().transform(parseSignature),
   }),
   terminal: z.looseObject({
     showHeader: z.boolean(),
-    type: z.unknown().transform(parseWindowType),
-    surface: z.unknown().transform(parseSurface),
+    type: z.unknown().optional().transform(parseWindowType),
+    surface: z.unknown().optional().transform(parseSurface),
     accentVisible: z.boolean(),
     shadow: z.string().nullable(),
     background: z.string(),

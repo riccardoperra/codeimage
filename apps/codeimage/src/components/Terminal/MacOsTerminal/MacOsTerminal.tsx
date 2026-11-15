@@ -12,7 +12,7 @@ import * as styles from './MacOsTerminal.css';
 export const exportExclude = _exportExclude;
 
 export interface MacOsTerminalProps extends BaseTerminalProps {
-  headerType: 'default' | 'outline' | 'gray';
+  headerType?: 'default' | 'outline' | 'gray';
 }
 
 export const MacOsTerminal: ParentComponent<MacOsTerminalProps> = props => {

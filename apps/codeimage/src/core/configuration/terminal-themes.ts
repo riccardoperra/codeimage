@@ -47,7 +47,7 @@ export const AVAILABLE_TERMINAL_THEMES = {
       label: 'frame.windowShell',
       component: ShellTerminal,
     },
-  } satisfies Record<
+  } as const satisfies Record<
     WindowType,
     {
       name: WindowType;

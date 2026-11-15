@@ -108,6 +108,24 @@ describe('renderSnapshot', {timeout: 30_000}, () => {
     }
   });
 
+  it.each(['card', 'editor', 'shell'])(
+    'renders the shared %s window during SSR',
+    async type => {
+      const {html} = await snapshotMarkup({
+        ...sampleDocument,
+        terminal: {
+          ...sampleDocument.terminal,
+          type,
+          surface: 'wash',
+          borderType: 'hairline',
+        },
+      });
+      expect(html).toContain(`data-window-style="${type}"`);
+      expect(html).toContain('data-surface="wash"');
+      expect(html).toContain('data-custom-border="hairline"');
+      expect(html).toContain(sampleDocument.editor.editors[0].tabName);
+    },
+  );
   it('scales the frame by whole multiples', async () => {
     const [one, two, three] = await Promise.all(
       [1, 2, 3].map(scale => png({...sampleDocument, scale})),

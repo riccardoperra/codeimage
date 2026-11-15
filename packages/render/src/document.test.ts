@@ -108,6 +108,16 @@ describe('parseSnapshotDocument', () => {
       }).terminal.surface,
     ).toBe('solid');
   });
+  it('defaults omitted appearance fields in older snapshots', () => {
+    const {signature, ...frame} = sampleDocument.frame;
+    const {surface, type, ...terminal} = sampleDocument.terminal;
+    expect(
+      parseSnapshotDocument({...sampleDocument, frame, terminal}),
+    ).toMatchObject({
+      frame: {signature: null},
+      terminal: {type: 'macOs', surface: 'solid'},
+    });
+  });
   it('parses signatures with app defaults and is idempotent', () => {
     const parsed = parseSnapshotDocument({
       ...sampleDocument,

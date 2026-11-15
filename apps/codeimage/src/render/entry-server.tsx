@@ -8,9 +8,7 @@ import {
   fitScale,
 } from '../components/Frame/FittedWindow';
 import {
-  FrameSignature,
   frameBottomPadding,
-  framePadding,
   signatureScale,
 } from '../components/Frame/FrameSignature';
 
@@ -23,13 +21,11 @@ import {getThemeStore} from '@codeimage/store/theme/theme.store';
 import {THEME_REGISTRY} from '@codeimage/store/theme/themeRegistry';
 import {SUPPORTED_FONTS} from '@core/configuration/font';
 import {loadLanguage} from '@core/snapshot/tokenize';
-import {assignInlineVars} from '@vanilla-extract/dynamic';
 import {renderToStringAsync} from 'solid-js/web';
 import {StateProvider} from 'statebuilder';
-import StaticCodeView from '../components/CustomEditor/StaticCodeView';
+import {FrameView} from '../components/Frame/FrameView';
 import {staticThemeCss} from '../components/CustomEditor/staticTheme';
 import * as styles from '../components/Frame/Frame.css';
-import {DynamicTerminal} from '../components/Terminal/DynamicTerminal/DynamicTerminal';
 
 export async function annotateCode(
   code: string,
@@ -100,7 +96,7 @@ export function frameSizeCss(size?: FrameSize): string {
         [styles.frameVars.maxWidth, 'none'],
       ];
   return `[data-snapshot-frame]{${declarations
-    .map(([variable, value]) => `${cssVar(variable)}:${value}`)
+    .map(([variable, value]) => `${cssVar(variable)}:${value}!important`)
     .join(';')}}`;
 }
 
@@ -168,92 +164,26 @@ async function render(snapshot: RenderSnapshot): Promise<FrameMarkup> {
   const SnapshotFrame = () => {
     const store = getEditorStore();
     store.editor.actions.setFromPersistedState(editor);
-    store.frame.setFromPersistedState(frame);
+    store.frame.setFromPersistedState({...frame, exportTarget: null});
     store.terminal.setFromPersistedState(terminal);
     getThemeStore().getThemeResource(theme.id)[1].mutate(theme);
 
+    store.frame.setWidth(
+      snapshot.width ?? getExportTarget(frame.exportTarget)?.resolution[0] ?? 0,
+    );
+    store.frame.setHeight(0);
+    store.frame.setBackground(background);
+    store.terminal.setState(state => ({
+      ...state,
+      background: terminal.background || theme.properties.terminal.main,
+      textColor: terminal.textColor || theme.properties.terminal.text,
+    }));
     return (
-      <div class={styles.previewWrapper}>
-        <div
-          class={styles.container}
-          data-snapshot-frame
-          style={assignInlineVars({
-            overflow: 'hidden',
-            [styles.frameVars.radius]: `${frame.radius}px`,
-            [styles.frameVars.padding]: framePadding(
-              frame.padding,
-              parseSignature(frame.signature),
-              snapshotSignatureScale(frame),
-            ),
-          })}
-        >
-          <div
-            class={styles.previewOverlay}
-            style={assignInlineVars({
-              [styles.frameVars.backgroundColor]: isAssetUrl(background)
-                ? 'transparent'
-                : background,
-              [styles.frameVars.opacity]: `${frame.opacity}%`,
-              [styles.frameVars.visibility]: frame.visible
-                ? 'visible'
-                : 'hidden',
-            })}
-          >
-            {backgroundImage && (
-              <img
-                src={backgroundImage}
-                style={{
-                  position: 'absolute',
-                  left: 0,
-                  top: 0,
-                  width: '100%',
-                  height: '100%',
-                  'object-fit': 'cover',
-                }}
-              />
-            )}
-          </div>
-          <div data-snapshot-window style={{display: 'contents'}}>
-            <DynamicTerminal
-              type={terminal.type}
-              readonlyTab={true}
-              showTab={true}
-              showOnlyActiveTab={false}
-              shadow={terminal.shadow}
-              background={terminal.background || theme.properties.terminal.main}
-              accentVisible={terminal.accentVisible}
-              textColor={terminal.textColor || theme.properties.terminal.text}
-              showHeader={terminal.showHeader}
-              showGlassReflection={terminal.showGlassReflection}
-              showWatermark={terminal.showWatermark}
-              opacity={terminal.opacity}
-              alternativeTheme={terminal.alternativeTheme}
-              borderType={terminal.borderType}
-              themeId={theme.id}
-            >
-              <StaticCodeView
-                code={activeEditor.code}
-                marks={activeEditor.marks ?? {lines: [], focusedLines: []}}
-                languageId={activeEditor.languageId}
-                language={language}
-                theme={theme}
-                showLineNumbers={editor.options.showLineNumbers}
-                lineNumberStart={activeEditor.lineNumberStart}
-                fontFamily={font.name}
-                fontWeight={editor.options.fontWeight}
-                enableLigatures={editor.options.enableLigatures}
-              />
-            </DynamicTerminal>
-          </div>
-          <FrameSignature
-            // A CLI handle or an older snapshot carries only some fields;
-            // the web reads them the same way.
-            signature={parseSignature(frame.signature)}
-            background={background}
-            scale={snapshotSignatureScale(frame)}
-          />
-        </div>
-      </div>
+      <FrameView
+        tab={store.editor.state.editors[0]}
+        language={language}
+        showOnlyActiveTab={false}
+      />
     );
   };
 
