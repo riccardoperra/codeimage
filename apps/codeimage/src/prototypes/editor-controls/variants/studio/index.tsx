@@ -57,7 +57,7 @@ function RailSettings() {
     <button
       type="button"
       class={styles.railButton}
-
+      aria-haspopup="dialog"
       aria-expanded={settings.isOpen()}
       data-settings-trigger
       onClick={() => settings.open()}
@@ -316,11 +316,11 @@ export default function Studio(props: VariantProps) {
             <CommandMenuButton>
               {trigger => (
                 <button
+                  {...trigger}
                   type="button"
                   class={`${styles.railButton} ${styles.railSearch}`}
 
                   title={`Search themes and options (${commandMenu.shortcut})`}
-                  {...trigger}
                 >
                   <span class={styles.railIcon}>
                     <SearchIcon />

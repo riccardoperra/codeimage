@@ -115,7 +115,7 @@ function DockItem(props: DockItemProps & {host: DockItemHost}) {
       fallback={
         <Button
           {...button}
-
+          aria-haspopup="dialog"
           aria-expanded={isOpen()}
           onClick={(event: MouseEvent) =>
             props.host.onToggle(props.panel, event)
@@ -186,7 +186,7 @@ function BarSettings() {
       size={'sm'}
       aria-label="Settings"
       title="Settings"
-
+      aria-haspopup="dialog"
       aria-expanded={settings.isOpen()}
       data-settings-trigger
       onClick={() => settings.open()}
@@ -438,14 +438,13 @@ export default function Dock(props: VariantProps) {
                 <CommandMenuButton>
                   {trigger => (
                     <Button
+                      {...trigger}
                       class={styles.item}
                       theme={'secondary'}
                       variant={'ghost'}
                       size={'sm'}
                       leftIcon={<SearchIcon />}
                       aria-label="Search themes and options"
-
-                      {...trigger}
                     >
                       <kbd class={styles.kbd}>{commandMenu.shortcut}</kbd>
                     </Button>

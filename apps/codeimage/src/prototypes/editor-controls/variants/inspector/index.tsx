@@ -300,11 +300,10 @@ export default function Inspector(props: VariantProps) {
                 <CommandMenuButton>
                   {trigger => (
                     <Button
+                      {...trigger}
                       class={styles.command}
                       size="sm"
                       theme="secondary"
-
-                      {...trigger}
                     >
                       Search
                       <kbd class={styles.commandKey}>

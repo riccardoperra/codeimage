@@ -233,10 +233,10 @@ function PhoneActions() {
       <CommandMenuButton>
         {trigger => (
           <Button
+            {...trigger}
             size={'sm'}
             theme={'secondary'}
             leftIcon={<SearchIcon />}
-            {...trigger}
           >
             Search all options
           </Button>
