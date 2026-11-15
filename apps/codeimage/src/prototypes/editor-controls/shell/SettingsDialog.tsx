@@ -69,6 +69,8 @@ function Panel(props: {sections: readonly SettingSection[]}) {
   const modality = useModality();
   const query = settings.query;
   const setQuery = settings.setQuery;
+  // Each opening starts without a search, as when the query was the panel's.
+  onCleanup(() => setQuery(''));
   let shell!: HTMLDivElement;
   let search: HTMLInputElement | undefined;
 
