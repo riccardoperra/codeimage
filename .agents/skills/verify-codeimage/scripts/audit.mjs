@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import assert from 'node:assert/strict';
 import {createMockContext} from './mock-context.mjs';
+import {animationMp4Cases} from './animation-mp4.mjs';
 import {auditSnippets} from './snippets.mjs';
 import {writeFile, readFile} from 'node:fs/promises';
 import {resolve} from 'node:path';
@@ -34,7 +35,10 @@ export async function audit({page, context, base, out, server}) {
   ) {
     assert.equal(server.exitCode, null);
     assert.ok((await fetch(base)).ok);
-    await target.goto(base + route);
+    await target.goto(base + route, {
+      waitUntil: 'domcontentloaded',
+      timeout: 60000,
+    });
     const changed =
       layout !== undefined &&
       (await target.evaluate(layout => {
@@ -56,8 +60,33 @@ export async function audit({page, context, base, out, server}) {
       .locator('.cm-content[contenteditable="true"]')
       .first()
       .waitFor({timeout: 60000});
-    const close = target.getByRole('button', {name: 'close', exact: true});
+    await target.evaluate(() => document.fonts.ready);
+    const firstVisit = await target.evaluate(
+      () => !sessionStorage.getItem('verify:startup-dismissed'),
+    );
+    if (firstVisit)
+      await target
+        .locator('[data-whats-new="showcase"], [data-whats-new="nudge"]')
+        .first()
+        .waitFor({timeout: 15000});
+    const close = target.getByRole('button', {name: /^close$/i});
     if (await close.isVisible()) await close.click();
+    await target
+      .locator('[data-whats-new="showcase"]')
+      .waitFor({state: 'hidden'});
+    const dismiss = target.getByRole('button', {
+      name: "Dismiss what's new",
+      exact: true,
+    });
+    if (await dismiss.isVisible()) {
+      await dismiss.click();
+      await target
+        .locator('[data-whats-new="nudge"]')
+        .waitFor({state: 'hidden'});
+    }
+    await target.evaluate(() =>
+      sessionStorage.setItem('verify:startup-dismissed', 'true'),
+    );
     await target.evaluate(() => document.fonts.ready);
     assert.ok(
       await target
@@ -493,13 +522,16 @@ export async function audit({page, context, base, out, server}) {
       .click();
     await closeSettings();
     await settings('experiments');
-    await page.locator('#settings-rendering-engine').focus();
-    await page.keyboard.press('Space');
-    assert.equal(
-      await page
-        .locator('#settings-rendering-engine')
-        .getAttribute('aria-checked'),
-      'true',
+    const renderer = page.locator('#settings-rendering-engine');
+    if ((await renderer.getAttribute('aria-checked')) !== 'true') {
+      await renderer.focus();
+      await page.keyboard.press('Space');
+    }
+    await page.waitForFunction(
+      () =>
+        document
+          .querySelector('#settings-rendering-engine')
+          ?.getAttribute('aria-checked') === 'true',
     );
     await closeSettings();
     PNG.sync.read(await download('takumi.png'));
@@ -816,104 +848,21 @@ export async function audit({page, context, base, out, server}) {
     await page.getByRole('button', {name: 'Presets', exact: true}).click();
     assert.equal(await item('Renamed preset').count(), 0);
   });
-  await feature('animation-mp4', async () => {
-    await section('window');
-    await page
-      .locator('[data-control="window.style"]')
-      .getByRole('button')
-      .click();
-    await page.getByRole('radio', {name: 'Editor', exact: true}).focus();
-    await page.keyboard.press('Space');
-    await page
-      .getByRole('dialog', {name: 'Window', exact: true})
-      .getByRole('button', {name: 'Close', exact: true})
-      .click();
-    const strip = page
-      .locator('[data-window-tabs]')
-      .filter({has: page.getByRole('button', {name: 'Add tab', exact: true})})
-      .first();
-    for (let step = 1; step <= 3; step++) {
-      if (step > 1)
-        await strip.getByRole('button', {name: 'Add tab', exact: true}).click();
-      await editor().fill(
-        `const step = ${step};\nconst message = "Animation ${step}";\nconsole.log(message, step);`,
-      );
-    }
-    await page.locator('[data-animate-toggle]').click();
-    await page.locator('[data-animate-panel]').waitFor();
-    await page.locator('[data-export-menu]').click();
-    await page.locator('[data-export-action="animation"]').click();
-    const dialog = page.locator('[data-animation-export]');
-    const start = dialog.getByRole('button', {name: 'Export MP4', exact: true});
-    await start.waitFor();
-    await page.waitForFunction(() =>
-      [...document.querySelectorAll('[data-animation-export] button')].some(
-        button => button.textContent === 'Export MP4' && !button.disabled,
-      ),
-    );
-    assert.equal(await start.isEnabled(), true, await dialog.innerText());
-    const downloading = page.waitForEvent('download', {timeout: 120000});
-    downloading.catch(() => undefined);
-    await page.evaluate(() => {
-      const send = Worker.prototype.postMessage;
-      window.__restoreAnimationCapture = () =>
-        (Worker.prototype.postMessage = send);
-      Worker.prototype.postMessage = function (message, ...options) {
-        if (message?.kind === 'export')
-          window.__animationWatermarks = message.job.scenes.map(
-            scene =>
-              new DOMParser()
-                .parseFromString(scene.html, 'text/html')
-                .querySelector('[data-watermark-home]')?.dataset
-                .watermarkPlacement,
-          );
-        return send.call(this, message, ...options);
-      };
-    });
-    try {
-      await start.click();
-      await page.waitForFunction(() => window.__animationWatermarks);
-      const slots = await page.evaluate(() => window.__animationWatermarks);
-      assert.ok(slots[0], 'first scene contains its watermark placement');
-      assert.deepEqual(
-        slots,
-        slots.map(() => slots[0]),
-        'equal-sized steps keep the watermark in the same place during transitions',
-      );
-    } finally {
-      await page.evaluate(() => window.__restoreAnimationCapture());
-    }
-    await page.waitForFunction(
-      () =>
-        document.querySelector('[data-animation-export] [role="alert"]') ||
-        document.querySelector('[data-animation-export] progress') ||
-        [
-          ...document.querySelectorAll(
-            '[data-animation-export] [role="status"]',
-          ),
-        ].some(el => el.textContent.includes('Ready')),
-      undefined,
-      {timeout: 30000},
-    );
-    const failure = dialog.getByRole('alert');
-    if (await failure.count()) throw new Error(await failure.innerText());
-    await shot('animation-mp4-progress');
-    const pending = await downloading;
-    const file = resolve(out, 'animation.mp4');
-    await pending.saveAs(file);
-    const bytes = await readFile(file);
-    assert.equal(bytes.toString('ascii', 4, 8), 'ftyp');
-    assert.ok(
-      bytes.indexOf('moov') > 0 &&
-        bytes.indexOf('moov') < bytes.indexOf('mdat'),
-      'MP4 faststart',
-    );
-    assert.ok(bytes.length > 1000, 'real MP4 payload');
-    assert.match(await dialog.innerText(), /Ready/);
-    await shot('animation-mp4');
-    await dialog.getByRole('button', {name: 'Close', exact: true}).click();
-    await editor().fill('const stillEditable = true;');
+  const mp4 = animationMp4Cases({
+    page,
+    context,
+    out,
+    base,
+    doctor,
+    editor,
+    shot,
+    section,
   });
+  await feature('animation-mp4', mp4.layouts);
+  await feature('animation-mp4-errors', mp4.errors);
+  await feature('animation-mp4-compositing', mp4.compositing);
+  await feature('animation-mp4-modes', mp4.modes);
+  await feature('animation-mp4-parity', mp4.parity);
   await feature('animate', async () => {
     // The Editor window names its Add tab button; the default one does not.
     await windowStyle('Editor');
@@ -1082,11 +1031,12 @@ export async function audit({page, context, base, out, server}) {
             await page.setViewportSize({width: 1440, height: 900});
             await doctor('/', 'editor', 'inspector');
             const nudge = page.locator('[data-whats-new="nudge"]');
-            await nudge.waitFor();
-            await nudge
-              .getByRole('button', {name: "Dismiss what's new", exact: true})
-              .click();
-            await nudge.waitFor({state: 'hidden'});
+            if (await nudge.isVisible()) {
+              await nudge
+                .getByRole('button', {name: "Dismiss what's new", exact: true})
+                .click();
+              await nudge.waitFor({state: 'hidden'});
+            }
             await animationFixture();
             await page.evaluate(
               layout =>
