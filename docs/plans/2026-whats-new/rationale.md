@@ -93,17 +93,25 @@ The first release becomes "CodeImage 2.0" in one final PR, opened when the featu
 | --------- | --------------- | ------------------------------------------------------------------------------------ | ---------------------------------------- | ------------------------------ |
 | `social`  | Social sizes    | Frame presets sized for the networks you post on, with an optional handle signature. | `control:frame.aspectRatio`              | #696                           |
 | `alt`     | Alt text        | Copy a description of your snippet to paste along with the image.                    | `export:alt`                             | #693                           |
-| `marks`   | Line marks      | Mark lines as added, removed, highlighted or focused.                                | Open. The feature may have no panel row. | #698                           |
+| `marks`   | Line marks      | Mark lines as added, removed, highlighted or focused.                                | No panel row. Needs a new kind of place. | #698                           |
 | `takumi`  | New renderer    | A faster export engine. Experimental.                                                | `setting:renderer`, when that row lands  | #701                           |
 | `cli`     | codeimage CLI   | Render the same image from your terminal or CI.                                      | `null`, with a documentation link        | #702                           |
-| `animate` | Code animations | Animate between code steps and export the result.                                    | Open. Add a kind for the Animate panel.  | #707 and the PRs stacked on it |
+| `animate` | Code animations | Animate between code steps and export the result.                                    | No control yet. Add a kind with its UI.  | #707 and the PRs stacked on it |
+
+Where these features live in the unified editor as of `feat/ui-prototypes` at 08737514, checked by pointing a fixture highlight at each place:
+
+- Social sizes are values of `frame.aspectRatio`, which now lists the export targets. `ControlRow` draws it in all three layouts, so `control:frame.aspectRatio` gets its dot in Inspector, in Dock's More panel and in Studio's Frame panel.
+- Signatures are the `signature.*` controls, drawn by `ControlRow`. The `signature.handle` dot shows in Dock's More panel. Inspector and Studio render the handle row only once a signature is on.
+- Alt text is Copy alt text in the Export menu and in the classic export dialog. `export:alt` puts its dot on the Export arrow. Classic draws only `export:tabs`, so it shows no dot for alt text.
+- Line marks have no panel control and no `ControlId`. They live in the CodeMirror editor, as a gutter button per line ("Line 1: No mark") and a toolbar over a selection, from `components/CustomEditor/plugins/lineMarks`. A dot needs a new place kind drawn by that plugin's UI, or `where: null`.
+- Code animations are core only: `core/animation` and `components/CustomEditor/AnimatedCodeView.tsx`. Nothing in the unified editor mounts them yet, and no control or command opens them.
+- The renderer has no Settings row yet, so `setting:renderer` does not compile.
 
 Open for that PR:
 
 - Whether 2.0 announces with the Showcase (`major: true`) or the Nudge.
 - Which PR carries the `major` changeset for `@codeimage/app`.
 
-- Where Line marks belongs. Do not assume the Line numbers row is its control.
-- Which shared owner and place kind the Animate panel exposes.
+- Which shared owner and place kind Line marks and the Animate panel expose.
 - How the first `control` highlight reveals a real visible target in each layout. The command callback alone does not guarantee this.
 - Whether layout-specific controls that bypass `ControlRow` need a shared renderer when one becomes a highlight target.
