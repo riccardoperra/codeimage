@@ -1,9 +1,9 @@
-import {getFrameState} from '@codeimage/store/editor/frame';
 import {EditorConfigStore} from '@codeimage/store/editor/config.store';
 import {provideState} from 'statebuilder';
 import {useI18n} from '@codeimage/locale';
 import {getAuth0State} from '@codeimage/store/auth/auth0';
 import {getExportCanvasStore} from '@codeimage/store/canvas';
+import {getFrameState} from '@codeimage/store/editor/frame';
 import {getUiStore} from '@codeimage/store/ui';
 import {RangeField} from '@codeimage/ui';
 import {Button, buttonStyles} from '@codeui/kit';
@@ -16,6 +16,7 @@ import {SegmentedField} from '@ui/SegmentedField/SegmentedField';
 import type {Component, JSX} from 'solid-js';
 import {createMemo, For, Match, Show, Switch} from 'solid-js';
 import {Changelog} from '../../../components/Changelog/Changelog';
+import {CopyAltTextButton} from '../../../components/Toolbar/CopyAltTextButton';
 import {ExportExtension} from '../../../hooks/use-export-image';
 import type {AppLocaleEntries} from '../../../i18n';
 import {SwitchField} from '../controls/fields';
@@ -389,7 +390,7 @@ export function createSettingSections(
   // Every row reads and writes the production export store, the one that
   // today's export popover and dialog share, so there is one value for each.
   const exportStore = getExportCanvasStore();
-  const frame = getFrameState();
+  const target = () => getFrameState().exportTarget();
   const exportSection: SettingSection = {
     id: 'export',
     name: nameOf('export'),
@@ -445,11 +446,20 @@ export function createSettingSections(
             id: 'export-scale',
             title: 'Scale',
             description: () =>
-              `The image is ${exportStore.canvasResolution()} pixels.`,
+              target()
+                ? `${target()?.name}: ${target()?.resolution.join(' × ')} pixels.` // i18n
+                : `The image is ${exportStore.canvasResolution()} pixels.`,
             control: () => (
               <Show
-                when={!frame.exportTarget()}
-                fallback={<span class={styles.value}>1x</span>}
+                when={!target()}
+                fallback={
+                  <span class={styles.value}>
+                    {getFrameState().exportPixelRatio(
+                      exportStore.get.devicePixelRatio,
+                    )}
+                    x
+                  </span>
+                }
               >
                 <Segmented
                   value={String(exportStore.get.devicePixelRatio)}
@@ -463,6 +473,13 @@ export function createSettingSections(
                 />
               </Show>
             ),
+          },
+          {
+            id: 'export-alt-text',
+            title: t('altText.copy'),
+            description: () => t('altText.hint'),
+            small: true,
+            control: () => <CopyAltTextButton />,
           },
         ],
       },

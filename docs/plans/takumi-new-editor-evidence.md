@@ -63,3 +63,7 @@ The integration now includes UI head `ad5b2bd0` (#729). The merge keeps tab mark
 ## UI alignment through 6dacfbaa
 
 The branch follows the UI merge of main and PR #733, including the Inspector/Dock style migration. Type import/export ordering conflicts use the UI version; a duplicate parseTabMarks import from the automatic merge was removed. 170 app tests, 71 API unit tests, app and API typecheck, app lint and production build pass. Image comparisons above remain from the preceding UI alignment.
+
+## UI export restoration through cabace36
+
+The new UI export flow now includes share, new-tab, clipboard, alt text and secret confirmation. Its current flow is preserved; normal actions and clipboard receive the persisted renderer, and ZIP captures it once per batch. Target summaries show exact dimensions. 170 app tests, typecheck, lint and production build pass. The UI probe passes Inspector, Dock and Studio with one durable reload each, exact Square dimensions, Restore defaults and two actual WASM renders in the ZIP, with no errors or fallback. Share/new-tab/clipboard and secret-confirmation flows were not exercised by this browser probe.

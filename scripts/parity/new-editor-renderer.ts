@@ -117,7 +117,7 @@ async function main() {
       await page.keyboard.press('Escape');
       assert.match(
         (await page.locator('[data-export-image]').getAttribute('title')) ?? '',
-        /at 1x$/,
+        /at 1080 × 1080$/,
       );
       await page.keyboard.press('ControlOrMeta+k');
       const search = page.getByRole('combobox', {
@@ -132,7 +132,7 @@ async function main() {
       await search.fill('Export image');
       assert.match(
         await page.getByRole('option').first().innerText(),
-        /PNG at 1x/,
+        /PNG at 1080 × 1080/,
       );
       await page.keyboard.press('Escape');
       await page.waitForFunction(() => {
@@ -171,7 +171,7 @@ async function main() {
       rows.push({
         reloads,
         picker: 'square',
-        summary: '1x',
+        summary: '1080 × 1080',
         layout,
         persisted: true,
         width: png.width,

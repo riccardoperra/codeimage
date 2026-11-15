@@ -764,13 +764,53 @@
     ]
   },
   "latestUiAlignment": {
-    "uiHead": "6dacfbaa",
+    "uiHead": "cabace36",
     "appTests": 170,
-    "apiUnitTests": 71,
     "typecheckExit": 0,
-    "apiTypecheckExit": 0,
     "lintExit": 0,
     "buildExit": 0,
-    "note": "Previous signature image matrix remains recorded for ad5b2bd0; this merge updates line-mark internals and UI styling."
+    "ui": {
+      "rows": [
+        {
+          "reloads": 1,
+          "picker": "square",
+          "summary": "1080 \u00d7 1080",
+          "layout": "inspector",
+          "persisted": true,
+          "width": 1080,
+          "height": 1080,
+          "restored": true
+        },
+        {
+          "reloads": 1,
+          "picker": "square",
+          "summary": "1080 \u00d7 1080",
+          "layout": "dock",
+          "persisted": true,
+          "width": 1080,
+          "height": 1080,
+          "restored": true
+        },
+        {
+          "reloads": 1,
+          "picker": "square",
+          "summary": "1080 \u00d7 1080",
+          "layout": "studio",
+          "persisted": true,
+          "width": 1080,
+          "height": 1080,
+          "restored": true
+        }
+      ],
+      "tabs": [
+        "01-index.tsx.png",
+        "02-second.ts.png"
+      ],
+      "tabRenders": 2,
+      "errors": [],
+      "fallbacks": [],
+      "wasm": 3
+    },
+    "scope": "Actual download, persistence and per-tab ZIP checked; share/new-tab/clipboard use the same typed renderer payload but were not exercised by this browser probe."
   }
 }

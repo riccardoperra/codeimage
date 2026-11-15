@@ -1,7 +1,9 @@
-import {getFrameState} from '@codeimage/store/editor/frame';
+import {useI18n} from '@codeimage/locale';
 import {getExportCanvasStore} from '@codeimage/store/canvas';
+import {getFrameState} from '@codeimage/store/editor/frame';
 import {getUiStore} from '@codeimage/store/ui';
 import {ExportExtension} from '../../../hooks/use-export-image';
+import type {AppLocaleEntries} from '../../../i18n';
 import type {Command} from '../command-menu/commands';
 import type {Exporter} from './export';
 import {exportSummary} from './ExportControl';
@@ -21,6 +23,7 @@ const MODES = [
  * production export store, as the Export section of the settings does.
  */
 export function exportCommands(exporter: Exporter): Command[] {
+  const [t] = useI18n<AppLocaleEntries>();
   const store = getExportCanvasStore();
   const group = 'Export';
   const tabs = exporter.tabs();
@@ -45,6 +48,42 @@ export function exportCommands(exporter: Exporter): Command[] {
             label: 'Export one image per tab',
             note: `${tabs} images`,
             run: exporter.eachTab,
+          },
+        ]
+      : []),
+    ...(exporter.canCopyAltText()
+      ? [
+          {
+            id: 'export=alt-text',
+            group,
+            label: t('altText.copy'),
+            run: exporter.copyAltText,
+          },
+        ]
+      : []),
+    ...(exporter.canCopy()
+      ? [
+          {
+            id: 'export=copy',
+            group,
+            label: 'Copy to clipboard', // i18n
+            run: exporter.copy,
+          },
+        ]
+      : []),
+    {
+      id: 'export=new-tab',
+      group,
+      label: t('toolbar.openNewTab'),
+      run: exporter.newTab,
+    },
+    ...(exporter.canShare()
+      ? [
+          {
+            id: 'export=share',
+            group,
+            label: t('export.shareMode'),
+            run: exporter.share,
           },
         ]
       : []),
