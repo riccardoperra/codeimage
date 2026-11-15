@@ -10,11 +10,7 @@ const frame = page =>
   page.locator('[data-fit-scale] [data-frame-content]').first();
 const code = page => page.locator('[data-fit-scale] .cm-content').first();
 
-async function ready(page, kind = 'owner') {
-  await page.locator(`.unified-editor[data-page-state="${kind}"]`).waitFor();
-  await code(page).waitFor();
-  await page.evaluate(() => document.fonts.ready);
-  await page.waitForTimeout(500);
+async function dismissNews(page) {
   const dismiss = page.getByRole('button', {
     name: "Dismiss what's new",
     exact: true,
@@ -23,6 +19,14 @@ async function ready(page, kind = 'owner') {
     await dismiss.click();
     await page.locator('[data-whats-new=nudge]').waitFor({state: 'hidden'});
   }
+}
+
+async function ready(page, kind = 'owner') {
+  await page.locator(`.unified-editor[data-page-state="${kind}"]`).waitFor();
+  await code(page).waitFor();
+  await page.evaluate(() => document.fonts.ready);
+  await page.waitForTimeout(500);
+  await dismissNews(page);
   const close = page.getByRole('button', {name: /^close$/i}).first();
   if (await close.isVisible()) await close.click();
 }
@@ -128,6 +132,7 @@ async function savedChange(page, change, matches) {
 }
 
 async function openThemes(page, layout, width) {
+  await dismissNews(page);
   if (layout === 'inspector') {
     if (width === 390)
       await page
@@ -424,8 +429,17 @@ export async function auditSnippets({feature, doctor, context, base, out}) {
             .count(),
           0,
         );
+        await dismissNews(page);
         if (layout === 'inspector')
-          assert.equal(await page.locator('aside').count(), 0);
+          assert.equal(
+            await page
+              .getByRole('complementary', {
+                name: 'Image inspector',
+                exact: true,
+              })
+              .count(),
+            0,
+          );
         if (layout === 'studio') {
           assert.equal(await page.locator('#studio-panel').count(), 0);
           if (width === 390)
@@ -602,8 +616,7 @@ export async function auditSnippets({feature, doctor, context, base, out}) {
         '// second snippet navigation',
       );
       if (layout === 'dock') {
-        await page.locator('button[data-panel=themes]').click();
-        await page.locator('[data-theme-option]:visible').first().waitFor();
+        await openThemes(page, layout, page.viewportSize().width);
         await navigate(page, `/${first.id}`);
         await ready(page, 'read-only');
         assert.equal(
