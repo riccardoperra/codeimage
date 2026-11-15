@@ -20,7 +20,7 @@ import {createEffect, createSignal, on, Show} from 'solid-js';
 import type {AppLocaleEntries} from '../../i18n';
 import {EasingCurve} from './EasingCurve';
 import * as styles from './easing.css';
-export function EasingField(props: {stepId: string}) {
+export function EasingField(props: {stepId: string; modal?: boolean}) {
   const {animation} = getEditorStore();
   const [t] = useI18n<AppLocaleEntries>();
   const step = () =>
@@ -111,7 +111,12 @@ export function EasingField(props: {stepId: string}) {
     animation.actions.playTransition(props.stepId);
   };
   return (
-    <Popover open={open()} onOpenChange={openChange} placement="top-end">
+    <Popover
+      open={open()}
+      onOpenChange={openChange}
+      placement="top-end"
+      modal={props.modal}
+    >
       <PopoverTrigger
         as={Button}
         size="xs"

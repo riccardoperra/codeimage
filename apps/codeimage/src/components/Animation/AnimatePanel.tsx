@@ -2,12 +2,13 @@ import {useI18n} from '@codeimage/locale';
 import {getEditorStore} from '@codeimage/store/editor';
 import {Show} from 'solid-js';
 import type {AppLocaleEntries} from '../../i18n';
+import {PhoneSteps} from './PhoneSteps';
 import {TransportBar} from './TransportBar';
 import {StripTimeline} from './StripTimeline';
 import {SegmentDetails} from './SegmentDetails';
 import {HeaderField} from './HeaderField';
 import * as styles from './AnimatePanel.css';
-export function AnimatePanel() {
+export function AnimatePanel(props: {compact: boolean}) {
   const {animation, editor} = getEditorStore();
   const [t] = useI18n<AppLocaleEntries>();
   let island!: HTMLElement;
@@ -38,9 +39,19 @@ export function AnimatePanel() {
         data-animate-panel
         on:keydown={keyDown}
       >
-        <TransportBar />
-        <StripTimeline />
-        <SegmentDetails />
+        <TransportBar compact={props.compact} />
+        <Show
+          when={props.compact}
+          fallback={
+            <>
+              <StripTimeline />
+              <SegmentDetails />
+            </>
+          }
+        >
+          <StripTimeline overview />
+          <PhoneSteps />
+        </Show>
         <div class={styles.mobileHeader}>
           <HeaderField />
         </div>

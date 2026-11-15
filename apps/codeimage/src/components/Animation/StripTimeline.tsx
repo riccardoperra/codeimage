@@ -9,15 +9,7 @@ import {
 } from '@codeimage/store/editor/animationSettings';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 import {createResizeObserver} from '@solid-primitives/resize-observer';
-import {
-  createEffect,
-  createMemo,
-  createSignal,
-  For,
-  on,
-  onMount,
-  Show,
-} from 'solid-js';
+import {createMemo, createSignal, For, onMount, Show} from 'solid-js';
 import {timelineGeometry, type TimelineGeometry} from './timelineGeometry';
 import type {AppLocaleEntries} from '../../i18n';
 import {createSegmentResize} from './createSegmentResize';
@@ -97,7 +89,11 @@ function Segment(props: {
       onClick={select}
       onFocus={select}
     >
-      <Show when={segment().kind === 'transition'}>
+      <Show
+        when={
+          segment().kind === 'transition' && props.geometry.label === 'full'
+        }
+      >
         <EasingCurve
           easing={easingOf(
             transitionOf(
@@ -108,11 +104,16 @@ function Segment(props: {
           glyph
         />
       </Show>
-      <span class={styles.label}>
-        {segment().kind === 'hold'
-          ? `${segment().index + 1} · ${name()}`
-          : formatDuration(segment().durationMs, locale())}
-      </span>
+      <Show when={props.geometry.label !== 'none'}>
+        <span class={styles.label} data-segment-label={props.geometry.label}>
+          {segment().kind === 'hold'
+            ? props.geometry.label === 'full' &&
+              props.geometry.width >= name().length * 6.4 + 28
+              ? `${segment().index + 1} · ${name()}`
+              : String(segment().index + 1)
+            : formatDuration(segment().durationMs, locale())}
+        </span>
+      </Show>
       <span
         class={styles.handle}
         data-segment-resize
@@ -122,27 +123,24 @@ function Segment(props: {
     </button>
   );
 }
-export function StripTimeline() {
+export function StripTimeline(props: {overview?: boolean}) {
   const {animation} = getEditorStore();
   const [t, {locale}] = useI18n<AppLocaleEntries>();
   let ruler!: HTMLDivElement;
   let track!: HTMLDivElement;
   let scroller!: HTMLDivElement;
   const [width, setWidth] = createSignal(0);
-  const [minimum, setMinimum] = createSignal(8);
-  onMount(() =>
-    createResizeObserver(
-      () => scroller,
-      () => {
-        setWidth(scroller.clientWidth - 8);
-        setMinimum(window.innerWidth <= 768 ? 80 : 8);
-      },
-    ),
-  );
-  const [frozen, setFrozen] = createSignal<{total: number; scale: number}>();
-  const axis = () => frozen()?.total ?? animation.durationMs();
+  const measure = () => setWidth(scroller.clientWidth - 8);
+  onMount(() => {
+    measure();
+    createResizeObserver(() => scroller, measure);
+  });
+  const axis = animation.durationMs;
   const geometry = createMemo(() =>
-    timelineGeometry(animation.segments(), width(), minimum(), frozen()?.scale),
+    timelineGeometry(animation.segments(), width(), {
+      labels: !props.overview,
+      minWidth: 8,
+    }),
   );
   const keys = createMemo(() =>
     animation.segments().map(segment => `${segment.kind}:${segment.stepId}`),
@@ -174,44 +172,6 @@ export function StripTimeline() {
     event.stopPropagation();
     segments[next]?.focus();
   };
-  let userScrollUntil = 0;
-  const userScroll = () => {
-    userScrollUntil = performance.now() + 1500;
-  };
-  const reveal = (left: number, right = left) => {
-    if (animation.resizing()) return;
-    const inset = 12;
-    const visibleLeft = scroller.scrollLeft;
-    const visibleRight = visibleLeft + scroller.clientWidth - 8;
-    if (left < visibleLeft + inset)
-      scroller.scrollLeft = Math.max(0, left - inset);
-    else if (right > visibleRight - inset)
-      scroller.scrollLeft = Math.min(
-        left - inset,
-        right - (scroller.clientWidth - 8) + inset,
-      );
-  };
-  createEffect(
-    on(animation.selection, selection => {
-      if (!selection) return;
-      const entry = geometry().entries.find(
-        ({segment}) =>
-          segment.stepId === selection.stepId &&
-          segment.kind === selection.kind,
-      );
-      if (entry) reveal(entry.x, entry.x + entry.width);
-    }),
-  );
-  createEffect(
-    on([animation.playhead, animation.playback], ([ms, playback], previous) => {
-      if (
-        (playback.state === 'playing' ||
-          (playback.state === 'paused' && previous?.[1].state === 'playing')) &&
-        performance.now() >= userScrollUntil
-      )
-        reveal(geometry().timeToX(ms));
-    }),
-  );
   const resize = createSegmentResize({
     total: animation.durationMs,
     geometry,
@@ -219,12 +179,8 @@ export function StripTimeline() {
       segment.kind === 'hold'
         ? DURATION_LIMITS.holdMs
         : DURATION_LIMITS.transitionMs,
-    begin: total => {
-      animation.actions.setResizing(true);
-      setFrozen({total, scale: geometry().scale});
-    },
+    begin: () => animation.actions.setResizing(true),
     end: () => {
-      setFrozen(undefined);
       animation.actions.setResizing(false);
     },
     update: (segment, ms, commit) => {
@@ -261,6 +217,14 @@ export function StripTimeline() {
   const pointerUp = (event: PointerEvent) => {
     if (!ruler.hasPointerCapture(event.pointerId)) return;
     animation.actions.seek(at(event));
+    if (props.overview) {
+      const x = event.clientX - ruler.getBoundingClientRect().left;
+      const entry =
+        geometry().entries.find(entry => x < entry.x + entry.width) ??
+        geometry().entries.at(-1);
+      if (entry)
+        animation.actions.select({stepId: entry.segment.stepId, kind: 'hold'});
+    }
     ruler.releasePointerCapture(event.pointerId);
   };
   const keyDown = (event: KeyboardEvent) => {
@@ -281,8 +245,8 @@ export function StripTimeline() {
       class={styles.root}
       ref={scroller}
       data-animation-scroller
-      onWheel={userScroll}
-      onTouchMove={userScroll}
+      data-overview={props.overview ? '' : undefined}
+      style={{visibility: width() > 0 ? undefined : 'hidden'}}
     >
       <div class={styles.axis} style={{width: `${geometry().width}px`}}>
         <div
@@ -301,21 +265,23 @@ export function StripTimeline() {
           onPointerCancel={pointerUp}
           on:keydown={keyDown}
         >
-          <For each={ticks()}>
-            {ms => (
-              <span
-                class={styles.tick}
-                data-animation-tick={ms}
-                data-first={ms === 0 ? '' : undefined}
-                data-last={ms === ticks().at(-1) ? '' : undefined}
-                style={assignInlineVars({
-                  [styles.position]: `${geometry().timeToX(ms)}px`,
-                })}
-              >
-                {formatSeconds(ms, locale())}
-              </span>
-            )}
-          </For>
+          <Show when={!props.overview}>
+            <For each={ticks()}>
+              {ms => (
+                <span
+                  class={styles.tick}
+                  data-animation-tick={ms}
+                  data-first={ms === 0 ? '' : undefined}
+                  data-last={ms === ticks().at(-1) ? '' : undefined}
+                  style={assignInlineVars({
+                    [styles.position]: `${geometry().timeToX(ms)}px`,
+                  })}
+                >
+                  {formatSeconds(ms, locale())}
+                </span>
+              )}
+            </For>
+          </Show>
           <span
             class={styles.playhead}
             data-animation-playhead
@@ -329,29 +295,52 @@ export function StripTimeline() {
           ref={track}
           data-animation-track
           data-axis-ms={axis()}
+          style={{gap: `${geometry().gap}px`}}
         >
-          <For each={keys()}>
-            {key => (
-              <Show
-                when={animation
-                  .segments()
-                  .find(segment => `${segment.kind}:${segment.stepId}` === key)}
-              >
-                {segment => (
-                  <Segment
-                    segment={segment()}
-                    geometry={geometry().entries.find(
-                      entry =>
-                        `${entry.segment.kind}:${entry.segment.stepId}` === key,
-                    )!}
-                    resize={resize}
-                    tabStop={key === tabStop()}
-                    navigate={navigate}
-                  />
+          <Show
+            when={props.overview}
+            fallback={
+              <For each={keys()}>
+                {key => (
+                  <Show
+                    when={animation
+                      .segments()
+                      .find(
+                        segment => `${segment.kind}:${segment.stepId}` === key,
+                      )}
+                  >
+                    {segment => (
+                      <Segment
+                        segment={segment()}
+                        geometry={geometry().entries.find(
+                          entry =>
+                            `${entry.segment.kind}:${entry.segment.stepId}` ===
+                            key,
+                        )!}
+                        resize={resize}
+                        tabStop={key === tabStop()}
+                        navigate={navigate}
+                      />
+                    )}
+                  </Show>
                 )}
-              </Show>
-            )}
-          </For>
+              </For>
+            }
+          >
+            <For each={geometry().entries}>
+              {entry => (
+                <span
+                  class={styles.segment}
+                  data-overview-segment
+                  data-kind={entry.segment.kind}
+                  data-step-id={entry.segment.stepId}
+                  style={assignInlineVars({
+                    [styles.segmentWidth]: `${entry.width}px`,
+                  })}
+                />
+              )}
+            </For>
+          </Show>
         </div>
       </div>
     </div>

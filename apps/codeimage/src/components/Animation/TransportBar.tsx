@@ -9,7 +9,7 @@ import {StepsMenu} from './StepsMenu';
 import {PauseIcon, PlayIcon, StopIcon} from './icons';
 import {formatSeconds} from './format';
 import * as styles from './AnimatePanel.css';
-export function TransportBar() {
+export function TransportBar(props: {compact: boolean}) {
   const {animation} = getEditorStore();
   const [t, {locale}] = useI18n<AppLocaleEntries>();
   const playing = () => animation.playback().state === 'playing';
@@ -52,7 +52,9 @@ export function TransportBar() {
       <div class={styles.desktopHeader}>
         <HeaderField />
       </div>
-      <StepsMenu />
+      <Show when={!props.compact}>
+        <StepsMenu />
+      </Show>
       <IconButton
         size="sm"
         theme="secondary"

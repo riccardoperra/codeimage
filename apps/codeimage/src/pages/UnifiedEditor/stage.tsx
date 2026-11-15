@@ -183,7 +183,7 @@ export function createStage(pageState: Accessor<EditorPageState>): Stage {
   const size = useModality() === 'full' ? 'sm' : 'xs';
 
   return {
-    AnimatePanel,
+    AnimatePanel: () => <AnimatePanel compact={compact()} />,
     AnimateToggle,
     compact,
     Canvas: () => {

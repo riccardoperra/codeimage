@@ -1,6 +1,11 @@
 export const animationLocale = {
   en: {
     animation: {
+      addStepRow: 'Add step',
+      closeStep: 'Close step settings',
+      tab: 'Tab',
+      transitionShort: 'Transition',
+      holdShort: 'Hold',
       export: {
         title: 'Export animation',
         description: 'MP4 video, rendered on your device.',
@@ -98,6 +103,11 @@ export const animationLocale = {
   },
   it: {
     animation: {
+      addStepRow: 'Aggiungi passaggio',
+      closeStep: 'Chiudi impostazioni passaggio',
+      tab: 'Scheda',
+      transitionShort: 'Transizione',
+      holdShort: 'Pausa',
       export: {
         title: 'Esporta animazione',
         description: 'Video MP4, generato sul tuo dispositivo.',
@@ -196,6 +206,11 @@ export const animationLocale = {
   },
   de: {
     animation: {
+      addStepRow: 'Schritt hinzufügen',
+      closeStep: 'Schritteinstellungen schließen',
+      tab: 'Tab',
+      transitionShort: 'Übergang',
+      holdShort: 'Halten',
       export: {
         title: 'Animation exportieren',
         description: 'MP4-Video, auf deinem Gerät gerendert.',
@@ -294,6 +309,11 @@ export const animationLocale = {
   },
   es: {
     animation: {
+      addStepRow: 'Añadir paso',
+      closeStep: 'Cerrar ajustes del paso',
+      tab: 'Pestaña',
+      transitionShort: 'Transición',
+      holdShort: 'Pausa',
       export: {
         title: 'Exportar animación',
         description: 'Vídeo MP4, renderizado en tu dispositivo.',

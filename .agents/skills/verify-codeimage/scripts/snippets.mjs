@@ -30,6 +30,10 @@ async function dismissNews(page) {
 async function ready(page, kind = 'owner') {
   await page.locator(`.unified-editor[data-page-state="${kind}"]`).waitFor();
   await code(page).waitFor();
+  await page
+    .locator('[data-fit-scale] [data-frame-placeholder]')
+    .waitFor({state: 'detached'});
+  await page.locator('[data-fit-scale] .cm-content .cm-line').first().waitFor();
   await page.evaluate(() => document.fonts.ready);
   await page.waitForTimeout(800);
   await dismissNews(page);

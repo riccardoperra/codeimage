@@ -9,12 +9,13 @@ import {createEffect, createMemo, createSignal, Show, untrack} from 'solid-js';
 import type {AppLocaleEntries} from '../../i18n';
 import {EasingField} from './EasingField';
 import * as styles from './AnimatePanel.css';
-function DurationInput(props: {
+export function DurationInput(props: {
   id: string;
   label: string;
   value: number;
   limits: {min: number; max: number};
   commit: (value: number) => void;
+  onEscape?: (event: KeyboardEvent) => void;
 }) {
   const [t] = useI18n<AppLocaleEntries>();
   const [pending, setPending] = createSignal(
@@ -42,8 +43,10 @@ function DurationInput(props: {
       return;
     event.preventDefault();
     event.stopPropagation();
-    if (event.key === 'Escape') setPending(String(props.value));
-    else if (event.key === 'ArrowUp') increase();
+    if (event.key === 'Escape') {
+      setPending(String(props.value));
+      props.onEscape?.(event);
+    } else if (event.key === 'ArrowUp') increase();
     else if (event.key === 'ArrowDown') decrease();
     else commit();
   };

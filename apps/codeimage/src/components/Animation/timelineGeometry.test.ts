@@ -19,13 +19,26 @@ function segments(count: number): AnimationSegment[] {
   });
 }
 
-for (const count of [3, 8, 40]) {
-  for (const minimum of [8, 40, 80]) {
-    test(`${count} steps, ${minimum}px minimum: shared edges, gaps and time round trips`, () => {
-      const geometry = timelineGeometry(segments(count), 320, minimum);
+for (const count of [3, 8, 15, 30]) {
+  for (const width of [320, 1000]) {
+    test(`${count} steps, ${width}px width: shared edges, gaps and time round trips`, () => {
+      const geometry = timelineGeometry(segments(count), width, {
+        labels: true,
+        minWidth: 8,
+      });
       assert.ok(geometry.scale > 0);
+      assert.ok(Math.abs(geometry.width - width) < 1e-8);
+      const overview = timelineGeometry(segments(count), width, {
+        labels: false,
+        minWidth: 8,
+      });
+      assert.ok(overview.entries.every(entry => entry.label === 'none'));
+      assert.deepEqual(
+        overview.entries.map(({x, width}) => ({x, width})),
+        geometry.entries.map(({x, width}) => ({x, width})),
+      );
       for (const [index, entry] of geometry.entries.entries()) {
-        assert.ok(entry.width >= minimum);
+        assert.ok(entry.width > 0);
         const {startMs, durationMs} = entry.segment;
         assert.equal(geometry.xToTime(entry.x), startMs);
         if (durationMs) {
@@ -40,12 +53,14 @@ for (const count of [3, 8, 40]) {
           assert.equal(geometry.xToTime(entry.x + entry.width / 2), startMs);
         }
         if (index < geometry.entries.length - 1) {
-          assert.equal(
-            geometry.entries[index + 1].x,
-            entry.x + entry.width + 3,
+          assert.ok(
+            Math.abs(
+              geometry.entries[index + 1].x -
+                (entry.x + entry.width + geometry.gap),
+            ) < 1e-8,
           );
           assert.equal(
-            geometry.xToTime(entry.x + entry.width + 1.5),
+            geometry.xToTime(entry.x + entry.width + geometry.gap / 2),
             startMs + durationMs,
           );
         }
@@ -60,8 +75,8 @@ for (const count of [3, 8, 40]) {
   }
 }
 
-test('resizing uses the same frozen geometry and keeps zero holds selectable', () => {
-  const initial = segments(40);
+test('drag conversion keeps its captured scale while the displayed geometry fits', () => {
+  const initial = segments(30);
   const before = timelineGeometry(initial, 1000);
   const durationMs = before.resizedDuration(initial[0].durationMs, 120);
   const shift = durationMs - initial[0].durationMs;
@@ -70,10 +85,9 @@ test('resizing uses the same frozen geometry and keeps zero holds selectable', (
       ? {...segment, durationMs}
       : {...segment, startMs: segment.startMs + shift},
   );
-  const during = timelineGeometry(resized, 1000, 8, before.scale);
-  assert.ok(
-    Math.abs(during.entries[0].width - before.entries[0].width - 120) < 1e-8,
-  );
+  const during = timelineGeometry(resized, 1000);
+  assert.equal(before.resizedDuration(initial[0].durationMs, 120), durationMs);
+  assert.ok(Math.abs(during.width - 1000) < 1e-8);
   assert.equal(during.entries[2].width, 8);
   assert.equal(during.timeToX(resized[1].startMs), during.entries[1].x);
   assert.equal(during.xToTime(during.entries[1].x), resized[1].startMs);
@@ -88,3 +102,34 @@ test('empty and all zero timelines have finite coordinates', () => {
   assert.equal(geometry.xToTime(100), 0);
   assert.ok(Number.isFinite(geometry.timeToX(0)));
 });
+
+test('labels collapse before they overlap', () => {
+  const geometry = timelineGeometry(segments(30), 1000);
+  assert.ok(geometry.entries.some(entry => entry.label === 'none'));
+  assert.ok(geometry.entries.some(entry => entry.label === 'full'));
+  const numbered = timelineGeometry(
+    segments(8).map((segment, index) => ({
+      ...segment,
+      durationMs: 800,
+      startMs: index * 800,
+    })),
+    1000,
+  );
+  assert.ok(numbered.entries.some(entry => entry.label === 'number'));
+});
+
+for (const width of [320, 390, 1000]) {
+  test(`zero first hold anchors time zero at the origin at ${width}px`, () => {
+    const timeline = segments(3).map((segment, index) => ({
+      ...segment,
+      startMs: index === 0 ? 0 : segment.startMs - 10000,
+      durationMs: index === 0 ? 0 : segment.durationMs,
+    }));
+    const geometry = timelineGeometry(timeline, width);
+    assert.equal(geometry.timeToX(0), 0);
+    assert.equal(geometry.timeToX(-1), 0);
+    assert.equal(geometry.xToTime(geometry.entries[0].width / 2), 0);
+    assert.ok(geometry.timeToX(1) > geometry.entries[1].x);
+    assert.ok(Math.abs(geometry.xToTime(geometry.timeToX(1)) - 1) < 1e-8);
+  });
+}

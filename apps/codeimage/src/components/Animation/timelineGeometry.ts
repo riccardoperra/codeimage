@@ -7,34 +7,44 @@ const clamp = (value: number, min: number, max: number) =>
 export function timelineGeometry(
   segments: readonly AnimationSegment[],
   viewportWidth: number,
-  minimum = 8,
-  frozenScale?: number,
+  options: {labels: boolean; minWidth: number} = {labels: true, minWidth: 8},
 ) {
   const durationMs = segments.reduce(
     (total, segment) => total + segment.durationMs,
     0,
   );
-  const gaps = Math.max(0, segments.length - 1) * TIMELINE_GAP;
-  const width = Math.max(
-    viewportWidth,
-    segments.length * (minimum + 20) + gaps,
+  const width = Math.max(0, viewportWidth);
+  const gap = Math.min(TIMELINE_GAP, width / Math.max(1, segments.length * 2));
+  const reservedGaps = Math.max(0, segments.length - 1) * gap;
+  const minimum = Math.min(
+    options.minWidth,
+    ((width - reservedGaps) / Math.max(1, segments.length)) * 0.8,
   );
   const scale =
-    frozenScale ??
-    (width - gaps - segments.length * minimum) / Math.max(1, durationMs);
+    (width - reservedGaps - segments.length * minimum) /
+    Math.max(1, durationMs);
   let x = 0;
   const entries = segments.map(segment => {
     const width = minimum + segment.durationMs * scale;
-    const entry = {segment, x, width};
-    x += width + TIMELINE_GAP;
+    const label = !options.labels
+      ? 'none'
+      : width >= (segment.kind === 'hold' ? 88 : 72)
+        ? 'full'
+        : segment.kind === 'hold' &&
+            width >= String(segment.index + 1).length * 7
+          ? 'number'
+          : 'none';
+    const entry = {segment, x, width, label};
+    x += width + gap;
     return entry;
   });
   const timeToX = (ms: number) => {
     const time = clamp(ms, 0, durationMs);
+    if (time === 0) return 0;
     const entry = entries.find(
       ({segment}) => time < segment.startMs + segment.durationMs,
     );
-    if (!entry) return Math.max(0, x - TIMELINE_GAP);
+    if (!entry) return Math.max(0, x - gap);
     return (
       entry.x +
       ((time - entry.segment.startMs) / entry.segment.durationMs) * entry.width
@@ -50,12 +60,13 @@ export function timelineGeometry(
   };
   return {
     entries,
-    width: Math.max(0, x - TIMELINE_GAP),
+    width: Math.max(0, x - gap),
     scale,
+    gap,
     timeToX,
     xToTime,
     resizedDuration: (initial: number, deltaX: number) =>
-      initial + deltaX / scale,
+      initial + deltaX / Math.max(Number.EPSILON, scale),
   };
 }
 

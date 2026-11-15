@@ -1,14 +1,13 @@
 import {themeVars} from '@codeimage/ui';
-import {createVar, style} from '@vanilla-extract/css';
+import {createVar, globalStyle, style} from '@vanilla-extract/css';
 import {TIMELINE_GAP} from './timelineGeometry';
 const c = themeVars.dynamicColors;
-export const root = style({minWidth: 0, overflowX: 'auto', padding: '2px 4px'});
+export const root = style({minWidth: 0, overflow: 'clip', padding: '2px 4px'});
 export const axis = style({width: '100%'});
 export const segmentWidth = createVar();
 export const position = createVar();
 export const ruler = style({
   height: 24,
-  '@media': {'(max-width: 768px)': {height: 40}},
   position: 'relative',
   cursor: 'ew-resize',
   touchAction: 'none',
@@ -54,7 +53,6 @@ export const track = style({
   gap: TIMELINE_GAP,
   height: 36,
   overflow: 'hidden',
-  '@media': {'(max-width: 768px)': {height: 40}},
 });
 export const segment = style({
   position: 'relative',
@@ -62,7 +60,7 @@ export const segment = style({
   alignItems: 'center',
   justifyContent: 'center',
   gap: 6,
-  minWidth: 8,
+  minWidth: 0,
   width: segmentWidth,
   flexShrink: 0,
   padding: 0,
@@ -98,7 +96,17 @@ export const handle = style({
   top: 0,
   bottom: 0,
   width: 8,
-  '@media': {'(max-width: 768px)': {width: 40}},
   cursor: 'ew-resize',
   touchAction: 'none',
 });
+
+// The overview keeps the strip geometry inside a 40px scrub target.
+globalStyle(`${root}[data-overview]`, {position: 'relative', height: 40});
+globalStyle(`${root}[data-overview] ${ruler}`, {
+  position: 'absolute',
+  inset: '0 4px',
+  height: 40,
+  zIndex: 1,
+});
+globalStyle(`${root}[data-overview] ${track}`, {height: 12, marginTop: 14});
+globalStyle(`${root}[data-overview] ${playhead}`, {top: 8, bottom: 8});

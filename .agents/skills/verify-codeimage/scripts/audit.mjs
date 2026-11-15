@@ -925,7 +925,11 @@ export async function audit({page, context, base, out, server}) {
     await page.mouse.move(x + 120, y, {steps: 4});
     const dragged = await value(hold);
     assert.ok(dragged > before && dragged % 100 === 0, 'snaps to 100 ms');
-    assert.equal(await axis(), total, 'the axis is frozen during the drag');
+    assert.equal(
+      await axis(),
+      total + dragged - before,
+      'the displayed axis follows the fitted segments during drag',
+    );
     await page.mouse.up();
     assert.equal(await value(hold), dragged);
     assert.equal(await axis(), total + dragged - before);
@@ -993,7 +997,7 @@ export async function audit({page, context, base, out, server}) {
       await page.waitForTimeout(100);
     assert.equal(await saved(), true, 'animation fixture saved before reload');
   }
-  async function animationMatrix(caseName, run) {
+  async function animationMatrix(caseName, run, phoneOnly = false) {
     const original = page;
     try {
       for (const layout of ['inspector', 'dock', 'studio']) {
@@ -1001,6 +1005,7 @@ export async function audit({page, context, base, out, server}) {
           {width: 1440, height: 900},
           {width: 390, height: 844},
         ]) {
+          if ((viewport.width === 390) !== phoneOnly) continue;
           const isolated = await createMockContext(context.browser(), base, {
             viewport,
             hasTouch: true,
@@ -1049,8 +1054,42 @@ export async function audit({page, context, base, out, server}) {
             await page.setViewportSize(viewport);
             await page.reload();
             await editor().waitFor();
+            await page.evaluate(() => {
+              window.__animationFirstFrames = [];
+              let samples = 0;
+              const sample = () => {
+                const viewport = document.querySelector(
+                  '[data-animation-scroller]',
+                );
+                if (
+                  viewport &&
+                  getComputedStyle(viewport).visibility !== 'hidden'
+                ) {
+                  window.__animationFirstFrames.push({
+                    viewport: viewport.clientWidth - 8,
+                    axis: viewport.firstElementChild.getBoundingClientRect()
+                      .width,
+                  });
+                }
+                if (++samples < 60) requestAnimationFrame(sample);
+              };
+              requestAnimationFrame(sample);
+            });
             await page.locator('[data-animate-toggle]').click();
             await page.locator('[data-animate-panel]').waitFor();
+            await page.waitForFunction(
+              () => window.__animationFirstFrames.length > 0,
+            );
+            const firstFrames = await page.evaluate(
+              () => window.__animationFirstFrames,
+            );
+            assert.ok(
+              firstFrames.every(
+                frame =>
+                  frame.axis > 0 && Math.abs(frame.axis - frame.viewport) < 1,
+              ),
+              'first visible strip frame already fits',
+            );
             await run({layout, viewport, name});
             assert.deepEqual(errors, [], `${name}: no page errors`);
             assert.deepEqual(
@@ -1096,8 +1135,209 @@ export async function audit({page, context, base, out, server}) {
     await page.getByRole('menuitem', {name, exact: true}).click();
     await page.locator('[role=menu]').waitFor({state: 'hidden'});
   }
+  await feature('animate-phone', async () => {
+    await animationMatrix(
+      'phone',
+      async ({name}) => {
+        const rows = page.locator('[data-animation-step-row]');
+        const sheet = page.locator('[data-animation-step-sheet]');
+        const hold = page.locator('#animationHold-input');
+        const transition = page.locator('#animationTransition-input');
+        const ruler = page.getByRole('slider', {name: 'Playhead', exact: true});
+        assert.equal(
+          await animationSegments().count(),
+          0,
+          'phone has no draggable strip',
+        );
+        assert.equal(await page.locator('[data-segment-resize]').count(), 0);
+        assert.equal(
+          await page.locator('[data-animation-tick]').count(),
+          0,
+          'overview has no labels',
+        );
+        assert.equal(
+          await page.getByRole('button', {name: 'Steps', exact: true}).count(),
+          0,
+        );
+        await rows.nth(1).tap();
+        await sheet.waitFor();
+        await hold.fill('1234');
+        await hold.press('Escape');
+        assert.equal(await hold.inputValue(), '800', 'first Escape reverts');
+        assert.equal(await sheet.isVisible(), true);
+        await hold.press('Escape');
+        await sheet.waitFor({state: 'hidden'});
+        assert.ok(
+          await rows.nth(1).evaluate(el => el === document.activeElement),
+          'sheet returns focus to row',
+        );
+        await rows.nth(1).tap();
+        await hold.fill('0');
+        await hold.press('Enter');
+        assert.equal(await hold.inputValue(), '0');
+        await transition.fill('100');
+        await transition.press('Enter');
+        await page.locator('[data-easing-trigger]').tap();
+        const easing = page.getByRole('dialog', {name: 'Easing', exact: true});
+        await easing.getByRole('tab', {name: 'Linear', exact: true}).tap();
+        for (const control of await easing
+          .locator('button:visible, [role=tab]:visible')
+          .all()) {
+          const box = await control.boundingBox();
+          assert.ok(
+            box.height >= 39.99 && box.width >= 39.99,
+            'easing controls are 40px',
+          );
+        }
+        await easing
+          .getByRole('tab', {name: 'Linear', exact: true})
+          .press('Escape');
+        await easing.waitFor({state: 'hidden'});
+        await sheet
+          .getByRole('button', {name: 'Apply to all', exact: true})
+          .tap();
+        for (const element of await sheet
+          .locator('button:visible, input:visible')
+          .all()) {
+          const box = await element.boundingBox();
+          assert.ok(
+            box.height >= 39.99 && box.width >= 39.99,
+            'sheet controls are 40px',
+          );
+        }
+        // Focus remains in the modal when tabbing past either end.
+        const controls = sheet.locator(
+          'button:not([disabled]):not([tabindex="-1"]), input',
+        );
+        await controls.last().focus();
+        await page.keyboard.press('Tab');
+        assert.ok(
+          await sheet.evaluate(el => el.contains(document.activeElement)),
+          'focus trapped',
+        );
+        await shot(`animate-phone-sheet-${name}`);
+        await sheet
+          .getByRole('button', {name: 'Close step settings', exact: true})
+          .tap();
+        await sheet.waitFor({state: 'hidden'});
+        for (const control of [
+          ruler,
+          page.getByRole('button', {name: 'Play animation', exact: true}),
+          page.getByRole('button', {name: 'Close animation', exact: true}),
+        ]) {
+          const box = await control.boundingBox();
+          assert.ok(
+            box.height >= 40 && box.width >= 40,
+            'phone transport and scrub targets',
+          );
+        }
+        const last = page.locator('[data-overview-segment]').last();
+        const segmentBox = await last.boundingBox();
+        const rulerBox = await ruler.boundingBox();
+        const x = segmentBox.x + segmentBox.width / 2;
+        const y = rulerBox.y + rulerBox.height / 2;
+        const durations = await rows.allTextContents();
+        const touch = await page.context().newCDPSession(page);
+        try {
+          await touch.send('Input.dispatchTouchEvent', {
+            type: 'touchStart',
+            touchPoints: [{x: rulerBox.x + 2, y}],
+          });
+          for (let i = 1; i <= 5; i++) {
+            await touch.send('Input.dispatchTouchEvent', {
+              type: 'touchMove',
+              touchPoints: [
+                {x: rulerBox.x + 2 + ((x - rulerBox.x - 2) * i) / 5, y},
+              ],
+            });
+          }
+          await touch.send('Input.dispatchTouchEvent', {
+            type: 'touchEnd',
+            touchPoints: [],
+          });
+        } finally {
+          await touch.detach();
+        }
+        assert.deepEqual(
+          await rows.allTextContents(),
+          durations,
+          'horizontal overview swipe never changes a duration',
+        );
+        assert.equal(
+          await rows.last().getAttribute('data-selected'),
+          '',
+          'scrub release selects step',
+        );
+        assert.ok(
+          Number(await ruler.getAttribute('aria-valuenow')) > 0,
+          'overview scrubs preview',
+        );
+        assert.equal(
+          await sheet.isVisible(),
+          false,
+          'scrubbing selects without opening sheet',
+        );
+        await page
+          .getByRole('button', {name: 'Stop and edit the code', exact: true})
+          .tap();
+        await rows.first().tap();
+        await sheet
+          .getByRole('button', {name: 'Duplicate as next step', exact: true})
+          .tap();
+        await sheet.waitFor({state: 'hidden'});
+        assert.equal(await rows.count(), 3);
+        await rows.nth(1).tap();
+        await sheet
+          .getByRole('button', {name: 'Move later', exact: true})
+          .tap();
+        assert.equal(
+          await sheet
+            .getByRole('button', {name: 'Move later', exact: true})
+            .isDisabled(),
+          true,
+        );
+        await sheet
+          .getByRole('button', {name: 'Remove step', exact: true})
+          .tap();
+        await sheet.waitFor({state: 'hidden'});
+        assert.equal(await rows.count(), 2);
+        for (let count = 2; count < 30; count++) {
+          await page.locator('[data-animation-add-step]').tap();
+          await page
+            .getByRole('menuitem', {name: 'index.tsx', exact: true})
+            .first()
+            .tap();
+          await page.waitForFunction(
+            () => !document.querySelector('[role=menu]'),
+          );
+          if ([3, 8, 15, 30].includes(count + 1)) {
+            assert.equal(await rows.count(), count + 1);
+            assert.equal(
+              await page.locator('[data-overview-segment]').count(),
+              (count + 1) * 2 - 1,
+            );
+            await shot(`animate-phone-${name}-${count + 1}-steps`);
+          }
+        }
+        assert.ok(
+          await page
+            .locator('[data-animation-scroller]')
+            .evaluate(el => el.scrollWidth <= el.clientWidth + 1),
+        );
+        await page
+          .getByRole('button', {name: 'Play animation', exact: true})
+          .tap();
+        await page.locator('[data-animation-stage]:visible').waitFor();
+        await page.locator('[data-preview-pill]').tap();
+        await page
+          .locator('[data-animation-stage]:visible')
+          .waitFor({state: 'hidden'});
+      },
+      true,
+    );
+  });
   await feature('animate-focus', async () => {
-    await animationMatrix('focus', async ({viewport, name}) => {
+    await animationMatrix('focus', async () => {
       const transition = animationSegments().nth(1);
       const hold = animationSegments().first();
       await transition.click();
@@ -1149,67 +1389,7 @@ export async function audit({page, context, base, out, server}) {
         before,
         'keyboard decrement commits',
       );
-      if (viewport.width === 390) {
-        await shot('animate-duration-touch');
-        for (const label of [
-          'Increase duration by 100 ms',
-          'Decrease duration by 100 ms',
-        ]) {
-          const button = page.getByRole('button', {name: label, exact: true});
-          const box = await button.boundingBox();
-          assert.ok(
-            box.width >= 40 && box.height >= 40,
-            'duration stepper touch target',
-          );
-          assert.ok(
-            await button.evaluate(el => {
-              const b = el.getBoundingClientRect();
-              return el.contains(
-                document.elementFromPoint(
-                  b.x + b.width / 2,
-                  b.y + b.height / 2,
-                ),
-              );
-            }),
-            'duration stepper can be hit',
-          );
-        }
-        await page.locator('[data-easing-trigger]').click();
-        const easing = page.getByRole('dialog', {name: 'Easing', exact: true});
-        await easing.evaluate(element =>
-          Promise.all(
-            element.getAnimations().map(animation => animation.finished),
-          ),
-        );
-        const touchTargets = [];
-        for (const control of [
-          easing.getByRole('tab', {name: 'Smooth', exact: true}),
-          easing.getByRole('button', {name: 'Play transition', exact: true}),
-        ]) {
-          const box = await control.boundingBox();
-          const minimum = await control.evaluate(element => ({
-            height: getComputedStyle(element).minHeight,
-            width: getComputedStyle(element).minWidth,
-          }));
-          assert.equal(minimum.height, '40px', 'easing target minimum height');
-          assert.equal(minimum.width, '40px', 'easing target minimum width');
-          assert.ok(
-            box.width >= 39.99 && box.height >= 39.99,
-            `easing touch target: ${JSON.stringify(box)}`,
-          );
-          touchTargets.push({box, minimum});
-        }
-        await writeFile(
-          resolve(out, `animate-touch-${name}.json`),
-          JSON.stringify(touchTargets, null, 2),
-        );
-        await easing.getByRole('tab', {name: 'Smooth', exact: true}).focus();
-        await page.keyboard.press('Escape');
-        await easing.waitFor({state: 'hidden'});
-        await durationInput().focus();
-      }
-      if (viewport.width === 390) await increment.tap();
-      else await increment.click();
+      await increment.click();
       assert.equal(
         Number(await transition.getAttribute('aria-valuenow')),
         before + 100,
@@ -1236,24 +1416,6 @@ export async function audit({page, context, base, out, server}) {
         (await editor().innerText()).includes('const first = 1;'),
         'duplicate code holds focus',
       );
-      if (viewport.width === 390) {
-        for (const name of ['Play animation', 'Close animation']) {
-          const box = await page
-            .getByRole('button', {name, exact: true})
-            .boundingBox();
-          assert.ok(
-            box.width >= 40 && box.height >= 40,
-            `${name}: 40px touch target`,
-          );
-        }
-        assert.ok(
-          (
-            await page
-              .getByRole('slider', {name: 'Playhead', exact: true})
-              .boundingBox()
-          ).height >= 40,
-        );
-      }
     });
   });
 
@@ -1278,7 +1440,7 @@ export async function audit({page, context, base, out, server}) {
     });
   }
   await feature('animate-geometry', async () => {
-    await animationMatrix('geometry', async ({viewport, name}) => {
+    await animationMatrix('geometry', async ({name}) => {
       const hold = animationSegments().first();
       const transition = animationSegments().nth(1);
       const ruler = page.getByRole('slider', {name: 'Playhead', exact: true});
@@ -1293,6 +1455,27 @@ export async function audit({page, context, base, out, server}) {
       await page.mouse.up();
       assert.equal(await hold.getAttribute('aria-valuenow'), '0');
       assert.equal(await durationInput().inputValue(), '0');
+      assert.equal(
+        await page
+          .locator('[data-animation-tick="0"]')
+          .evaluate(el => parseFloat(getComputedStyle(el).left)),
+        0,
+        'zero tick stays at the origin after a zero hold',
+      );
+      const tickBoxes = await page
+        .locator('[data-animation-tick]')
+        .evaluateAll(ticks =>
+          ticks.map(tick => {
+            const box = tick.getBoundingClientRect();
+            return {left: box.left, right: box.right};
+          }),
+        );
+      assert.ok(
+        tickBoxes.every(
+          (box, index) => index === 0 || box.left >= tickBoxes[index - 1].right,
+        ),
+        'tick labels do not collide after a zero first hold',
+      );
       assert.ok(
         (await hold.boundingBox()).width >= 8,
         'zero hold keeps a visible slot',
@@ -1305,20 +1488,6 @@ export async function audit({page, context, base, out, server}) {
         'zero hold selectable with a click',
       );
       assert.equal(await durationInput().inputValue(), '0');
-      if (viewport.width === 390) {
-        await transition.tap();
-        await hold.tap();
-        assert.equal(
-          await hold.getAttribute('data-selected'),
-          '',
-          'zero hold selectable with touch',
-        );
-        assert.equal(await durationInput().inputValue(), '0');
-        assert.ok(
-          (await hold.locator('[data-segment-resize]').boundingBox()).width >=
-            40,
-        );
-      }
       await typeDuration(100);
       assert.equal(await hold.getAttribute('aria-valuenow'), '100');
       await typeDuration(0);
@@ -1335,7 +1504,7 @@ export async function audit({page, context, base, out, server}) {
       await typeDuration(100);
       let count = 2;
       const measurements = [];
-      for (const target of [3, 8, 40]) {
+      for (const target of [3, 8, 15, 30]) {
         while (count < target) {
           await addAnimationStep();
           count++;
@@ -1345,7 +1514,7 @@ export async function audit({page, context, base, out, server}) {
           );
           assert.ok(
             await visibleInStrip(animationSegments().last()),
-            'new step scrolls into view',
+            'new step fits in the panel',
           );
           await typeDuration(100);
         }
@@ -1384,6 +1553,25 @@ export async function audit({page, context, base, out, server}) {
           Math.max(...tickDrift) < 1,
           `${target} steps: ruler ticks share segment geometry`,
         );
+        assert.ok(
+          await scroller.evaluate(el => el.scrollWidth <= el.clientWidth + 1),
+          `${target} steps fit the panel`,
+        );
+        assert.ok(
+          (await animationSegments()
+            .locator('[data-segment-label="number"]')
+            .count()) > 0 || target === 30,
+          'narrow holds use numbers',
+        );
+        if (target >= 8)
+          assert.ok(
+            (await animationSegments()
+              .filter({has: page.locator('[data-segment-label]')})
+              .count()) <
+              target * 2 - 1,
+            'short segments lose their labels',
+          );
+        await shot(`animate-desktop-${name}-${target}-steps`);
         const indices = [
           ...new Set([
             1,
@@ -1427,75 +1615,19 @@ export async function audit({page, context, base, out, server}) {
           maxTickDrift: Math.max(...tickDrift),
         });
       }
-      await hold.scrollIntoViewIfNeeded();
-      await hold.click();
-      await typeDuration(100);
-      await scroller.evaluate(el => {
-        el.scrollLeft = 0;
-      });
-      await page
-        .getByRole('button', {name: 'Play animation', exact: true})
-        .click();
-      await page.waitForFunction(
-        () =>
-          document.querySelector('[data-animation-scroller]').scrollLeft > 100,
-      );
-      const root = await scroller.boundingBox();
-      await page.mouse.move(root.x + root.width / 2, root.y + root.height / 2);
-      await page.mouse.wheel(-120, 0);
-      await page.waitForTimeout(100);
-      const manuallyScrolled = await scroller.evaluate(el => el.scrollLeft);
-      await page.waitForTimeout(250);
-      assert.equal(
-        await scroller.evaluate(el => el.scrollLeft),
-        manuallyScrolled,
-        'playback respects a user scroll',
-      );
-      await page.waitForTimeout(1400);
-      for (let i = 0; i < 10; i++) {
-        assert.ok(
-          await visibleInStrip(page.locator('[data-animation-playhead]')),
-          'playhead follows in the scrolling strip',
-        );
-        await page.waitForTimeout(100);
-      }
-      await page.waitForFunction(
-        () => {
-          const ruler = document.querySelector(
-            '[data-animate-panel] [aria-label="Playhead"]',
-          );
-          return (
-            Number(ruler?.getAttribute('aria-valuenow')) ===
-            Number(ruler?.getAttribute('aria-valuemax'))
-          );
-        },
-        null,
-        {timeout: 15000},
-      );
-      assert.ok(
-        await visibleInStrip(page.locator('[data-animation-playhead]')),
-        'the final paused playhead stays visible',
-      );
-      await page
-        .getByRole('button', {name: 'Stop and edit the code', exact: true})
-        .click();
-      // Select through the keyboard, without Playwright scrolling a locator.
       await animationSegments().first().focus();
       await page.keyboard.press('End');
+      assert.equal(
+        await animationSegments().last().getAttribute('data-selected'),
+        '',
+      );
       assert.ok(
         await visibleInStrip(animationSegments().last()),
         'keyboard selection stays visible',
       );
-      const scrollBox = await scroller.boundingBox();
-      await page.mouse.move(
-        scrollBox.x + scrollBox.width / 2,
-        scrollBox.y + scrollBox.height / 2,
-      );
-      await page.mouse.wheel(-160, 0);
-      await addAnimationStep();
       assert.ok(
-        await visibleInStrip(animationSegments().last()),
-        'added step stays visible after playback',
+        await scroller.evaluate(el => el.scrollWidth <= el.clientWidth + 1),
+        'strip never scrolls horizontally',
       );
       await writeFile(
         resolve(out, `animate-geometry-${name}.json`),
