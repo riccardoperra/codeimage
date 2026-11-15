@@ -1,6 +1,8 @@
 export const animationLocale = {
   en: {
     animation: {
+      increaseDuration: 'Increase duration by 100 ms',
+      decreaseDuration: 'Decrease duration by 100 ms',
       addStep: 'Add to animation',
       duplicate: 'Duplicate as next step',
       remove: 'Remove step',
@@ -52,6 +54,8 @@ export const animationLocale = {
   },
   it: {
     animation: {
+      increaseDuration: 'Aumenta la durata di 100 ms',
+      decreaseDuration: 'Riduci la durata di 100 ms',
       addStep: 'Aggiungi all’animazione',
       duplicate: 'Duplica come passaggio successivo',
       remove: 'Rimuovi passaggio',
@@ -98,12 +102,14 @@ export const animationLocale = {
       previewFailed: "Impossibile preparare l'anteprima dell'animazione",
       shortcut: {
         togglePlayback: "Riproduci o metti in pausa l'animazione",
-        backToEditor: "Torna all'editor (anteprima selezionata)",
+        backToEditor: "Torna all'editor",
       },
     },
   },
   de: {
     animation: {
+      increaseDuration: 'Dauer um 100 ms erhöhen',
+      decreaseDuration: 'Dauer um 100 ms verringern',
       addStep: 'Zur Animation hinzufügen',
       duplicate: 'Als nächsten Schritt duplizieren',
       remove: 'Schritt entfernen',
@@ -150,12 +156,14 @@ export const animationLocale = {
       previewFailed: 'Die Animationsvorschau konnte nicht vorbereitet werden',
       shortcut: {
         togglePlayback: 'Animation abspielen oder pausieren',
-        backToEditor: 'Zurück zum Editor (Vorschau fokussiert)',
+        backToEditor: 'Zurück zum Editor',
       },
     },
   },
   es: {
     animation: {
+      increaseDuration: 'Aumentar la duración en 100 ms',
+      decreaseDuration: 'Reducir la duración en 100 ms',
       addStep: 'Añadir a la animación',
       duplicate: 'Duplicar como siguiente paso',
       remove: 'Eliminar paso',
@@ -202,7 +210,7 @@ export const animationLocale = {
       previewFailed: 'No se pudo preparar la vista previa de la animación',
       shortcut: {
         togglePlayback: 'Reproducir o pausar la animación',
-        backToEditor: 'Volver al editor (vista previa enfocada)',
+        backToEditor: 'Volver al editor',
       },
     },
   },

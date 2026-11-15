@@ -11,7 +11,7 @@ import {
   DropdownSubMenuTrigger,
   DropdownSubMenuContent,
 } from '@codeui/kit';
-import {For} from 'solid-js';
+import {For, onCleanup} from 'solid-js';
 import type {AppLocaleEntries} from '../../i18n';
 function AddStepItem(props: {id: string; name: string}) {
   const {animation} = getEditorStore();
@@ -26,9 +26,25 @@ export function StepsMenu() {
       .settings()
       .steps.findIndex(step => step.id === animation.selection()?.stepId);
   const id = () => animation.settings().steps[index()]?.id;
+  let editDuplicate: number | undefined;
+  onCleanup(() => {
+    editDuplicate = undefined;
+  });
+  const closeAutoFocus = (event: Event) => {
+    if (editDuplicate === undefined) return;
+    event.preventDefault();
+    queueMicrotask(() => {
+      if (editDuplicate === undefined) return;
+      animation.actions.editStep(editDuplicate);
+      editDuplicate = undefined;
+    });
+  };
   const duplicate = () => {
     const stepId = id();
-    if (stepId) animation.actions.duplicateAsNext(stepId);
+    if (stepId) {
+      editDuplicate = index() + 1;
+      animation.actions.duplicateAsNext(stepId);
+    }
   };
   const earlier = () => {
     const stepId = id();
@@ -48,13 +64,16 @@ export function StepsMenu() {
         {t('animation.steps')}
       </DropdownMenuTrigger>
       <DropdownMenuPortal>
-        <DropdownMenuContent>
+        <DropdownMenuContent
+          onCloseAutoFocus={closeAutoFocus}
+          data-animation-steps-menu
+        >
           <DropdownSubMenu>
             <DropdownSubMenuTrigger>
               {t('animation.addStep')}
             </DropdownSubMenuTrigger>
             <DropdownMenuPortal>
-              <DropdownSubMenuContent>
+              <DropdownSubMenuContent data-animation-steps-menu>
                 <For each={editor.state.editors}>
                   {tab => (
                     <AddStepItem
