@@ -333,7 +333,6 @@ globalStyle(`:root[data-cui-theme="light"] ${card}`, {
 globalStyle(`${card} > [data-picture]`, {flexShrink: 0});
 globalStyle(`${card}:first-child > [data-picture]`, {
   height: '168px',
-  padding: '24px',
 });
 globalStyle(
   `${card}:not(:first-child):not(:nth-last-child(-n+3)) > [data-picture]`,

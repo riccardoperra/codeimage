@@ -36,8 +36,7 @@ const en = {
     altDescription:
       'TypeScript snippet with a Counter component built on createSignal.',
     alt: 'ALT',
-    cliOutput: 'same image as the web export',
-    optional: 'Optional engine',
+    browser: 'Browser',
     exportImage: 'Export image',
   },
   highlights: {
@@ -123,8 +122,7 @@ const it = {
     altDescription:
       'Snippet TypeScript con un componente Counter basato su createSignal.',
     alt: 'ALT',
-    cliOutput: 'stessa immagine dell’esportazione web',
-    optional: 'Motore opzionale',
+    browser: 'Browser',
     exportImage: 'Esporta immagine',
   },
   highlights: {
@@ -210,8 +208,7 @@ const de = {
     altDescription:
       'TypeScript-Snippet mit einer Counter-Komponente auf Basis von createSignal.',
     alt: 'ALT',
-    cliOutput: 'gleiches Bild wie beim Web-Export',
-    optional: 'Optionale Engine',
+    browser: 'Browser',
     exportImage: 'Bild exportieren',
   },
   highlights: {
@@ -297,8 +294,7 @@ const es = {
     altDescription:
       'Fragmento TypeScript con un componente Counter basado en createSignal.',
     alt: 'ALT',
-    cliOutput: 'la misma imagen que la exportación web',
-    optional: 'Motor opcional',
+    browser: 'Navegador',
     exportImage: 'Exportar imagen',
   },
   highlights: {

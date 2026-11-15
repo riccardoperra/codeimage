@@ -49,25 +49,41 @@ export const showcaseFor = {
   fade: 400,
 } as const;
 
-/** One-shot illustration parts, in milliseconds after playAt. */
+/**
+ * How long each one-shot part of a picture takes. A picture plays once, when
+ * it enters the viewport, and ends on the drawing its `still` mode shows.
+ */
 export const illustrationFor = {
-  redact: 450,
-  tabs: 360,
-  shortcut: 240,
-  commandPick: 420,
-  layout: 360,
-  theme: 360,
-  engine: 360,
+  /** A part arriving in its place. */
+  arrive: 360,
+  /** A line mark's wash crossing its row. */
+  wipe: 420,
+  /** One dot replacing a character of the secret. */
+  redact: 260,
+  /** The engine switch moving to Takumi. */
+  engine: 420,
+  /** The command being typed in the terminal. */
+  type: 480,
+  /** A signature landing on the image. */
+  stamp: 320,
+  /** The playhead crossing the first step. */
+  playhead: 900,
+  /** The code moving from one step to the next. */
+  morph: 450,
 } as const;
 
+/** When each part starts, in milliseconds after the picture starts playing. */
 export const illustrationAt = {
-  redact: 150,
-  tabs: [0, 90, 160],
-  shortcut: 0,
-  commandPick: 180,
-  layout: [0, 110, 190],
-  theme: [0, 90, 150],
-  engine: [0, 120, 220],
+  /** Three parts in a row: 30 to 80ms apart, never uniform. */
+  stagger: [0, 70, 130],
+  markAdded: 140,
+  /** Between two dots of the redacted secret. */
+  redactDot: 28,
+  engineWire: 260,
+  /** The terminal answers once the command is typed. */
+  cliDone: 520,
+  /** The playhead reaches the second step. */
+  morph: 620,
 } as const;
 
 export const ms = (value: number) => `${value}ms`;
