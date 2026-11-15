@@ -27,6 +27,13 @@ for (const count of [3, 8, 15, 30]) {
         minWidth: 8,
       });
       assert.ok(geometry.scale > 0);
+      const positions = geometry.ticks(500).map(geometry.timeToX);
+      assert.equal(positions[0], 0);
+      assert.ok(
+        positions.every(
+          (x, index) => index === 0 || x - positions[index - 1] >= 64,
+        ),
+      );
       assert.ok(Math.abs(geometry.width - width) < 1e-8);
       const overview = timelineGeometry(segments(count), width, {
         labels: false,

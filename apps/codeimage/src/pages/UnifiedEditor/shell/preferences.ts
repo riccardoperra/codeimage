@@ -33,6 +33,15 @@ export const THEME_CARDS = [
 
 export type ThemeCardsId = (typeof THEME_CARDS)[number]['id'];
 
+/** The colour modes of the app, each drawn as an orb in the settings. */
+export const COLOUR_MODES = [
+  {id: 'dark', name: 'editor.dark', hint: 'editor.darkHint'},
+  {id: 'light', name: 'editor.light', hint: 'editor.lightHint'},
+  {id: 'system', name: 'editor.system', hint: 'editor.systemHint'},
+] as const;
+
+export type ColourModeId = (typeof COLOUR_MODES)[number]['id'];
+
 /** How Export offers a one-off format and scale: a menu under the button, or a dialog. */
 export const EXPORT_STYLES = [
   {id: 'panel', name: 'editor.exportStylePanel'},

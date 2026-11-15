@@ -1,5 +1,5 @@
 import type {Owner} from 'solid-js';
-import {createSignal, Show} from 'solid-js';
+import {createEffect, createSignal, onCleanup, Show} from 'solid-js';
 import {render} from 'solid-js/web';
 import type {ViewUpdate} from '@codemirror/view';
 import {EditorView, ViewPlugin} from '@codemirror/view';
@@ -14,29 +14,40 @@ export function lineMarksNews(owner: Owner): ViewPlugin<{
   return ViewPlugin.define(view => {
     const host = document.body.appendChild(document.createElement('div'));
     const [position, setPosition] = createSignal<{left: number; top: number}>();
-    const measure = () =>
-      view.requestMeasure({
-        key: host,
-        read: () => {
-          const line = view.state.doc.lineAt(
-            view.state.selection.main.head,
-          ).number;
-          const marker = view.dom.querySelector<HTMLElement>(
-            `.cm-lineMarkMarker[data-mark-line="${line}"]`,
-          );
-          const rect = marker?.parentElement?.getBoundingClientRect();
-          if (!rect || rect.top < 0 || rect.bottom > innerHeight) return;
-          const top = document
-            .elementsFromPoint(
-              (rect.left + rect.right) / 2,
-              rect.top + rect.height / 2,
-            )
-            .find(element => !element.closest('.cm-lineMarkMarker'));
-          if (!top || !view.dom.contains(top)) return;
-          return {left: Math.max(4, rect.right - 46), top: rect.top};
-        },
-        write: setPosition,
-      });
+    const locate = () => {
+      const line = view.state.doc.lineAt(view.state.selection.main.head).number;
+      const marker = view.dom.querySelector<HTMLElement>(
+        `.cm-lineMarkMarker[data-mark-line="${line}"]`,
+      );
+      const rect = marker?.parentElement?.getBoundingClientRect();
+      if (!rect || rect.top < 0 || rect.bottom > innerHeight) return;
+      const top = document
+        .elementsFromPoint(
+          (rect.left + rect.right) / 2,
+          rect.top + rect.height / 2,
+        )
+        .find(
+          element =>
+            !element.closest('.cm-lineMarkMarker') && !host.contains(element),
+        );
+      if (!top || !view.dom.contains(top)) return;
+      return {left: Math.max(4, rect.right - 46), top: rect.top};
+    };
+    const place = () => {
+      const next = locate();
+      const current = position();
+      if (next?.left !== current?.left || next?.top !== current?.top)
+        setPosition(next);
+    };
+    // The badge is fixed to the viewport, and the canvas moves for reasons no
+    // event reports: a panel opening beside it, the inspector changing side,
+    // a fit-to-screen transform. So while the dot can show, follow the marker
+    // every frame. Nothing runs once the highlight is seen.
+    let frame = 0;
+    const follow = () => {
+      frame = requestAnimationFrame(follow);
+      place();
+    };
     const dispose = render(
       () => {
         getWhatsNew().bindLocation('editor:line-marks', async () => {
@@ -45,15 +56,26 @@ export function lineMarksNews(owner: Owner): ViewPlugin<{
               y: 'nearest',
             }),
           });
-          measure();
           await new Promise<void>(resolve =>
             requestAnimationFrame(() => requestAnimationFrame(() => resolve())),
           );
+          place();
+        });
+        createEffect(() => {
+          const news = getWhatsNew();
+          if (
+            !news.dotAt('editor:line-marks') &&
+            !news.revealedAt('editor:line-marks')
+          )
+            return;
+          follow();
+          onCleanup(() => cancelAnimationFrame(frame));
         });
         return (
           <Show when={position()}>
             {point => (
               <div
+                data-line-marks-news
                 style={{
                   position: 'fixed',
                   left: `${point().left}px`,
@@ -71,10 +93,6 @@ export function lineMarksNews(owner: Owner): ViewPlugin<{
       undefined,
       {owner},
     );
-    const changed = () => measure();
-    window.addEventListener('resize', changed);
-    window.addEventListener('scroll', changed, true);
-    measure();
     return {
       update(update: ViewUpdate) {
         if (
@@ -86,13 +104,11 @@ export function lineMarksNews(owner: Owner): ViewPlugin<{
           )
         )
           getWhatsNew().seen('marks');
-        measure();
       },
       destroy() {
+        cancelAnimationFrame(frame);
         dispose();
         host.remove();
-        window.removeEventListener('resize', changed);
-        window.removeEventListener('scroll', changed, true);
       },
     };
   });

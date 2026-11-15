@@ -9,6 +9,7 @@ import {fileURLToPath} from 'node:url';
 import {chromium} from 'playwright';
 import {createMockContext} from './mock-context.mjs';
 import {PNG} from 'pngjs';
+import {dismissNews} from './news.mjs';
 const root = fileURLToPath(new URL('../../../..', import.meta.url));
 process.chdir(root);
 const require = createRequire(import.meta.url);
@@ -106,17 +107,7 @@ try {
   await page.goto(base);
   const editor = page.locator('.cm-content[contenteditable="true"]').first();
   await editor.waitFor();
-  // What's new waits 700 ms before announcing itself. Let its exit finish before typing.
-  await page
-    .locator('[data-whats-new="showcase"], [data-whats-new="nudge"]')
-    .first()
-    .waitFor({timeout: 15000});
-  const close = page.getByRole('button', {name: /^close$/i});
-  if (await close.isVisible()) await close.click();
-  await page.locator('[data-whats-new="showcase"]').waitFor({state: 'hidden'});
-  await page.evaluate(() =>
-    sessionStorage.setItem('verify:startup-dismissed', 'true'),
-  );
+  await dismissNews(page);
   await page.evaluate(() => document.fonts.ready);
   await writeFile(
     resolve(out, 'doctor.json'),

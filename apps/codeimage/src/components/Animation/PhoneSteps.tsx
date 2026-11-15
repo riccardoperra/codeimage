@@ -56,13 +56,19 @@ function StepRow(props: {id: string; open: (id: string) => void}) {
       >
         <span class={styles.index}>{index() + 1}</span>
         <span class={styles.name}>{name()}</span>
-        <span class={styles.metric} aria-label={t('animation.transition')}>
+        <span
+          class={styles.metric}
+          aria-label={`${t('animation.transition')}: ${index() > 0 ? formatDuration(transition().ms, locale()) : '—'}`}
+        >
           <Show when={index() > 0} fallback="—">
             <EasingCurve easing={easingOf(transition().easing)} glyph />
             {formatDuration(transition().ms, locale())}
           </Show>
         </span>
-        <span class={styles.metric} aria-label={t('animation.hold')}>
+        <span
+          class={styles.metric}
+          aria-label={`${t('animation.hold')}: ${formatDuration(step()?.holdMs ?? 0, locale())}`}
+        >
           {formatDuration(step()?.holdMs ?? 0, locale())}
         </span>
       </button>

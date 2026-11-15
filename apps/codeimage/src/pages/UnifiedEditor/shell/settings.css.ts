@@ -680,6 +680,20 @@ export const wireFrame = style({fill: 'currentColor', opacity: 0.28});
 export const wireControl = style({fill: c.primary});
 export const wireControlSoft = style({fill: c.primary, opacity: 0.45});
 
+/* The colour mode orbs. Their fills are fixed; only the rim and stars follow the theme. */
+export const orb = style({display: 'block', overflow: 'visible'});
+export const orbRim = style({
+  stroke: 'currentColor',
+  strokeOpacity: 0.18,
+  strokeWidth: 1,
+});
+export const orbStars = style({fill: 'currentColor', opacity: 0.45});
+export const orbSeam = style({
+  stroke: '#ffffff',
+  strokeOpacity: 0.35,
+  strokeWidth: 0.75,
+});
+
 // A row of an Aa list: the mark and a line of text.
 export const listRow = style({
   display: 'flex',

@@ -53,6 +53,7 @@ import {
 } from './icons';
 import type {ThemeCardsId} from './preferences';
 import {
+  COLOUR_MODES,
   DEFAULT_CARDS,
   DEFAULT_LAYOUT,
   EXPORT_STYLES,
@@ -69,7 +70,7 @@ import {
   MEMORY_CAP,
   readEnvironment,
 } from '../local-ai/requirements';
-import {LayoutPreview} from './previews';
+import {ColourModeOrb, LayoutPreview} from './previews';
 import type {SectionId} from './settings-state';
 import {SECTIONS, settings} from './settings-state';
 import * as styles from './settings.css';
@@ -529,15 +530,19 @@ export function createSettingSections(model: EditorControlsModel) {
             id: 'colour-mode' as const,
             title: t('editor.colourMode'),
             description: () => t('editor.colourModeHint'),
+            wide: true,
             control: () => (
-              <Segmented
+              <ChoiceCards
+                label={t('editor.colourMode')}
+                options={COLOUR_MODES.map(option => ({
+                  ...option,
+                  name: t(option.name),
+                  hint: t(option.hint),
+                }))}
                 value={ui.get.themeMode}
+                default={'dark'}
                 onChange={ui.setThemeMode}
-                items={[
-                  {label: t('editor.dark'), value: 'dark'},
-                  {label: t('editor.light'), value: 'light'},
-                  {label: t('editor.system'), value: 'system'},
-                ]}
+                preview={option => <ColourModeOrb mode={option.id} />}
               />
             ),
           },
