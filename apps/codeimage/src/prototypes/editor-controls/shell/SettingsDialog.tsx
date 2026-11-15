@@ -6,7 +6,14 @@ import {useI18n} from '@codeimage/locale';
 import {Dialog, IconButton, TextField} from '@codeui/kit';
 import {useModality} from '@core/hooks/isMobile';
 import {Dialog as KDialog} from '@kobalte/core/dialog';
-import {createEffect, createMemo, For, onCleanup, Show} from 'solid-js';
+import {
+  createEffect,
+  createMemo,
+  For,
+  onCleanup,
+  Show,
+  untrack,
+} from 'solid-js';
 import type {EditorControlsModel} from '../model';
 import {CloseIcon, SearchIcon} from './icons';
 import type {SettingGroup, SettingRow, SettingSection} from './sections';
@@ -16,10 +23,6 @@ import * as styles from './settings.css';
 
 function Row(props: {row: SettingRow}) {
   const [t] = useI18n<AppLocaleEntries>();
-  createEffect(() => {
-    const id = props.row.fresh;
-    if (id) getWhatsNew().opened(id, 'library');
-  });
   const titleId = () => `setting-${props.row.id}-title`;
   const descriptionId = () => `setting-${props.row.id}-description`;
   return (
@@ -86,6 +89,19 @@ function Panel(props: {sections: readonly SettingSection[]}) {
     query().trim().toLowerCase().split(/\s+/).filter(Boolean),
   );
   const searching = () => terms().length > 0;
+  // Once per visit to a section, not per row drawn: a search or a language
+  // switch draws the rows again.
+  createEffect(() => {
+    const section = current();
+    if (searching()) return;
+    untrack(() =>
+      section.groups().forEach(group =>
+        group.rows.forEach(row => {
+          if (row.fresh) getWhatsNew().opened(row.fresh, 'library');
+        }),
+      ),
+    );
+  });
   const matches = (row: SettingRow) => {
     const text = `${row.title} ${row.description()}`.toLowerCase();
     return terms().every(term => text.includes(term));
