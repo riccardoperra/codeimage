@@ -61,6 +61,7 @@ export const localAi = {
       copied: 'Copied',
       download: 'Download model',
       retry: 'Retry',
+      restartDownload: 'Restart download',
       notReady:
         'The on-device model is not ready. Download it in Settings, under Experiments.',
     },
@@ -135,6 +136,7 @@ export const localAi = {
       copied: 'Copiato',
       download: 'Scarica il modello',
       retry: 'Riprova',
+      restartDownload: 'Riavvia il download',
       notReady:
         'Il modello on-device non è pronto. Scaricalo in Impostazioni, sotto Esperimenti.',
     },
@@ -208,6 +210,7 @@ export const localAi = {
       copied: 'Kopiert',
       download: 'Modell herunterladen',
       retry: 'Erneut versuchen',
+      restartDownload: 'Download neu starten',
       notReady:
         'Das On-Device-Modell ist nicht bereit. Lade es in den Einstellungen unter Experimente herunter.',
     },
@@ -281,6 +284,7 @@ export const localAi = {
       copied: 'Copiado',
       download: 'Descargar el modelo',
       retry: 'Reintentar',
+      restartDownload: 'Reiniciar la descarga',
       notReady:
         'El modelo en el dispositivo no está listo. Descárgalo en Ajustes, en Experimentos.',
     },

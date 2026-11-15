@@ -108,6 +108,25 @@ describe('createLanguageModel', () => {
     expect(fake.create).not.toHaveBeenCalled();
   });
 
+  it('restarts a download Chrome reports but does not move', async () => {
+    const fake = fakeApi('downloading');
+    const model = createLanguageModel(fake.api);
+    await vi.advanceTimersByTimeAsync(0);
+    expect(model.state()).toEqual({kind: 'downloading', loaded: undefined});
+    expect(model.requesting()).toBe(false);
+
+    const done = model.download();
+    await vi.advanceTimersByTimeAsync(0);
+    expect(fake.create).toHaveBeenCalledTimes(1);
+    expect(model.requesting()).toBe(true);
+    fake.progress(0.25);
+    expect(model.state()).toEqual({kind: 'downloading', loaded: 0.25});
+    fake.finish(true);
+    await done;
+    expect(model.state()).toEqual({kind: 'available'});
+    expect(model.requesting()).toBe(false);
+  });
+
   it('reaches available by polling a download Chrome started on its own', async () => {
     const fake = fakeApi('downloading');
     const model = createLanguageModel(fake.api);

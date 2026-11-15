@@ -61,7 +61,7 @@ export function createLanguageModel(api: LanguageModelApi | undefined) {
   const [state, setState] = createSignal<ModelState>(
     api ? {kind: 'unavailable'} : {kind: 'unsupported'},
   );
-  let creating = false;
+  const [creating, setCreating] = createSignal(false);
   let poll: ReturnType<typeof setInterval> | undefined;
 
   const set = (next: ModelState) => {
@@ -92,7 +92,7 @@ export function createLanguageModel(api: LanguageModelApi | undefined) {
     const now = state();
     // Our own download decides when it ends, and a failure stays on screen
     // with its Retry until a download succeeds.
-    if (creating && next !== 'available') return;
+    if (creating() && next !== 'available') return;
     if (now.kind === 'failed' && next === 'downloadable') return;
     if (next === 'downloading') {
       if (now.kind !== 'downloading') {
@@ -108,10 +108,14 @@ export function createLanguageModel(api: LanguageModelApi | undefined) {
     if (api) apply(await check());
   }
 
-  /** Downloads the model. Chrome needs a user gesture, so call it from a click. */
+  /**
+   * Downloads the model, or asks Chrome again for a download it reports but
+   * does not move, such as one that stopped for lack of disk space. Chrome
+   * needs a user gesture, so call it from a click.
+   */
   async function download() {
-    if (!api || creating || state().kind === 'available') return;
-    creating = true;
+    if (!api || creating() || state().kind === 'available') return;
+    setCreating(true);
     try {
       const before = await check();
       if (before === 'unavailable' || before === 'available') {
@@ -139,7 +143,7 @@ export function createLanguageModel(api: LanguageModelApi | undefined) {
         error: error instanceof Error ? error.message : String(error),
       });
     } finally {
-      creating = false;
+      setCreating(false);
     }
   }
 
@@ -164,7 +168,14 @@ export function createLanguageModel(api: LanguageModelApi | undefined) {
 
   if (!api) log('this browser has no LanguageModel');
   void refresh();
-  return {state, refresh, download, openSession};
+  return {
+    state,
+    /** True while this page's own `create()` call waits for the model. */
+    requesting: creating,
+    refresh,
+    download,
+    openSession,
+  };
 }
 
 /** Chrome's on-device model, shared by Settings and the local AI dialog. */

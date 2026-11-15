@@ -190,6 +190,11 @@ function verifyDownload({fresh, out}) {
         ['chrome://on-device-internals'],
         'only the internals page, for the live download status',
       );
+      assert.equal(
+        await row.getByRole('button', {name: 'Restart download'}).count(),
+        0,
+        'no restart while this page downloads',
+      );
       await group.screenshot({
         path: resolve(out, 'local-ai-row-downloading-indeterminate.png'),
       });
@@ -347,6 +352,7 @@ function verifyBackgroundDownload({fresh}) {
         true,
         'the switch waits for the model',
       );
+      await row.getByRole('button', {name: 'Restart download'}).waitFor();
       const checks = await page.evaluate(() => window.__localAi.checks);
       await row.getByText('Ready on this device.').waitFor({timeout: 15000});
       const readyAfter = Date.now() - loaded;

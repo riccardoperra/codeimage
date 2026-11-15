@@ -281,27 +281,34 @@ function ModelControl() {
       </Match>
       <Match when={downloading()}>
         {state => (
-          <Show
-            when={state().loaded}
-            fallback={
-              <progress
-                class={styles.progress}
-                aria-label={t('localAi.modelDownloading')}
-              />
-            }
-          >
-            {loaded => (
-              <span class={styles.progressValue}>
+          <>
+            <Show
+              when={state().loaded === undefined && !languageModel.requesting()}
+            >
+              {download(t('localAi.restartDownload'))}
+            </Show>
+            <Show
+              when={state().loaded}
+              fallback={
                 <progress
                   class={styles.progress}
                   aria-label={t('localAi.modelDownloading')}
-                  value={loaded()}
-                  max={1}
                 />
-                {Math.round(loaded() * 100)}%
-              </span>
-            )}
-          </Show>
+              }
+            >
+              {loaded => (
+                <span class={styles.progressValue}>
+                  <progress
+                    class={styles.progress}
+                    aria-label={t('localAi.modelDownloading')}
+                    value={loaded()}
+                    max={1}
+                  />
+                  {Math.round(loaded() * 100)}%
+                </span>
+              )}
+            </Show>
+          </>
         )}
       </Match>
     </Switch>
