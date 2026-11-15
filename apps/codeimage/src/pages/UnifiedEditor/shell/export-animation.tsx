@@ -29,6 +29,9 @@ import type {AnimationExport} from '../../../core/video/protocol';
 import {getOwner, runWithOwner} from 'solid-js';
 import {render} from 'solid-js/web';
 
+const yieldToEditor = () =>
+  new Promise<void>(resolve => setTimeout(resolve, 0));
+
 export function animationSnapshot() {
   const {animation, editor} = getEditorStore();
   const frame = getFrameState();
@@ -108,6 +111,7 @@ export function animationSnapshot() {
     host.append(captureStyle);
     try {
       for (const [index, scene] of timeline.scenes.entries()) {
+        await yieldToEditor();
         const tab = tabs[scene.step];
         const view = () => (
           <div
@@ -185,18 +189,18 @@ export function animationSnapshot() {
           }
         }
       }
-      await prepareWatermarks(host);
+      for (const root of roots) await prepareWatermarks(root);
       captureStyle.remove();
       const collecting = collectRasterizeResources(host, font);
-      // Capture every scene before the user can edit a frame setting. The
-      // shared collector includes the font runs of every hold and transition.
-      const scenes = timeline.scenes.map((scene, index) => {
-        return {
+      const scenes: AnimationExport['scenes'] = [];
+      for (const [index, scene] of timeline.scenes.entries()) {
+        await yieldToEditor();
+        scenes.push({
           html: cloneExportNode(roots[index]).html,
           durationMs: scene.durationMs,
           css: frameCss[index],
-        };
-      });
+        });
+      }
       return {
         scenes,
         resources: (await collecting).resources,

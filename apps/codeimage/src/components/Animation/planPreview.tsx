@@ -56,6 +56,7 @@ async function measureHidden<T>(
   view: () => JSX.Element,
   read: (host: HTMLElement) => T,
 ): Promise<T> {
+  await new Promise<void>(resolve => setTimeout(resolve, 0));
   const host = document.createElement('div');
   host.style.cssText =
     'position:fixed;left:0;top:0;visibility:hidden;pointer-events:none';
