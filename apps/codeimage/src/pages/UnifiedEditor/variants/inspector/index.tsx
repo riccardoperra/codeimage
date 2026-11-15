@@ -242,6 +242,22 @@ export default function Inspector(props: VariantProps) {
         ?.focus({preventScroll: true});
     });
   };
+  onMount(() => {
+    onCleanup(
+      props.model.controls.register(id => {
+        if (id.startsWith('signature.')) {
+          setSheet('tall');
+          toggleSection('frame', true);
+          controlOverlay.open('signature');
+          return;
+        }
+        const section = props.model.sections.find(section =>
+          section.controls.some(control => control.id === id),
+        );
+        if (section) openQuickControl(section.id, id);
+      }),
+    );
+  });
   // A click on the signature in the canvas opens its section at the handle.
   onCleanup(signatureEditor.register(() => controlOverlay.open('signature')));
   const signatureSummary = () => {

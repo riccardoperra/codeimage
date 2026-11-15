@@ -189,6 +189,7 @@ export function setLineMarks(
     annotations: [
       Transaction.addToHistory.of(addToHistory),
       isolateHistory.of('full'),
+      Transaction.userEvent.of('input.line-marks'),
     ],
   });
 }

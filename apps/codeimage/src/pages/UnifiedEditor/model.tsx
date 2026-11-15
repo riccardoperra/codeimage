@@ -43,6 +43,8 @@ import {FontPicker} from './localized/FontPicker';
 import {ImagePicker} from './localized/ImagePicker';
 import {createPreviewSession} from './preview';
 import type {PreviewSession} from './preview';
+import {getWhatsNew} from '../../state/whats-new';
+import {createControlRevealer} from './controls/reveal-control';
 import {readSyntaxColors} from './syntax';
 import type {SyntaxColors} from './syntax';
 
@@ -201,6 +203,7 @@ export interface ThemeEntry {
 }
 
 export interface EditorControlsModel {
+  readonly controls: ReturnType<typeof createControlRevealer>;
   readonly sections: readonly Section[];
   readonly control: (id: ControlId) => Control | undefined;
   /** Registry order. Grows while theme modules load. */
@@ -456,12 +459,13 @@ export function createEditorControlsModel(): EditorControlsModel {
           value: () => frame.store.exportTarget ?? frame.store.aspectRatio,
           set: value => {
             const target = getExportTarget(value);
-            if (target) frame.setExportTarget(target.id);
-            else frame.setAspectRatio(value);
+            if (target) {
+              frame.setExportTarget(target.id);
+            } else frame.setAspectRatio(value);
           },
           track: ratio => {
-            if (!getExportTarget(ratio))
-              getUmami().track('aspect-ratio', {ratio: ratio ?? 'unset'});
+            if (getExportTarget(ratio)) getWhatsNew().seen('social');
+            else getUmami().track('aspect-ratio', {ratio: ratio ?? 'unset'});
           },
         }),
       ],
@@ -579,7 +583,10 @@ export function createEditorControlsModel(): EditorControlsModel {
             })),
           value: () => terminal.state.type,
           set: terminal.setType,
-          track: type => getUmami().track('change-terminal-type', {type}),
+          track: type => {
+            getWhatsNew().seen('window-styles');
+            getUmami().track('change-terminal-type', {type});
+          },
         }),
         choice('segmented', {
           id: 'window.surface',
@@ -751,6 +758,7 @@ export function createEditorControlsModel(): EditorControlsModel {
   );
 
   return {
+    controls: createControlRevealer(),
     sections,
     control: id => byId.get(id),
     themes,

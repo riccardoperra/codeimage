@@ -38,7 +38,7 @@ import {
 } from './context';
 import type {DockApi} from './context';
 import * as styles from './dock.css';
-import {createFields} from './fields';
+import {PLACES, createFields} from './fields';
 import type {PanelId} from './fields';
 import {CodeIcon, PaddingIcon, SearchIcon, SlidersIcon} from './icons';
 import {PANELS, showMoreGroup} from './panels';
@@ -263,6 +263,15 @@ export default function Dock(props: VariantProps) {
     onCleanup(() => observer.disconnect());
   });
 
+  onMount(() => {
+    onCleanup(
+      props.model.controls.register(id => {
+        const place = PLACES[id];
+        if (place.group) showMoreGroup(place.group);
+        setPanel(place.panel);
+      }),
+    );
+  });
   // A click on the signature in the canvas opens More at the Signature group.
   onCleanup(
     signatureEditor.register(() => {

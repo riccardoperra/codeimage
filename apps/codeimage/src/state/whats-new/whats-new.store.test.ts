@@ -1,7 +1,7 @@
 import type * as solid from 'solid-js';
 import {createMemo, createRoot, createSignal, onCleanup} from 'solid-js';
 import {describe, expect, expectTypeOf, it, vi} from 'vitest';
-import type {LocatedHighlightId} from './registry';
+import {RELEASES, UPCOMING, type LocatedHighlightId} from './registry';
 import {createWhatsNew, type WhatsNew} from './whats-new.store';
 
 // The suite renders snapshots with Solid's server build, where signals never
@@ -48,10 +48,10 @@ describe('release discovery across visits', () => {
     expect(app.announcement()).toBeNull();
     expect(app.store.interaction()).toBeNull();
     app.setQuiet(true);
-    expect(app.announcement()?.surface).toBe('nudge');
+    expect(app.announcement()?.surface).toBe('showcase');
     expect(app.store.headerEntry()).toBe(false);
     app.setQuiet(false);
-    expect(app.announcement()?.surface).toBe('nudge');
+    expect(app.announcement()?.surface).toBe('showcase');
     app.store.dismiss();
     expect(app.store.headerEntry()).toBe(true);
     expect(app.store.interaction()).toBe('pointer');
@@ -77,7 +77,8 @@ describe('release discovery across visits', () => {
     await db.update('whats-new', () => ({
       v: 1,
       seen: ['future-id', 'layouts'],
-      dismissed: ['2026-11', 'future-release'],
+      dismissed: ['2.0', 'future-release'],
+      minimized: [],
     }));
     const update = vi.spyOn(db, 'update');
     const track = vi.fn();
@@ -95,7 +96,7 @@ describe('release discovery across visits', () => {
       app.store.reopen(true);
       expect(app.announcement()).toMatchObject({
         surface: 'nudge',
-        release: {id: '2026-11'},
+        release: {id: '2.0'},
         entry: 'keyboard',
       });
       expect(app.store.headerEntry()).toBe(false);
@@ -105,9 +106,7 @@ describe('release discovery across visits', () => {
       app.store.reopen();
       expect(
         track.mock.calls.filter(([event]) => event === 'whats-new-reopened'),
-      ).toEqual([
-        ['whats-new-reopened', {surface: 'nudge', release: '2026-11'}],
-      ]);
+      ).toEqual([['whats-new-reopened', {surface: 'nudge', release: '2.0'}]]);
       window.dispatchEvent(new Event('focus'));
       await settle();
       expect(app.announcement()).not.toBeNull();
@@ -132,14 +131,7 @@ describe('release discovery across visits', () => {
     const db = database();
     const app = boot(db);
     await settle();
-    for (const id of [
-      'redact',
-      'tabs',
-      'command-menu',
-      'layouts',
-      'theme-cards',
-    ] as const)
-      app.store.seen(id);
+    for (const {id} of RELEASES[0].highlights) app.store.seen(id);
     expect(app.store.headerEntry()).toBe(true);
     expect(app.store.headerUnread()).toBe(false);
     app.store.reopen();
@@ -176,9 +168,72 @@ describe('release discovery across visits', () => {
     expect(app.store.headerEntry()).toBe(false);
     app.store.dismiss();
     expect(app.store.headerEntry()).toBe(true);
-    expect(app.store.interaction()).toBeNull();
+    expect(app.store.interaction()).toBe('pointer');
     app.store.reopen();
     expect(app.store.current()?.surface).toBe('nudge');
+    app.dispose();
+  });
+
+  it.each([false, true])(
+    'dismisses the major release and reopens only a session Nudge (minimized=%s)',
+    async minimized => {
+      const db = database();
+      const visit = () =>
+        createRoot(dispose => {
+          const store = createWhatsNew(db, () => Date.parse('2026-11-15'));
+          return {store, current: store.announce(() => () => true), dispose};
+        });
+      const first = visit();
+      await settle();
+      expect(first.current()?.surface).toBe('showcase');
+      expect(first.store.headerEntry()).toBe(false);
+      if (minimized) {
+        first.store.minimize('2.0');
+        expect(first.current()?.surface).toBe('nudge');
+        expect(first.store.headerEntry()).toBe(false);
+      }
+      first.store.dismiss(true);
+      await settle();
+      expect(first.store.headerEntry()).toBe(true);
+      const stored = await db.get('whats-new');
+      const update = vi.spyOn(db, 'update');
+      first.store.reopen(true);
+      expect(first.current()).toMatchObject({
+        surface: 'nudge',
+        entry: 'keyboard',
+      });
+      expect(first.store.headerEntry()).toBe(false);
+      window.dispatchEvent(new Event('focus'));
+      await settle();
+      expect(first.current()?.surface).toBe('nudge');
+      expect(update).not.toHaveBeenCalled();
+      expect(await db.get('whats-new')).toEqual(stored);
+      first.dispose();
+      const reloaded = visit();
+      await settle();
+      expect(reloaded.current()).toBeNull();
+      expect(reloaded.store.headerEntry()).toBe(true);
+      reloaded.dispose();
+    },
+  );
+
+  it('keeps an explicit Showcase preview while stored minimization loads', async () => {
+    const db = database();
+    await db.update('whats-new', () => ({v: 1, minimized: ['2.0']}));
+    const app = createRoot(dispose => {
+      const store = createWhatsNew(db, () => Date.parse('2026-11-15'));
+      return {
+        store,
+        current: store.announce(() => () => true, 'showcase'),
+        dispose,
+      };
+    });
+    await settle();
+    expect(app.current()).toMatchObject({
+      surface: 'showcase',
+      entry: 'preview',
+    });
+    expect(app.store.headerEntry()).toBe(false);
     app.dispose();
   });
 
@@ -217,6 +272,15 @@ describe('release discovery across visits', () => {
     const a = boot(db);
     const b = boot(db);
     await settle();
+    for (const id of [
+      'tabs',
+      'social',
+      'signature',
+      'marks',
+      'alt',
+      'window-styles',
+    ] as const)
+      a.store.seen(id);
     a.store.seen('command-menu');
     b.store.seen('layouts');
     const reloaded = boot(db);
@@ -283,7 +347,7 @@ describe('release discovery across visits', () => {
     try {
       await settle();
       expect(app.store.isNew('tabs')).toBe(true);
-      expect(app.store.dotAt('export:tabs')).toBe('tabs');
+      expect(app.store.dotAt('editor:line-marks')).toBe('marks');
       now.mockReturnValue(Date.parse('2026-12-29T00:00:00Z'));
       window.dispatchEvent(new Event('focus'));
       await settle();
@@ -314,7 +378,7 @@ describe('release discovery across visits', () => {
       return {store, announcement: store.announce(() => () => true), dispose};
     });
     await settle();
-    expect(app.announcement()?.surface).toBe('nudge');
+    expect(app.announcement()?.surface).toBe('showcase');
     expect(() => app.store.seen('command-menu')).not.toThrow();
     expect(app.store.dotAt('command-menu')).toBeUndefined();
     expect(() => app.store.dismiss()).not.toThrow();
@@ -336,7 +400,9 @@ describe('release discovery across visits', () => {
     expect(app.store.canShowMe('command-menu')).toBe(true);
     app.store.showMe('command-menu', 'nudge');
     expect(revealed).toBe(true);
-    expect(app.store.dotAt('command-menu')).toBe('command-menu');
+    await settle();
+    expect(app.store.revealedAt('command-menu')).toBe('command-menu');
+    expect(app.store.isNew('command-menu')).toBe(true);
     app.store.seen('command-menu');
     expect(app.store.dotAt('command-menu')).toBeUndefined();
     unbind();
@@ -404,4 +470,177 @@ it('hands a place to the owner that replaces another in the same update', async 
   dispose();
   expect(app.store.canShowMe('tabs')).toBe(false);
   app.dispose();
+});
+
+it('waits for control panels to reveal, opens a temporary coachmark and preserves seen facts', async () => {
+  const app = boot(database());
+  await settle();
+  let finish!: () => void;
+  const reveal = vi.fn(
+    () =>
+      new Promise<void>(resolve => {
+        finish = resolve;
+      }),
+  );
+  const unbind = createRoot(dispose => {
+    app.store.bindLocation('control', reveal);
+    return dispose;
+  });
+  expect(app.store.canShowMe('window-styles')).toBe(true);
+  app.store.showMe('window-styles', 'showcase');
+  expect(reveal).toHaveBeenCalledWith('window.style');
+  expect(app.store.revealedAt('control:window.style')).toBeUndefined();
+  finish();
+  await settle();
+  expect(app.store.revealedAt('control:window.style')).toBe('window-styles');
+  expect(app.store.isNew('window-styles')).toBe(true);
+  expect(app.store.dotAt('setting:layout')).toBe('layouts');
+  expect(app.store.dotAt('control:window.style')).toBeUndefined();
+  app.store.endReveal('window-styles');
+  expect(app.store.dotAt('setting:layout')).toBe('layouts');
+  unbind();
+  expect(app.store.canShowMe('window-styles')).toBe(false);
+  app.dispose();
+});
+
+it('binds editor places and lets the most recent Show me request win', async () => {
+  const app = boot(database());
+  await settle();
+  let finish!: () => void;
+  const unbind = createRoot(dispose => {
+    app.store.bindLocation(
+      'control',
+      () =>
+        new Promise<void>(resolve => {
+          finish = resolve;
+        }),
+    );
+    app.store.bindLocation('editor', vi.fn());
+    return dispose;
+  });
+  app.store.showMe('social', 'library');
+  app.store.showMe('marks', 'library');
+  await settle();
+  finish();
+  await settle();
+  expect(app.store.revealedAt('editor:line-marks')).toBe('marks');
+  expect(app.store.revealedAt('control:frame.aspectRatio')).toBeUndefined();
+  app.store.seen('marks');
+  expect(app.store.revealedAt('editor:line-marks')).toBeUndefined();
+  expect(app.store.isNew('marks')).toBe(false);
+  unbind();
+  app.dispose();
+});
+
+it('gives the optional engine its Settings pointer without consuming it on reveal', async () => {
+  const app = boot(database());
+  await settle();
+  for (const id of [
+    'tabs',
+    'social',
+    'signature',
+    'marks',
+    'alt',
+    'window-styles',
+    'command-menu',
+  ] as const)
+    app.store.seen(id);
+  expect(app.store.dotAt('setting:rendering-engine')).toBe('takumi');
+  expect(app.store.canShowMe('takumi')).toBe(false);
+  const reveal = vi.fn();
+  const dispose = createRoot(dispose => {
+    app.store.bindLocation('setting', reveal);
+    return dispose;
+  });
+  app.store.showMe('takumi', 'library');
+  await settle();
+  expect(reveal).toHaveBeenCalledWith('rendering-engine');
+  expect(app.store.isNew('takumi')).toBe(true);
+  expect(app.store.revealedAt('setting:rendering-engine')).toBe('takumi');
+  app.store.seen('takumi');
+  expect(app.store.dotAt('setting:rendering-engine')).toBeUndefined();
+  expect(app.store.isNew('takumi')).toBe(false);
+  dispose();
+  app.dispose();
+});
+
+it('keeps upcoming ids out of every dot and the release consumed by all announcement surfaces', async () => {
+  const app = createRoot(dispose => {
+    const store = createWhatsNew(database(), () => Date.parse('2026-11-15'));
+    return {store, announcement: store.announce(() => () => true), dispose};
+  });
+  await settle();
+  const places = RELEASES.flatMap(release => release.highlights).flatMap(
+    highlight => (highlight.where === null ? [] : [highlight.where]),
+  );
+  const dots = places.map(place => app.store.dotAt(place));
+  for (const {id} of UPCOMING) {
+    expect(dots).not.toContain(id);
+    expect(
+      app.announcement()?.release.highlights.map(highlight => highlight.id),
+    ).not.toContain(id);
+    // The Settings archive reads all RELEASES, rather than the pending release.
+    expect(
+      RELEASES.flatMap(release => release.highlights).map(
+        highlight => highlight.id,
+      ),
+    ).not.toContain(id);
+  }
+  app.dispose();
+});
+
+it('persists minimizing once, keeps every highlight fresh, and changes an already open tab on focus', async () => {
+  const db = database();
+  const track = vi.fn();
+  Object.assign(window, {umami: {track}});
+  const visit = () =>
+    createRoot(dispose => {
+      const store = createWhatsNew(db, () => Date.parse('2026-11-15'));
+      return {store, announcement: store.announce(() => () => true), dispose};
+    });
+  const a = visit();
+  const b = visit();
+  let reloaded: ReturnType<typeof visit> | undefined;
+  try {
+    await settle();
+    expect(a.announcement()?.surface).toBe('showcase');
+    expect(b.announcement()?.surface).toBe('showcase');
+    a.store.minimize('2.0');
+    a.store.minimize('2.0');
+    await settle();
+    expect(a.announcement()?.surface).toBe('nudge');
+    expect(await db.get('whats-new')).toEqual({
+      v: 1,
+      seen: [],
+      dismissed: [],
+      minimized: ['2.0'],
+    });
+    expect(
+      track.mock.calls.filter(([event]) => event === 'whats-new-minimized'),
+    ).toEqual([['whats-new-minimized', {surface: 'showcase', release: '2.0'}]]);
+    for (const h of RELEASES[0].highlights)
+      expect(a.store.isNew(h.id)).toBe(true);
+    window.dispatchEvent(new Event('focus'));
+    await settle();
+    expect(b.announcement()?.surface).toBe('nudge');
+    expect(
+      track.mock.calls.filter(([event]) => event === 'whats-new-minimized'),
+    ).toHaveLength(1);
+    reloaded = visit();
+    await settle();
+    expect(reloaded.announcement()?.surface).toBe('nudge');
+    expect(reloaded.store.headerEntry()).toBe(false);
+    expect(a.store.headerEntry()).toBe(false);
+    a.store.dismiss();
+    await settle();
+    window.dispatchEvent(new Event('focus'));
+    await settle();
+    expect(b.announcement()).toBeNull();
+    expect(reloaded.announcement()).toBeNull();
+  } finally {
+    a.dispose();
+    b.dispose();
+    reloaded?.dispose();
+    Reflect.deleteProperty(window, 'umami');
+  }
 });

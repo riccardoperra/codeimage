@@ -3,7 +3,7 @@ import type {AppLocaleEntries} from '../../i18n';
 import {Button} from '@codeui/kit';
 import {Popover} from '@kobalte/core/popover';
 import type {JSX} from 'solid-js';
-import {createSignal, onCleanup, Show} from 'solid-js';
+import {createEffect, createSignal, onCleanup, Show} from 'solid-js';
 import {Dynamic} from 'solid-js/web';
 import type {LocatedHighlightId, Where} from '../../state/whats-new';
 import {getWhatsNew, RELEASES} from '../../state/whats-new';
@@ -36,7 +36,8 @@ function Dot(props: {at: Where}) {
   // The opened highlight stays on this dot until its coachmark has shrunk
   // back into it, even once seen and another highlight holds the place.
   const [pinned, setPinned] = createSignal<LocatedHighlightId>();
-  const current = () => pinned() ?? news.dotAt(props.at);
+  const current = () =>
+    pinned() ?? news.revealedAt(props.at) ?? news.dotAt(props.at);
   let anchor: HTMLSpanElement | undefined;
   let content: HTMLDivElement | undefined;
   // A seen dot leaves with its coachmark, so focus cannot return to it.
@@ -47,7 +48,11 @@ function Dot(props: {at: Where}) {
   const [instant, setInstant] = createSignal(false);
   let closed: number | undefined;
   onCleanup(() => clearTimeout(closed));
-  const toggle = (value: boolean, side?: 'before' | 'after') => {
+  const toggle = (
+    value: boolean,
+    side?: 'before' | 'after',
+    automatic = false,
+  ) => {
     if (value === open()) return;
     if (value) {
       // Pin before marking seen, or the dot unmounts for a moment and comes
@@ -58,13 +63,15 @@ function Dot(props: {at: Where}) {
       setPinned(id);
       setOpen(true);
       news.opened(id, 'coachmark');
-      news.seen(id);
+      if (!automatic) news.seen(id);
       return;
     }
     if (anchor && (side !== undefined || !news.dotAt(props.at)))
       returnTo = tabbableBeside(anchor, side ?? 'before', content);
     clearTimeout(closed);
     setOpen(false);
+    const id = pinned();
+    if (id) news.endReveal(id);
     if (instant()) setPinned(undefined);
     else
       closed = window.setTimeout(
@@ -73,6 +80,21 @@ function Dot(props: {at: Where}) {
       );
     returnTo?.focus();
   };
+  createEffect(() => {
+    // Export reveals its menu. Its arrow stays outside that menu's focus scope.
+    if (
+      props.at === 'export' ||
+      props.at.startsWith('export:') ||
+      !news.revealedAt(props.at)
+    )
+      return;
+    requestAnimationFrame(() => {
+      if (!anchor?.isConnected || !news.revealedAt(props.at)) return;
+      anchor.scrollIntoView({block: 'nearest', inline: 'nearest'});
+      setInstant(true);
+      toggle(true, undefined, true);
+    });
+  });
   const highlight = () =>
     RELEASES.flatMap(release => release.highlights).find(
       item => item.id === current(),
@@ -117,7 +139,14 @@ function Dot(props: {at: Where}) {
                 onPointerDownOutside={() => setInstant(false)}
                 // The coachmark is portaled away from its dot, so Tab would
                 // otherwise leave it for the end of the page.
-                onKeyDown={(event: KeyboardEvent) => {
+                on:keydown={(event: KeyboardEvent) => {
+                  if (event.key === 'Escape') {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    setInstant(true);
+                    toggle(false);
+                    return;
+                  }
                   if (event.key !== 'Tab') return;
                   event.preventDefault();
                   setInstant(true);
@@ -145,6 +174,7 @@ function Dot(props: {at: Where}) {
                     size="sm"
                     theme="secondary"
                     onClick={event => {
+                      news.seen(item().id);
                       setInstant(fromKeyboard(event));
                       toggle(false);
                     }}

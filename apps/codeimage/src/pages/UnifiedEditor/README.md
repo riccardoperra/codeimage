@@ -165,6 +165,13 @@ Each snippet keeps its own signature copy, so later edits to a saved signature l
 Shared controls render the dots and bind reveal actions.
 Layouts do not import What's new modules. The root oxlint override enforces that boundary.
 
+Show me on a `control:` place calls `model.controls.reveal`, a generic capability each layout registers to open the panel that holds a control.
+Dock and Studio read the panel from their placement maps, which also drive rendering, so a control without a panel fails the typecheck.
+`editor:line-marks` belongs to the line marks CodeMirror plugin, which renders its dot into `document.body`, outside the exported DOM.
+A highlight whose row is not rendered, such as window style with the title bar off, has no dot and no Show me.
+The Showcase has a minimise button that stores the release in `minimized`, after which it announces through the Nudge.
+`UPCOMING` in the registry holds prepared highlights that nothing renders.
+
 The shell offers a permanent Experiments button that opens Settings on that section.
 Studio hosts it beside Settings in the desktop rail; Inspector and Dock keep it in the header.
 Its labelled, secondary ghost What's new button is available for `NEW_FOR_DAYS` (45 days)
@@ -180,6 +187,8 @@ Reloading respects the stored dismissal. A still unread dot on the sparkle icon 
 unseen highlights, outside the three feature-dot slots.
 Both extra buttons hide at widths of 768px and below; the mobile header stays unchanged.
 After expiry, the Settings archive remains available.
+Closing the Showcase dismisses the release and hands over to the header with the same pointer or keyboard behavior.
+The header always reopens an expanded Nudge, even for a major release that was never minimized.
 
 `components/WhatsNew/motion.ts` defines curves, durations, and stagger delays for announcements.
 The announcement styles and exit timers read those constants.

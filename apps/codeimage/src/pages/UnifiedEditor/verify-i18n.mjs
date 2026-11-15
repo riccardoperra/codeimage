@@ -63,6 +63,15 @@ async function ready(page) {
   );
   await page.evaluate(() => document.fonts.ready);
   await page.waitForTimeout(2500);
+  const showcase = page.locator('[data-whats-new=showcase]');
+  if (await showcase.isVisible()) {
+    await page
+      .locator('[role=dialog], [role=alertdialog]')
+      .locator('button[aria-label]')
+      .last()
+      .click();
+    await showcase.waitFor({state: 'hidden'});
+  }
   const nudge = page.locator('[data-whats-new=nudge]');
   if (await nudge.isVisible()) {
     await nudge.locator('button[aria-label]').last().click();
