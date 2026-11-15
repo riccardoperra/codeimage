@@ -1,5 +1,6 @@
 import {
   readFrameExportProperties,
+  readTerminalSurface,
   writeFrameSignature,
   parseTabMarks,
 } from './project.model.js';
@@ -13,7 +14,6 @@ import type {
 } from '@codeimage/prisma-models';
 import {type Db, type OwnerScope, orNull} from '../../shared/db.js';
 import {asUserId, type UserId} from '../../shared/principal.js';
-import {readTerminalSurface} from './project.model.js';
 import type {
   Project,
   ProjectChanges,

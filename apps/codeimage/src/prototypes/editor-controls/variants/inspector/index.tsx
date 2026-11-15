@@ -1,5 +1,5 @@
-import {themeVars} from '@codeimage/ui';
 import {Button} from '@codeui/kit';
+import {assignInlineVars} from '@vanilla-extract/dynamic';
 import {
   For,
   Show,
@@ -9,7 +9,7 @@ import {
   onCleanup,
   onMount,
 } from 'solid-js';
-import type {JSX, ParentProps} from 'solid-js';
+import type {ParentProps} from 'solid-js';
 import {useI18n} from '@codeimage/locale';
 import {getFrameState} from '@codeimage/store/editor/frame';
 import {displayHandle} from '@codeimage/store/frame/signature';
@@ -21,7 +21,7 @@ import {FrameActions} from '../../controls/FrameActions';
 import type {Control, ControlId, SectionId} from '../../model';
 import {ControlRow} from './controls';
 import {createOverlayPlacement} from './overlays';
-import './inspector.css';
+import * as styles from './inspector.css';
 
 export const meta: VariantMeta = {
   name: 'Inspector',
@@ -61,8 +61,8 @@ const fromPortal = (event: KeyboardEvent) =>
 function moveBetweenHeaders(event: KeyboardEvent) {
   const headers = [
     ...(event.currentTarget as HTMLElement)
-      .closest('.inspector-panel-scroll')!
-      .querySelectorAll<HTMLElement>(':scope > .inspector-section > button'),
+      .closest(`.${styles.panelScroll}`)!
+      .querySelectorAll<HTMLElement>(`:scope > .${styles.section} > button`),
   ];
   const index = headers.indexOf(event.currentTarget as HTMLElement);
   const next = {
@@ -97,7 +97,7 @@ function Section(
   const header = `inspector-section-${props.id}`;
   return (
     <section
-      class="inspector-section"
+      class={styles.section}
       data-section={props.id}
       data-open={props.open ? '' : undefined}
       onKeyDown={event => {
@@ -110,7 +110,7 @@ function Section(
       <button
         type="button"
         id={header}
-        class="inspector-section-trigger"
+        class={styles.sectionTrigger}
         aria-expanded={props.open}
         aria-controls={`${header}-body`}
         onClick={() => props.onOpenChange(!props.open)}
@@ -119,30 +119,30 @@ function Section(
           trigger = element;
         }}
       >
-        <span class="inspector-section-name">
-          <span class="inspector-chevron" aria-hidden="true">
+        <span class={styles.sectionName}>
+          <span class={styles.chevron} aria-hidden="true">
             ›
           </span>
           {props.title}
         </span>
-        <span class="inspector-summary" title={props.summary}>
+        <span class={styles.summary} title={props.summary}>
           {props.summary}
         </span>
       </button>
       <div
         id={`${header}-body`}
-        class="inspector-section-body"
+        class={styles.sectionBody}
         role="region"
         aria-labelledby={header}
         ref={body =>
           createEffect(() => body.toggleAttribute('inert', !props.open))
         }
-        style={{
-          '--inspector-body-height': `${props.height ?? measured()}px`,
-        }}
+        style={assignInlineVars({
+          [styles.bodyHeight]: `${props.height ?? measured()}px`,
+        })}
       >
         <div
-          class="inspector-section-content"
+          class={styles.sectionContent}
           ref={element => {
             const observer = new ResizeObserver(() =>
               setMeasured(element.offsetHeight),
@@ -192,12 +192,12 @@ export default function Inspector(props: VariantProps) {
       parseFloat(box.paddingTop) -
       parseFloat(box.paddingBottom);
     const sections = [
-      ...scroll.querySelectorAll<HTMLElement>(':scope > .inspector-section'),
+      ...scroll.querySelectorAll<HTMLElement>(`:scope > .${styles.section}`),
     ];
     // A section without its body: the header and the island's padding.
     const chrome = sections.reduce((sum, section) => {
       const body = section.querySelector<HTMLElement>(
-        ':scope > .inspector-section-body',
+        `:scope > .${styles.sectionBody}`,
       );
       return sum + section.offsetHeight - (body?.offsetHeight ?? 0);
     }, 0);
@@ -257,20 +257,11 @@ export default function Inspector(props: VariantProps) {
     editor: () => summary(props.model.control('editor.language')),
     font: () => summary(props.model.control('font.weight')),
   };
-  const tokens: JSX.CSSProperties = {
-    '--inspector-app': themeVars.dynamicColors.panel.background,
-    '--inspector-island': themeVars.dynamicColors.background,
-    '--inspector-text': themeVars.dynamicColors.baseText,
-    '--inspector-muted': themeVars.dynamicColors.descriptionTextColor,
-    '--inspector-field': themeVars.dynamicColors.input.backgroundColor,
-    '--inspector-accent': themeVars.dynamicColors.primary,
-    '--inspector-hover': themeVars.dynamicColors.button.base.hoverColor,
-  };
   return (
     <div
-      class="inspector-root"
+      class={styles.root}
       data-sheet={sheet()}
-      style={{...tokens, '--inspector-tall-sheet': `${tallSheet()}px`}}
+      style={assignInlineVars({[styles.tallSheet]: `${tallSheet()}px`})}
       ref={root => {
         const observer = new ResizeObserver(() =>
           setRootHeight(root.getBoundingClientRect().bottom),
@@ -279,9 +270,9 @@ export default function Inspector(props: VariantProps) {
         onCleanup(() => observer.disconnect());
       }}
     >
-      <div class="inspector-workspace">
+      <div class={styles.workspace}>
         <main
-          class="inspector-canvas"
+          class={styles.canvas}
           aria-label="Image preview"
           ref={element => {
             canvas = element;
@@ -291,7 +282,7 @@ export default function Inspector(props: VariantProps) {
           }}
         >
           <div
-            class="inspector-stage"
+            class={styles.stage}
             style={{
               'padding-left': `${overlayInset().left}px`,
               'padding-right': `${overlayInset().right}px`,
@@ -300,13 +291,13 @@ export default function Inspector(props: VariantProps) {
           >
             <props.stage.Canvas />
           </div>
-          <div class="inspector-frame-actions">
+          <div class={styles.frameActions}>
             <FrameActions frameRef={props.stage.exportRef()} />
             <Show
               when={mobile()}
               fallback={
                 <Button
-                  class="inspector-command"
+                  class={styles.command}
                   size="sm"
                   theme="secondary"
                   aria-haspopup="dialog"
@@ -314,7 +305,7 @@ export default function Inspector(props: VariantProps) {
                   onClick={commandMenu.open}
                 >
                   Search
-                  <kbd>{commandMenu.shortcut}</kbd>
+                  <kbd class={styles.commandKey}>{commandMenu.shortcut}</kbd>
                 </Button>
               }
             >
@@ -323,14 +314,14 @@ export default function Inspector(props: VariantProps) {
           </div>
         </main>
         <aside
-          class="inspector-panel"
+          class={styles.panel}
           aria-label="Image inspector"
           ref={element => {
             panel = element;
           }}
         >
           <Button
-            class="inspector-sheet-handle"
+            class={styles.sheetHandle}
             size="sm"
             theme="secondary"
             variant="ghost"
@@ -391,9 +382,9 @@ export default function Inspector(props: VariantProps) {
               setSheet(current => (current === 'short' ? 'tall' : 'short'));
             }}
           >
-            <span />
+            <span class={styles.sheetGrip} />
           </Button>
-          <div class="inspector-quick-controls">
+          <div class={styles.quickControls}>
             <Button
               theme="secondary"
               size="sm"
@@ -428,7 +419,7 @@ export default function Inspector(props: VariantProps) {
             </Button>
           </div>
           <div
-            class="inspector-panel-scroll"
+            class={styles.panelScroll}
             ref={element => {
               scroll = element;
               const observer = new ResizeObserver(measureFill);
@@ -450,7 +441,7 @@ export default function Inspector(props: VariantProps) {
               onOpenChange={open => toggleSection('themes', open)}
               height={fill()}
             >
-              <div class="inspector-themes">
+              <div class={styles.themes}>
                 <props.ThemePicker size={mobile() ? 'md' : 'sm'} />
               </div>
             </Section>

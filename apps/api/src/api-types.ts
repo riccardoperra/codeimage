@@ -19,10 +19,10 @@ export type DeletePresetApi = PresetApi['remove'];
 export type GetPresetByIdApi = PresetApi['get'];
 export type UpdatePresetApi = PresetApi['update'];
 export type GetAllPresetApi = PresetApi['list'];
-
-export type {TabMarks} from './modules/project/project.contract.js';
 export type CreateSignatureApi = SignatureApi['create'];
 export type DeleteSignatureApi = SignatureApi['remove'];
 export type GetSignatureByIdApi = SignatureApi['get'];
 export type UpdateSignatureApi = SignatureApi['update'];
 export type GetAllSignatureApi = SignatureApi['list'];
+
+export type {TabMarks} from './modules/project/project.contract.js';

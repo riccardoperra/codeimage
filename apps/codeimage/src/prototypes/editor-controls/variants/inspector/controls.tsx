@@ -11,6 +11,7 @@ import {SidebarPopoverTitle} from '../../../../components/PropertyEditor/Sidebar
 import {AmbientSwatch} from '../../controls/AmbientSwatch';
 import {ControlRow as SharedRow} from '../../controls/ControlRow';
 import * as shared from '../../controls/controls.css';
+import * as styles from './inspector.css';
 import type {BackgroundControl, Control} from '../../model';
 
 /**
@@ -37,18 +38,18 @@ function Overlay(
             <Button
               {...trigger}
               id={props.id}
-              class="inspector-inline-trigger"
+              class={styles.inlineTrigger}
               size="sm"
               theme="secondary"
               variant="ghost"
             >
               <Show when={props.swatch}>
                 <span
-                  class="inspector-value-swatch"
+                  class={styles.valueSwatch}
                   style={{background: props.swatch}}
                 />
               </Show>
-              <span class="inspector-inline-value">{props.value}</span>
+              <span class={styles.inlineValue}>{props.value}</span>
               <span aria-hidden="true">⌄</span>
             </Button>
           )}
@@ -95,7 +96,7 @@ function ColorPickerContent(props: {control: BackgroundControl}) {
   });
   return (
     <div
-      class="inspector-color-picker"
+      class={styles.colorPicker}
       ref={element => {
         content = element;
       }}
@@ -173,7 +174,7 @@ export function ControlRow(props: {control: Control}) {
     <SharedRow
       control={control}
       prefix="inspector"
-      listClass="inspector-select-portal"
+      listClass={styles.selectPortal}
     />
   );
 }

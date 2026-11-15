@@ -59,3 +59,7 @@ At a running server, the repeat passes Inspector, Dock and Studio with one persi
 ## Following the UI signature merge
 
 The integration now includes UI head `ad5b2bd0` (#729). The merge keeps tab marks, window surfaces and the current saved-signature schema together. 170 app tests, 71 API unit tests, app typecheck, lint and production build pass. The native 1x signature matrix was rerun against the actual merged frontend: all 18 combinations pass, with no page errors, fallback or font network issues. Avatar loading and signature CRUD runtime flows remain outside this image probe.
+
+## UI alignment through 6dacfbaa
+
+The branch follows the UI merge of main and PR #733, including the Inspector/Dock style migration. Type import/export ordering conflicts use the UI version; a duplicate parseTabMarks import from the automatic merge was removed. 170 app tests, 71 API unit tests, app and API typecheck, app lint and production build pass. Image comparisons above remain from the preceding UI alignment.

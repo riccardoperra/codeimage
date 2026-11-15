@@ -3,11 +3,11 @@ import {Value} from '@sinclair/typebox/value';
 import {
   ExportTargetSchema,
   type FrameSignatureSchema,
-  TabMarksSchema,
-  type TabMarks,
   SignaturePlatformSchema,
   SignaturePositionSchema,
   SignatureStyleSchema,
+  TabMarksSchema,
+  type TabMarks,
 } from './project.contract.js';
 import {defineErrors} from '../../shared/errors.js';
 import {

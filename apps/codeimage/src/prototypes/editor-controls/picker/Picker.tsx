@@ -7,7 +7,8 @@ import {
   onMount,
   Show,
 } from 'solid-js';
-import './picker.css';
+import clsx from 'clsx';
+import * as styles from './picker.css';
 
 /** The item a key selects, `replay`, or undefined to leave the key to the page. */
 export type PickerKeys = (
@@ -25,6 +26,8 @@ interface PickerProps {
   keys: PickerKeys;
   /** Shows the replay button. */
   onReplay?: () => void;
+  /** Classes of the page that places the pill. */
+  class?: string;
 }
 
 /** Number keys, the arrows, and R to replay: the layout picker of PICKER.md. */
@@ -122,21 +125,21 @@ export function Picker(props: PickerProps) {
 
   return (
     <nav
-      class="proto-picker"
+      class={clsx(styles.picker, props.class)}
       aria-label={props.label}
       data-position="top"
       data-ready={ready() ? '' : undefined}
     >
       <span
         ref={el => (highlight = el)}
-        class="proto-picker-highlight"
+        class={styles.highlight}
         aria-hidden="true"
       />
       <For each={props.names}>
         {(name, i) => (
           <button
             ref={el => (items[i()] = el)}
-            class="proto-picker-item"
+            class={styles.item}
             data-active={i() === props.active ? '' : undefined}
             aria-current={i() === props.active ? 'true' : undefined}
             onClick={() => props.onSelect(i())}
@@ -148,9 +151,9 @@ export function Picker(props: PickerProps) {
       <Show when={props.onReplay}>
         {replay => (
           <>
-            <span class="proto-picker-divider" aria-hidden="true" />
+            <span class={styles.divider} aria-hidden="true" />
             <button
-              class="proto-picker-item proto-picker-replay"
+              class={clsx(styles.item, styles.replay)}
               aria-label="Replay animation (R)"
               onClick={() => replay()()}
             >

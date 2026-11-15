@@ -10,6 +10,7 @@ import {FontSystemPicker} from '../../../../components/PropertyEditor/controls/F
 import {PanelHeader} from '../../../../components/PropertyEditor/PanelHeader';
 import {commandMenu} from '../../command-menu/state';
 import {useDock} from './context';
+import * as styles from './dock.css';
 import {AmbientSwatch} from '../../controls/AmbientSwatch';
 import {ControlRow} from '../../controls/ControlRow';
 import {fieldId, SegmentedChoice} from '../../controls/fields';
@@ -34,7 +35,7 @@ function ThemesPanel() {
     list.scrollLeft += event.deltaY;
   };
   return (
-    <div class="dock-panel dock-themes" on:wheel={onWheel}>
+    <div class={`${styles.panel} ${styles.themes}`} on:wheel={onWheel}>
       <dock.ThemePicker
         size={dock.compact() ? 'md' : 'sm'}
         autofocus
@@ -51,7 +52,7 @@ function BackgroundPanel() {
   const frameVisible = () => dock.fields.control('frame.visible', 'toggle');
 
   return (
-    <div class="dock-panel dock-background">
+    <div class={styles.panel}>
       <Show when={dock.fields.control('frame.background', 'background')}>
         {control => (
           <>
@@ -60,7 +61,7 @@ function BackgroundPanel() {
               when={control().visible()}
               fallback={
                 <>
-                  <p class="dock-empty">
+                  <p class={styles.empty}>
                     The frame is hidden, so there is no background to set.
                   </p>
                   <Show when={frameVisible()}>
@@ -89,9 +90,9 @@ function PaddingPanel() {
   return (
     <Show when={dock.fields.choice('frame.padding')}>
       {control => (
-        <div class="dock-panel dock-padding-panel">
+        <div class={styles.panel}>
           <PanelHeader label={control().label()} />
-          <div class="dock-segmented">
+          <div class={styles.segmented}>
             <SegmentedChoice
               control={control()}
               id={fieldId('dock', control().id)}
@@ -114,9 +115,9 @@ function LanguagePanel() {
   return (
     <Show when={dock.fields.choice('editor.language')}>
       {control => (
-        <div class="dock-panel dock-language">
+        <div class={styles.panel}>
           <PanelHeader label={control().label()} />
-          <div class="dock-list">
+          <div class={styles.list}>
             <Listbox<Item>
               size={'md'}
               selectionMode={'single'}
@@ -152,7 +153,7 @@ function FontPanel() {
   const ligatures = () => dock.fields.control('font.ligatures', 'toggle');
 
   return (
-    <div class="dock-panel dock-font">
+    <div class={styles.panel}>
       <Show when={dock.fields.choice('font.family')}>
         {family => {
           const fonts = createFontPickerListboxProps({
@@ -168,9 +169,9 @@ function FontPanel() {
             },
           });
           return (
-            <div class="dock-font-family">
+            <div>
               <PanelHeader label={family().label()} />
-              <div class="dock-segmented">
+              <div class={styles.segmented}>
                 <SegmentedField<FontSource>
                   adapt
                   size={'sm'}
@@ -182,7 +183,7 @@ function FontPanel() {
                   ]}
                 />
               </div>
-              <div class="dock-list">
+              <div class={styles.list}>
                 <Switch>
                   <Match when={source() === 'default'}>
                     <Listbox {...fonts} />
@@ -200,7 +201,7 @@ function FontPanel() {
           );
         }}
       </Show>
-      <div class="dock-font-style">
+      <div class={styles.fontStyle}>
         <Show when={weight()}>
           {control => <ControlRow control={control()} prefix="dock" />}
         </Show>
@@ -228,7 +229,7 @@ function Group(props: {id: GroupId}) {
 function PhoneActions() {
   const dock = useDock();
   return (
-    <div class="dock-phone-actions">
+    <div class={styles.phoneActions}>
       <Button
         size={'sm'}
         theme={'secondary'}
@@ -267,8 +268,8 @@ export const showMoreGroup = setGroup;
 function MorePanel() {
   const dock = useDock();
   return (
-    <div class="dock-panel dock-more">
-      <div class="dock-segmented">
+    <div class={`${styles.panel} ${styles.more}`}>
+      <div class={styles.segmented}>
         <SegmentedField
           adapt
           size={'sm'}
@@ -277,7 +278,7 @@ function MorePanel() {
           items={GROUPS.map(({id, label}) => ({label, value: id}))}
         />
       </div>
-      <section class="dock-group" aria-label={group()}>
+      <section class={styles.group} aria-label={group()}>
         <Group id={group()} />
       </section>
       <Show when={dock.compact()}>

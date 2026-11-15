@@ -51,11 +51,22 @@ export function FitFrame(props: ParentProps<FitFrameProps>) {
     const observer = new ResizeObserver(entries => {
       let resized = false;
       for (const entry of entries) {
-        const target = entry.target === wrapper ? available : natural;
         const {width, height} = entry.contentRect;
-        if (target.width !== width || target.height !== height) resized = true;
+        const target = entry.target === wrapper ? available : natural;
+        // Under a zoom the content snaps to the screen's pixels, so each zoom
+        // moves its size by up to a pixel of the screen: at 390px, 591.7 and
+        // 592.5 in turn. Taking that move as new content flipped the zoom
+        // between 0.222 and 0.223 on every frame.
+        const snap =
+          target === natural ? 2 / (scale() * window.devicePixelRatio) : 0;
+        if (
+          Math.abs(target.width - width) <= snap &&
+          Math.abs(target.height - height) <= snap
+        )
+          continue;
         target.width = width;
         target.height = height;
+        resized = true;
       }
       if (!resized || !fit()) return;
       observer.unobserve(content);
