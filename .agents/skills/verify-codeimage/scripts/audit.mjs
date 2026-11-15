@@ -55,9 +55,13 @@ export async function audit({page, context, base, out, server}) {
     if (requested.size && !requested.has(name)) return;
     try {
       await doctor('/', 'editor', 'inspector');
-      await run();
+      const measurements = await run();
       await shot(name);
-      results.push({feature: name, status: 'passed'});
+      results.push({
+        feature: name,
+        status: 'passed',
+        ...(measurements ? {measurements} : {}),
+      });
       console.log(`PASS ${name}`);
     } catch (error) {
       await shot(`${name}-failure`).catch(() => {});
@@ -105,6 +109,75 @@ export async function audit({page, context, base, out, server}) {
     if ((await button.getAttribute('aria-expanded')) !== 'true')
       await button.click();
   }
+  async function fresh({name, layout, viewport, initialize}, run) {
+    const previous = {page, context};
+    context = await context.browser().newContext({
+      viewport,
+      locale: 'en-US',
+      colorScheme: 'dark',
+      permissions: ['clipboard-read', 'clipboard-write'],
+    });
+    try {
+      await context.addInitScript(layout => {
+        localStorage.setItem(
+          'codeimage:editor-settings',
+          JSON.stringify({layout}),
+        );
+        localStorage.setItem(
+          '@store/ui',
+          JSON.stringify({themeMode: 'dark', locale: 'en'}),
+        );
+      }, layout);
+      await context.tracing.start({
+        screenshots: true,
+        snapshots: true,
+        sources: true,
+      });
+      if (initialize) await initialize(context);
+      page = await context.newPage();
+      page.setDefaultTimeout(60000);
+      const errors = [];
+      page.on('pageerror', error => errors.push(String(error)));
+      try {
+        const result = await run({
+          page,
+          context,
+          doctor,
+          editor,
+          section,
+          settings,
+          closeSettings,
+          download,
+        });
+        assert.deepEqual(errors, [], `${name}: no uncaught browser errors`);
+        return result;
+      } catch (error) {
+        await shot(`${name}-failure`).catch(() => {});
+        await writeFile(
+          resolve(out, `${name}-failure.aria.txt`),
+          await page
+            .locator('body')
+            .ariaSnapshot()
+            .catch(() => ''),
+        );
+        throw error;
+      }
+    } finally {
+      await context.tracing
+        .stop({path: resolve(out, `${name}-trace.zip`)})
+        .catch(() => {});
+      await context.close();
+      ({page, context} = previous);
+    }
+  }
+  await feature('frame-cold-start', async () => {
+    const {verifyColdStart} = await import('./frame-regressions.mjs');
+    return verifyColdStart({fresh, out});
+  });
+  await feature('export-screen-parity', async () => {
+    const {verifyExportScreen} = await import('./frame-regressions.mjs');
+    return verifyExportScreen({fresh, out});
+  });
   await feature('editor', async () => {
     for (const route of ['/', '/classic']) {
       await doctor(route);
