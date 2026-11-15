@@ -80,6 +80,8 @@ Each live lane runs in its own git worktree at the PR head. There is no `control
 
 **Depends on.** P1, P3, and P4.
 
+**Split.** On 2026-11-15 A1 became two PRs, so the animation UI can ship with the new editor before the CLI. The core is every file below except `entry-server.tsx` and `scripts/parity/animation-*.ts`, plus the A2 fix that makes `planTimeline` take `fps`. It needs only P1 and P5 and lands on `main` alone. #707 keeps the Node part on top of P3 and the core. A3 builds on the core, and A2 builds on #707.
+
 **Files.**
 
 - [ ] Create `apps/codeimage/src/core/animation/model.ts`.
