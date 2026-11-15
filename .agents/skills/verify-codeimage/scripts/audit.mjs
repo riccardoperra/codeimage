@@ -1097,7 +1097,8 @@ export async function audit({page, context, base, out, server}) {
         await easing.waitFor({state: 'hidden'});
         await durationInput().focus();
       }
-      await increment.click();
+      if (viewport.width === 390) await increment.tap();
+      else await increment.click();
       assert.equal(
         Number(await transition.getAttribute('aria-valuenow')),
         before + 100,

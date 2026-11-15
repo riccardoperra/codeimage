@@ -135,7 +135,7 @@ export function StripTimeline() {
       () => scroller,
       () => {
         setWidth(scroller.clientWidth - 8);
-        setMinimum(window.innerWidth <= 768 ? 40 : 8);
+        setMinimum(window.innerWidth <= 768 ? 80 : 8);
       },
     ),
   );

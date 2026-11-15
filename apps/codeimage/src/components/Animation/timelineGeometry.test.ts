@@ -20,7 +20,7 @@ function segments(count: number): AnimationSegment[] {
 }
 
 for (const count of [3, 8, 40]) {
-  for (const minimum of [8, 40]) {
+  for (const minimum of [8, 40, 80]) {
     test(`${count} steps, ${minimum}px minimum: shared edges, gaps and time round trips`, () => {
       const geometry = timelineGeometry(segments(count), 320, minimum);
       assert.ok(geometry.scale > 0);
