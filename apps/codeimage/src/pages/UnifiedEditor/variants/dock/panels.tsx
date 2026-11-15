@@ -4,7 +4,6 @@ import {Button, Listbox} from '@codeui/kit';
 import {SegmentedField} from '@ui/SegmentedField/SegmentedField';
 import {createSignal, For, Match, Show, Switch} from 'solid-js';
 import type {Component} from 'solid-js';
-import {ColorSwatchIcon} from '../../../../components/Icons/ColorSwatch';
 import {SparklesIcon} from '../../../../components/Icons/SparklesIcon';
 import {createFontPickerListboxProps} from '../../../../components/PropertyEditor/controls/FontPicker/FontPickerListbox';
 import {PanelHeader} from '../../../../components/PropertyEditor/PanelHeader';
@@ -246,14 +245,6 @@ function PhoneActions() {
           </Button>
         )}
       </CommandMenuButton>
-      <Button
-        size={'sm'}
-        theme={'secondary'}
-        leftIcon={<ColorSwatchIcon />}
-        onClick={() => dock.stage.randomize()}
-      >
-        {t('editor.randomizeShort')}
-      </Button>
       <Button
         size={'sm'}
         theme={'secondary'}

@@ -16,7 +16,11 @@ export const WindowsTerminal: ParentComponent<BaseTerminalProps> = props => {
   return (
     <TerminalHost {...props} themeClass={styles.theme}>
       <Show when={props.showHeader}>
-        <div class={baseStyles.header} data-accent-visible={showTab()}>
+        <div
+          class={baseStyles.header}
+          data-watermark-header
+          data-accent-visible={showTab()}
+        >
           <Show when={!props.showTab && props.title}>
             <span class={baseStyles.title} data-animation-title>
               {props.title}
@@ -39,7 +43,7 @@ export const WindowsTerminal: ParentComponent<BaseTerminalProps> = props => {
       </Show>
 
       <Show when={props.children}>
-        <div class={baseStyles.content}>
+        <div class={baseStyles.content} data-watermark-content>
           <Box position={'relative'}>
             <div>{props.children}</div>
           </Box>

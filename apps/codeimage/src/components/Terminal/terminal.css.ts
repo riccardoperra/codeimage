@@ -62,6 +62,9 @@ export const wrapper = style([
   },
 ]);
 
+// The wash lights the whole window, so it lies over the title bar, tabs and
+// status bar instead of under their fills, and below the code, which keeps
+// its theme colours.
 export const wash = style({
   position: 'absolute',
   inset: 0,

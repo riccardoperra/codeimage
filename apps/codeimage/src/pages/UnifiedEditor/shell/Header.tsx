@@ -2,7 +2,7 @@ import type {AppLocaleEntries} from '../../../i18n';
 import {useI18n} from '@codeimage/locale';
 import {getAuth0State} from '@codeimage/store/auth/auth0';
 import {getEditorSyncAdapter} from '@codeimage/store/editor/createEditorSync';
-import {buttonStyles, IconButton, Link} from '@codeui/kit';
+import {Button, buttonStyles, IconButton, Link} from '@codeui/kit';
 import {useModality} from '@core/hooks/isMobile';
 import {A as LocalLink} from '@solidjs/router';
 import {Show} from 'solid-js';
@@ -10,10 +10,12 @@ import {CodeImageLogoV2} from '../../../components/Icons/CodeImageLogoV2';
 import {CollectionIcon} from '../../../components/Icons/Collection';
 import {ShareButton} from '../../../components/Toolbar/ShareButton';
 import {ToolbarSnippetName} from '../../../components/Toolbar/ToolbarSnippetName';
+import {CommandMenuButton} from '../command-menu/CommandMenuButton';
+import {commandMenu} from '../command-menu/state';
 import {UserBadge} from '../localized/UserBadge';
 import type {Stage} from '../stage';
 import * as styles from './header.css';
-import {SettingsIcon} from './icons';
+import {SearchIcon, SettingsIcon} from './icons';
 import {settings} from './settings-state';
 
 /**
@@ -60,6 +62,24 @@ export function Header(props: {stage: Stage}) {
       </Show>
 
       <div class={styles.actions}>
+        {/* Dock and Studio have their own search. */}
+        <Show when={!settings.inLayout() && !props.stage.compact()}>
+          <CommandMenuButton>
+            {trigger => (
+              <Button
+                {...trigger}
+                class={styles.search}
+                size={'sm'}
+                theme={'secondary'}
+                variant={'ghost'}
+                leftIcon={<SearchIcon size={16} />}
+              >
+                {t('editor.search')}
+                <kbd class={styles.kbd}>{commandMenu.shortcut}</kbd>
+              </Button>
+            )}
+          </CommandMenuButton>
+        </Show>
         {/* Studio and Dock have a better home for it on a wide window. */}
         <Show when={!settings.inLayout()}>
           <IconButton

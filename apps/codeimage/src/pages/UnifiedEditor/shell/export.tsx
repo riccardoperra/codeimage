@@ -2,7 +2,6 @@ import {EditorConfigStore} from '@codeimage/store/editor/config.store';
 import {provideState} from 'statebuilder';
 import {useI18n} from '@codeimage/locale';
 import {detectSecrets} from '@codeimage/secrets';
-import {getExportCanvasStore} from '@codeimage/store/canvas';
 import {getRootEditorStore} from '@codeimage/store/editor';
 import {getWhatsNew} from '@codeimage/store/whats-new';
 import {getActiveEditorStore} from '@codeimage/store/editor/activeEditor';
@@ -24,27 +23,35 @@ import {redactTabCode} from '../../../components/CustomEditor/plugins/secrets';
 import {PreviewFrame} from '../../../components/Frame/PreviewFrame';
 import {showExportSuccessToast} from '../../../components/Toolbar/ExportSuccessToast';
 import {deliverTabFiles, renderTabFiles} from '../../../hooks/export-tabs';
-import {
-  ExportExtension,
-  ExportMode,
-  exportImage,
-} from '../../../hooks/use-export-image';
+import {ExportMode, exportImage} from '../../../hooks/use-export-image';
 import type {AppLocaleEntries} from '../../../i18n';
+import type {ExportChoice} from './export-formats';
+import {savedExportChoice} from './export-formats';
 
 type ExportAction = 'image' | 'eachTab' | 'share' | 'newTab' | 'copy';
+
+/** An export waiting for the secrets review, with the choice it was asked with. */
+interface PendingExport {
+  readonly action: ExportAction;
+  readonly choice: ExportChoice | undefined;
+}
 
 export interface Exporter {
   /** True while an export runs. */
   readonly busy: Accessor<boolean>;
   /** The number of tabs of the snippet. */
   readonly tabs: Accessor<number>;
-  /** Exports the image on the canvas with the export settings. */
-  readonly image: () => void;
-  /** Exports one image per tab with the export settings, in a zip. */
-  readonly eachTab: () => void;
-  readonly share: () => void;
-  readonly newTab: () => void;
-  readonly copy: () => void;
+  /**
+   * Exports the image on the canvas with the choice, or with the export
+   * settings without one. The other image actions take a choice the same way.
+   */
+  readonly image: (choice?: ExportChoice) => void;
+  /** One image per tab, in a zip. */
+  readonly eachTab: (choice?: ExportChoice) => void;
+  readonly share: (choice?: ExportChoice) => void;
+  readonly newTab: (choice?: ExportChoice) => void;
+  /** Copies a PNG at the choice's scale. */
+  readonly copy: (choice?: ExportChoice) => void;
   readonly canCopy: Accessor<boolean>;
   readonly canShare: Accessor<boolean>;
   /** A requested export waits here while the user reviews visible secrets. */
@@ -68,26 +75,25 @@ export function createExporter(
 ): Exporter {
   const config = provideState(EditorConfigStore);
   const [t] = useI18n<AppLocaleEntries>();
-  const canvas = getExportCanvasStore();
   const editor = getRootEditorStore();
   const owner = getOwner();
   const [busy, setBusy] = createSignal(false);
-  const [pending, setPending] = createSignal<ExportAction>();
+  const [pending, setPending] = createSignal<PendingExport>();
   const secrets = () =>
     editor.state.editors.reduce(
       (count, tab) => count + detectSecrets(tab.code).length,
       0,
     );
 
-  const options = (mode: ExportMode) => ({
-    extension: canvas.get.extension,
+  const options = (mode: ExportMode, choice: ExportChoice) => ({
+    extension: choice.extension,
     mode,
-    pixelRatio: canvas.get.devicePixelRatio,
-    quality: canvas.get.jpegQuality / 100,
+    pixelRatio: choice.pixelRatio,
+    quality: choice.quality / 100,
   });
 
-  const eachTab = async () => {
-    const payload = options(ExportMode.export);
+  const eachTab = async (choice: ExportChoice) => {
+    const payload = options(ExportMode.export, choice);
     const renderer = config.get.renderer;
     const tabs = editor.state.editors.map(tab => ({
       ...tab,
@@ -128,12 +134,16 @@ export function createExporter(
       }),
     );
 
-  const run = async (action: ExportAction) => {
+  const run = async (action: ExportAction, choice: ExportChoice) => {
     if (busy() || dispatchCopyToClipboard.loading()) return;
     if (action === 'copy') {
       const element = ref();
       if (element)
-        dispatchCopyToClipboard({ref: element, renderer: config.get.renderer});
+        dispatchCopyToClipboard({
+          ref: element,
+          renderer: config.get.renderer,
+          pixelRatio: choice.pixelRatio,
+        });
       return;
     }
     setBusy(true);
@@ -150,16 +160,16 @@ export function createExporter(
     else
       getUmami().track('export-confirm', {
         mode,
-        extension: canvas.get.extension,
+        extension: choice.extension,
       });
     try {
       const result = await (action === 'eachTab'
-        ? eachTab()
+        ? eachTab(choice)
         : runWithOwner(owner, () =>
             exportImage({
               ref: ref(),
               renderer: config.get.renderer,
-              options: options(mode),
+              options: options(mode, choice),
             }),
           ));
       if (result && mode !== ExportMode.newTab) {
@@ -174,17 +184,20 @@ export function createExporter(
     }
   };
 
-  const request = (action: ExportAction) => {
+  const request = (action: ExportAction, choice?: ExportChoice) => {
     if (busy() || pending() || dispatchCopyToClipboard.loading()) return;
-    if (secrets() > 0) setPending(action);
-    else void run(action);
+    if (secrets() > 0) setPending({action, choice});
+    else void run(action, choice ?? savedExportChoice());
   };
 
   const confirm = () => {
-    const action = pending();
+    const request = pending();
     setPending(undefined);
     // Let the export preview catch up with redaction before capturing it.
-    if (action) requestAnimationFrame(() => void run(action));
+    if (request)
+      requestAnimationFrame(
+        () => void run(request.action, request.choice ?? savedExportChoice()),
+      );
   };
 
   const copyAltText = () => {
@@ -200,14 +213,12 @@ export function createExporter(
   return {
     busy: () => busy() || dispatchCopyToClipboard.loading(),
     tabs: () => editor.state.editors.length,
-    image: () => request('image'),
-    eachTab: () => request('eachTab'),
-    share: () => request('share'),
-    newTab: () => request('newTab'),
-    copy: () => request('copy'),
-    canCopy: () =>
-      !!navigator.clipboard?.write &&
-      [ExportExtension.png, ExportExtension.svg].includes(canvas.get.extension),
+    image: choice => request('image', choice),
+    eachTab: choice => request('eachTab', choice),
+    share: choice => request('share', choice),
+    newTab: choice => request('newTab', choice),
+    copy: choice => request('copy', choice),
+    canCopy: () => !!navigator.clipboard?.write,
     canShare: () => !!navigator.share,
     confirming: () => pending() !== undefined,
     confirm,

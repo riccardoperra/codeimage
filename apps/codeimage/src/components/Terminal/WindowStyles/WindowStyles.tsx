@@ -51,9 +51,13 @@ const WindowStyleTerminal: ParentComponent<
     >
       <div class={styles.body}>
         <Show when={props.showHeader}>
-          <div class={styles.bar} data-style={props.windowStyle}>
+          <div
+            class={styles.bar}
+            data-watermark-header
+            data-style={props.windowStyle}
+          >
             <Show when={props.windowStyle === 'shell'}>
-              <div class={styles.dots}>
+              <div class={styles.dots} data-watermark-obstacle>
                 <div class={styles.dot} />
                 <div class={styles.dot} />
                 <div class={styles.dot} />
@@ -107,7 +111,7 @@ const WindowStyleTerminal: ParentComponent<
           </Show>
         </Show>
         <Show when={props.children}>
-          <div class={baseStyles.content}>
+          <div class={baseStyles.content} data-watermark-content>
             <div class={styles.codeBody}>{props.children}</div>
           </div>
         </Show>

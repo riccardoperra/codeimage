@@ -124,6 +124,7 @@ export function FrameView(props: VoidProps<FrameViewProps>) {
     <div class={styles.previewWrapper} ref={props.ref}>
       <div
         class={styles.container}
+        data-watermark-frame
         data-animation-frame={props.animated ? '' : undefined}
         style={assignInlineVars({
           overflow: 'hidden',
@@ -150,6 +151,7 @@ export function FrameView(props: VoidProps<FrameViewProps>) {
       >
         <div
           class={styles.previewOverlay}
+          data-watermark-background
           style={assignInlineVars({
             [styles.frameVars.backgroundColor]: assetsStore.isAssetUrl(
               frame.background,

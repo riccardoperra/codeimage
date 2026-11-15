@@ -129,17 +129,23 @@ export async function audit({page, context, base, out, server}) {
     await editor().fill('const dracula = true;');
     PNG.sync.read(await download('dracula.png'));
     await section('window');
-    await page
+    const wash = page
       .locator('[data-control="window.surface"]')
-      .getByRole('tab', {name: 'Accent wash', exact: true})
-      .click();
-    assert.equal(
-      await page
-        .locator('[data-control="window.surface"]')
-        .getByRole('tab', {name: 'Accent wash', exact: true})
-        .getAttribute('aria-selected'),
-      'true',
-    );
+      .getByRole('radio', {name: 'Accent wash', exact: true});
+    await wash.focus();
+    await page.keyboard.press('Space');
+    assert.ok(await wash.isChecked(), 'Accent wash surface tile checked');
+    const surface = page
+      .locator('.cm-editor')
+      .first()
+      .locator('xpath=ancestor::*[@data-surface][1]');
+    assert.equal(await surface.getAttribute('data-surface'), 'wash');
+    await surface.screenshot({path: resolve(out, 'appearance-wash.png')});
+    PNG.sync.read(await download('wash.png'));
+  });
+  await feature('watermark', async () => {
+    const {verifyWatermark} = await import('./watermark.mjs');
+    await verifyWatermark({page, out, download, section});
   });
   await feature('tabs', async () => {
     await section('window');

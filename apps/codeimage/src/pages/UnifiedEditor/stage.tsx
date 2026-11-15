@@ -55,15 +55,15 @@ export interface Stage {
   /** The hidden copy of the frame that export and copy capture. Set once Canvas mounts. */
   readonly exportRef: Accessor<HTMLElement | undefined>;
   /**
-   * Export: the button exports at once with the export settings, the arrow
-   * beside it exports one image per tab or opens the export settings. It
-   * binds Ctrl+S.
+   * Export: the button exports at once with the export settings; the way to
+   * choose a one-off export depends on the prototype variant. It binds Ctrl+S.
    */
   readonly ExportButton: Component;
-  /** What the Export control runs, for the command menu. */
+  /** What the Export control runs, for the command menu and the canvas toolbar. */
   readonly exporter: Exporter;
   /** The mini editor that today's theme cards show, drawn in the given theme. */
   readonly ThemePreview: Component<{theme: ThemeEntry}>;
+  /** Randomize stays in the command menu and its shortcut, with no button. */
   readonly randomize: () => void;
   readonly format: () => Promise<unknown>;
   readonly canFormat: Accessor<boolean>;
@@ -193,7 +193,14 @@ export function createStage(): Stage {
       );
     },
     exportRef,
-    ExportButton: () => <ExportControl exporter={exporter} size={size} />,
+    ExportButton: () => (
+      <ExportControl
+        exporter={exporter}
+        exportRef={exportRef}
+        size={size}
+        compact={compact()}
+      />
+    ),
     exporter,
     ThemePreview,
     randomize: () => dispatchRandomTheme(),

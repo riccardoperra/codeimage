@@ -87,3 +87,22 @@ export const swatch = style({
   objectFit: 'cover',
   borderRadius: themeVars.borderRadius.md,
 });
+
+// The selected window style's title bar, as the production picker showed it.
+export const windowThumb = style({
+  position: 'relative',
+  width: '64px',
+  height: '24px',
+  flexShrink: 0,
+  overflow: 'hidden',
+  borderRadius: themeVars.borderRadius.md,
+  background: c.input.backgroundColor,
+});
+export const windowThumbArt = style({
+  position: 'absolute',
+  top: '5px',
+  left: '5px',
+  width: '240px',
+  zoom: 0.4,
+  pointerEvents: 'none',
+});

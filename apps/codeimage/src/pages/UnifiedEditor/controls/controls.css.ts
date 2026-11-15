@@ -1,5 +1,5 @@
 import {themeVars} from '@codeimage/ui';
-import {createVar, fallbackVar, style} from '@vanilla-extract/css';
+import {createVar, fallbackVar, globalStyle, style} from '@vanilla-extract/css';
 
 const c = themeVars.dynamicColors;
 /** Same breakpoint as the app's `useModality`. */
@@ -89,7 +89,12 @@ export const windowGrid = style({
   gridTemplateColumns: 'repeat(2, minmax(0, 1fr))',
   gap: '10px',
   width: '100%',
+  selectors: {'&[data-compact]': {gap: '8px'}},
 });
+
+// A compact tile fits a row's value column: its art sits in its own box and
+// the caption below it, where a long label can wrap.
+const compactTile = '[data-compact] > &';
 
 export const windowTile = style({
   position: 'relative',
@@ -101,6 +106,16 @@ export const windowTile = style({
   selectors: {
     '&[data-checked]': {boxShadow: `inset 0 0 0 2px ${c.primary}`},
     '&:has(input:focus-visible)': focusRing,
+    [compactTile]: {
+      display: 'flex',
+      flexDirection: 'column',
+      gap: '6px',
+      height: 'auto',
+      overflow: 'visible',
+      borderRadius: '12px',
+      background: 'none',
+      boxShadow: 'none',
+    },
   },
 });
 
@@ -111,14 +126,55 @@ export const windowTileLabel = style({
   zIndex: 1,
 });
 
+export const windowTileArt = style({
+  position: 'absolute',
+  inset: 0,
+  pointerEvents: 'none',
+  selectors: {
+    [`[data-compact] > * > &`]: {
+      position: 'relative',
+      height: '52px',
+      overflow: 'hidden',
+      borderRadius: '12px',
+      background: c.input.backgroundColor,
+    },
+    [`[data-compact] > [data-checked] > &`]: {
+      boxShadow: `inset 0 0 0 2px ${c.primary}`,
+    },
+  },
+});
+
 export const windowTilePreview = style({
   position: 'absolute',
   top: '10px',
   left: '10px',
   width: '230px',
   zoom: 0.5,
-  pointerEvents: 'none',
+  selectors: {
+    [`[data-compact] ${windowTileArt} > &`]: {
+      top: '16px',
+      left: '16px',
+      width: '400px',
+      maskImage: 'linear-gradient(black 60%, transparent 96%)',
+    },
+  },
 });
+
+/** Two bars standing in for code, so a surface tile shows the window body. */
+export const codeLines = style({
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '8px',
+  padding: '4px 0 6px',
+});
+globalStyle(`${codeLines} > span`, {
+  height: '8px',
+  width: '55%',
+  borderRadius: '4px',
+  background: 'currentColor',
+  opacity: 0.35,
+});
+globalStyle(`${codeLines} > span + span`, {width: '35%'});
 
 export const windowTileCaption = style({
   position: 'absolute',
@@ -128,7 +184,14 @@ export const windowTileCaption = style({
   fontWeight: 500,
   color: c.descriptionTextColor,
   pointerEvents: 'none',
-  selectors: {[`${windowTile}[data-checked] &`]: {color: c.baseText}},
+  selectors: {
+    [`${windowTile}[data-checked] &`]: {color: c.baseText},
+    [`[data-compact] ${windowTile} &`]: {
+      position: 'static',
+      paddingInline: '2px',
+      lineHeight: 1.3,
+    },
+  },
 });
 
 export const visuallyHidden = style({
