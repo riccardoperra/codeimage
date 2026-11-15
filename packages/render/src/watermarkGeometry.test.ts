@@ -61,3 +61,18 @@ test('measures padded scaled text at its painted origin without changing pixels'
   });
   expect(wordOrigin).toEqual([0.5, 0, 0, 0.5, 90, 65]);
 });
+
+for (const pixelRatio of [1, 2, 3]) {
+  test(`keeps CSS watermark geometry at output scale ${pixelRatio}`, async () => {
+    const renderer = new Renderer();
+    const result = await positionWatermark({
+      html: html('collision'),
+      painted: true,
+      inset: 8,
+      pixelRatio,
+      measure: html => renderer.measure(html, {devicePixelRatio: pixelRatio}),
+    });
+    expect(result).toContain('data-watermark-placement="frame-bottom-right"');
+    expect(result).toContain('transform:scale(1)');
+  });
+}

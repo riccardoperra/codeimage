@@ -1,5 +1,10 @@
 import {expect, test} from 'vitest';
-import {intersects, placeWatermark} from './watermark';
+import {
+  intersects,
+  placeWatermark,
+  isTransparentColor,
+  canHostWatermarkFrame,
+} from './watermark';
 import type {Rect, WatermarkScene} from './watermark';
 
 const home: Rect = {x: 300, y: 150, width: 125, height: 25};
@@ -130,4 +135,51 @@ test('keeps the original when both tab-strip corners are occupied too', () => {
       obstacles: scene.header ? [scene.header] : [],
     }).slot,
   ).toBe('unavoidable');
+});
+
+for (const color of [
+  'transparent',
+  '#0000',
+  '#ffffff00',
+  'rgba(0,0,0,.0)',
+  'rgb(0 0 0 / 0%)',
+  'hsl(0 0% 0% / 0%)',
+  'RGBA(0, 0, 0, 0.0)',
+  'oklch(0 0 0 / 0)',
+]) {
+  test(`recognizes transparent color ${color}`, () => {
+    expect(isTransparentColor(color)).toBe(true);
+  });
+}
+for (const color of [
+  'black',
+  '#000',
+  '#ffffff01',
+  'rgba(0,0,0,.01)',
+  'rgb(0 0 0 / 1%)',
+  'hsl(0 0% 0% / 100%)',
+]) {
+  test(`preserves painted color ${color}`, () => {
+    expect(isTransparentColor(color)).toBe(false);
+  });
+}
+
+test('only a visible painted frame can host the logo', () => {
+  const frame = {
+    visible: true,
+    opacity: 1,
+    backgroundColor: 'transparent',
+    hasImage: false,
+  };
+  expect(canHostWatermarkFrame(frame)).toBe(false);
+  expect(canHostWatermarkFrame({...frame, hasImage: true})).toBe(true);
+  expect(canHostWatermarkFrame({...frame, backgroundColor: 'black'})).toBe(
+    true,
+  );
+  expect(
+    canHostWatermarkFrame({...frame, hasImage: true, visible: false}),
+  ).toBe(false);
+  expect(canHostWatermarkFrame({...frame, hasImage: true, opacity: 0})).toBe(
+    false,
+  );
 });

@@ -186,15 +186,16 @@ export function createRenderer(options: RendererOptions = {}) {
     const html = await positionWatermark({
       html: normalizeStyleAttributes(frame.html),
       ...frame.watermarkFrame,
+      pixelRatio: scale,
       measure: html =>
         renderer.measure(html, {
           css,
           images: frame.images,
           fonts,
           fontFamilies,
-          width: frame.size.width,
-          height: frame.size.height,
-          devicePixelRatio: 1,
+          width: frame.size.width * scale,
+          height: frame.size.height * scale,
+          devicePixelRatio: scale,
           signal: options.signal,
         }),
     });

@@ -16,10 +16,53 @@ import {
 
 declare global {
   interface Window {
-    prepare(
-      snapshot: unknown,
-    ): Promise<{preset: string; image: string; slot?: string}>;
+    prepare(snapshot: unknown): Promise<{
+      preset: string;
+      image: string;
+      imageOff: string;
+      slot?: string;
+    }>;
   }
+}
+
+async function inkBounds(image: string, withoutWatermark: string) {
+  const on = PNG.sync.read(await readFile(image));
+  const off = PNG.sync.read(await readFile(withoutWatermark));
+  assert.equal(on.width, off.width, 'watermark must not change image width');
+  assert.equal(on.height, off.height, 'watermark must not change image height');
+  let left = on.width,
+    top = on.height,
+    right = -1,
+    bottom = -1;
+  for (let y = 0; y < on.height; y++)
+    for (let x = 0; x < on.width; x++) {
+      const offset = (y * on.width + x) * 4;
+      if (
+        on.data
+          .subarray(offset, offset + 4)
+          .some(
+            (value, channel) =>
+              Math.abs(value - off.data[offset + channel]) > 2,
+          )
+      ) {
+        left = Math.min(left, x);
+        right = Math.max(right, x);
+        top = Math.min(top, y);
+        bottom = Math.max(bottom, y);
+      }
+    }
+  assert.ok(
+    right >= left && bottom >= top,
+    'actual output contains visible watermark ink',
+  );
+  return {
+    left,
+    right,
+    top,
+    bottom,
+    imageWidth: on.width,
+    imageHeight: on.height,
+  };
 }
 
 async function main() {
@@ -93,7 +136,14 @@ window.prepare = async snapshot => {
   const store = getEditorStore();
   const preset = toCliConfig({frame: store.frame.stateToPersist(), terminal: store.terminal.stateToPersist(), editor: {...snapshot.editor.options}});
   const image = await createRasterizer('dom-export', 'dataUrl')(ref, {format: 'png', pixelRatio: snapshot.frame.exportTarget ? 1 : snapshot.scale, quality: 1, codeFont: store.editor.computed.selectedFont()});
-  return {preset, image, slot: ref.querySelector('[data-watermark-home]')?.dataset.watermarkPlacement};
+  const logo = ref.querySelector('[data-watermark-moved] svg, [data-watermark-home] svg');
+  const previous = logo.style.visibility;
+  let imageOff;
+  try {
+    logo.style.visibility = 'hidden';
+    imageOff = await createRasterizer('dom-export', 'dataUrl')(ref, {format: 'png', pixelRatio: snapshot.frame.exportTarget ? 1 : snapshot.scale, quality: 1, codeFont: store.editor.computed.selectedFont()});
+  } finally { logo.style.visibility = previous; }
+  return {preset, image, imageOff, slot: ref.querySelector('[data-watermark-home]')?.dataset.watermarkPlacement};
 };
 `;
   await writeFile(join(temporary, 'browser.tsx'), source);
@@ -142,7 +192,7 @@ window.prepare = async snapshot => {
           undefined,
           {timeout: 120000},
         );
-        const {preset, image, slot} = await page.evaluate(
+        const {preset, image, imageOff, slot} = await page.evaluate(
           snapshot => window.prepare(snapshot),
           snapshot,
         );
@@ -151,6 +201,11 @@ window.prepare = async snapshot => {
         await writeFile(
           web,
           Buffer.from(image.slice(image.indexOf(',') + 1), 'base64'),
+        );
+        const webOff = join(out, `${name}-web-off.png`);
+        await writeFile(
+          webOff,
+          Buffer.from(imageOff.slice(imageOff.indexOf(',') + 1), 'base64'),
         );
         const presetFile = join(files, `${name}.json`);
         await writeFile(presetFile, preset);
@@ -172,6 +227,46 @@ window.prepare = async snapshot => {
           '-o',
           cli,
         ]);
+        const withoutWatermark = JSON.parse(preset);
+        withoutWatermark.terminal.showWatermark = false;
+        const offPreset = join(files, `${name}-off.json`);
+        await writeFile(offPreset, JSON.stringify(withoutWatermark));
+        const cliOff = join(out, `${name}-cli-off.png`);
+        await execute(process.execPath, [
+          join(root, 'packages/cli/dist/bin.js'),
+          ...codeFiles,
+          '--preset',
+          offPreset,
+          ...(snapshot.frame.exportTarget
+            ? []
+            : ['--scale', String(snapshot.scale)]),
+          '-o',
+          cliOff,
+        ]);
+        const browserInk = await inkBounds(web, webOff);
+        const cliInk = await inkBounds(cli, cliOff);
+        const right =
+          slot === 'home' || slot === 'unavoidable' || slot?.endsWith('-right');
+        const bottom =
+          slot === 'home' ||
+          slot === 'unavoidable' ||
+          slot?.startsWith('frame-bottom');
+        const dx = right ? cliInk.imageWidth - browserInk.imageWidth : 0;
+        const dy = bottom ? cliInk.imageHeight - browserInk.imageHeight : 0;
+        const deltas = {
+          left: cliInk.left - browserInk.left - dx,
+          right: cliInk.right - browserInk.right - dx,
+          top: cliInk.top - browserInk.top - dy,
+          bottom: cliInk.bottom - browserInk.bottom - dy,
+        };
+        await writeFile(
+          join(out, `${name}-ink.json`),
+          JSON.stringify({browserInk, cliInk, deltas}, null, 2),
+        );
+        assert.ok(
+          Object.values(deltas).every(delta => Math.abs(delta) <= 2),
+          `${name} actual CLI watermark ink differs from browser by more than 2px: ${JSON.stringify(deltas)}`,
+        );
         const markup = await snapshotMarkup(snapshot);
         const cliSlot = markup.html.match(
           /data-watermark-placement="([^"]+)"/,
@@ -184,7 +279,7 @@ window.prepare = async snapshot => {
           console.error(`${name} pixel comparison: ${String(error)}`);
         }
         const {width, height} = PNG.sync.read(await readFile(cli));
-        const row = `| ${name} | ${width}x${height} | ${percent.toFixed(2)}% | ${percent <= MAX_DIFF_PERCENT ? 'pass' : 'pixel drift'} | ${slot} |`;
+        const row = `| ${name} | ${width}x${height} | ${percent.toFixed(2)}% | ${percent <= MAX_DIFF_PERCENT ? 'pass' : 'pixel drift'} | ${slot} | ${Math.max(...Object.values(deltas).map(Math.abs)).toFixed(2)}px |`;
         rows.push(row);
         console.log(row);
       } finally {
@@ -194,8 +289,8 @@ window.prepare = async snapshot => {
     await writeFile(
       join(out, 'table.md'),
       [
-        '| Cell | Size | Diff | Result | Watermark slot |',
-        '| --- | --- | --- | --- | --- |',
+        '| Cell | Size | Diff | Result | Watermark slot | Ink edge delta |',
+        '| --- | --- | --- | --- | --- | --- |',
         ...rows,
       ].join('\n'),
     );

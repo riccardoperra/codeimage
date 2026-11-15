@@ -52,6 +52,15 @@ add('hidden-frame', doc => {
 add('transparent-frame', doc => {
   doc.frame.background = 'transparent';
 });
+for (const [name, color] of [
+  ['rgba-dot-zero', 'rgba(0,0,0,.0)'],
+  ['rgb-percent-zero', 'rgb(0 0 0 / 0%)'],
+  ['hsl-percent-zero', 'hsl(0 0% 0% / 0%)'],
+]) {
+  add(name, doc => {
+    doc.frame.background = color;
+  });
+}
 add('zero-opacity-frame', doc => {
   doc.frame.opacity = 0;
 });
@@ -73,6 +82,11 @@ for (const position of ['bottom-left', 'bottom-center', 'bottom-right']) {
 for (const fontId of ['fira-code', 'space-mono']) {
   add(fontId, doc => {
     doc.editor.options.fontId = fontId;
+  });
+}
+for (const scale of [2, 3]) {
+  add(`scale-${scale}`, doc => {
+    doc.scale = scale;
   });
 }
 add('tabs', doc => {

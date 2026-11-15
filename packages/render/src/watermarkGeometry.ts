@@ -1,7 +1,7 @@
 import {parse, parseFragment, serialize} from 'parse5';
 import type {DefaultTreeAdapterMap} from 'parse5';
 import type {MeasuredNode} from '@takumi-rs/core';
-import {placeWatermark} from './watermark';
+import {placeWatermark, WATERMARK} from './watermark';
 import type {Rect} from './watermark';
 
 type Element = DefaultTreeAdapterMap['element'];
@@ -47,8 +47,19 @@ export async function positionWatermark(options: {
   html: string;
   painted: boolean;
   inset: number;
+  pixelRatio?: number;
   measure(html: string): Promise<MeasuredNode>;
 }): Promise<string> {
+  const measuredRect = (node: MeasuredNode, box?: Rect): Rect => {
+    const bounds = rect(node, box);
+    const ratio = options.pixelRatio ?? 1;
+    return {
+      x: bounds.x / ratio,
+      y: bounds.y / ratio,
+      width: bounds.width / ratio,
+      height: bounds.height / ratio,
+    };
+  };
   const document = parse(options.html);
   let prefix = 'CI_WATERMARK_PROBE_';
   while (options.html.includes(prefix)) prefix += '_';
@@ -61,7 +72,8 @@ export async function positionWatermark(options: {
       return;
     }
     const code =
-      inCode || (attr(node, 'class') ?? '').split(/\s+/).includes('cm-line');
+      inCode ||
+      (attr(node, 'class') ?? '').split(/\s+/).includes(WATERMARK.codeClass);
     let kind: Kind | undefined;
     if (has(node, 'data-watermark-frame')) {
       kind = 'frame';
@@ -133,7 +145,7 @@ export async function positionWatermark(options: {
     for (const run of node.runs)
       if (/\S/u.test(run.text) && !probes.has(run.text))
         target.push(
-          rect(node, {
+          measuredRect(node, {
             x: run.x,
             y: run.y,
             width: run.width,
@@ -157,7 +169,7 @@ export async function positionWatermark(options: {
                   !child.runs.some(run => probes.has(run.text)),
               ) ?? node)
             : node;
-        list.push(rect(target));
+        list.push(measuredRect(target));
         boxes.set(probe.kind, list);
         if (probe.kind === 'code') collectText(node);
         if (probe.kind === 'header') {
@@ -184,7 +196,7 @@ export async function positionWatermark(options: {
     frame: options.painted ? {bounds: frameRect, inset: options.inset} : null,
     code: text,
     obstacles: boxes.get('obstacle') ?? [],
-    gap: (4 * homeRect.width) / 125,
+    gap: (WATERMARK.gap * homeRect.width) / WATERMARK.width,
   });
   const clean = parse(options.html);
   let cleanHome: Element | undefined, cleanFrame: Element | undefined;
@@ -204,11 +216,11 @@ export async function positionWatermark(options: {
   if ('rect' in placement) {
     const logo = cleanHome.childNodes;
     cleanHome.childNodes = fragment(
-      `<span style="display:inline-block;width:125px;height:${(homeRect.height * 125) / homeRect.width}px"></span>`,
+      `<span style="display:inline-block;width:${WATERMARK.width}px;height:${(homeRect.height * WATERMARK.width) / homeRect.width}px"></span>`,
     );
-    const scale = homeRect.width / 125;
+    const scale = homeRect.width / WATERMARK.width;
     const moved = fragment(
-      `<div data-watermark-moved="${placement.slot}" style="position:absolute;left:${placement.rect.x - frameRect.x}px;top:${placement.rect.y - frameRect.y}px;opacity:.35;display:flex;pointer-events:none;z-index:3;transform:scale(${scale});transform-origin:top left"></div>`,
+      `<div data-watermark-moved="${placement.slot}" style="position:absolute;left:${placement.rect.x - frameRect.x}px;top:${placement.rect.y - frameRect.y}px;opacity:${WATERMARK.opacity};display:flex;pointer-events:none;z-index:${WATERMARK.zIndex};transform:scale(${scale});transform-origin:top left"></div>`,
     )[0];
     if (moved && element(moved)) {
       moved.childNodes = logo;
