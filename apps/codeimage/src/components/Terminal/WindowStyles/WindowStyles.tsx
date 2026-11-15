@@ -6,6 +6,7 @@ import type {BaseTerminalProps} from '../TerminalHost';
 import {TerminalHost} from '../TerminalHost';
 import * as baseStyles from '../terminal.css';
 import * as styles from './WindowStyles.css';
+import {useWatermarkPart} from '../../../core/watermark/scope';
 
 export type WindowStyle = 'card' | 'editor' | 'shell';
 
@@ -17,6 +18,8 @@ const WindowStyleTerminal: ParentComponent<
   BaseTerminalProps & {windowStyle: WindowStyle}
 > = props => {
   const editor = getRootEditorStore();
+  const headerRef = useWatermarkPart('header');
+  const contentRef = useWatermarkPart('content');
   const active = createMemo(() =>
     editor.state.editors.find(tab =>
       props.activeTabId
@@ -52,6 +55,7 @@ const WindowStyleTerminal: ParentComponent<
       <div class={styles.body}>
         <Show when={props.showHeader}>
           <div
+            ref={headerRef}
             class={styles.bar}
             data-watermark-header
             data-style={props.windowStyle}
@@ -100,7 +104,11 @@ const WindowStyleTerminal: ParentComponent<
           </Show>
         </Show>
         <Show when={props.children}>
-          <div class={baseStyles.content} data-watermark-content>
+          <div
+            class={baseStyles.content}
+            ref={contentRef}
+            data-watermark-content
+          >
             <div class={styles.codeBody}>{props.children}</div>
           </div>
         </Show>
