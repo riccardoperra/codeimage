@@ -156,6 +156,7 @@ export async function composeFrame(
         return (
           <FrameView
             tab={store.editor.state.editors[0]}
+            theme={theme}
             language={language}
             media={media}
             windowPlacement={placement}

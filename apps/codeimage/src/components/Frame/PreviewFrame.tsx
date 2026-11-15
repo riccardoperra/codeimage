@@ -7,10 +7,11 @@ import {EditorConfigStore} from '@codeimage/store/editor/config.store';
 import type {EditorState} from '@codeimage/store/editor/model';
 import type {Language} from '@codemirror/language';
 import {loadLanguage} from '@core/snapshot/tokenize';
+import {getThemeStore} from '@codeimage/store/theme/theme.store';
 import {dispatchCopyToClipboard} from '@codeimage/store/effects/onCopyToClipboard';
 import {createRef} from '@core/helpers/create-ref';
 import type {ParentProps, Ref, VoidProps} from 'solid-js';
-import {createResource, onMount, Suspense} from 'solid-js';
+import {createMemo, createResource, onMount, Show, Suspense} from 'solid-js';
 import {Portal} from 'solid-js/web';
 import {provideState} from 'statebuilder';
 import {useHotkey} from '../../hooks/use-hotkey';
@@ -53,6 +54,15 @@ export function PreviewFrame(props: VoidProps<PreviewFrameProps>) {
     ({languageId, tabName}) => loadLanguage(languageId, tabName),
     {initialValue: null},
   );
+  // FrameView takes a loaded theme. A Suspense still creates its children
+  // while it shows its fallback, so the frame below waits for the theme.
+  const theme = createMemo(() => {
+    const themes = getThemeStore().themeArray();
+    return (
+      themes.find(theme => theme()?.id === editor.state.options.themeId)?.() ??
+      themes[0]()
+    );
+  });
   const filterHotKey = () =>
     editor.state.options.focused ||
     document.activeElement?.nodeName === 'INPUT';
@@ -72,15 +82,20 @@ export function PreviewFrame(props: VoidProps<PreviewFrameProps>) {
   const exportCanvas = getExportCanvasStore();
   return (
     <PreviewPortal>
-      <FrameView
-        ref={createRef<'div'>(props, el => (ref = el))}
-        tab={props.tab}
-        media={media()}
-        language={
-          props.language === undefined ? language.latest : props.language
-        }
-        showOnlyActiveTab={exportCanvas.get.showOnlyActiveTab}
-      />
+      <Show when={theme()}>
+        {theme => (
+          <FrameView
+            ref={createRef<'div'>(props, el => (ref = el))}
+            tab={props.tab}
+            theme={theme()}
+            media={media()}
+            language={
+              props.language === undefined ? language.latest : props.language
+            }
+            showOnlyActiveTab={exportCanvas.get.showOnlyActiveTab}
+          />
+        )}
+      </Show>
     </PreviewPortal>
   );
 }

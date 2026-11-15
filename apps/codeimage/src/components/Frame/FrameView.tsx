@@ -1,4 +1,5 @@
 import {getExportTarget} from '@codeimage/config';
+import type {CustomTheme} from '@codeimage/highlight';
 import type {FrameState} from '@codeimage/store/frame/model';
 import type {FittedPlacement} from './FittedWindow';
 import {frameBottomPadding} from './signatureLayout';
@@ -11,11 +12,10 @@ import {getActiveEditorStore} from '@codeimage/store/editor/activeEditor';
 import {getFrameState} from '@codeimage/store/editor/frame';
 import type {EditorState} from '@codeimage/store/editor/model';
 import type {Language} from '@codemirror/language';
-import {getThemeStore} from '@codeimage/store/theme/theme.store';
 import {getTerminalState} from '@codeimage/store/editor/terminal';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 import type {Ref, VoidProps} from 'solid-js';
-import {createMemo, Show} from 'solid-js';
+import {Show} from 'solid-js';
 import {DynamicTerminal} from '../Terminal/DynamicTerminal/DynamicTerminal';
 import StaticCodeView from '../CustomEditor/StaticCodeView';
 import * as styles from './Frame.css';
@@ -24,6 +24,8 @@ export interface FrameViewProps {
   ref?: Ref<HTMLDivElement>;
   tab?: EditorState;
   language: Language | null;
+  /** The syntax theme, already loaded. */
+  theme: CustomTheme;
   media: FrameMedia;
   windowPlacement?: FittedPlacement;
   showOnlyActiveTab?: boolean;
@@ -36,13 +38,6 @@ export function FrameView(props: VoidProps<FrameViewProps>) {
   const terminal = getTerminalState().state;
   const editor = getRootEditorStore();
   const tab = () => props.tab ?? getActiveEditorStore().editor();
-  const theme = createMemo(() => {
-    const themes = getThemeStore().themeArray();
-    return (
-      themes.find(theme => theme()?.id === editor.state.options.themeId)?.() ??
-      themes[0]()
-    );
-  });
 
   return (
     <div class={styles.previewWrapper} ref={props.ref}>
@@ -127,7 +122,7 @@ export function FrameView(props: VoidProps<FrameViewProps>) {
                   marks={active().marks}
                   languageId={active().languageId}
                   language={props.language}
-                  theme={theme()!}
+                  theme={props.theme}
                   showLineNumbers={editor.state.options.showLineNumbers}
                   lineNumberStart={active().lineNumberStart ?? 1}
                   fontFamily={editor.computed.selectedFont().name}
