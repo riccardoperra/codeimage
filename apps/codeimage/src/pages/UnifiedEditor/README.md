@@ -156,7 +156,6 @@ From the repository root, with the dev server running on port 4347:
 node apps/codeimage/src/pages/UnifiedEditor/verify-locale-parity.mjs
 node apps/codeimage/src/pages/UnifiedEditor/verify-i18n.mjs http://localhost:4347 /tmp/codeimage-i18n-shots
 node apps/codeimage/src/pages/UnifiedEditor/verify-review.mjs http://localhost:4347 /tmp/codeimage-review-shots
-node apps/codeimage/src/pages/UnifiedEditor/verify-snippets.mjs http://localhost:4347 /tmp/codeimage-snippet-shots
 ```
 
 The live scripts set the layout in saved preferences before opening `/`.
@@ -166,6 +165,6 @@ The parity script checks keys, placeholders, empty translations, and hard-coded 
 Its negative controls prove that missing keys and hard-coded text fail.
 The review script checks secrets review, focus restoration, overlay geometry, row values, and shortcut help.
 
-The snippet script needs the mock API and mock auth enabled, with the installed MSW worker served at `/mockServiceWorker.js`. It creates projects through the dashboard and checks loading, account saves, previews, read-only geometry, Share, export, Clone, missing/failed loads, and route navigation in all six layout/viewport combinations.
+Snippet verification lives in `.agents/skills/verify-codeimage/scripts/snippets.mjs`, registered as six `snippet-*` cases in the skill audit. Run them through `VERIFY_AUDIT=1 VERIFY_CASES=snippet-save,snippet-previews,snippet-read-only,snippet-clone,snippet-missing,snippet-navigation node .agents/skills/verify-codeimage/scripts/verify.mjs`. The helper owns Vite, the installed MSW worker, mock sign-in and disposable contexts. Case coverage is documented in the skill's `features/projects.md`.
 
 Known limitation: for a signed-out viewer with a saved local document, Clone restores that local document instead of keeping the viewed snippet. The shared sync adapter navigates to `/` without handing the clone to the next provider. Resolve this before removing the classic editor. Account Clone works.
