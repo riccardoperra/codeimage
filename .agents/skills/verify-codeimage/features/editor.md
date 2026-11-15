@@ -8,11 +8,11 @@ Code entry, history, language choice, formatter choice, line numbers and the For
 
 ## How to get to it (user POV)
 
-Guests open `/`; `/classic` opens the older editor. Signed-in `/` is the dashboard. `/` opens the saved layout; the audit saves Inspector as the layout preference before load. Format is the button in the toolbar under the canvas, beside Randomize, on both editors; the command menu also offers Format code.
+Guests open `/`; `/classic` opens the older editor. Signed-in `/` is the dashboard. `/` opens the saved layout; the audit saves Inspector as the layout preference before load. The unified canvas toolbar offers Format code, and its command menu offers the same action. Classic keeps Format beside Randomize.
 
 ## Driving it with Playwright
 
-Run the audit editor journey. Fill `.cm-content[contenteditable="true"]`, type a character and undo with `ControlOrMeta+z`; assert original text on both routes. The editor also has aria-label `codeimage-editor`, but theme preview editors carry the same label (`components/CustomEditor/CustomEditorPreview.tsx`), so it is not a unique selector. On unified Inspector expand `[data-section="editor"] > button` (titled Code), then choose language with `#inspector-editor-language-trigger`. Classic uses `button[aria-label="Language"]`. Both editors format through button `Format` (exact name); it is disabled when the language has no formatter. Capture selected language and code when checking language/format behavior.
+Run the audit editor journey. Fill `.cm-content[contenteditable="true"]`, type a character and undo with `ControlOrMeta+z`; assert original text on both routes. The editor also has aria-label `codeimage-editor`, but theme preview editors carry the same label (`components/CustomEditor/CustomEditorPreview.tsx`), so it is not a unique selector. On unified Inspector expand `[data-section="editor"] > button` (titled Code), then choose language with `#inspector-editor-language-trigger`. Classic uses `button[aria-label="Language"]`. The unified editor formats through button `Format code` and classic through `Format` (exact names); it is disabled when the language has no formatter. Capture selected language and code when checking language/format behavior.
 
 Source: `components/CustomEditor/CustomEditor.tsx`, `pages/UnifiedEditor/model.tsx`, `pages/UnifiedEditor/controls/fields.tsx`, `pages/UnifiedEditor/controls/FrameActions.tsx`, classic `components/Toolbar/FrameToolbar.tsx`.
 

@@ -157,6 +157,10 @@ export async function audit({page, context, base, out, server}) {
     await surface.screenshot({path: resolve(out, 'appearance-wash.png')});
     PNG.sync.read(await download('wash.png'));
   });
+  await feature('watermark', async () => {
+    const {verifyWatermark} = await import('./watermark.mjs');
+    await verifyWatermark({page, out, download, section});
+  });
   await feature('tabs', async () => {
     await section('window');
     await page
@@ -196,7 +200,7 @@ export async function audit({page, context, base, out, server}) {
     await page.locator('[data-export-menu]').click();
     const [zip] = await Promise.all([
       page.waitForEvent('download', {timeout: 60000}),
-      page.getByRole('menuitem', {name: /^Export one image per tab/}).click(),
+      page.locator('[data-export-action=tabs]').click(),
     ]);
     await zip.saveAs(resolve(out, 'tabs.zip'));
     const entries = Object.entries(
@@ -481,9 +485,7 @@ export async function audit({page, context, base, out, server}) {
         .click();
       await closeSettings();
       await page.locator('[data-export-menu]').click();
-      await page
-        .getByRole('menuitem', {name: 'Copy alt text', exact: true})
-        .click();
+      await page.locator('[data-export-action=alt]').click();
       assert.match(
         await page.evaluate(() => navigator.clipboard.readText()),
         /exportOptions/,
@@ -632,7 +634,7 @@ export async function audit({page, context, base, out, server}) {
     await page.getByRole('option', {name: /^Typescript$/i}).click();
     assert.match(await language.innerText(), /Typescript/i);
     await editor().fill('const value={answer:42}');
-    await page.getByRole('button', {name: 'Format', exact: true}).click();
+    await page.getByRole('button', {name: 'Format code', exact: true}).click();
     await page.waitForFunction(() =>
       document
         .querySelector('.cm-content[contenteditable="true"]')

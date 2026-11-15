@@ -134,44 +134,6 @@ export const frameActions = style({
   },
 });
 
-// The production frame toolbar, and on a phone the Export control, each on
-// an island of the app's colour in place of their own floating surface.
-globalStyle(`${root} ${frameActions} > div`, {
-  position: 'static',
-  bottom: 'auto',
-  left: 'auto',
-  transform: 'none',
-  height: 'auto',
-  minHeight: '48px',
-  maxWidth: '100%',
-  padding: '8px',
-  background: c.panel.background,
-  borderRadius: '16px',
-  boxShadow: 'none',
-  '@media': {
-    [phone]: {
-      width: '100%',
-      padding: '8px 4px',
-    },
-  },
-});
-
-// The toolbar's row of buttons.
-globalStyle(`${root} ${frameActions} > div > div`, {
-  flexWrap: 'wrap',
-  justifyContent: 'center',
-  rowGap: '8px',
-  '@media': {
-    [phone]: {columnGap: '4px'},
-  },
-});
-
-globalStyle(`${root} ${frameActions} button`, {
-  '@media': {
-    [phone]: {minHeight: '40px'},
-  },
-});
-
 export const panel = style({
   display: 'flex',
   flexDirection: 'column',
@@ -222,18 +184,6 @@ globalStyle(
 );
 
 // A kit button.
-export const command = style({
-  selectors: {
-    [`${root} &`]: {flex: 'none', gap: '8px'},
-  },
-});
-
-export const commandKey = style({
-  font: 'inherit',
-  fontSize: '11px',
-  color: c.descriptionTextColor,
-});
-
 export const panelScroll = style({
   display: 'flex',
   flex: '1 1 auto',

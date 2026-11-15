@@ -21,7 +21,7 @@ import {shownTheme} from '../../command-menu/listed-model';
 import {commandMenu} from '../../command-menu/state';
 import type {VariantMeta, VariantProps} from '../../contract';
 import {fieldId, SegmentedChoice, SelectChoice} from '../../controls/fields';
-import {FrameActions} from '../../controls/FrameActions';
+import {CanvasToolbar} from '../../controls/CanvasToolbar';
 import {keepMarkToolbarAboveSelection} from '../../controls/mark-toolbar';
 import {ShortcutHelp} from '../../controls/ShortcutHelp';
 import {Footer} from '../../localized/Footer';
@@ -482,16 +482,24 @@ export default function Dock(props: VariantProps) {
             </div>
 
             <Show when={props.pageState().kind !== 'read-only'}>
-              <EditingControls state={props.pageState()}>
-                <ShortcutHelp editable={props.pageState().editable} />
-              </EditingControls>
-            </Show>
-            <Show when={!compact()}>
-              <EditingControls state={props.pageState()}>
-                <div class={`${styles.frameActions} ${styles.float}`}>
-                  <FrameActions />
-                </div>
-              </EditingControls>
+              <Show
+                when={!compact()}
+                fallback={
+                  <EditingControls state={props.pageState()}>
+                    <ShortcutHelp editable={props.pageState().editable} />
+                  </EditingControls>
+                }
+              >
+                <EditingControls state={props.pageState()}>
+                  <div class={`${styles.frameActions} ${styles.float}`}>
+                    <CanvasToolbar
+                      stage={props.stage}
+                      help
+                      editable={props.pageState().editable}
+                    />
+                  </div>
+                </EditingControls>
+              </Show>
             </Show>
           </div>
 

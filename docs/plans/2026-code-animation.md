@@ -1,9 +1,9 @@
 # CodeImage code animation plan
 
-CodeImage gets animated exports. A user puts code steps in tabs, and CodeImage animates from one tab to the next. Tokens that stay slide to their new place, removed tokens fade out, and new tokens fade in. The output is an animated WebP, GIF, APNG, or MP4, from the web app and from the CLI.
+CodeImage gets animated exports. A user puts code steps in tabs, and CodeImage animates from one tab to the next. Tokens that stay slide to their new place, removed tokens fade out, and new tokens fade in. The web app exports MP4 as the main format and GIF as the second. The CLI also writes MP4 and GIF, plus animated WebP and APNG.
 The program builds on what P1 to P4 already ship. The tabs are the steps. The Lezer tokens from `tokenizeCode` are the tokens. `@shikijs/magic-move/core` pairs tokens between steps. One CSS stylesheet with a `@keyframes` rule per token is the timeline. Takumi renders it, natively in Node and as WASM in the browser, and the browser plays the same CSS for the live preview.
 The rule the program enforces is endpoint parity. The first frame of a transition matches the static export of the step it leaves, and the last frame matches the static export of the step it reaches, within 0.5% of pixels at pixelmatch threshold 0.1.
-PR ids in order are A1, A2, A3, A4, A5.
+PR ids in order are A1, A2, A3, A4, A5, A6. A4 exports MP4 from the web app, A5 exports GIF from the web app, and A6 exports MP4 from the CLI.
 
 ## How to read this
 
@@ -23,7 +23,7 @@ Tests alone are not sufficient verification. A PR is verified only when its unit
   - [ ] `~/.claude/skills/poteto-mode/playbooks/autopilot-stack.md`
   - [ ] `~/.claude/skills/swarm/SKILL.md`
   - [ ] `~/.claude/skills/poteto-mode/playbooks/opening-a-pr.md`
-  - [ ] `~/.claude/skills/poteto-mode/playbooks/visual-parity.md` for A1, A2, and A4.
+  - [ ] `~/.claude/skills/poteto-mode/playbooks/visual-parity.md` for A1, A2, A4, and A5.
   - [ ] `git show origin/main:docs/plans/2026-code-animation.md` once this plan is on trunk.
   - [ ] `git show origin/main:apps/codeimage/src/core/snapshot/tokenize.ts`
   - [ ] `git show origin/main:apps/codeimage/src/components/CustomEditor/StaticCodeView.tsx`
@@ -39,15 +39,17 @@ Tests alone are not sufficient verification. A PR is verified only when its unit
   - [ ] A1 is first. It branches from the stack tip that holds P1, P3, and P4.
   - [ ] A2 after A1.
   - [ ] A3 after A1. A2 and A3 are independent of each other.
-  - [ ] A4 after A3 and P2.
-  - [ ] A5 after A2 and A4.
+  - [ ] A4 after A3 and P2. A3 ships as #736.
+  - [ ] A5 after A4.
+  - [ ] A6 after A2 and A4.
 - [ ] Hold the file boundaries.
   - [ ] A1 touches only `apps/codeimage/src/core/animation/**`, `apps/codeimage/src/components/CustomEditor/AnimatedCodeView.tsx`, `apps/codeimage/src/render/entry-server.tsx`, `apps/codeimage/package.json`, and `scripts/parity/animation-*.ts`.
   - [ ] A2 touches only `packages/render/**`, `packages/cli/src/args.ts`, `packages/cli/src/bin.ts`, and `packages/cli/src/flags/animate.ts`.
   - [ ] A3 touches only `apps/codeimage/src/state/editor/**`, `apps/codeimage/src/components/Animation/**`, `apps/codeimage/src/components/Frame/PreviewFrame.tsx`, the editor page layout under `apps/codeimage/src/pages/Editor/**`, `apps/api/prisma/**`, `apps/api/src/**` for the new field, `packages/locale/**`, and `scripts/parity/animation-*.ts`.
-  - [ ] A4 touches only `apps/codeimage/src/core/rasterize/**`, `apps/codeimage/src/hooks/use-export-animation.ts`, `apps/codeimage/src/workers/animation.worker.ts`, and `apps/codeimage/src/components/Toolbar/Export*.tsx`.
-  - [ ] A5 touches only `apps/codeimage/src/core/video/**`, `apps/codeimage/src/hooks/use-export-animation.ts`, `apps/codeimage/src/components/Toolbar/Export*.tsx`, `packages/cli/src/video/**`, `packages/cli/src/args.ts`, and `packages/cli/src/bin.ts`.
-- [ ] Hold the review gate. A2, A3, A4, and A5 change an interaction. They wait for the operator's review in chat with screenshots and a video before merge.
+  - [ ] A4 touches only `apps/codeimage/src/core/rasterize/**`, `apps/codeimage/src/core/video/**`, `apps/codeimage/src/core/animation/**` and `apps/codeimage/src/render/entry-server.tsx` for the `targetLayout` move, `apps/codeimage/src/hooks/use-export-animation.ts`, `apps/codeimage/src/workers/animation.worker.ts`, `apps/codeimage/src/pages/UnifiedEditor/shell/ExportControl.tsx`, `apps/codeimage/src/pages/UnifiedEditor/shell/export*.ts*`, `apps/codeimage/src/i18n/animation.ts`, and `apps/codeimage/package.json`.
+  - [ ] A5 touches only `apps/codeimage/src/core/gif/**`, `apps/codeimage/src/hooks/use-export-animation.ts`, `apps/codeimage/src/workers/animation.worker.ts`, `apps/codeimage/src/pages/UnifiedEditor/shell/export*.ts*`, `apps/codeimage/src/i18n/animation.ts`, `apps/codeimage/package.json`, and `scripts/parity/animation-gif.ts`.
+  - [ ] A6 touches only `packages/cli/src/video/**`, `packages/cli/src/args.ts`, and `packages/cli/src/bin.ts`.
+- [ ] Hold the review gate. A2, A3, A4, A5, and A6 change an interaction. They wait for the operator's review in chat with screenshots and a video before merge.
 
 ### PR mechanics, for every PR
 
@@ -214,6 +216,8 @@ Each live lane runs in its own git worktree at the PR head. There is no `control
 
 **Depends on.** A1.
 
+**Status.** On 2026-11-15 A3 moved to the unified editor. It ships as #736, `feat(app): animate panel in the unified editor`, with its own plan in `docs/plans/2026-animate-new-ui.md` on `feat/animate-new-ui`. The classic-editor PR, #727, was closed and its commits moved into #736. The boxes below record the classic-editor A3. The Animate panel in #736 has no fps control. `fps` stays in the saved settings with a default of 30, and the A4 export dialog is the only place that sets it.
+
 **Files.**
 
 - [ ] Edit `apps/codeimage/src/state/editor/model.ts` to add `animation?: AnimationSettings` to `ProjectEditorPersistedState`.
@@ -277,57 +281,76 @@ Each live lane runs in its own git worktree at the PR head. There is no `control
 - [ ] Rebased onto current trunk after the verdict, patch-id unchanged.
 - [ ] The root appends A3 to the stack and the operator lands it bottom-up.
 
-## Export animated WebP and GIF from the web app (A4)
+## Export MP4 from the web app (A4)
 
-**Depends on.** A3 and P2.
+**Depends on.** A3, which ships as #736, and P2.
+
+**Decision.** MP4 is the main animated format, because X, LinkedIn, Bluesky, Instagram, and slide tools take video. GIF follows in A5 for READMEs, docs, and Markdown, where video does not autoplay. The operator chose this order on 2026-11-15, after the prototype in Appendix A showed that every engine tested encodes H.264 with WebCodecs. The export runs only in the browser. Appendix B explains why there is no server-side export and no ffmpeg.wasm.
 
 **Files.**
 
 - [ ] Create `apps/codeimage/src/workers/animation.worker.ts`.
+- [ ] Create `apps/codeimage/src/core/video/encode.ts` for the encoder config, the support check, and the MP4 muxing.
 - [ ] Create `apps/codeimage/src/hooks/use-export-animation.ts`.
 - [ ] Edit `apps/codeimage/src/core/rasterize/takumi.ts` to share font and stylesheet collection with the worker.
-- [ ] Edit `apps/codeimage/src/components/Toolbar/ExportContent.tsx` and `ExportButton.tsx`.
+- [ ] Edit `apps/codeimage/package.json` to add `mediabunny`.
+- [ ] Edit `apps/codeimage/src/pages/UnifiedEditor/shell/ExportControl.tsx` and `apps/codeimage/src/pages/UnifiedEditor/shell/export.tsx` to add the animation export. The classic `apps/codeimage/src/components/Toolbar/ExportButton.tsx` gets no animation export.
+- [ ] Edit `apps/codeimage/src/i18n/animation.ts` for the new strings in en, it, de, and es.
 
 **Build.**
 
 - [ ] Move the `targetLayout` math from `apps/codeimage/src/render/entry-server.tsx` into `apps/codeimage/src/core/animation/` as a pure function, so the worker can plan a frame with a social target size. The operator chose A4 for this move on 2026-11-14.
-- [ ] Run Takumi WASM `prepareAnimation` and `renderAnimation` in a module worker, so the editor stays responsive. Send the scenes, the stylesheet, and the font bytes that P2 already collects.
-- [ ] Add **WebP**, **GIF**, and **APNG** to the export dialog when the project has more than one step. Show the output size, the duration, and a progress bar fed by the worker. **Cancel** terminates the worker.
+- [ ] Add an **Export animation** entry to the Export menu in `ExportControl.tsx`. Show it when the animation has two steps or more. Its dialog holds the format and the fps, which is 24, 30, 50, or 60. The dialog is the only place that sets fps, because #736 removed the fps control from the Animate panel. Save the chosen fps in the animation settings, so the CLI renders the same rate from a project JSON.
+- [ ] Plan the export the way the preview plans it. Read `animation.settings()` as saved, measure with `measurePreview`, and plan with `planTimeline` at the chosen fps.
+- [ ] Run Takumi WASM in a module worker, so the editor stays responsive. Send the scenes, the stylesheet, and the font bytes that P2 already collects. Render each frame with `render({timeMs, format: 'raw'})` and wrap the RGBA pixels in a `VideoFrame`.
+- [ ] Encode while the worker renders. Pass each `VideoFrame` to a WebCodecs `VideoEncoder` and render the next frame while the encoder works. Wait before the next render when `encodeQueueSize` passes a small limit, so memory stays flat on long clips.
+- [ ] Write the MP4 with Mediabunny, which is MPL-2.0 and used unmodified. Use `Mp4OutputFormat` with `fastStart: 'in-memory'`, so the `moov` box comes before the media data.
+- [ ] Request H.264 High profile in the codec string. Use `avc1.640028`, High at level 4.0, up to 1080p at 30 fps. Use `avc1.64002a`, level 4.2, for 1080p at 50 or 60 fps. WebKit encodes Baseline when the string does not ask for High.
+- [ ] Set the colour space of every `VideoFrame` to BT.709 limited range, `{primaries: 'bt709', transfer: 'bt709', matrix: 'bt709', fullRange: false}`. Chrome encodes full range by default, which `ffprobe` reports as `yuvj420p`. A platform that re-encodes the upload may read it as limited range and shift the colours.
+- [ ] Request a keyframe every 2 s with `encode(frame, {keyFrame: true})`. Set `bitrate` to a cap that scales with the pixel rate. Chrome wrote 8.8 Mb/s at 1080p60 in the prototype. Firefox ignores the requested bitrate and adds a keyframe every 0.5 s on its own, as Appendix C records.
+- [ ] Round the video width and height up to even numbers, because H.264 rejects odd sizes. Fill the added pixel with the frame background.
+- [ ] Warm up the encoder when the export dialog opens. Configure a `VideoEncoder` with the export config, encode one frame, and close it. Branded Chrome spends about 3 s on the first encode in a page, and the warm-up moves that cost into the time the user spends in the dialog.
+- [ ] Check support before the dialog offers MP4. Call `VideoEncoder.isConfigSupported` with the exact config, including the codec string, the size, the bitrate, and the frame rate. When `VideoEncoder` is missing or the config is not supported, disable **MP4** and show one line with the reason. The line suggests a current Chrome, Firefox, or Safari. Offer no WebM fallback and show no Safari-only warning. From A5 on, the dialog selects **GIF** in that case.
+- [ ] Show the duration, the size that the bitrate predicts, and a progress bar fed by the worker. **Cancel** closes the encoder and terminates the worker.
 - [ ] When the WASM module fails to load, show an error that names the cause. There is no dom-export fallback for animation.
-- [ ] Download the file through the same code as image export, and share it on mobile when the browser can share files.
+- [ ] Download the file through the same code as image export, as `video/mp4` with an `.mp4` name. Share it on mobile when `navigator.canShare` accepts the file.
 
 **You see.**
 
-- [ ] Exporting a three-step project as WebP shows progress and downloads a file that plays in the browser.
+- [ ] Exporting a three-step project as MP4 in Chrome shows progress and downloads a file that plays in QuickTime.
+- [ ] `ffprobe` on that file reports `h264 (High)`, `yuv420p(tv, bt709)`, the chosen frame rate, and keyframes 2 s apart.
+- [ ] In a browser that fails the support check, **MP4** is disabled and one line says why.
 
 **Verify, unit.** Tests alone are not sufficient verification. A PR is verified only when its unit, live, and perf boxes are all checked.
 
-- [ ] `use-export-animation.test.ts` asserts that cancel terminates the worker and that a worker error reaches the UI as a message. Run `pnpm --filter=@codeimage/app test`.
+- [ ] `encode.test.ts` asserts the even-size rounding, the codec string for 1080p30 and 1080p60, a keyframe every 2 s at each fps, and BT.709 limited range on every frame. Run `pnpm --filter=@codeimage/app test`.
+- [ ] `use-export-animation.test.ts` asserts that cancel terminates the worker, that a worker error reaches the UI as a message, and that an unsupported config disables MP4 with its reason.
 
 **Verify, live.** Tests alone are not sufficient verification. A PR is verified only when its unit, live, and perf boxes are all checked. Ten lanes on `claude-sonnet-5-5` at the PR head, per the boot recipe.
 
 - [ ] Lane 1. Regression lane against trunk. Export the same project as PNG on trunk and head. Save `a4-png.png`. Pass when the PNGs differ by at most 0.5%.
-- [ ] Lane 2. Export three steps as WebP in Chrome. Save `a4-webp.png` with one frame per step. Pass when the file plays the three steps in order.
-- [ ] Lane 3. Compare the web WebP with the CLI WebP of the same project JSON. Save `a4-web-vs-cli.png`. Pass when frames at the same times differ by at most 0.5%.
-- [ ] Lane 4. Export as GIF and as APNG. Save `a4-gif-apng.png`. Pass when both files play.
-- [ ] Lane 5. Start a long export and click **Cancel**. Save `a4-cancel.png`. Pass when the progress stops, no file downloads, and the editor works.
-- [ ] Lane 6. Type in the editor during an export. Save `a4-responsive.png`. Pass when the typed characters appear without a visible stall.
-- [ ] Lane 7. Block the WASM URL in Playwright and export. Save `a4-wasm-error.png`. Pass when the dialog names the error and the app keeps working.
-- [ ] Lane 8. Export in Chrome, Firefox, and WebKit. Save `a4-browsers.png`. Pass when all three produce a file that plays.
-- [ ] Lane 9. Export with a local system font from Local Font Access. Save `a4-local-font.png`. Pass when the frames use that font.
-- [ ] Lane 10. Export on a 390 by 844 viewport with share available. Save `a4-share.png`. Pass when the share sheet receives the file.
+- [ ] Lane 2. Export three steps as MP4 at 1920 by 1080 and 60 fps in Chrome. Save `a4-chrome.png` with one frame per step. Pass when `ffprobe` reports H.264 High, `yuv420p` with BT.709 limited range, the expected duration and frame rate, keyframes 2 s apart, and the `moov` box first. The file must also play to the end in a `<video>` element.
+- [ ] Lane 3. Export a project that uses a local system font from Local Font Access. Render the same times with Takumi WASM on the main thread as PNG. Save `a4-mp4-vs-takumi.png`. Pass when the MP4 frames use that font and differ from the PNGs by at most 2%, which leaves room for H.264 compression.
+- [ ] Lane 4. Export the same project at 24 fps and at 60 fps, then reopen the dialog. Save `a4-fps.png`. Pass when `ffprobe` reports each rate, the dialog shows the last choice, and the Animate panel shows no fps control.
+- [ ] Lane 5. Export a project with an odd frame width. Save `a4-odd-size.png`. Pass when the MP4 has an even width and no visible edge.
+- [ ] Lane 6. Start a long export and click **Cancel**. Save `a4-cancel.png`. Pass when the progress stops, no file downloads, and the editor works.
+- [ ] Lane 7. Type in the editor during an export. Save `a4-responsive.png`. Pass when the typed characters appear without a visible stall.
+- [ ] Lane 8. Run three error cases. Block the WASM URL in Playwright. Make `VideoEncoder.isConfigSupported` resolve `{supported: false}`. Delete `VideoEncoder` before the app loads. Save `a4-errors.png`. Pass when the dialog names each cause in one line, suggests a current browser where MP4 is off, offers no WebM, and the app keeps working.
+- [ ] Lane 9. Export MP4 in Firefox and WebKit through Playwright. Save `a4-browsers.png`. Pass when both files pass the `ffprobe` checks of lane 2 and the WebKit file is High profile. Record the Firefox bitrate. This lane needs the cross-browser setup in Appendix C. Until that setup exists, record the lane as not run.
+- [ ] Lane 10. Export on a 390 by 844 viewport with share available. Save `a4-share.png`. Pass when the share sheet receives the MP4.
+- [ ] Safari by hand, before the operator merges. Export a three-step project as MP4 once in real Safari 27 and run `ffprobe` on the file. Pass when it reports H.264 High, `yuv420p` with BT.709 limited range, the expected frame count, and the `moov` box first. No lane automates this check, because `safaridriver` could not start Safari in the prototype.
 
 **Verify, perf.** Tests alone are not sufficient verification. A PR is verified only when its unit, live, and perf boxes are all checked.
 
-- [ ] Metric. Measure PNG export wall time at trunk and head. On head, measure the WebP export wall time for a 3 second animation at 60 fps and 1920 by 1080 with about 200 tokens per step, and the longest main-thread task during that export.
-- [ ] Probe. Ten interleaved PNG exports on trunk and head in Chrome. Then ten WebP exports on head with a `PerformanceObserver` for `longtask`.
-- [ ] Baseline. Record the trunk PNG median first.
-- [ ] Rule. The head PNG median is at most 1.05 times trunk. The WebP median is at most 12 s. No main-thread task is longer than 100 ms. The prototype measured 2.6 s for 1 s of WebP with Takumi WASM in Node, so 3 s should take about 8 s.
+- [ ] Metric. Measure PNG export wall time at trunk and head. On head, take a 3 second animation at 60 fps and 1920 by 1080 with about 200 tokens per step in Chrome. Measure its render-only time, its MP4 export time, and the longest main-thread task during the export. A render-only run renders every frame in the worker with `format: 'raw'` and drops it.
+- [ ] Probe. Ten interleaved PNG exports on trunk and head in Chrome. Then ten interleaved pairs of a render-only run and an MP4 export on head, with the encoder warm and a `PerformanceObserver` for `longtask`. Record the first export in a fresh page apart from the ten.
+- [ ] Baseline. Record the trunk PNG median first, then the head render-only median.
+- [ ] Rule. The head PNG median is at most 1.05 times trunk. The MP4 median is at most 1.25 times the render-only median and at most 12 s. No main-thread task is longer than 100 ms. Takumi rendering sets the export time. In the prototype, encoding during rendering added 6% to 7% in Chrome, Chromium, and WebKit, and 17% in Firefox, so 1.25 times leaves room for noise. A median over it means that the encoder holds back rendering. The 12 s ceiling allows Takumi WASM in Chrome to be twice as slow as the 5.87 s that 180 frames at 32.6 ms take in Node.
 
 **Review gate.** The operator reviews before merge.
 
-- [ ] Copy lane 2, 5, and 8 screenshots into `/tmp/codeimage-verification/a4-review-<slug>.png`.
-- [ ] Record a 30 to 60 second video of exporting WebP and GIF, cancelling one export, and playing the result. Save it as `/tmp/codeimage-verification/a4-review.mp4`.
+- [ ] Copy lane 2, 6, and 9 screenshots into `/tmp/codeimage-verification/a4-review-<slug>.png`. Add the `ffprobe` output of the Safari file.
+- [ ] Record a 30 to 60 second video of exporting MP4, cancelling one export, and playing the result. Save it as `/tmp/codeimage-verification/a4-review.mp4`.
 - [ ] Post the screenshots and the video in chat. Stop at merge-ready. Wait for the operator's click.
 
 **Merge.**
@@ -337,26 +360,84 @@ Each live lane runs in its own git worktree at the PR head. There is no `control
 - [ ] Rebased onto current trunk after the verdict, patch-id unchanged.
 - [ ] The root appends A4 to the stack and the operator lands it bottom-up.
 
-## Export MP4 from the web app and the CLI (A5)
+## Export GIF from the web app (A5)
+
+**Depends on.** A4.
+
+**Decision.** GIF is the second web format, for READMEs, docs, and Markdown, where video does not autoplay. APNG stays in the CLI, and the web app does not offer it.
+
+**Files.**
+
+- [ ] Edit `apps/codeimage/src/workers/animation.worker.ts` and `apps/codeimage/src/hooks/use-export-animation.ts`.
+- [ ] If the operator picks `gifenc`, create `apps/codeimage/src/core/gif/encode.ts` and add `gifenc` to `apps/codeimage/package.json`.
+- [ ] Edit `apps/codeimage/src/pages/UnifiedEditor/shell/export.tsx` and `apps/codeimage/src/i18n/animation.ts`.
+- [ ] Create `scripts/parity/animation-gif.ts`.
+
+**Build.**
+
+- [ ] Settle the GIF encoder with the operator before the build. The decision is open. Takumi 2.19 GIF output has palette and colour defects and holes, as Appendix C records. `gifenc`, under MIT, is the proposed alternative, and it takes the raw RGBA frames that A4 already renders. Write `animation-gif.ts` to encode the same frames both ways for the A1 edge cases and a 3 s clip. For each encoder it prints the diff against the raw frames, the file size, and the wall time. Post the table and stop for the operator's choice.
+- [ ] With `gifenc`, build one palette for the whole clip from a sample of frames, so colours do not flicker between frames. Use one palette per frame only when the shared palette fails the diff.
+- [ ] Cap fps at 50 for GIF. GIF stores frame delays in hundredths of a second, so it cannot hold 60 fps, and Takumi rejects it. When the dialog fps is 60, the GIF plays at 50 and the dialog says so.
+- [ ] Add **GIF** after **MP4** in the format choice of the export dialog. **MP4** stays the default. When the support check disables MP4, the dialog selects GIF.
+- [ ] Show the output size before the download, and suggest MP4 for long clips. The A5 owner proposes the length threshold with the encoder table.
+- [ ] Ask the operator about animated WebP in the web app. The decision is open. The recommendation is to leave WebP out of the web UI and keep it in the CLI, which A2 already ships. MP4 covers social posts and slides, and GIF covers Markdown, so WebP adds a third choice without a use that the other two miss. If the operator keeps it, add it here as an advanced format and check the `quality` risk in Appendix C.
+
+**You see.**
+
+- [ ] Exporting a three-step project as GIF downloads a file that plays in Chrome and in macOS Preview, with no holes and the theme colours of the static export.
+
+**Verify, unit.** Tests alone are not sufficient verification. A PR is verified only when its unit, live, and perf boxes are all checked.
+
+- [ ] `use-export-animation.test.ts` asserts the 50 fps cap for GIF and that the dialog selects GIF when MP4 is unsupported. Run `pnpm --filter=@codeimage/app test`.
+- [ ] With `gifenc`, `gif/encode.test.ts` asserts that the frame delays add up to the clip duration within one frame and that one palette covers the clip.
+
+**Verify, live.** Tests alone are not sufficient verification. A PR is verified only when its unit, live, and perf boxes are all checked. Ten lanes on `claude-sonnet-5-5` at the PR head, per the boot recipe.
+
+- [ ] Lane 1. Regression lane against trunk. Export the same project as MP4 on trunk and head. Save `a5-mp4.png`. Pass when `ffprobe` reports the same codec, profile, colour tags, and frame count, and frames at the same times differ by at most 2%.
+- [ ] Lane 2. Export three steps as GIF in Chrome. Save `a5-gif.png` with one frame per step. Pass when the file plays the three steps in order.
+- [ ] Lane 3. Export the `edge-empty-to` case from A1 as GIF. Save `a5-edge.png`. Pass when no frame shows the raised tabs, the wrong traffic-light colours, or the dark stripes that the A1 verifier found.
+- [ ] Lane 4. Export a project with a gradient background and a light theme. Save `a5-colours.png`. Pass when no pixel inside the frame is transparent and each endpoint frame differs from the static PNG export by at most 2%.
+- [ ] Lane 5. Pick 60 fps and export GIF. Save `a5-fps.png`. Pass when the dialog says that GIF plays at 50 fps and the file plays at 50 fps.
+- [ ] Lane 6. Export a 10 second clip at 1920 by 1080. Save `a5-size.png`. Pass when the dialog shows the size before the download and suggests MP4.
+- [ ] Lane 7. Start a long GIF export and click **Cancel**. Save `a5-cancel.png`. Pass when no file downloads and the editor works.
+- [ ] Lane 8. Make `VideoEncoder.isConfigSupported` resolve `{supported: false}` and open the dialog. Save `a5-no-mp4.png`. Pass when GIF is selected, MP4 is disabled with its reason, and the GIF export works.
+- [ ] Lane 9. Export GIF in Firefox and WebKit through Playwright. Save `a5-browsers.png`. Pass when both files play. This lane needs the cross-browser setup in Appendix C. Until that setup exists, record the lane as not run.
+- [ ] Lane 10. Compare the web GIF with the CLI APNG of the same project JSON. Save `a5-web-vs-cli.png`. Pass when frames at the same times differ by at most 2%.
+
+**Verify, perf.** Tests alone are not sufficient verification. A PR is verified only when its unit, live, and perf boxes are all checked.
+
+- [ ] Metric. Measure MP4 export wall time at trunk and head. On head, measure the GIF export wall time for a 3 second animation at 50 fps and 1920 by 1080 with about 200 tokens per step, and the longest main-thread task during that export.
+- [ ] Probe. Ten interleaved MP4 exports on trunk and head in Chrome. Then ten GIF exports on head with a `PerformanceObserver` for `longtask`.
+- [ ] Baseline. Record the trunk MP4 median first.
+- [ ] Rule. The head MP4 median is at most 1.05 times trunk. The GIF median is at most 20 s. No main-thread task is longer than 100 ms. The prototype took 6.7 s for one second of Takumi WASM GIF in Node, so three seconds take about 20 s with that encoder. The operator may lower the budget when picking the encoder.
+
+**Review gate.** The operator reviews before merge.
+
+- [ ] Copy lane 2, 3, and 8 screenshots into `/tmp/codeimage-verification/a5-review-<slug>.png`.
+- [ ] Record a 30 to 60 second video of exporting GIF, cancelling one export, and playing the result. Save it as `/tmp/codeimage-verification/a5-review.mp4`.
+- [ ] Post the screenshots and the video in chat. Stop at merge-ready. Wait for the operator's click.
+
+**Merge.**
+
+- [ ] Root's clean verdict at the exact head SHA.
+- [ ] Bugbot triage done.
+- [ ] Rebased onto current trunk after the verdict, patch-id unchanged.
+- [ ] The root appends A5 to the stack and the operator lands it bottom-up.
+
+## Export MP4 from the CLI (A6)
 
 **Depends on.** A2 and A4.
 
 **Files.**
 
-- [ ] Create `apps/codeimage/src/core/video/encode.ts`.
-- [ ] Edit `apps/codeimage/package.json` to add `mediabunny`.
-- [ ] Edit `apps/codeimage/src/workers/animation.worker.ts` and `apps/codeimage/src/hooks/use-export-animation.ts`.
-- [ ] Edit `apps/codeimage/src/components/Toolbar/ExportContent.tsx`.
 - [ ] Create `packages/cli/src/video/ffmpeg.ts`.
 - [ ] Create `packages/cli/src/video/download.ts` and `packages/cli/src/video/checksums.ts`.
-- [ ] Edit `packages/cli/src/args.ts` and `packages/cli/src/bin.ts` to add the `install-ffmpeg` command.
+- [ ] Edit `packages/cli/src/args.ts` and `packages/cli/src/bin.ts` to accept `.mp4` with `--animate` and to add the `install-ffmpeg` command.
 
 **Build.**
 
-- [ ] In the worker, render each frame with Takumi `render({timeMs, format: 'raw'})` and pass the RGBA pixels to a WebCodecs `VideoFrame`. Encode with Mediabunny to MP4 with H.264. When `canEncode` rejects H.264, fall back to WebM with VP9 and say so in the dialog.
-- [ ] Round the video width and height up to even numbers, because H.264 rejects odd sizes. Fill the added pixel with the frame background.
-- [ ] Hide **MP4** in browsers without `VideoEncoder` and say why in a tooltip.
-- [ ] In the CLI, pipe raw RGBA frames from Takumi into `ffmpeg -f rawvideo -pix_fmt rgba` with `libx264`, `yuv420p`, and `+faststart`.
+- [ ] Pipe raw RGBA frames from Takumi into `ffmpeg -f rawvideo -pix_fmt rgba` with `libx264`, `yuv420p`, and `+faststart`.
+- [ ] Encode the same stream as the web export. Pass `-profile:v high`, and set `-g` to twice the fps for a keyframe every 2 s. Convert and tag BT.709 limited range with `-vf scale=out_color_matrix=bt709:out_range=tv -colorspace bt709 -color_primaries bt709 -color_trc bt709 -color_range tv`. Round the width and height up to even numbers, as A4 does.
 - [ ] Resolve the ffmpeg binary in this order, and stop at the first hit. First the `--ffmpeg <path>` flag, then the `CODEIMAGE_FFMPEG` variable, then `ffmpeg` on `PATH`, then the CodeImage cache. When none exists, download it.
 - [ ] Download the binary only on the first MP4 export, never at install time. Use the `ffmpeg-static` release assets on GitHub, release `b6.1.1`, file `ffmpeg-<platform>-<arch>.gz`. Do not add the `ffmpeg-static` npm package as a dependency. Its `install` script downloads about 20 to 30 MB for every user, and pnpm 10 and Bun skip dependency install scripts unless the user allows them, so the binary would be missing for them.
 - [ ] Pin the release tag and the SHA-256 of each platform file in `checksums.ts`. Reject a download whose hash differs, and delete it.
@@ -367,39 +448,38 @@ Each live lane runs in its own git worktree at the PR head. There is no `control
 
 **You see.**
 
-- [ ] Exporting a three-step project as MP4 in Chrome downloads a file that plays in QuickTime.
 - [ ] `codeimage a.ts b.ts --animate -o demo.mp4` writes an MP4. On a machine without ffmpeg, the first run prints `Downloading ffmpeg b6.1.1 (19 MB) to ~/Library/Caches/codeimage/ffmpeg/...` once, and the second run prints nothing about ffmpeg.
 
 **Verify, unit.** Tests alone are not sufficient verification. A PR is verified only when its unit, live, and perf boxes are all checked.
 
-- [ ] `encode.test.ts` asserts the even-size rounding and the codec fallback order. Run `pnpm --filter=@codeimage/app test`.
-- [ ] `video/ffmpeg.test.ts` asserts the ffmpeg arguments and the resolution order. Run `pnpm --filter=@codeimage/cli test`.
+- [ ] `video/ffmpeg.test.ts` asserts the ffmpeg arguments, including the profile, the keyframe interval, and the colour flags, and the resolution order. Run `pnpm --filter=@codeimage/cli test`.
 - [ ] `video/download.test.ts` serves a fake release from a local HTTP server. It asserts that a good file lands in the cache, that a file with a wrong hash is deleted and fails, that a second call does not download again, and that two calls at once leave one complete binary.
 
 **Verify, live.** Tests alone are not sufficient verification. A PR is verified only when its unit, live, and perf boxes are all checked. Ten lanes on `claude-sonnet-5-5` at the PR head, per the boot recipe.
 
-- [ ] Lane 1. Regression lane against trunk. Export the same project as WebP on trunk and head. Save `a5-webp.png`. Pass when frames at the same times differ by at most 0.5%.
-- [ ] Lane 2. Export MP4 in Chrome. Save `a5-chrome.png`. Pass when `ffprobe` reports H.264, the expected duration, and the expected frame rate.
-- [ ] Lane 3. Export MP4 in Firefox and WebKit. Save `a5-browsers.png`. Pass when each browser writes MP4 or, where H.264 is missing, WebM with the dialog note.
-- [ ] Lane 4. Compare MP4 frames with the WebP frames of the same project. Save `a5-mp4-vs-webp.png`. Pass when the frames differ by at most 2%, which leaves room for H.264 compression.
-- [ ] Lane 5. Export a project with an odd frame width. Save `a5-odd-size.png`. Pass when the MP4 has an even width and no visible edge.
-- [ ] Lane 6. Upload the MP4 to a local `<video>` element and play it to the end. Save `a5-video-tag.png`. Pass when it plays without stalling.
-- [ ] Lane 7. Run the CLI MP4 export with ffmpeg installed. Save `a5-cli.png`. Pass when the file plays and `ffprobe` shows `yuv420p`.
-- [ ] Lane 8. Run the CLI MP4 export three times with `PATH` lacking ffmpeg and an empty `XDG_CACHE_HOME`. The first run is online, the second is online, and the third is offline with a fresh cache folder. Save `a5-cli-download.png`. Pass when the first run downloads once and writes the MP4, the second run reuses the cache, and the third exits with code 2 and names the four ways to provide ffmpeg.
-- [ ] Lane 9. Cancel an MP4 export in the browser. Save `a5-cancel.png`. Pass when no file downloads and the editor works.
-- [ ] Lane 10. Compare the web MP4 and the CLI MP4 of the same project JSON. Save `a5-web-vs-cli.png`. Pass when frames at the same times differ by at most 2%.
+- [ ] Lane 1. Regression lane against trunk. Run `codeimage a.ts b.ts --animate -o demo.webp` on trunk and head. Save `a6-webp.png`. Pass when frames at the same times differ by at most 0.5%.
+- [ ] Lane 2. Run the CLI MP4 export with ffmpeg on `PATH`. Save `a6-cli.png`. Pass when the file plays and `ffprobe` reports H.264 High, `yuv420p` with BT.709 limited range, keyframes 2 s apart, and the `moov` box first.
+- [ ] Lane 3. Run the CLI MP4 export three times with `PATH` lacking ffmpeg and an empty `XDG_CACHE_HOME`. The first run is online, the second is online, and the third is offline with a fresh cache folder. Save `a6-cli-download.png`. Pass when the first run downloads once and writes the MP4, the second run reuses the cache, and the third exits with code 2 and names the four ways to provide ffmpeg.
+- [ ] Lane 4. Write three wrapper scripts that print their own name and then run ffmpeg. Put one on `PATH`, name one in `CODEIMAGE_FFMPEG`, and pass one with `--ffmpeg`. Remove them one at a time and export after each change. Save `a6-resolve.png`. Pass when every run uses the first hit of the resolution order.
+- [ ] Lane 5. Run `codeimage install-ffmpeg` twice on an empty cache. Save `a6-install.png`. Pass when the first run downloads and prints the binary path, and the second prints the same path without a download.
+- [ ] Lane 6. Start two MP4 exports at once on an empty cache. Save `a6-concurrent.png`. Pass when both write a playable MP4 and the cache holds one complete binary and no temporary file.
+- [ ] Lane 7. Export a project with an odd frame width. Save `a6-odd-size.png`. Pass when the MP4 has an even width and no visible edge.
+- [ ] Lane 8. Press Ctrl+C during an MP4 export. Save `a6-abort.png`. Pass when the CLI exits within one second, no ffmpeg process is left, and no partial MP4 is left.
+- [ ] Lane 9. Press Ctrl+C during the ffmpeg download. Save `a6-abort-download.png`. Pass when the cache holds no partial binary and the next run downloads again.
+- [ ] Lane 10. Compare the web MP4 and the CLI MP4 of the same project JSON. Save `a6-web-vs-cli.png`. Pass when frames at the same times differ by at most 2%.
 
 **Verify, perf.** Tests alone are not sufficient verification. A PR is verified only when its unit, live, and perf boxes are all checked.
 
-- [ ] Metric. Measure WebP export wall time at trunk and head. On head, measure MP4 export wall time for a 3 second animation at 60 fps and 1920 by 1080 in Chrome and in the CLI.
-- [ ] Probe. Ten interleaved WebP exports on trunk and head. Then ten MP4 exports on head in each place.
+- [ ] Metric. Measure the CLI WebP export wall time at trunk and head. On head, measure the CLI MP4 export wall time for a 3 second animation at 60 fps and 1920 by 1080, with ffmpeg already in the cache.
+- [ ] Probe. Ten interleaved cold WebP runs on trunk and head. Then ten cold MP4 runs on head.
 - [ ] Baseline. Record the trunk WebP median first.
-- [ ] Rule. The head WebP median is at most 1.05 times trunk. The browser MP4 median is at most 15 s and the CLI MP4 median is at most 6 s, with ffmpeg already in the cache. The first download is not part of the budget. The prototype measured 32.6 ms per raw frame in Takumi WASM and 8.6 ms in native Takumi, before encoding.
+- [ ] Rule. The head WebP median is at most 1.05 times trunk. The CLI MP4 median is at most 6 s. The first download is not part of the budget. The prototype measured 8.6 ms per raw frame in native Takumi, before encoding.
 
 **Review gate.** The operator reviews before merge.
 
-- [ ] Copy lane 2, 3, and 7 screenshots into `/tmp/codeimage-verification/a5-review-<slug>.png`.
-- [ ] Record a 30 to 60 second video of exporting MP4 in the browser and from the CLI, and of playing both files. Save it as `/tmp/codeimage-verification/a5-review.mp4`.
+- [ ] Copy lane 2, 3, and 10 screenshots into `/tmp/codeimage-verification/a6-review-<slug>.png`.
+- [ ] Record a 30 to 60 second video of the first CLI MP4 export with its download, a second export, and both files playing. Save it as `/tmp/codeimage-verification/a6-review.mp4`.
+- [ ] The operator confirms the GPL-3.0 handling of the ffmpeg binaries in Appendix C.
 - [ ] Post the screenshots and the video in chat. Stop at merge-ready. Wait for the operator's click.
 
 **Merge.**
@@ -407,7 +487,7 @@ Each live lane runs in its own git worktree at the PR head. There is no `control
 - [ ] Root's clean verdict at the exact head SHA.
 - [ ] Bugbot triage done.
 - [ ] Rebased onto current trunk after the verdict, patch-id unchanged.
-- [ ] The root appends A5 to the stack and the operator lands it bottom-up.
+- [ ] The root appends A6 to the stack and the operator lands it bottom-up.
 
 ## Close the program
 
@@ -424,12 +504,12 @@ Takumi animates per-token keyframes. `proto-a.mjs` builds one scene with absolut
 
 Takumi native is faster than real time at 1080p. `proto-b.mjs` renders a 35-line pair with 191 and 212 tokens at 1920 by 1080. These are measured numbers.
 
-| Output | Frames | Wall time | Size |
-|---|---|---|---|
-| WebP, quality 85, 60 fps | 126 | 717 ms | 4.8 MB |
-| GIF, 50 fps | 126 | 2,755 ms | 7.1 MB |
-| APNG, 60 fps | 126 | 740 ms | 17.6 MB |
-| Raw RGBA per frame | 55 | 8.6 ms per frame | none |
+| Output                   | Frames | Wall time        | Size    |
+| ------------------------ | ------ | ---------------- | ------- |
+| WebP, quality 85, 60 fps | 126    | 717 ms           | 4.8 MB  |
+| GIF, 50 fps              | 126    | 2,755 ms         | 7.1 MB  |
+| APNG, 60 fps             | 126    | 740 ms           | 17.6 MB |
+| Raw RGBA per frame       | 55     | 8.6 ms per frame | none    |
 
 Takumi WASM is about four times slower and still usable for export. `proto-c.mjs` runs the WASM build in Node, as a stand-in for the browser. One second at 60 fps took 2,648 ms as WebP and 6,719 ms as GIF. A raw frame took 32.6 ms. `wasm-mid.png` is a middle frame. Chrome speed is not measured yet.
 
@@ -437,11 +517,56 @@ Takumi WASM is about four times slower and still usable for export. `proto-c.mjs
 
 Takumi animates layout size. `proto-d.mjs` animates a box from 300 by 120 to 700 by 400. `measure()` at 500 ms reports 500 by 260, so the window can grow between steps. `size-500.png` shows it.
 
+The MP4 prototype ran on 2026-11-15 to answer whether every browser can encode MP4 and whether ffmpeg.wasm is usable. The machine was at a load average between 10 and 90 on 8 cores, so the timings are noisy, and the tables give medians. The scripts, the files, and the `ffprobe` logs stay in a scratch folder outside the repository. Per-run media never goes into the checkout, which ignores `docs/plans/media/`.
+
+Every engine tested encodes H.264. Each cell comes from `VideoEncoder.isConfigSupported` and a real encode. `ffprobe` read every H.264 file as valid, with the `moov` box first.
+
+| Browser                        | H.264                                               | HEVC         | VP9 and AV1                                                |
+| ------------------------------ | --------------------------------------------------- | ------------ | ---------------------------------------------------------- |
+| Chrome 157, branded            | Yes, with hardware encoding                         | Yes          | Software encoding                                          |
+| Chromium 156, Playwright       | Yes                                                 | No           | Not checked                                                |
+| Firefox 158, branded, macOS    | Yes                                                 | Not checked  | Not checked                                                |
+| Firefox 144, Playwright, Linux | Yes                                                 | Not checked  | Not checked                                                |
+| WebKit 27.2, Playwright        | Yes, Baseline unless the codec string asks for High | Yes          | VP9 dropped frames: 178 of 180 and 89 of 90 frames written |
+| Safari 27                      | Not measured                                        | Not measured | Not measured                                               |
+
+Real Safari is missing because `safaridriver` could not start it.
+
+Encoding alone is fast. These times encode 180 frames, 3 s at 1920 by 1080 and 60 fps.
+
+| Browser                            | Encode time |
+| ---------------------------------- | ----------- |
+| Chrome 157, warm, n = 5            | 1,048 ms    |
+| Chrome 157, first encode in a page | 4,054 ms    |
+| Chromium 156                       | 829 ms      |
+| WebKit 27.2                        | 905 ms      |
+| Firefox                            | 1,841 ms    |
+
+Rendering limits the export, not encoding. The end-to-end runs replaced Takumi with a 32.6 ms wait per frame, the raw frame time of Takumi WASM in Node, and encoded each frame while the next one rendered.
+
+| Run          | Wall time | Added by encoding |
+| ------------ | --------- | ----------------- |
+| Render alone | 5.87 s    | none              |
+| Chrome       | 6.29 s    | 7%                |
+| Chromium     | 6.22 s    | 6%                |
+| WebKit       | 6.29 s    | 7%                |
+| Firefox      | 6.88 s    | 17%               |
+
+The engines write different files from the same request. WebKit encodes Baseline unless the codec string asks for High. Chrome writes full range by default, which `ffprobe` reports as `yuvj420p`. Firefox ignores the requested bitrate and wrote 17.7 Mb/s where Chrome wrote 8.8 Mb/s, with a keyframe every 0.5 s.
+
+ffmpeg.wasm writes valid MP4 and costs more than WebCodecs on each measure. Its core is GPL-2.0-or-later. It downloads 7.2 MB with brotli, 32 MB raw, and its x264 is built without SIMD. In Chrome it encoded the same 180 frames in 9.55 s on one thread and in 3.18 s on four threads, encode only. It cannot encode during rendering, because it needs every frame in memory first. As YUV 4:2:0 frames that is 560 MB for 3 s at 1080p60 and 1.87 GB for 10 s. The multi-thread core crashed at its default thread count in every engine and hung in Firefox in 2 of 3 runs. Threads need COOP and COEP cross-origin isolation. With `require-corp`, the production umami script is blocked. The Auth0 silent-auth iframe may break too, which is a guess that nobody checked. WebKit lacks `credentialless`, the gentler COEP mode. The output carries no colour tags.
+
+The MIT `h264-mp4-encoder`, built on minih264, avoids the GPL and fails the output checks. It encodes Baseline only, makes every frame a keyframe, writes no faststart, and writes untagged full range, which shifted the colours.
+
+X asks for H.264. The X API media best practices at https://docs.x.com/x-api/media/quickstart/best-practices ask for H.264 High, at most 60 fps, YUV 4:2:0, and at most 1280 by 1024 for API uploads. They do not mention WebM. The 1280 by 1024 limit is for API uploads. Whether the X web upload takes 1080p was not checked. LinkedIn lists WebM as supported at https://www.linkedin.com/help/linkedin/answer/a548372. Instagram and Bluesky were not checked.
+
 These questions stay unproven.
 
 - Whether the browser and Takumi agree on every frame of the same keyframes. A3 gates it with `animation-preview.ts`.
-- How fast Takumi WASM is in Chrome, Firefox, and Safari. A4 measures it.
-- How fast Mediabunny encodes 1080p H.264 in each browser. A5 measures it.
+- How fast Takumi WASM is in Chrome, Firefox, and Safari. The MP4 prototype simulated the frame time. A4 measures it.
+- Whether real Safari 27 encodes like Playwright WebKit 27.2. A4 checks it by hand before it ships.
+- Whether `gifenc` gives better GIFs than Takumi. A5 measures it.
+- Whether Instagram and Bluesky accept the MP4 without re-encoding problems.
 - Whether fallback fonts wider than one cell break the column math. Lane 7 of A1 records it.
 
 ## Appendix B. Alternatives rejected
@@ -462,24 +587,34 @@ Recording the DOM preview with `MediaRecorder` or screenshots gives frames at th
 
 The `ffmpeg-static` npm package was rejected as a dependency of the CLI, and its binaries were kept. The package downloads the binary in an `install` script. Every user would download 20 to 30 MB even without making a video, and pnpm 10 and Bun skip that script by default, so those users would have no binary. An optional peer dependency fails for `npx` and global installs, because the CLI cannot import a package the user installed elsewhere. Downloading the same release files on the first MP4 export follows the Playwright and Puppeteer browser downloads. It costs nothing for users who never export MP4, and the cache survives CLI upgrades.
 
-ffmpeg.wasm weighs about 65 MB and its core is GPL-2.0. Mediabunny with WebCodecs is the maintained MP4 muxer, and its license is MPL-2.0.
+The operator ruled out server-side export on 2026-11-15. The browser renders and encodes a 3 s 1080p60 clip in about 6.3 s in the prototype, so a server adds an upload, a queue, and CPU cost per export without a speed gain, and the code leaves the user's device.
 
-Takumi already writes WebP, GIF, and APNG, so `gifenc` and `sharp` are not needed.
+ffmpeg.wasm was rejected for the web export. Appendix A has the numbers. Its GPL-2.0-or-later core, the 7.2 MB download, and the encode that waits for every frame in memory each cost more than WebCodecs. Its threads need cross-origin isolation, which blocks the umami script and may break the Auth0 iframe, and its multi-thread core crashed at the default thread count. WebCodecs with Mediabunny, under MPL-2.0, encodes during rendering in every engine tested.
+
+The MIT `h264-mp4-encoder` was rejected because it writes Baseline only, a keyframe on every frame, no faststart, and untagged full range.
+
+A WebM fallback for browsers without H.264 was rejected. X's media docs ask for H.264 and do not mention WebM, and WebKit's VP9 encoder dropped frames. Every engine tested encodes H.264, so a browser that fails the support check gets a one-line reason and GIF instead.
+
+Takumi writes WebP and APNG, so `sharp` is not needed. `gifenc` was rejected for the same reason, and A5 reopens it because Takumi's GIF output has defects.
 
 ## Appendix C. Risks
 
 - Browser and Takumi may disagree on easing or on transforms at fractional pixels. A3 owns `animation-preview.ts`. If a time fails, round translations to device pixels in `compileScene`.
 - Fallback fonts for CJK and emoji are wider than one cell, so column math puts later tokens in the wrong place. A1 lane 7 records it. If the endpoint diff fails, measure the runs of the affected lines with `measure()` instead of using columns.
 - Lezer splits tokens differently from Shiki, for example around punctuation. Matching may move fewer tokens than the magic-move demos. A1 `pair.test.ts` holds real cases.
-- Takumi WASM may be too slow in Safari. A4 measures it. If the 12 s budget fails, render at 30 fps by default in that browser.
-- WebCodecs H.264 support varies by browser and platform. A5 falls back to WebM with VP9 and hides MP4 when there is no `VideoEncoder`.
-- Takumi 2.19 GIF output leaves ghost pixels when the frame shrinks. The A1 verifier found two raised tabs, wrong traffic-light colors, and dark stripes in the last frame of `edge-empty-to.gif`, and macOS ImageIO decodes the same bytes, so the defect is in the encoder. A2 reproduces it, checks a newer Takumi, and otherwise renders GIF at a fixed frame size or reports it upstream before it offers GIF.
-- GIF files are large at 1080p. A4 shows the output size before the download, and the dialog suggests WebP or MP4 for long clips.
+- Takumi WASM may be too slow in Safari. A4 measures it by hand. If the 12 s budget fails, render at 30 fps by default in that browser.
+- Real Safari 27 is unverified. The prototype measured Playwright WebKit 27.2, and `safaridriver` could not start Safari. A4 exports once in Safari by hand and checks the file with `ffprobe` before it ships.
+- Chrome encodes full range by default. Without the BT.709 limited-range colour space on each `VideoFrame`, the file is `yuvj420p`, and a platform that re-encodes it can shift the colours. A4 sets the colour space, and A4 lane 2 checks the tags.
+- Firefox ignores the requested bitrate. It wrote 17.7 Mb/s where Chrome wrote 8.8 Mb/s, with a keyframe every 0.5 s, so Firefox files are about twice as large and the size shown in the dialog is low there. A4 lane 9 records the bitrate.
+- With WebCodecs, the browser or the OS encodes H.264, so the patent licence is theirs and not CodeImage's. This is a guess, and nobody has checked it.
+- The Firefox and WebKit lanes of A4 and A5 need the cross-browser setup that the operator wants built later. Playwright installs of both browsers stall on the operator's Mac. Until the setup exists, those lanes are recorded as not run, and the Safari check by hand is the only evidence outside Chrome.
+- Takumi 2.19 GIF output leaves ghost pixels when the frame shrinks. The A1 verifier found two raised tabs, wrong traffic-light colors, and dark stripes in the last frame of `edge-empty-to.gif`, and macOS ImageIO decodes the same bytes, so the defect is in the encoder. The operator also reports palette and colour defects and holes in Takumi's GIF output. A2 reproduces it for the CLI, checks a newer Takumi, and otherwise renders GIF at a fixed frame size or reports it upstream before it offers GIF. A5 measures `gifenc` against it, and the operator picks the web encoder.
+- GIF files are large at 1080p. A5 shows the output size before the download, and the dialog suggests MP4 for long clips.
 - A dimmed row that also has a line mark draws its glyphs 1 to 3 levels of 255 lighter than the static export, because the mark and the tokens fade as separate boxes. The operator chose to fix it in a small follow-up PR after A1 merges, with one box per row. The A1 row-paint check allows these rows 0.5 levels until then.
 - A rescaling window in a target frame is exact only at its 200 keyframe stops. Between stops it strays from the eased path by 0.02 to 0.06 px when the code doubles, and by up to 1.8 px when it grows ten times. The A1 verdict at `c01b70e1` rated it non-blocking. The same follow-up PR places the stops on the export frame times, which A2 knows from `fps`. It also samples the window check between stops and cuts the vertical layout tolerance from 0.5 px to 0.05 px, which every A1 case already meets.
-- Animated WebP is lossless by default in Takumi WASM. A4 checks whether `quality` is honored, and otherwise shows the larger size.
-- The ffmpeg download depends on the `eugeneware/ffmpeg-static` GitHub releases. A5 pins the tag and the SHA-256 of each file, so a changed file fails instead of running. If the release disappears, the four other ways to provide ffmpeg still work. Moving the files to a CodeImage release is the fallback.
-- The ffmpeg binaries are GPL-3.0. The CLI does not ship them in its npm package and downloads their `LICENSE` and `README` next to the binary. The operator confirms this before A5 merges.
+- Animated WebP is lossless by default in Takumi WASM. This matters only if the operator keeps WebP in the web app. A5 then checks whether `quality` is honored, and otherwise shows the larger size.
+- The ffmpeg download depends on the `eugeneware/ffmpeg-static` GitHub releases. A6 pins the tag and the SHA-256 of each file, so a changed file fails instead of running. If the release disappears, the four other ways to provide ffmpeg still work. Moving the files to a CodeImage release is the fallback.
+- The ffmpeg binaries are GPL-3.0. The CLI does not ship them in its npm package and downloads their `LICENSE` and `README` next to the binary. The operator confirms this before A6 merges.
 - The `@keyframes` count grows with tokens. A 300-line step makes a large stylesheet. A1 perf measures compile time, and A4 measures the stylesheet's effect on render time.
 
 ## Appendix D. Links and reading list
@@ -492,6 +627,9 @@ Read these before editing.
 - The Takumi animation docs at https://github.com/kane50613/takumi/blob/master/docs/content/docs/animation.mdx and the ffmpeg example at https://github.com/kane50613/takumi/tree/master/example/ffmpeg-keyframe-animation.
 - The magic-move core in `@shikijs/magic-move/dist/core.mjs`, for `toKeyedTokens` and `syncTokenKeys`.
 - Mediabunny formats and codecs at https://mediabunny.dev/guide/supported-formats-and-codecs.
+- `docs/plans/2026-animate-new-ui.md` on `feat/animate-new-ui`, the plan of #736, for the Animate panel and the section on where A4 plugs in.
+- The X API media best practices at https://docs.x.com/x-api/media/quickstart/best-practices and the LinkedIn video specs at https://www.linkedin.com/help/linkedin/answer/a548372.
+- `gifenc` at https://github.com/mattdesl/gifenc.
 - The memory note on Takumi parity quirks, for the Chrome reference setup.
 
 A1 and A3 get `~/.claude/skills/how/SKILL.md` before the build. A1 gets `~/.claude/skills/interrogate/SKILL.md` on the token-pairing design. Keep the decision trail per `~/.claude/skills/show-me-your-work/SKILL.md`.

@@ -16,11 +16,9 @@ import {
 import type {ParentProps} from 'solid-js';
 import type {AppLocaleEntries} from '../../../../i18n';
 import {EditingControls} from '../../EditingControls';
-import {CommandMenuButton} from '../../command-menu/CommandMenuButton';
-import {commandMenu} from '../../command-menu/state';
 import type {VariantMeta, VariantProps} from '../../contract';
 import {controlOverlay, SignatureRow} from '../../controls/ControlOverlay';
-import {FrameActions} from '../../controls/FrameActions';
+import {CanvasToolbar} from '../../controls/CanvasToolbar';
 import {keepMarkToolbarAboveSelection} from '../../controls/mark-toolbar';
 import {ShortcutHelp} from '../../controls/ShortcutHelp';
 import type {Control, ControlId, SectionId} from '../../model';
@@ -294,36 +292,24 @@ export default function Inspector(props: VariantProps) {
           <div class={styles.stage}>
             <props.stage.Canvas />
           </div>
-          <div class={styles.frameActions}>
-            <EditingControls state={props.pageState()}>
-              <Show when={!mobile()}>
-                <ShortcutHelp editable={props.pageState().editable} />
+          <Show
+            when={
+              props.pageState().kind !== 'read-only' || props.stage.compact()
+            }
+          >
+            <div class={styles.frameActions}>
+              <EditingControls state={props.pageState()}>
+                <CanvasToolbar
+                  stage={props.stage}
+                  help={!mobile()}
+                  editable={props.pageState().editable}
+                />
+              </EditingControls>
+              <Show when={props.stage.compact()}>
+                <props.stage.ExportButton />
               </Show>
-              <FrameActions />
-            </EditingControls>
-            <Show
-              when={props.stage.compact()}
-              fallback={
-                <CommandMenuButton>
-                  {trigger => (
-                    <Button
-                      {...trigger}
-                      class={styles.command}
-                      size="sm"
-                      theme="secondary"
-                    >
-                      {t('editor.search')}
-                      <kbd class={styles.commandKey}>
-                        {commandMenu.shortcut}
-                      </kbd>
-                    </Button>
-                  )}
-                </CommandMenuButton>
-              }
-            >
-              <props.stage.ExportButton />
-            </Show>
-          </div>
+            </div>
+          </Show>
         </main>
         <EditingControls state={props.pageState()}>
           <aside
