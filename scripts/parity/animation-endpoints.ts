@@ -4,11 +4,22 @@ import {join} from 'node:path';
 import {parseArgs} from 'node:util';
 import pixelmatch from 'pixelmatch';
 import {PNG} from 'pngjs';
+import type {
+  AnimationHost,
+  AnimationScenes,
+  AnimationTiming,
+  ComposedFrame,
+  FrameHost,
+  FrameMarkup,
+} from '../../apps/codeimage/src/render/contract';
 import type {SnapshotInput} from '../../packages/render/dist/index.mjs';
 import {
+  openFontCache,
   parseSnapshotDocument,
   renderSnapshot,
 } from '../../packages/render/dist/index.mjs';
+import {watermarkScenes} from '../../packages/render/src/animationWatermark';
+import {positionWatermark} from '../../packages/render/src/watermarkGeometry';
 import {decodeAnimation} from './animation-frames';
 import {MAX_DIFF_PERCENT, PIXELMATCH_THRESHOLD} from './lib';
 
@@ -42,35 +53,20 @@ interface Measured {
   children: Measured[];
   runs: {text: string; x: number; y: number; width: number}[];
 }
-interface Scenes {
-  scenes: {html: string; durationMs: number}[];
-  css: string;
-  width: number;
-  height: number;
-}
 type Document = ReturnType<typeof parseSnapshotDocument>;
 interface Entry {
-  renderFrame(
+  composeFrame(
     document: Document,
+    host: FrameHost,
     editorId?: string,
-  ): Promise<{html: string; css: string; fontFamily: string}>;
-  frameSizeCss(size?: {width: number; height: number}): string;
-  targetLayout(
-    frame: Document['frame'],
-    natural: {width: number; height: number},
-  ): {size: {width: number; height: number}; css: string} | undefined;
+  ): Promise<ComposedFrame>;
   renderAnimationScenes(
     document: Document,
-    settings: Settings,
-    measure: (html: string, css: string) => Promise<Measured>,
-  ): Promise<Scenes>;
+    timing: AnimationTiming,
+    host: AnimationHost,
+  ): Promise<AnimationScenes>;
 }
-interface Settings {
-  steps: {editorId: string; holdMs: number}[];
-  transitionMs: number;
-  easing: 'smooth' | 'snappy' | 'linear';
-  fps: 24 | 30 | 50 | 60;
-}
+type Settings = AnimationTiming;
 
 async function main() {
   const entry = (await import(
@@ -80,41 +76,26 @@ async function main() {
     new URL('ssr/assets/style.css', dist),
     'utf8',
   );
-  type FontFile = {
-    file: string;
-    weight?: number;
-    unicodeRange?: [number, number][];
-  };
-  const manifest = JSON.parse(
-    await readFile(new URL('fonts/manifest.json', dist), 'utf8'),
-  ) as {
-    fonts: Record<string, FontFile[]>;
-    fallbacks: {family: string; files: FontFile[]}[];
-  };
-
-  // The same faces in the same order as packages/render, so the animation and
-  // the static export draw text with the same fallback chain.
-  const renderer = new Renderer();
-  const register = async (family: string, files: FontFile[]) => {
-    for (const {file, ...face} of files) {
-      await renderer.registerFont({
-        name: family,
-        data: await readFile(new URL(`fonts/${file}`, dist)),
-        ...face,
-      });
+  // The font store and the faces packages/render uses, so the animation and
+  // the static export draw text with the same fallback chain. Like
+  // createRenderer, each document gets a renderer of its own.
+  const fontCache = openFontCache();
+  const fontFamilies = fontCache.fallbackFamilies;
+  let renderer = new Renderer();
+  let fonts: unknown[] = [];
+  async function useDocument(document: Document) {
+    const {fontId} = document.editor.options;
+    const code = fontCache.catalog.fonts.find(
+      font => font.id.toLowerCase() === fontId.toLowerCase(),
+    );
+    if (!code) throw new Error(`Unknown font "${fontId}"`);
+    const resources = fontCache.resources(code);
+    renderer = new Renderer();
+    for (const primary of resources.primaries) {
+      await renderer.registerFont(primary);
     }
-  };
-  for (const {family, files} of manifest.fallbacks)
-    await register(family, files);
-  await register('Inter var', manifest.fonts.ui);
-  const fontFamilies = manifest.fallbacks.map(({family}) => family);
-  const appFonts = new Map<string, Promise<void>>();
-  const registerAppFont = (fontId: string, family: string) => {
-    if (!appFonts.has(fontId)) {
-      appFonts.set(fontId, register(family, manifest.fonts[fontId]));
-    }
-    return appFonts.get(fontId)!;
-  };
+    fonts = resources.loaders;
+  }
 
   // Copied from packages/render/src/render.ts, which A2 extends to animations.
   const gradientCorner =
@@ -131,44 +112,92 @@ async function main() {
     );
   // The CodeMirror rules come first, as on the web, so marks.css can show
   // the bands that reach out of the gutter and the scroller.
-  const pageCss = (css: string) => [css, stylesheet].map(normalizeGradients);
+  const pageCss = (css: string[]) =>
+    [...css, stylesheet].map(normalizeGradients);
 
   const decode = (bytes: Uint8Array) => PNG.sync.read(Buffer.from(bytes));
 
+  // Lays out and draws the markup of the SSR entry the way createRenderer
+  // does, in CSS pixels.
+  const host = (scale: number): AnimationHost => {
+    const layout = async (markup: FrameMarkup) =>
+      inCssPixels(
+        await renderer.measure(normalizeStyleAttributes(markup.html), {
+          css: pageCss(markup.css),
+          images: markup.images,
+          fontFamilies,
+          fonts,
+          devicePixelRatio: scale,
+        }),
+        scale,
+      );
+    return {
+      async measure(markup) {
+        const {width, height} = await layout(markup);
+        return {width, height};
+      },
+      layout,
+      pixels: (markup, size) =>
+        renderer.render(markup.html, {
+          css: markup.css,
+          images: markup.images,
+          width: size,
+          height: size,
+          format: 'raw',
+          devicePixelRatio: 1,
+        }),
+    };
+  };
+
+  // Places the watermark of a static export the way createRenderer does.
+  const placeWatermark = (frame: ComposedFrame, scale: number) =>
+    positionWatermark({
+      html: normalizeStyleAttributes(frame.html),
+      ...frame.watermarkFrame,
+      pixelRatio: scale,
+      measure: html =>
+        renderer.measure(html, {
+          css: pageCss(frame.css),
+          images: frame.images,
+          fontFamilies,
+          fonts,
+          width: frame.size.width * scale,
+          height: frame.size.height * scale,
+          devicePixelRatio: scale,
+        }),
+    });
+
   // packages/render renders only the first tab, so later steps go through the
-  // same measure, size and render calls with their tab active. Step one checks
-  // that this path draws what renderSnapshot draws.
+  // same compose, watermark and render calls with their tab active. Step one
+  // checks that this path draws what renderSnapshot draws.
   async function staticExport(document: Document, editorId: string) {
     const {scale} = document;
-    const frame = await entry.renderFrame(document, editorId);
-    await registerAppFont(document.editor.options.fontId, frame.fontFamily);
-    const html = normalizeStyleAttributes(frame.html);
-    const css = pageCss(frame.css);
-    const content = await renderer.measure(html, {
-      css: [...css, entry.frameSizeCss()],
-      fontFamilies,
-      devicePixelRatio: scale,
-    });
-    const natural = {
-      width: content.width / scale,
-      height: content.height / scale,
-    };
-    const target = entry.targetLayout(document.frame, natural);
-    const layout = target?.size ?? {
-      width: Math.max(document.width ?? 0, natural.width),
-      height: natural.height,
-    };
+    const frame = await entry.composeFrame(document, host(scale), editorId);
+    const html = await placeWatermark(frame, scale);
     return decode(
       await renderer.render(html, {
-        width: Math.floor(Math.round(layout.width) * scale),
-        height: Math.floor(Math.round(layout.height) * scale),
-        css: [...css, entry.frameSizeCss(layout), target?.css ?? ''],
+        width: Math.floor(frame.size.width * scale),
+        height: Math.floor(frame.size.height * scale),
+        css: pageCss(frame.css),
+        images: frame.images,
         fontFamilies,
+        fonts,
         format: 'png',
         devicePixelRatio: scale,
       }),
     );
   }
+
+  // Each scene gets the watermark of its step's static export.
+  const withWatermarks = async (
+    animation: AnimationScenes,
+    scale: number,
+  ): Promise<AnimationScenes> => ({
+    ...animation,
+    scenes: await watermarkScenes(animation, step =>
+      placeWatermark(step, scale),
+    ),
+  });
 
   const inCssPixels = (node: Measured, scale: number): Measured => ({
     width: node.width / scale,
@@ -184,18 +213,6 @@ async function main() {
       width: run.width / scale,
     })),
   });
-
-  const measureAt =
-    (scale: number) =>
-    async (html: string, css: string): Promise<Measured> =>
-      inCssPixels(
-        await renderer.measure(normalizeStyleAttributes(html), {
-          css: pageCss(css),
-          fontFamilies,
-          devicePixelRatio: scale,
-        }),
-        scale,
-      );
 
   type Run = Measured['runs'][number];
   type Glyph = {char: string; x: number | null; y: number; slack: number};
@@ -992,6 +1009,7 @@ const label = 'a much longer label that pushes the code past the width of the ta
   for (const {name, input, identity} of selected) {
     const document = parseSnapshotDocument(input);
     const {scale} = document;
+    await useDocument(document);
     const [first, second] = document.editor.editors.map(({id}) => id);
     const fromStatic = await staticExport(document, first);
     const toStatic = await staticExport(document, second);
@@ -999,10 +1017,9 @@ const label = 'a much longer label that pushes the code past the width of the ta
       decode((await renderSnapshot(input)) as Uint8Array),
       fromStatic,
     );
-    const animation = await entry.renderAnimationScenes(
-      document,
-      settings,
-      measureAt(scale),
+    const animation = await withWatermarks(
+      await entry.renderAnimationScenes(document, settings, host(scale)),
+      scale,
     );
     const [fromHold, early, late, toHold] = animation.scenes;
     if (args.shift) {
@@ -1012,7 +1029,9 @@ const label = 'a much longer label that pushes the code past the width of the ta
         gutter: '.cm-gutterElement > div',
       }[layer];
       if (!moved) throw new Error(`cannot shift ${layer}`);
-      animation.css += `\n[data-animation-scene="1"] ${moved}{left:${pixels}px}`;
+      animation.css.push(
+        `[data-animation-scene="1"] ${moved}{left:${pixels}px}`,
+      );
     }
     const frameAt = async (scene: {html: string}, timeMs: number) =>
       decode(
@@ -1020,7 +1039,9 @@ const label = 'a much longer label that pushes the code past the width of the ta
           width: animation.width * scale,
           height: animation.height * scale,
           css: pageCss(animation.css),
+          images: animation.images,
           fontFamilies,
+          fonts,
           format: 'png',
           devicePixelRatio: scale,
           timeMs,
@@ -1041,7 +1062,9 @@ const label = 'a much longer label that pushes the code past the width of the ta
           width: animation.width * scale,
           height: animation.height * scale,
           css: pageCss(animation.css),
+          images: animation.images,
           fontFamilies,
+          fonts,
           devicePixelRatio: scale,
           timeMs,
         }),
@@ -1062,10 +1085,11 @@ const label = 'a much longer label that pushes the code past the width of the ta
     const path =
       codeBoxPath(fromLayout, from.code) ?? codeBoxPath(toLayout, to.code);
     // The box a target frame shows its window in, after its scale. The
-    // window is the child of the frame on the path to the code box.
+    // window is in the fit viewport, the child of the frame on the path to
+    // the code box.
     const windowOf = (frame: Measured): Rect | null => {
       if (!document.frame.exportTarget || !path) return null;
-      const window = frame.children[path[4]];
+      const window = frame.children[path[4]].children[path[5]];
       const [a, , , d, x, y] = window.transform;
       return {
         x: x - frame.transform[4],
@@ -1109,15 +1133,21 @@ const label = 'a much longer label that pushes the code past the width of the ta
         fromSegment(middle(box), middle(windows[0]), middle(windows.at(-1)!)),
       ),
     );
-    const windowOut = Math.max(
-      0,
-      ...windows.flatMap(box => [
+    const outOf = (box: Rect) =>
+      Math.max(
+        0,
         padding - box.x,
         padding - box.y,
         box.x + box.width - (animation.width - padding),
         box.y + box.height - (animation.height - padding),
-      ]),
-    );
+      );
+    // The static export rounds its window's place to whole pixels and fits
+    // the rounded size, so an end may reach into the padding already. The
+    // transition may not reach further than its ends.
+    const endsOut = windows.length
+      ? Math.max(outOf(windows[0]), outOf(windows.at(-1)!))
+      : 0;
+    const windowOut = Math.max(0, ...windows.map(outOf)) - endsOut;
     const markedHold = (scene: {html: string}) =>
       layoutAt({html: markLineStarts(scene.html)}, 0);
     const layout = path
@@ -1241,7 +1271,9 @@ const label = 'a much longer label that pushes the code past the width of the ta
             width: animation.width * scale,
             height: animation.height * scale,
             css: pageCss(animation.css),
+            images: animation.images,
             fontFamilies,
+            fonts,
             fps,
             format,
             devicePixelRatio: scale,
@@ -1289,7 +1321,9 @@ const label = 'a much longer label that pushes the code past the width of the ta
       paint: paint ?? 'ok',
       center: center.toFixed(3),
       ...(windows.length
-        ? {window: `${windowDrift.toFixed(3)} ${windowOut.toFixed(3)}`}
+        ? {
+            window: `${windowDrift.toFixed(3)} ${windowOut.toFixed(3)} (ends ${endsOut.toFixed(3)})`,
+          }
         : {}),
       ...(identity ? {worstFrame: worstFrame.toFixed(3)} : {}),
       size: `${animation.width}x${animation.height}`,
