@@ -1,5 +1,6 @@
 import {Button} from '@codeui/kit';
 import {Popover} from '@kobalte/core/popover';
+import type {JSX} from 'solid-js';
 import {createSignal, onCleanup, Show} from 'solid-js';
 import {Dynamic} from 'solid-js/web';
 import type {LocatedHighlightId} from '../../state/whats-new';
@@ -126,5 +127,24 @@ export function NewDot(props: {highlight: LocatedHighlightId}) {
         </Show>
       )}
     </Show>
+  );
+}
+
+/**
+ * Puts the dot on the top right corner of the control it wraps. `filled` is
+ * for a control filled with the dot's colour, so that a ring separates them.
+ */
+export function WithNewDot(props: {
+  highlight: LocatedHighlightId;
+  filled?: boolean;
+  children: JSX.Element;
+}) {
+  return (
+    <span
+      class={`${styles.commandAnchor} ${props.filled ? styles.filledAnchor : ''}`}
+    >
+      {props.children}
+      <NewDot highlight={props.highlight} />
+    </span>
   );
 }

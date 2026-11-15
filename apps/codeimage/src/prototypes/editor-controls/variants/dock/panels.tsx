@@ -1,5 +1,4 @@
-import {NewDot} from '../../../../components/WhatsNew/NewDot';
-import {commandAnchor} from '../../../../components/WhatsNew/whats-new.css';
+import {WithNewDot} from '../../../../components/WhatsNew/NewDot';
 import {Button, Listbox} from '@codeui/kit';
 import {SegmentedField} from '@ui/SegmentedField/SegmentedField';
 import type {Component} from 'solid-js';
@@ -232,7 +231,7 @@ function PhoneActions() {
   const dock = useDock();
   return (
     <div class={styles.phoneActions}>
-      <span class={commandAnchor}>
+      <WithNewDot highlight="command-menu">
         <Button
           size={'sm'}
           theme={'secondary'}
@@ -241,8 +240,7 @@ function PhoneActions() {
         >
           Search all options
         </Button>
-        <NewDot highlight="command-menu" />
-      </span>
+      </WithNewDot>
       <Button
         size={'sm'}
         theme={'secondary'}

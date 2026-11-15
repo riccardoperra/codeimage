@@ -13,11 +13,7 @@ import {
 } from '@codeui/kit';
 import {createSignal, Show} from 'solid-js';
 import {DownloadIcon} from '../../../components/Icons/Download';
-import {NewDot} from '../../../components/WhatsNew/NewDot';
-import {
-  commandAnchor,
-  filledAnchor,
-} from '../../../components/WhatsNew/whats-new.css';
+import {WithNewDot} from '../../../components/WhatsNew/NewDot';
 import {useHotkey} from '../../../hooks/use-hotkey';
 import type {AppLocaleEntries} from '../../../i18n';
 import {getWhatsNew} from '../../../state/whats-new';
@@ -77,7 +73,7 @@ export function ExportControl(props: {exporter: Exporter; size?: 'sm' | 'xs'}) {
         open={menuOpen()}
         onOpenChange={setMenuOpen}
       >
-        <span class={`${commandAnchor} ${filledAnchor}`}>
+        <WithNewDot highlight="tabs" filled>
           <DropdownMenuTrigger
             as={IconButton}
             class={styles.more}
@@ -88,8 +84,7 @@ export function ExportControl(props: {exporter: Exporter; size?: 'sm' | 'xs'}) {
           >
             <icons.ChevronDownIcon />
           </DropdownMenuTrigger>
-          <NewDot highlight="tabs" />
-        </span>
+        </WithNewDot>
         <DropdownMenuPortal>
           <DropdownMenuContent>
             <DropdownMenuItem onSelect={() => exporter().image()}>

@@ -1,5 +1,4 @@
-import {NewDot} from '../../../../components/WhatsNew/NewDot';
-import {commandAnchor} from '../../../../components/WhatsNew/whats-new.css';
+import {WithNewDot} from '../../../../components/WhatsNew/NewDot';
 import {Button, IconButton} from '@codeui/kit';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 import {
@@ -314,7 +313,7 @@ export default function Studio(props: VariantProps) {
             )}
           </For>
           <Show when={!isPhone()}>
-            <span class={commandAnchor}>
+            <WithNewDot highlight="command-menu">
               <button
                 type="button"
                 class={`${styles.railButton} ${styles.railSearch}`}
@@ -329,8 +328,7 @@ export default function Studio(props: VariantProps) {
                 Search
                 <kbd class={styles.railHint}>{commandMenu.shortcut}</kbd>
               </button>
-              <NewDot highlight="command-menu" />
-            </span>
+            </WithNewDot>
             <RailSettings />
           </Show>
         </nav>

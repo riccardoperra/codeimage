@@ -1,5 +1,4 @@
-import {NewDot} from '../../../../components/WhatsNew/NewDot';
-import {commandAnchor} from '../../../../components/WhatsNew/whats-new.css';
+import {WithNewDot} from '../../../../components/WhatsNew/NewDot';
 import {Button, IconButton} from '@codeui/kit';
 import {Popover} from '@kobalte/core/popover';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
@@ -436,7 +435,7 @@ export default function Dock(props: VariantProps) {
                 icon={<SlidersIcon />}
               />
               <Show when={!compact()}>
-                <span class={commandAnchor}>
+                <WithNewDot highlight="command-menu">
                   <Button
                     class={styles.item}
                     theme={'secondary'}
@@ -450,8 +449,7 @@ export default function Dock(props: VariantProps) {
                   >
                     <kbd class={styles.kbd}>{commandMenu.shortcut}</kbd>
                   </Button>
-                  <NewDot highlight="command-menu" />
-                </span>
+                </WithNewDot>
                 <BarSettings />
               </Show>
               <Show when={props.stage.compact()}>

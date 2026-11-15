@@ -1,5 +1,4 @@
-import {NewDot} from '../../../../components/WhatsNew/NewDot';
-import {commandAnchor} from '../../../../components/WhatsNew/whats-new.css';
+import {WithNewDot} from '../../../../components/WhatsNew/NewDot';
 import {Button} from '@codeui/kit';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 import {For, Show, createEffect, createSignal, on, onCleanup} from 'solid-js';
@@ -282,7 +281,7 @@ export default function Inspector(props: VariantProps) {
             <Show
               when={mobile()}
               fallback={
-                <span class={commandAnchor}>
+                <WithNewDot highlight="command-menu">
                   <Button
                     class={styles.command}
                     size="sm"
@@ -294,8 +293,7 @@ export default function Inspector(props: VariantProps) {
                     Search
                     <kbd class={styles.commandKey}>{commandMenu.shortcut}</kbd>
                   </Button>
-                  <NewDot highlight="command-menu" />
-                </span>
+                </WithNewDot>
               }
             >
               <props.stage.ExportButton />
