@@ -154,17 +154,12 @@ function gutterColumns(step: Step) {
 }
 
 function stepBox(step: Step, widths: GlyphWidths): StepBox {
-  const kinds = markKinds(step);
-  const indent = [...kinds.values()].some(kind => kind !== 'highlight') ? 2 : 0;
   return {
     rows: step.lines.length,
-    columns:
-      indent +
-      Math.max(
-        0,
-        ...step.lines.map(line => columnsAfter(0, lineText(line), widths)),
-      ),
-    indent,
+    columns: Math.max(
+      0,
+      ...step.lines.map(line => columnsAfter(0, lineText(line), widths)),
+    ),
     dimmed: dimmedRows(step),
   };
 }

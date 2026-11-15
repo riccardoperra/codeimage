@@ -9,13 +9,14 @@ export interface AnimatedCodeViewProps {
   html: string;
   languageId: string;
   theme: CustomTheme;
+  showLineNumbers: boolean;
   fontFamily: string;
   fontWeight: number;
   enableLigatures: boolean;
 }
 
-// StaticCodeView with the code area replaced by the compiled spans. Focus and
-// diff state live in each span's keyframes, so the root carries neither.
+// StaticCodeView with the code area replaced by the compiled spans. Focus
+// lives in each span's keyframes, so the root leaves out data-line-focus.
 export default function AnimatedCodeView(props: AnimatedCodeViewProps) {
   const theme = createMemo(() => getStaticTheme(props.theme));
   if (!isServer) createEffect(() => mountStaticTheme(document, props.theme));
@@ -24,6 +25,8 @@ export default function AnimatedCodeView(props: AnimatedCodeViewProps) {
       <div
         class={`cm-editor ${theme().classes}`}
         data-animated-code-view
+        data-line-marks="true"
+        data-line-numbers={String(props.showLineNumbers)}
         style={{
           '--codeimage-font-family': `${props.fontFamily}, monospace`,
           '--codeimage-font-weight': props.fontWeight,

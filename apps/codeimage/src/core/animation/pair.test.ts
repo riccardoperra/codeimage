@@ -243,7 +243,7 @@ test('a mark keeps its place when its line changes under it', async () => {
   assert.deepEqual(markRows(scene), [['move', 'highlight', 1, 1]]);
 });
 
-test('diff marks indent the code by two columns and focus dims the other rows', async () => {
+test('diff marks keep the code in place and focus dims the other rows', async () => {
   const scene = pairScene(
     await step('a\nbb\nccc', {
       marks: {
@@ -259,11 +259,11 @@ test('diff marks indent the code by two columns and focus dims the other rows', 
   );
   assert.deepEqual(
     {...scene.from, dimmed: [...scene.from.dimmed]},
-    {rows: 3, columns: 5, indent: 2, dimmed: [0, 1]},
+    {rows: 3, columns: 3, dimmed: [0, 1]},
   );
   assert.deepEqual(
     {...scene.to, dimmed: [...scene.to.dimmed]},
-    {rows: 3, columns: 3, indent: 0, dimmed: []},
+    {rows: 3, columns: 3, dimmed: []},
   );
 });
 

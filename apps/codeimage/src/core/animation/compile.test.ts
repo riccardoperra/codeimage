@@ -17,7 +17,6 @@ const timing = {transitionMs: 1000, easing: 'linear'} as const;
 const box = (overrides: Partial<StepBox> = {}): StepBox => ({
   rows: 3,
   columns: 8,
-  indent: 0,
   dimmed: new Set(),
   ...overrides,
 });
@@ -83,6 +82,12 @@ function play(input: Scene, sceneTiming: SceneTiming = timing) {
           mark: element.attributes['data-mark'],
           ...pose(element, timeMs),
         })),
+    numberBands: (timeMs: number) =>
+      elements.flatMap(element => {
+        const [, mark] =
+          element.attributes.class?.match(/\bcm-lineMark-(\w+)/) ?? [];
+        return mark ? [{mark, ...pose(element, timeMs)}] : [];
+      }),
   };
 }
 
@@ -155,13 +160,13 @@ test('a token that changes classes slides in both colors while they crossfade', 
   ]);
 });
 
-test('code shifts by the diff indent and fades with focus dimming', () => {
+test('code fades with focus dimming', () => {
   const {at} = play(
     scene([move('x', {line: 0, col: 0}, {line: 0, col: 0})], {
-      from: box({indent: 2, dimmed: new Set([0])}),
+      from: box({dimmed: new Set([0])}),
     }),
   );
-  assert.deepEqual(at('x', 0), {left: 20, top: 0, opacity: 0.35});
+  assert.deepEqual(at('x', 0), {left: 0, top: 0, opacity: 0.35});
   assert.deepEqual(at('x', 1000), {left: 0, top: 0, opacity: 1});
 });
 
@@ -239,6 +244,33 @@ test('a kept mark moves with its line, and the others fade', () => {
   assert.deepEqual(at(1000), [
     {mark: 'added', left: 0, top: 40, opacity: 1},
     {mark: 'highlight', left: 0, top: 0, opacity: 0},
+  ]);
+});
+
+test('with a gutter, each mark also bands its line number', () => {
+  const marks: MarkTransition[] = [
+    {
+      kind: 'move',
+      key: 'k',
+      mark: 'added',
+      from: {line: 1, col: 0},
+      to: {line: 2, col: 0},
+    },
+  ];
+  const without = play(scene([], {marks}));
+  assert.deepEqual(without.numberBands(0), []);
+  const {marks: lines, numberBands} = play(
+    scene([], {
+      marks,
+      gutter: {numbers: [], fromColumns: 1, toColumns: 1},
+      from: box({dimmed: new Set([1])}),
+    }),
+  );
+  for (const timeMs of [0, 500, 1000]) {
+    assert.deepEqual(numberBands(timeMs), lines(timeMs));
+  }
+  assert.deepEqual(numberBands(0), [
+    {mark: 'added', left: 0, top: 20, opacity: 0.35},
   ]);
 });
 
