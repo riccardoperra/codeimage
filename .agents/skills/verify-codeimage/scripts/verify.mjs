@@ -27,6 +27,19 @@ await new Promise((ok, fail) => {
   probe.once('error', fail);
   probe.listen(port, '127.0.0.1', () => probe.close(ok));
 });
+const cases = (process.env.VERIFY_CASES ?? '')
+  .split(',')
+  .map(name => name.trim());
+if (
+  process.env.VERIFY_AUDIT === '1' &&
+  (!process.env.VERIFY_CASES || cases.includes('frame-cold-start'))
+) {
+  for (const cache of [
+    'node_modules/.vite',
+    'apps/codeimage/node_modules/.vite',
+  ])
+    await rm(resolve(root, cache), {recursive: true, force: true});
+}
 const scratch = await mkdtemp('/tmp/codeimage-verify-public-');
 try {
   await cp(resolve(root, 'apps/codeimage/public'), scratch, {recursive: true});
@@ -79,7 +92,9 @@ try {
         ready = true;
         break;
       }
-    } catch {}
+    } catch {
+      // The owned server may still be binding its socket.
+    }
     await new Promise(r => setTimeout(r, 500));
   }
   assert.ok(ready, 'Vite HTTP readiness');

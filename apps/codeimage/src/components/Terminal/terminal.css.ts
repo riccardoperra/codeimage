@@ -78,6 +78,7 @@ export const content = style({
   position: 'relative',
   overflow: 'auto',
   fontSize: themeVars.fontSize.base,
+  lineHeight: themeVars.lineHeight.normal,
   paddingBottom: themeVars.spacing['4'],
   paddingTop: themeVars.spacing['5'],
   paddingInlineStart: 'var(--codeimage-content-inset)',

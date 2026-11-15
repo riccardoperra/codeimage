@@ -48,9 +48,10 @@ const exportShortcutKeys = (combo: string) =>
     return key.length === 1 ? key.toUpperCase() : key;
   });
 
+export const shortcutHelpKey = '?';
+
 type Shortcut = {label: LocaleKeys<AppLocaleEntries>; key: string[]};
-// KeyboardShortcuts keeps its definitions private. Mirror its list here, using
-// the production mark definitions, until it exposes a list and hotkey hook.
+// One list for the unified editor, including the production line-mark bindings.
 export const shortcuts: readonly Shortcut[] = [
   {label: 'shortcut.focusCodeEditor', key: ['F']},
   {label: 'shortcut.unFocusCodeEditor', key: ['Esc']},
@@ -62,7 +63,7 @@ export const shortcuts: readonly Shortcut[] = [
     label: shortcut.label,
     key: exportShortcutKeys(exportShortcutCombos(shortcut)[0]),
   })),
-  {label: 'shortcut.openShortcuts', key: ['?']},
+  {label: 'shortcut.openShortcuts', key: [shortcutHelpKey]},
   ...markCommands.map(command => ({
     label:
       `lineMarks.shortcut.${command.id}` satisfies LocaleKeys<AppLocaleEntries>,
@@ -98,7 +99,7 @@ export function useExportShortcuts(exporter: Accessor<Exporter>) {
   useHotkey(window, bindings, {capture: true});
 }
 
-export function bindEditorShortcuts() {
+export function bindEditorShortcuts(editable: Accessor<boolean>) {
   const editor = getRootEditorStore();
   const frame = getFrameState();
   const terminal = getTerminalState();
@@ -109,11 +110,11 @@ export function bindEditorShortcuts() {
       'input, textarea, [contenteditable=true], [role=dialog], [role=alertdialog]',
     );
   const whenIdle = (action: () => void) => () => {
-    if (!inField()) action();
+    if (editable() && !inField()) action();
   };
   useHotkey(document.body, {
     F: event => {
-      if (!inField()) {
+      if (editable() && !inField()) {
         event.preventDefault();
         editor.actions.setFocused(true);
       }

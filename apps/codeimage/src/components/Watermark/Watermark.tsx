@@ -1,14 +1,25 @@
 import {Box, FadeInOutTransition} from '@codeimage/ui';
-import {createSignal, onCleanup, onMount, Show} from 'solid-js';
+import {
+  createEffect,
+  createSignal,
+  onCleanup,
+  onMount,
+  Show,
+  untrack,
+} from 'solid-js';
 import {Portal} from 'solid-js/web';
 import type {JSX} from 'solid-js';
-import {registerWatermark} from '../../core/watermark/browser';
 import {
   placeWatermark,
   canHostWatermarkFrame,
   WATERMARK,
 } from '@codeimage/render/watermark';
 import type {Rect} from '@codeimage/render/watermark';
+import {
+  codeLines,
+  codeRoot,
+  useWatermarkScope,
+} from '../../core/watermark/scope';
 import {signatureScale} from '../Frame/signatureLayout';
 import {CodeImageLogoV2} from '../Icons/CodeImageLogoV2';
 import * as styles from '../Terminal/terminal.css';
@@ -49,6 +60,12 @@ interface MovedMark {
   key: string;
 }
 
+interface Reading {
+  slot: string;
+  naturalHeight: number;
+  mark: MovedMark | null;
+}
+
 export function Watermark(props: {enabled: boolean; darkMode: boolean}) {
   return (
     <FadeInOutTransition show={props.enabled}>
@@ -60,28 +77,22 @@ export function Watermark(props: {enabled: boolean; darkMode: boolean}) {
 }
 
 function MountedWatermark(props: {darkMode: boolean}) {
+  const scope = useWatermarkScope();
+  if (!scope) throw new Error('A watermark must render inside a frame.');
   let home!: HTMLDivElement;
   const [moved, setMoved] = createSignal<MovedMark | null>(null);
   const [height, setHeight] = createSignal(24.3);
-  let disposed = false;
-  let pending = 0;
 
-  const measure = () => {
-    if (disposed || !home?.isConnected) return;
-    const window = home.closest<HTMLElement>('[data-surface]');
-    const content = home.closest<HTMLElement>('[data-watermark-content]');
-    const frame = home.closest<HTMLElement>('[data-watermark-frame]');
-    const size = home.firstElementChild;
+  const read = () => {
+    const {window, content, frame, background, signature, header, code} =
+      scope.parts();
+    const size = home?.isConnected && home.firstElementChild;
     if (!window || !content || !size) return;
     const natural = size.getBoundingClientRect();
     if (!natural.width || !natural.height) return;
     const windowRect = window.getBoundingClientRect();
     const scale = windowRect.width / window.offsetWidth;
-    if (!moved()) setHeight(natural.height / scale);
-    const header = window.querySelector<HTMLElement>('[data-watermark-header]');
-    const code = Array.from(
-      window.querySelectorAll(`.${WATERMARK.codeClass}`),
-    ).flatMap(textRects);
+    const naturalHeight = natural.height / scale;
     const obstacles: Rect[] = [];
     for (const el of window.querySelectorAll<HTMLElement>(
       WATERMARK.obstacles,
@@ -90,16 +101,8 @@ function MountedWatermark(props: {darkMode: boolean}) {
         obstacles.push(el.getBoundingClientRect());
     }
     if (header) obstacles.push(...textRects(header));
-    if (frame) {
-      const signature = frame.querySelector(
-        '[data-frame-signature]',
-      )?.firstElementChild;
-      if (signature) obstacles.push(signature.getBoundingClientRect());
-    }
-    const backdrop = frame?.querySelector<HTMLElement>(
-      '[data-watermark-background]',
-    );
-    const paint = backdrop && getComputedStyle(backdrop);
+    if (frame && signature) obstacles.push(signature.getBoundingClientRect());
+    const paint = frame && background && getComputedStyle(background);
     const painted =
       paint &&
       canHostWatermarkFrame({
@@ -107,7 +110,7 @@ function MountedWatermark(props: {darkMode: boolean}) {
         opacity: Number(paint.opacity),
         backgroundColor: paint.backgroundColor,
         hasImage:
-          paint.backgroundImage !== 'none' || !!backdrop?.querySelector('img'),
+          paint.backgroundImage !== 'none' || !!background.querySelector('img'),
       });
     const placement = placeWatermark({
       home: natural,
@@ -125,15 +128,12 @@ function MountedWatermark(props: {darkMode: boolean}) {
                 frame.offsetWidth,
             }
           : null,
-      code,
+      code: code ? codeLines(code).flatMap(textRects) : [],
       obstacles,
       gap: WATERMARK.gap * scale,
     });
-    home.dataset.watermarkPlacement = placement.slot;
-    if (!('rect' in placement)) {
-      if (moved()) setMoved(null);
-      return;
-    }
+    if (!('rect' in placement))
+      return {slot: placement.slot, naturalHeight, mark: null};
     const host = placement.slot.startsWith('frame-') && frame ? frame : window;
     const hostRect = host.getBoundingClientRect();
     const hostScale = hostRect.width / host.offsetWidth;
@@ -161,62 +161,66 @@ function MountedWatermark(props: {darkMode: boolean}) {
       'transform-origin': `${end ? 'bottom' : 'top'} ${start ? 'left' : 'right'}`,
     };
     const key = JSON.stringify([placement.slot, right, left, top, bottom, fit]);
-    if (moved()?.key !== key || moved()?.host !== host)
-      setMoved({host, slot: placement.slot, style, key});
+    return {
+      slot: placement.slot,
+      naturalHeight,
+      mark: {host, slot: placement.slot, style, key},
+    };
   };
-  const schedule = () => {
-    if (disposed || pending) return;
-    pending = requestAnimationFrame(() => {
-      pending = 0;
-      measure();
-    });
+
+  const write = (reading: Reading) => {
+    if (!moved()) setHeight(reading.naturalHeight);
+    home.dataset.watermarkPlacement = reading.slot;
+    const current = moved();
+    const mark = reading.mark;
+    if (!mark) {
+      if (current) setMoved(null);
+    } else if (current?.key !== mark.key || current.host !== mark.host)
+      setMoved(mark);
+  };
+
+  const measure = () => {
+    const reading = read();
+    return reading && (() => untrack(() => write(reading)));
   };
 
   onMount(() => {
-    const unregister = registerWatermark(home, measure);
-    onCleanup(unregister);
-    const root =
-      home.closest<HTMLElement>('[data-watermark-frame]') ??
-      home.closest<HTMLElement>('[data-surface]');
-    if (!root) return;
-    const resize = new ResizeObserver(schedule);
-    resize.observe(root);
-    for (const el of root.querySelectorAll<HTMLElement>(
-      '[data-surface], [data-watermark-content], .cm-content, [data-frame-signature]',
-    ))
-      resize.observe(el);
-    const mutation = new MutationObserver(records => {
-      if (
-        records.some(record => {
-          const element =
-            record.target instanceof Element
-              ? record.target
-              : record.target.parentElement;
-          return !element?.closest(
-            '[data-watermark-home], [data-watermark-moved]',
-          );
-        })
-      )
-        schedule();
-    });
-    mutation.observe(root, {
-      subtree: true,
-      childList: true,
-      characterData: true,
-      attributes: true,
-      attributeFilter: ['style', 'class', 'data-header-visible'],
-    });
-    root.addEventListener('scroll', schedule, true);
-    document.fonts.addEventListener('loadingdone', schedule);
-    void document.fonts.ready.then(schedule);
-    schedule();
+    scope.attach('measure', measure);
+    document.fonts.addEventListener('loadingdone', scope.invalidate);
+    void document.fonts.ready.then(scope.invalidate);
+    onCleanup(() =>
+      document.fonts.removeEventListener('loadingdone', scope.invalidate),
+    );
+  });
+
+  createEffect(() => {
+    const {frame, window, content, header, background, signature, code} =
+      scope.parts();
+    const resize = new ResizeObserver(scope.invalidate);
+    for (const el of [
+      frame,
+      window,
+      content,
+      header,
+      signature,
+      code && codeRoot(code),
+    ])
+      if (el) resize.observe(el);
+    const mutation = new MutationObserver(scope.invalidate);
+    for (const el of [header, background])
+      if (el)
+        mutation.observe(el, {
+          subtree: true,
+          childList: true,
+          characterData: true,
+          attributes: true,
+        });
+    const scroller = frame ?? window;
+    scroller?.addEventListener('scroll', scope.invalidate, true);
     onCleanup(() => {
       resize.disconnect();
       mutation.disconnect();
-      root.removeEventListener('scroll', schedule, true);
-      document.fonts.removeEventListener('loadingdone', schedule);
-      disposed = true;
-      cancelAnimationFrame(pending);
+      scroller?.removeEventListener('scroll', scope.invalidate, true);
     });
   });
 

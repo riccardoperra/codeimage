@@ -24,6 +24,3 @@ globalStyle(`${toolbar} button`, {
   minHeight: '36px',
   '@media': {[phone]: {minHeight: '40px'}},
 });
-
-// The help trigger brings its own island; here it shares this one.
-globalStyle(`${toolbar} [data-shortcut-help]`, {background: 'transparent'});

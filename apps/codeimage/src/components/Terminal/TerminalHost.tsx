@@ -12,6 +12,7 @@ import {createMemo, Show} from 'solid-js';
 import {createWindowPalette} from './windowPalette';
 import {windowVars} from './windowPalette.css';
 import {getFrameState} from '@codeimage/store/editor/frame';
+import {useWatermarkPart} from '../../core/watermark/scope';
 
 export interface BaseTerminalProps extends Omit<
   TerminalState,
@@ -63,6 +64,7 @@ export const TerminalHost: FlowComponent<TerminalHostProps> = props => {
     );
   const darkMode = () => tabTheme().darkMode;
   const frameState = getFrameState().store;
+  const windowRef = useWatermarkPart('window');
 
   const background = () => {
     if (props.alternativeTheme) {
@@ -77,6 +79,7 @@ export const TerminalHost: FlowComponent<TerminalHostProps> = props => {
 
   return (
     <div
+      ref={windowRef}
       class={clsx(styles.wrapper, props.themeClass)}
       data-lite={props.lite}
       data-preview={props.preview || ''}

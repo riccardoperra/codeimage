@@ -4,8 +4,11 @@ import {
   createSignal,
   onMount,
   onCleanup,
+  untrack,
   type ParentProps,
 } from 'solid-js';
+import type {WatermarkScope} from '../../core/watermark/scope';
+import {WatermarkContext} from '../../core/watermark/scope';
 
 export const FITTED_WINDOW_MIN_WIDTH = 480;
 
@@ -43,11 +46,20 @@ export function fittedPlacement(
   };
 }
 
+/**
+ * The window's box in a frame, and the watermark scope its children register
+ * in. A given placement (Node) replaces the browser's measurement.
+ */
 export function FittedWindow(
-  props: ParentProps<{active: boolean; placement?: FittedPlacement}>,
+  props: ParentProps<{
+    active: boolean;
+    watermark: WatermarkScope;
+    placement?: FittedPlacement;
+  }>,
 ) {
   const [viewport, setViewport] = createSignal<HTMLDivElement>();
   const [content, setContent] = createSignal<HTMLDivElement>();
+  const watermark = untrack(() => props.watermark);
   const [measured, setMeasured] = createSignal<FittedPlacement>({
     left: 0,
     top: 0,
@@ -58,20 +70,30 @@ export function FittedWindow(
     const box = viewport();
     const fitted = content();
     if (!box || !fitted || !props.active || props.placement) return;
-    setMeasured(
-      fittedPlacement(
-        {width: box.clientWidth, height: box.clientHeight},
-        {
-          width: Math.max(fitted.offsetWidth, fitted.scrollWidth),
-          height: Math.max(fitted.offsetHeight, fitted.scrollHeight),
-        },
-      ),
+    const next = fittedPlacement(
+      {width: box.clientWidth, height: box.clientHeight},
+      {
+        width: Math.max(fitted.offsetWidth, fitted.scrollWidth),
+        height: Math.max(fitted.offsetHeight, fitted.scrollHeight),
+      },
     );
+    const current = untrack(measured);
+    if (
+      current.left === next.left &&
+      current.top === next.top &&
+      current.scale === next.scale
+    )
+      return;
+    // Setting the signal outside a batch restyles the window synchronously,
+    // which the watermark's export preparation relies on.
+    setMeasured(next);
+    watermark.invalidate();
   };
   createResizeObserver(viewport, fit);
   createResizeObserver(content, fit);
   createEffect(fit);
   onMount(() => {
+    watermark.attach('fit', fit);
     if (props.placement) return;
     const observer = new MutationObserver(fit);
     observer.observe(content()!, {
@@ -115,7 +137,9 @@ export function FittedWindow(
             : {display: 'contents', transform: 'none'}
         }
       >
-        {props.children}
+        <WatermarkContext.Provider value={watermark}>
+          {props.children}
+        </WatermarkContext.Provider>
       </div>
     </div>
   );

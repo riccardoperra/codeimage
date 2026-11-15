@@ -103,18 +103,20 @@ function FitText(props: ParentProps<{class?: string}>) {
 export function SignatureMark(props: {
   signature: Signature;
   avatar: string | null;
+  ref?: (element: HTMLElement) => void;
 }) {
   const handle = () => displayHandle(props.signature);
   return (
     <Switch>
       <Match when={props.signature.style === 'minimal'}>
-        <div class={styles.minimal}>
+        <div ref={element => props.ref?.(element)} class={styles.minimal}>
           <PlatformIcon platform={props.signature.platform} size={16} />
           <FitText>{handle()}</FitText>
         </div>
       </Match>
       <Match when={props.signature.style === 'pill'}>
         <div
+          ref={element => props.ref?.(element)}
           class={styles.pill}
           classList={{[styles.pillWithIcon]: !!props.signature.platform}}
         >
@@ -123,7 +125,7 @@ export function SignatureMark(props: {
         </div>
       </Match>
       <Match when={props.signature.style === 'card'}>
-        <div class={styles.card}>
+        <div ref={element => props.ref?.(element)} class={styles.card}>
           <Avatar signature={props.signature} url={props.avatar} />
           <div class={styles.cardText}>
             <FitText class={styles.cardName}>
@@ -155,6 +157,8 @@ export function FrameSignature(props: {
   /** Makes the signature a button that opens its settings, in the editor only. */
   onEdit?: () => void;
   editLabel?: string;
+  /** Receives the visible mark: the edit button, or the mark itself. */
+  markRef?: (element: HTMLElement) => void;
 }) {
   const tone = () => props.media.tone;
   // Keep the editor's focus and selection, and start no drag.
@@ -186,10 +190,12 @@ export function FrameSignature(props: {
               <SignatureMark
                 signature={signature()}
                 avatar={props.media.avatar}
+                ref={props.markRef}
               />
             }
           >
             <button
+              ref={element => props.markRef?.(element)}
               type="button"
               class={styles.edit}
               data-signature-style={signature().style}

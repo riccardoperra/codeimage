@@ -54,7 +54,7 @@ const handlers: RequestHandler[] = [
 
     return HttpResponse.json(projects);
   }),
-  http.get(`${BASE_URL}/api/v1/project/:id`, ({params}) => {
+  http.get(`${BASE_URL}/api/v1/project/:id`, ({params, request}) => {
     const id = params['id'] as string;
     const {data, error} = getProjectByIdOrThrowNotFound(id);
     if (error) {
@@ -62,7 +62,13 @@ const handlers: RequestHandler[] = [
         status: 404,
       });
     }
-    return HttpResponse.json(data);
+    return HttpResponse.json({
+      ...data,
+      isOwner:
+        request.headers.has('authorization') &&
+        data?.ownerId ===
+          (request.headers.get('auth-mock-user-id') ?? 'default-user'),
+    });
   }),
   http.delete(`${BASE_URL}/api/v1/project/:id`, async ({request, params}) => {
     const id = params['id'] as string;
@@ -271,7 +277,7 @@ const handlers: RequestHandler[] = [
       const ownerId =
         request.headers.get('auth-mock-user-id') ?? 'default-user';
 
-      const {data, error} = getProjectByIdOrThrowNotFound(id, ownerId);
+      const {data, error} = getProjectByIdOrThrowNotFound(id);
       if (error) {
         return HttpResponse.json(error, {status: 404});
       }
@@ -283,6 +289,7 @@ const handlers: RequestHandler[] = [
           id: crypto.randomUUID(),
           name: body?.newName ?? name,
           isOwner: true,
+          ownerId,
         });
         await persistDb();
         return HttpResponse.json(project);

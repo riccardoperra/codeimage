@@ -131,7 +131,7 @@ window.prepare = async snapshot => {
   await document.fonts.load('500 16px "CodeImage Signature"');
   await document.fonts.load('650 16px "CodeImage Signature"');
   await Promise.all([...ref.querySelectorAll('img')].map(image => image.decode()));
-  await (await import('/src/core/watermark/browser')).prepareWatermarks(ref);
+  await (await import('/src/core/watermark/scope')).prepareWatermark(ref);
   await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
   const store = getEditorStore();
   const preset = toCliConfig({frame: store.frame.stateToPersist(), terminal: store.terminal.stateToPersist(), editor: {...snapshot.editor.options}});

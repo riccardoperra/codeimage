@@ -2,8 +2,9 @@ import type {CustomTheme} from '@codeimage/highlight';
 import type {TabMarks} from '@codeimage/store/editor/model';
 import type {Language} from '@codemirror/language';
 import {tokenizeCode} from '@core/snapshot/tokenize';
-import {createEffect, createMemo, For, Show} from 'solid-js';
+import {createEffect, createMemo, For, on, Show} from 'solid-js';
 import {isServer} from 'solid-js/web';
+import {useWatermarkScope} from '../../core/watermark/scope';
 import {getStaticTheme, mountStaticTheme} from './staticTheme';
 import './plugins/lineMarks/marks.css';
 
@@ -25,6 +26,7 @@ export default function StaticCodeView(props: StaticCodeViewProps) {
     tokenizeCode(props.code, props.language, props.theme),
   );
   const theme = createMemo(() => getStaticTheme(props.theme));
+  const watermark = useWatermarkScope();
   const marks = createMemo(
     () =>
       new Map(
@@ -40,6 +42,22 @@ export default function StaticCodeView(props: StaticCodeViewProps) {
           line => line >= 1 && line <= lines().length,
         ),
       ),
+  );
+  createEffect(
+    on(
+      () => [
+        lines(),
+        theme(),
+        marks(),
+        focused(),
+        props.fontFamily,
+        props.fontWeight,
+        props.enableLigatures,
+        props.showLineNumbers,
+        props.lineNumberStart,
+      ],
+      () => watermark?.invalidate(),
+    ),
   );
   const hasDiff = () =>
     Array.from(marks().values()).some(kind => kind !== 'highlight');
@@ -104,6 +122,7 @@ export default function StaticCodeView(props: StaticCodeViewProps) {
           <div
             class="cm-content cm-lineWrapping"
             style={{'white-space': 'pre'}}
+            ref={root => watermark?.attach('code', {kind: 'static', root})}
           >
             <For each={lines()}>
               {(line, index) => (

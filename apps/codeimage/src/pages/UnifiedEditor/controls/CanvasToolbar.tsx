@@ -1,18 +1,16 @@
 import {useI18n} from '@codeimage/locale';
 import {Button} from '@codeui/kit';
 import {createAsyncAction} from '@core/hooks/async-action';
-import {Show} from 'solid-js';
 import type {AppLocaleEntries} from '../../../i18n';
 import {CopyIcon, SparklesIcon} from '../shell/icons';
 import type {Stage} from '../stage';
 import * as styles from './canvas-toolbar.css';
-import {ShortcutHelp} from './ShortcutHelp';
 
 /**
  * The actions on the image under the canvas: format the code and copy the
- * image with the export settings, then the shortcut help when `help` is set.
+ * image with the export settings.
  */
-export function CanvasToolbar(props: {stage: Stage; help?: boolean}) {
+export function CanvasToolbar(props: {stage: Stage}) {
   const [t] = useI18n<AppLocaleEntries>();
   const [formatAction, {notify: format}] = createAsyncAction(() =>
     props.stage.format(),
@@ -42,9 +40,6 @@ export function CanvasToolbar(props: {stage: Stage; help?: boolean}) {
       >
         {t('editor.copyImage')}
       </Button>
-      <Show when={props.help}>
-        <ShortcutHelp />
-      </Show>
     </div>
   );
 }

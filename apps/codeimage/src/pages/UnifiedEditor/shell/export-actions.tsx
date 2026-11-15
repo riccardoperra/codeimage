@@ -125,7 +125,7 @@ export function createExportActions(
       icon: HideIcon,
       title: () => t('secrets.redactAll'),
       description: secretsLine,
-      visible: () => exporter().secrets() > 0,
+      visible: () => exporter().canRedact() && exporter().secrets() > 0,
       disabled: () => false,
       run: () => exporter().redactSecrets(),
     },

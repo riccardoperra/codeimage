@@ -14,6 +14,7 @@ import {Dynamic} from 'solid-js/web';
 import {SparklesIcon} from '../../../../components/Icons/SparklesIcon';
 import {ShareButton} from '../../../../components/Toolbar/ShareButton';
 import type {AppLocaleEntries} from '../../../../i18n';
+import {EditingControls} from '../../EditingControls';
 import {CommandMenuButton} from '../../command-menu/CommandMenuButton';
 import {commandMenu} from '../../command-menu/state';
 import type {VariantMeta, VariantProps} from '../../contract';
@@ -21,9 +22,10 @@ import {controlOverlay} from '../../controls/ControlOverlay';
 import {CanvasToolbar} from '../../controls/CanvasToolbar';
 import {keepMarkToolbarAboveSelection} from '../../controls/mark-toolbar';
 import {ShortcutHelp} from '../../controls/ShortcutHelp';
-import {Footer} from '../../localized/Footer';
-import {SettingsIcon} from '../../shell/icons';
-import {claimSettingsEntry, settings} from '../../shell/settings-state';
+import {ExperimentsIcon, SettingsIcon, GitHubIcon} from '../../shell/icons';
+import {editorLinks} from '../../shell/links';
+import {settings} from '../../shell/settings-state';
+import {claimHeaderActions} from '../../shell/header-actions';
 import {ownCompositeKeys} from './controls';
 import {CloseIcon, CollapseIcon, SearchIcon} from './icons';
 import {PANELS} from './panels';
@@ -52,24 +54,49 @@ function rubberband(overshoot: number, dimension: number) {
   return (overshoot * dimension * 0.55) / (dimension + 0.55 * overshoot);
 }
 
-/** The settings entry at the foot of the rail, under Search. */
-function RailSettings() {
+/** Layout-hosted header actions, followed by the repository link. */
+function RailActions() {
   const [t] = useI18n<AppLocaleEntries>();
-  claimSettingsEntry();
+  claimHeaderActions(['commands', 'settings', 'experiments']);
   return (
-    <button
-      type="button"
-      class={styles.railButton}
-      aria-haspopup="dialog"
-      aria-expanded={settings.isOpen()}
-      data-settings-trigger
-      onClick={() => settings.open()}
-    >
-      <span class={styles.railIcon}>
-        <SettingsIcon size={20} />
-      </span>
-      {t('editor.settings')}
-    </button>
+    <>
+      <button
+        type="button"
+        class={styles.railButton}
+        aria-haspopup="dialog"
+        aria-expanded={settings.isOpen()}
+        data-settings-trigger
+        onClick={() => settings.open()}
+      >
+        <span class={styles.railIcon}>
+          <SettingsIcon size={20} />
+        </span>
+        {t('editor.settings')}
+      </button>
+      <button
+        type="button"
+        class={`${styles.railButton} ${styles.railLink}`}
+        aria-label={t('editor.experiments')}
+        title={t('editor.experiments')}
+        aria-haspopup="dialog"
+        data-experiments-trigger
+        onClick={() => settings.open('experiments')}
+      >
+        <span class={styles.railIcon}>
+          <ExperimentsIcon size={20} />
+        </span>
+      </button>
+      <a
+        class={`${styles.railButton} ${styles.railLink}`}
+        href={editorLinks[0].href}
+        target="_blank"
+        rel="noreferrer"
+        aria-label={t('editor.openGithub')}
+        title={t('editor.openGithub')}
+      >
+        <GitHubIcon size={20} />
+      </a>
+    </>
   );
 }
 
@@ -104,7 +131,9 @@ export default function Studio(props: VariantProps) {
     ),
   });
   const sheetHeight = () =>
-    isPhone() && openId() ? sheetHeights()[stop()] : 0;
+    isPhone() && openId() && props.pageState().kind !== 'read-only'
+      ? sheetHeights()[stop()]
+      : 0;
 
   const stopAnimations = () =>
     panelEl.getAnimations().forEach(animation => animation.cancel());
@@ -258,12 +287,14 @@ export default function Studio(props: VariantProps) {
     const onQuery = (e: MediaQueryListEvent) => setIsPhone(e.matches);
     compactQuery.addEventListener('change', onQuery);
 
-    const measure = () =>
+    const measure = () => {
+      if (!railEl?.isConnected) return;
       setAvailable(
         railEl.getBoundingClientRect().top -
           bodyEl.getBoundingClientRect().top -
           GAP,
       );
+    };
     const observer = new ResizeObserver(measure);
     observer.observe(bodyEl);
     measure();
@@ -279,116 +310,133 @@ export default function Studio(props: VariantProps) {
       <div
         ref={bodyEl}
         class={styles.body}
+        data-read-only={props.pageState().kind === 'read-only' ? '' : undefined}
         style={assignInlineVars({
           [styles.sheetHeight]: `${sheetHeight()}px`,
           [styles.sheetSpace]: `${sheetHeight() ? sheetHeight() + GAP : 0}px`,
         })}
       >
-        <nav
-          ref={railEl}
-          class={styles.rail}
-          aria-label={t('editor.editorPanels')}
-        >
-          <For each={PANELS}>
-            {panel => (
-              <button
-                ref={el => openers.set(panel.id, el)}
-                type="button"
-                class={styles.railButton}
-                aria-controls={PANEL_ID}
-                aria-expanded={openId() === panel.id}
-                onClick={() => toggle(panel)}
-              >
-                <span class={styles.railIcon}>
-                  <panel.Icon />
-                </span>
-                {t(panel.label)}
-              </button>
-            )}
-          </For>
-          <Show when={!isPhone()}>
-            <CommandMenuButton>
-              {trigger => (
-                <button
-                  {...trigger}
-                  type="button"
-                  class={`${styles.railButton} ${styles.railSearch}`}
-                  title={`${t('editor.searchOptions')} (${commandMenu.shortcut})`}
-                >
-                  <span class={styles.railIcon}>
-                    <SearchIcon />
-                  </span>
-                  {t('editor.search')}
-                  <kbd class={styles.railHint}>{commandMenu.shortcut}</kbd>
-                </button>
-              )}
-            </CommandMenuButton>
-            <RailSettings />
-          </Show>
-          <ShortcutHelp />
-        </nav>
-
-        <section
-          ref={panelEl}
-          data-control-panel
-          id={PANEL_ID}
-          role="region"
-          aria-label={openPanel() ? t(openPanel()!.label) : undefined}
-          class={styles.panel}
-          data-wide={openPanel()?.wide ? '' : undefined}
-          hidden={!openPanel()}
-          onKeyDown={onPanelKeyDown}
-        >
-          <div
-            class={styles.panelGrabArea}
-            onPointerDown={onGrabStart}
-            onPointerMove={onGrabMove}
-            onPointerUp={onGrabEnd}
-            onPointerCancel={onGrabEnd}
+        <Show when={!isPhone() || props.pageState().kind !== 'read-only'}>
+          <nav
+            ref={railEl}
+            class={styles.rail}
+            aria-label={t('editor.editorPanels')}
           >
-            <div class={styles.sheetGrip} />
-            <Show when={!openPanel()?.ownHeader}>
-              <div class={styles.panelHeader}>
-                <h2 class={styles.panelTitle}>
-                  {openPanel() ? t(openPanel()!.label) : ''}
-                </h2>
-                <IconButton
-                  size={size()}
-                  theme="secondary"
-                  variant="ghost"
-                  aria-label={t('editor.closePanel', {
-                    panel: openPanel()
-                      ? t(openPanel()!.label)
-                      : t('editor.panel'),
-                  })}
-                  title={t('editor.closeEscape')}
-                  onClick={() => close(true)}
-                >
-                  <Show when={isPhone()} fallback={<CollapseIcon size={18} />}>
-                    <CloseIcon size={18} />
-                  </Show>
-                </IconButton>
+            <EditingControls state={props.pageState()}>
+              <For each={PANELS}>
+                {panel => (
+                  <button
+                    ref={el => openers.set(panel.id, el)}
+                    type="button"
+                    class={styles.railButton}
+                    aria-controls={PANEL_ID}
+                    aria-expanded={openId() === panel.id}
+                    onClick={() => toggle(panel)}
+                  >
+                    <span class={styles.railIcon}>
+                      <panel.Icon />
+                    </span>
+                    {t(panel.label)}
+                  </button>
+                )}
+              </For>
+            </EditingControls>
+            <Show when={!isPhone()}>
+              <div class={styles.railUtilities}>
+                <CommandMenuButton>
+                  {trigger => (
+                    <button
+                      {...trigger}
+                      type="button"
+                      class={styles.railButton}
+                      title={`${t('editor.searchOptions')} (${commandMenu.shortcut})`}
+                    >
+                      <span class={styles.railIcon}>
+                        <SearchIcon />
+                      </span>
+                      {t('editor.commands')}
+                      <kbd class={styles.railHint}>{commandMenu.shortcut}</kbd>
+                    </button>
+                  )}
+                </CommandMenuButton>
+                <RailActions />
               </div>
             </Show>
-          </div>
-          <For each={PANELS}>
-            {panel => (
-              <Show when={mounted().has(panel.id)}>
-                <div class={styles.panelPage} hidden={openId() !== panel.id}>
-                  <Dynamic
-                    component={panel.Body}
-                    model={props.model}
-                    stage={props.stage}
-                    ThemePicker={props.ThemePicker}
-                    size={size}
-                    phone={isPhone}
-                    close={() => close(true)}
-                  />
+            <Show when={isPhone()}>
+              <EditingControls state={props.pageState()}>
+                <ShortcutHelp editable={props.pageState().editable} />
+              </EditingControls>
+            </Show>
+          </nav>
+        </Show>
+
+        <EditingControls state={props.pageState()}>
+          <section
+            ref={panelEl}
+            data-control-panel
+            id={PANEL_ID}
+            role="region"
+            aria-label={openPanel() ? t(openPanel()!.label) : undefined}
+            class={styles.panel}
+            data-wide={openPanel()?.wide ? '' : undefined}
+            hidden={!openPanel()}
+            onKeyDown={onPanelKeyDown}
+          >
+            <div
+              class={styles.panelGrabArea}
+              onPointerDown={onGrabStart}
+              onPointerMove={onGrabMove}
+              onPointerUp={onGrabEnd}
+              onPointerCancel={onGrabEnd}
+            >
+              <div class={styles.sheetGrip} />
+              <Show when={!openPanel()?.ownHeader}>
+                <div class={styles.panelHeader}>
+                  <h2 class={styles.panelTitle}>
+                    {openPanel() ? t(openPanel()!.label) : ''}
+                  </h2>
+                  <IconButton
+                    size={size()}
+                    theme="secondary"
+                    variant="ghost"
+                    aria-label={t('editor.closePanel', {
+                      panel: openPanel()
+                        ? t(openPanel()!.label)
+                        : t('editor.panel'),
+                    })}
+                    title={t('editor.closeEscape')}
+                    onClick={() => close(true)}
+                  >
+                    <Show
+                      when={isPhone()}
+                      fallback={<CollapseIcon size={18} />}
+                    >
+                      <CloseIcon size={18} />
+                    </Show>
+                  </IconButton>
                 </div>
               </Show>
-            )}
-          </For>
-        </section>
+            </div>
+            <For each={PANELS}>
+              {panel => (
+                <Show when={mounted().has(panel.id)}>
+                  <div class={styles.panelPage} hidden={openId() !== panel.id}>
+                    <Dynamic
+                      component={panel.Body}
+                      model={props.model}
+                      pageState={props.pageState}
+                      stage={props.stage}
+                      ThemePicker={props.ThemePicker}
+                      size={size}
+                      phone={isPhone}
+                      close={() => close(true)}
+                    />
+                  </div>
+                </Show>
+              )}
+            </For>
+          </section>
+        </EditingControls>
 
         <main class={styles.main}>
           <div class={styles.stage}>
@@ -398,25 +446,28 @@ export default function Studio(props: VariantProps) {
             when={!props.stage.compact()}
             fallback={
               <div class={styles.compactActions}>
-                <ShareButton showLabel={false} />
-                <Button
-                  size="xs"
-                  theme="secondary"
-                  aria-label={t('editor.formatCode')}
-                  leftIcon={<SparklesIcon />}
-                  disabled={!props.stage.canFormat()}
-                  onClick={() => props.stage.format()}
-                />
+                <Show when={props.pageState().kind === 'local'}>
+                  <ShareButton showLabel={false} />
+                </Show>
+                <EditingControls state={props.pageState()}>
+                  <Button
+                    size="xs"
+                    theme="secondary"
+                    aria-label={t('editor.formatCode')}
+                    leftIcon={<SparklesIcon />}
+                    disabled={!props.stage.canFormat()}
+                    onClick={() => props.stage.format()}
+                  />
+                </EditingControls>
                 <props.stage.ExportButton />
               </div>
             }
           >
-            <div class={styles.frameActions}>
-              <CanvasToolbar stage={props.stage} />
-            </div>
-            <div class={styles.footer}>
-              <Footer />
-            </div>
+            <EditingControls state={props.pageState()}>
+              <div class={styles.frameActions}>
+                <CanvasToolbar stage={props.stage} />
+              </div>
+            </EditingControls>
           </Show>
         </main>
       </div>

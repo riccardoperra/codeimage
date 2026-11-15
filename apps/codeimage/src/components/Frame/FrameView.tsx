@@ -15,9 +15,13 @@ import type {Language} from '@codemirror/language';
 import {getTerminalState} from '@codeimage/store/editor/terminal';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 import type {Ref, VoidProps} from 'solid-js';
-import {Show} from 'solid-js';
+import {createEffect, on, Show} from 'solid-js';
 import {DynamicTerminal} from '../Terminal/DynamicTerminal/DynamicTerminal';
 import StaticCodeView from '../CustomEditor/StaticCodeView';
+import {
+  bindWatermarkExport,
+  createWatermarkScope,
+} from '../../core/watermark/scope';
 import * as styles from './Frame.css';
 
 export interface FrameViewProps {
@@ -38,11 +42,24 @@ export function FrameView(props: VoidProps<FrameViewProps>) {
   const terminal = getTerminalState().state;
   const editor = getRootEditorStore();
   const tab = () => props.tab ?? getActiveEditorStore().editor();
+  // Each frame owns its watermark scope, so per-tab exports never share one.
+  // The parts register through refs and effects, which Node never runs.
+  const watermark = createWatermarkScope();
+  createEffect(on(() => frame.signature?.position, watermark.invalidate));
 
   return (
-    <div class={styles.previewWrapper} ref={props.ref}>
+    <div
+      class={styles.previewWrapper}
+      ref={element => {
+        // The export receives this element and prepares the watermark through it.
+        bindWatermarkExport(element, watermark);
+        const ref = props.ref;
+        if (typeof ref === 'function') ref(element);
+      }}
+    >
       <div
         class={styles.container}
+        ref={element => watermark.attach('frame', element)}
         data-watermark-frame
         data-snapshot-frame
         style={assignInlineVars({
@@ -68,6 +85,7 @@ export function FrameView(props: VoidProps<FrameViewProps>) {
         })}
       >
         <div
+          ref={element => watermark.attach('background', element)}
           data-watermark-background
           class={styles.previewOverlay}
           style={assignInlineVars({
@@ -97,7 +115,11 @@ export function FrameView(props: VoidProps<FrameViewProps>) {
           </Show>
         </div>
 
-        <FittedWindow active={!!target()} placement={props.windowPlacement}>
+        <FittedWindow
+          active={!!target()}
+          watermark={watermark}
+          placement={props.windowPlacement}
+        >
           <DynamicTerminal
             type={terminal.type}
             activeTabId={props.tab?.id}
@@ -140,6 +162,7 @@ export function FrameView(props: VoidProps<FrameViewProps>) {
           media={props.media}
           background={frame.background}
           scale={scale()}
+          markRef={element => watermark.attach('signature', element)}
         />
       </div>
     </div>
