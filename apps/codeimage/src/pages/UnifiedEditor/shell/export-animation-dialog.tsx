@@ -15,6 +15,7 @@ import {Dialog} from '@kobalte/core/dialog';
 import {Progress} from '@kobalte/core/progress';
 import {type Accessor, createEffect, createSignal, Show} from 'solid-js';
 import download from 'downloadjs';
+import {parseToRgb, rgb} from 'polished';
 import {useExportAnimation} from '../../../hooks/use-export-animation';
 import {type VideoFps} from '../../../core/video/encode';
 import type {AppLocaleEntries} from '../../../i18n';
@@ -31,8 +32,16 @@ export function createAnimationExporter() {
   const [fps, setFps] = createSignal<VideoFps>(30);
   const [scale, setScale] = createSignal<1 | 2 | 3>(2);
   const [matte, setMatte] = createSignal<string>();
-  const solidBackground = () =>
-    matte() ?? style.theme()!.properties.terminal.main;
+  const defaultBackground = () => {
+    const {red, green, blue} = parseToRgb(
+      style.theme()!.properties.terminal.main,
+    );
+    return rgb(red, green, blue);
+  };
+  const solidBackground = () => matte() ?? defaultBackground();
+  const validMatte = () =>
+    /^#(?:[0-9a-f]{3}|[0-9a-f]{6})$/i.test(solidBackground());
+  const needsMatte = () => !frame.store.visible || frame.store.opacity === 0;
   const [size, setSize] = createSignal<'current' | '1080p'>('current');
   const [summary, setSummary] =
     createSignal<Awaited<ReturnType<typeof snapshot.describe>>>();
@@ -84,11 +93,12 @@ export function createAnimationExporter() {
   };
   const changeMatte = (value: string) => setMatte(value);
   const start = () => {
+    if (needsMatte() && !validMatte()) return;
     // Read again after the secrets review, including any redaction it made.
     const frameRate = fps();
     const output = size() === '1080p' ? {width: 1920, height: 1080} : undefined;
     const outputScale = scale();
-    const background = solidBackground();
+    const background = needsMatte() ? solidBackground() : defaultBackground();
     void job.start(() =>
       snapshot.capture(frameRate, output, outputScale, background),
     );
@@ -104,7 +114,8 @@ export function createAnimationExporter() {
     changeScale,
     matte: solidBackground,
     changeMatte,
-    needsMatte: () => !frame.store.visible || frame.store.opacity === 0,
+    needsMatte,
+    validMatte,
     scalable: () => size() === 'current' && !frame.exportTarget(),
     changeFps,
     changeSize,
@@ -145,7 +156,10 @@ export function AnimationExportContent(props: {
       : undefined;
   };
   const canStart = () =>
-    state().kind === 'ready' && !unsupported() && !exporter().busy();
+    state().kind === 'ready' &&
+    !unsupported() &&
+    !exporter().busy() &&
+    (!exporter().needsMatte() || exporter().validMatte());
   const progress = () => {
     const value = state();
     return value.kind === 'encoding' ? value : {done: 0, total: 1};
@@ -195,9 +209,6 @@ export function AnimationExportContent(props: {
   const retry = () => void exporter().retry();
   const scaleLabel = (value: 1 | 2 | 3) => `${number(value)}×`;
   const scaleValue = (value: Accessor<1 | 2 | 3>) => scaleLabel(value());
-  const colorInput = (input: HTMLInputElement) => {
-    input.type = 'color';
-  };
   const close = () => exporter().close();
   const save = () => {
     const value = done();
@@ -292,7 +303,13 @@ export function AnimationExportContent(props: {
               size="sm"
               label={t('animation.export.background')}
               description={t('animation.export.backgroundHint')}
-              ref={colorInput}
+              slotClasses={{input: styles.videoColor}}
+              validationState={exporter().validMatte() ? 'valid' : 'invalid'}
+              errorMessage={
+                exporter().validMatte()
+                  ? undefined
+                  : t('animation.export.colorInvalid')
+              }
               value={exporter().matte()}
               onChange={exporter().changeMatte}
               disabled={exporter().busy()}

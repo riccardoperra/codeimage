@@ -244,3 +244,5 @@ export const videoPopover = style([
     },
   },
 ]);
+
+export const videoColor = style({width: themeVars.spacing['24']});
