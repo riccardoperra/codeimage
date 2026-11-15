@@ -29,11 +29,10 @@ export function createAnimationExporter() {
   const refresh = async () => {
     const current = ++generation;
     setPrepared(undefined);
+    const frameRate = fps();
+    const output = size() === '1080p' ? {width: 1920, height: 1080} : undefined;
     await job.check(async () => {
-      const value = await snapshot(
-        fps(),
-        size() === '1080p' ? {width: 1920, height: 1080} : undefined,
-      );
+      const value = await snapshot(frameRate, output);
       if (current === generation) setPrepared(value);
       return value.config;
     });
@@ -67,13 +66,9 @@ export function createAnimationExporter() {
   };
   const start = () => {
     // Read again after the secrets review, including any redaction it made.
-    void job.start(async () => {
-      const value = await snapshot(
-        fps(),
-        size() === '1080p' ? {width: 1920, height: 1080} : undefined,
-      );
-      return value;
-    });
+    const frameRate = fps();
+    const output = size() === '1080p' ? {width: 1920, height: 1080} : undefined;
+    void job.start(() => snapshot(frameRate, output));
   };
   return {
     job,

@@ -83,7 +83,11 @@ try {
     await new Promise(r => setTimeout(r, 500));
   }
   assert.ok(ready, 'Vite HTTP readiness');
-  browser = await chromium.launch();
+  browser = await chromium.launch(
+    process.env.VERIFY_BROWSER_CHANNEL
+      ? {channel: process.env.VERIFY_BROWSER_CHANNEL}
+      : undefined,
+  );
   context = await browser.newContext({
     viewport: {width: 1440, height: 1000},
     locale: 'en-US',

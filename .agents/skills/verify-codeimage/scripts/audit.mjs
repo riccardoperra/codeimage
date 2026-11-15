@@ -663,6 +663,75 @@ export async function audit({page, context, base, out, server}) {
     await page.getByRole('button', {name: 'Presets', exact: true}).click();
     assert.equal(await item('Renamed preset').count(), 0);
   });
+  await feature('animation-mp4', async () => {
+    await section('window');
+    await page
+      .locator('[data-control="window.style"]')
+      .getByRole('button')
+      .click();
+    await page.getByRole('radio', {name: 'Editor', exact: true}).focus();
+    await page.keyboard.press('Space');
+    await page
+      .getByRole('dialog', {name: 'Window', exact: true})
+      .getByRole('button', {name: 'Close', exact: true})
+      .click();
+    const strip = page
+      .locator('[data-window-tabs]')
+      .filter({has: page.getByRole('button', {name: 'Add tab', exact: true})})
+      .first();
+    for (let step = 1; step <= 3; step++) {
+      if (step > 1)
+        await strip.getByRole('button', {name: 'Add tab', exact: true}).click();
+      await editor().fill(`const step = ${step};\nconsole.log(step);`);
+    }
+    await page.locator('[data-animate-toggle]').click();
+    await page.locator('[data-animate-panel]').waitFor();
+    await page.locator('[data-export-menu]').click();
+    await page
+      .getByRole('menuitem', {name: 'Export animation', exact: true})
+      .click();
+    const dialog = page.locator('[data-animation-export]');
+    const start = dialog.getByRole('button', {name: 'Export MP4', exact: true});
+    await start.waitFor();
+    await page.waitForFunction(() =>
+      [...document.querySelectorAll('[data-animation-export] button')].some(
+        button => button.textContent === 'Export MP4' && !button.disabled,
+      ),
+    );
+    assert.equal(await start.isEnabled(), true, await dialog.innerText());
+    const downloading = page.waitForEvent('download', {timeout: 120000});
+    downloading.catch(() => undefined);
+    await start.click();
+    await page.waitForFunction(
+      () =>
+        document.querySelector('[data-animation-export] [role="alert"]') ||
+        document.querySelector('[data-animation-export] progress') ||
+        [
+          ...document.querySelectorAll(
+            '[data-animation-export] [role="status"]',
+          ),
+        ].some(el => el.textContent.includes('Ready')),
+      {timeout: 30000},
+    );
+    const failure = dialog.getByRole('alert');
+    if (await failure.count()) throw new Error(await failure.innerText());
+    await shot('animation-mp4-progress');
+    const pending = await downloading;
+    const file = resolve(out, 'animation.mp4');
+    await pending.saveAs(file);
+    const bytes = await readFile(file);
+    assert.equal(bytes.toString('ascii', 4, 8), 'ftyp');
+    assert.ok(
+      bytes.indexOf('moov') > 0 &&
+        bytes.indexOf('moov') < bytes.indexOf('mdat'),
+      'MP4 faststart',
+    );
+    assert.ok(bytes.length > 1000, 'real MP4 payload');
+    assert.match(await dialog.innerText(), /Ready/);
+    await shot('animation-mp4');
+    await dialog.getByRole('button', {name: 'Close', exact: true}).click();
+    await editor().fill('const stillEditable = true;');
+  });
   await feature('animate', async () => {
     // The Editor window names its Add tab button; the default one does not.
     await section('window');
