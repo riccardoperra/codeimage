@@ -1,6 +1,7 @@
 import {openFontCache} from '@codeimage/render';
 import {parseArgs} from 'node:util';
 import {UsageError} from '../errors';
+import type {Ui} from '../ui';
 
 export function parseFontArgs(argv: string[]) {
   const [command, ...rest] = argv;
@@ -51,25 +52,41 @@ export type FontCommand = Exclude<
   ReturnType<typeof parseFontArgs>,
   {kind: 'help'}
 >;
-export async function runFontCommand(args: FontCommand) {
+export async function runFontCommand(args: FontCommand, ui: Ui) {
   const cache = openFontCache({
     offline: args.kind === 'fonts-install' && args.offline,
+    onEvent: ui.fontEvent,
   });
   if (args.kind === 'fonts-clean') {
+    if (
+      !args.yes &&
+      ui.prompts &&
+      !(await ui.prompts.confirm(
+        'Clear cached fonts? Active renders may refill the cache.',
+      ))
+    )
+      return;
     await cache.clean();
-    process.stderr.write('codeimage: cleared font cache\n');
+    ui.success('cleared font cache');
   } else if (args.kind === 'fonts-list') {
     const inventory = await cache.list();
-    process.stderr.write(
+    ui.text(
       args.json
         ? `${JSON.stringify(inventory, null, 2)}\n`
         : `${inventory.map(font => `${font.id.padEnd(20)} ${font.label.padEnd(20)} ${font.state.padEnd(8)} ${font.filesLocal}/${font.files} files ${font.bytesLocal}/${font.bytes} B  ${font.source}`).join('\n')}\nCache: ${cache.dir}\n`,
     );
   } else {
-    if (!args.ids.length && !args.all)
-      throw new UsageError('fonts install: specify font ids or --all');
     const inventory = await cache.list();
-    const ids = args.ids.map(id => {
+    let names = args.ids;
+    if (!names.length && !args.all) {
+      if (!ui.prompts)
+        throw new UsageError('fonts install: specify font ids or --all');
+      names = await ui.prompts.pick(
+        inventory.map(font => ({value: font.id, label: font.label})),
+      );
+      if (!names.length) return;
+    }
+    const ids = names.map(id => {
       const font = inventory.find(
         font => font.id.toLowerCase() === id.toLowerCase(),
       );
@@ -79,7 +96,9 @@ export async function runFontCommand(args: FontCommand) {
         );
       return font.id;
     });
-    await cache.install(args.all ? 'all' : ids);
-    process.stderr.write('codeimage: fonts installed\n');
+    await ui.run('Installing fonts', () =>
+      cache.install(args.all ? 'all' : ids),
+    );
+    ui.success('fonts installed');
   }
 }

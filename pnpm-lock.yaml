@@ -852,6 +852,9 @@ importers:
 
   packages/cli:
     dependencies:
+      '@clack/prompts':
+        specifier: 1.9.0
+        version: 1.9.0
       '@codeimage/render':
         specifier: workspace:*
         version: link:../render
