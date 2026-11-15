@@ -10,19 +10,18 @@ import {toast} from '@codeimage/ui';
 import {altText} from '@core/altText';
 import {getUmami} from '@core/constants/umami';
 import {loadLanguage} from '@core/snapshot/tokenize';
-import type {Accessor} from 'solid-js';
 import {
   batch,
   createComponent,
-  createMemo,
   createSignal,
   getOwner,
   runWithOwner,
 } from 'solid-js';
+import type {Accessor} from 'solid-js';
 import {render} from 'solid-js/web';
 import {redactTabCode} from '../../../components/CustomEditor/plugins/secrets';
-import {showExportSuccessToast} from '../../../components/Toolbar/ExportSuccessToast';
 import {PreviewFrame} from '../../../components/Frame/PreviewFrame';
+import {showExportSuccessToast} from '../../../components/Toolbar/ExportSuccessToast';
 import {deliverTabFiles, renderTabFiles} from '../../../hooks/export-tabs';
 import {
   ExportExtension,
@@ -73,12 +72,11 @@ export function createExporter(
   const owner = getOwner();
   const [busy, setBusy] = createSignal(false);
   const [pending, setPending] = createSignal<ExportAction>();
-  const secrets = createMemo(() =>
+  const secrets = () =>
     editor.state.editors.reduce(
       (count, tab) => count + detectSecrets(tab.code).length,
       0,
-    ),
-  );
+    );
 
   const options = (mode: ExportMode) => ({
     extension: canvas.get.extension,

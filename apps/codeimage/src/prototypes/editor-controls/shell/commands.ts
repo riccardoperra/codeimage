@@ -72,7 +72,7 @@ export function exportCommands(exporter: Exporter): Command[] {
     {
       id: 'export=new-tab',
       group,
-      label: t('toolbar.openNewTab'),
+      label: t('editor.openImageTab'),
       run: exporter.newTab,
     },
     ...(exporter.canShare()

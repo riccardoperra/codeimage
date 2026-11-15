@@ -1,24 +1,24 @@
-import type {LocaleKeys} from '@codeimage/locale';
-import type {AppLocaleEntries} from '../../../../i18n';
 import {useI18n} from '@codeimage/locale';
+import type {LocaleKeys} from '@codeimage/locale';
 import {Button, Listbox} from '@codeui/kit';
 import {SegmentedField} from '@ui/SegmentedField/SegmentedField';
-import type {Component} from 'solid-js';
 import {createSignal, For, Match, Show, Switch} from 'solid-js';
+import type {Component} from 'solid-js';
 import {ColorSwatchIcon} from '../../../../components/Icons/ColorSwatch';
 import {SparklesIcon} from '../../../../components/Icons/SparklesIcon';
-import {ColorPickerPopover} from '../../localized/ColorPicker';
 import {createFontPickerListboxProps} from '../../../../components/PropertyEditor/controls/FontPicker/FontPickerListbox';
-import {FontSystemPicker} from '../../localized/FontSystemPicker';
 import {PanelHeader} from '../../../../components/PropertyEditor/PanelHeader';
+import type {AppLocaleEntries} from '../../../../i18n';
 import {commandMenu} from '../../command-menu/state';
-import {useDock} from './context';
-import * as styles from './dock.css';
 import {AmbientSwatch} from '../../controls/AmbientSwatch';
 import {ControlRow} from '../../controls/ControlRow';
 import {fieldId, SegmentedChoice} from '../../controls/fields';
-import type {GroupId, PanelId} from './fields';
+import {ColorPickerPopover} from '../../localized/ColorPicker';
+import {FontSystemPicker} from '../../localized/FontSystemPicker';
+import {useDock} from './context';
+import * as styles from './dock.css';
 import {GROUPS} from './fields';
+import type {GroupId, PanelId} from './fields';
 import {SearchIcon} from './icons';
 
 /**
@@ -259,7 +259,6 @@ function PhoneActions() {
       >
         {t('editor.formatShort')}
       </Button>
-      <dock.stage.CopyToClipboardButton />
     </div>
   );
 }

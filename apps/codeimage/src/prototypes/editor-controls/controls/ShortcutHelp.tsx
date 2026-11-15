@@ -1,103 +1,98 @@
 import {useI18n} from '@codeimage/locale';
 import {getRootEditorStore} from '@codeimage/store/editor';
-import {Button} from '@codeui/kit';
-import {createSignal, onCleanup, onMount, Show} from 'solid-js';
-import {KeyboardShortcuts} from '../../../components/KeyboardShortcuts/KeyboardShortcuts';
+import {Button, IconButton, icons} from '@codeui/kit';
+import {Dialog, Content as DialogContent} from '@kobalte/core/dialog';
+import {createSignal, For, onCleanup, onMount} from 'solid-js';
 import {HintIcon} from '../../../components/Icons/Hint';
-import type {AppLocaleEntries} from '../../../i18n';
-import * as styles from './shortcut-help.css';
-import {commandMenu} from '../command-menu/state';
 import * as production from '../../../components/KeyboardShortcuts/KeyboardShortcuts.css';
+import type {AppLocaleEntries} from '../../../i18n';
+import {commandMenu} from '../command-menu/state';
+import * as styles from './shortcut-help.css';
+import {bindEditorShortcuts, shortcuts} from './shortcuts';
 
-export const shortcutHelp = {
-  open: () =>
-    queueMicrotask(() =>
-      document
-        .querySelector<HTMLButtonElement>('[data-shortcut-help] > button')
-        ?.click(),
-    ),
-};
+const [open, setOpen] = createSignal(false);
+export const shortcutHelp = {open: () => setOpen(true)};
 
-/** Keep the production list and hotkeys, with a viewport-sized overlay. */
 export function ShortcutHelp() {
   const [t] = useI18n<AppLocaleEntries>();
-  const [generation, setGeneration] = createSignal(1);
-  let mount!: HTMLSpanElement;
-  const [shown, setShown] = createSignal(false);
-  const reset = () => {
-    setShown(false);
-    setGeneration(value => value + 1);
+  let trigger: HTMLButtonElement | undefined;
+  const close = () => setOpen(false);
+  const show = () => setOpen(true);
+  const restoreFocus = (event: Event) => {
+    event.preventDefault();
+    trigger?.focus();
   };
-  onCleanup(commandMenu.beforeOpen(reset));
-  const open = () => {
-    // Production keeps its visibility and headless-popover state separately.
-    // A fresh instance opens reliably after Escape, outside clicks and commands.
-    reset();
-    setShown(true);
-    mount.parentElement
-      ?.querySelector<HTMLButtonElement>(':scope > button')
-      ?.focus();
-    queueMicrotask(() =>
-      mount.querySelector<HTMLButtonElement>('button')?.click(),
-    );
-  };
+  bindEditorShortcuts();
+  onCleanup(commandMenu.beforeOpen(close));
+  onCleanup(close);
   onMount(() => {
     const keydown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape' && shown()) {
-        event.preventDefault();
-        event.stopImmediatePropagation();
-        reset();
-        mount.parentElement
-          ?.querySelector<HTMLButtonElement>(':scope > button')
-          ?.focus();
-        return;
-      }
-      if (event.key !== '?' || event.metaKey || event.ctrlKey || event.altKey)
-        return;
       if (
+        event.key !== '?' ||
+        event.metaKey ||
+        event.ctrlKey ||
+        event.altKey ||
         getRootEditorStore().state.options.focused ||
         (event.target instanceof Element &&
           event.target.closest(
-            'input, textarea, [contenteditable=true], [role=dialog]',
+            'input, textarea, [contenteditable=true], [role=dialog], [role=alertdialog]',
           ))
       )
         return;
       event.preventDefault();
-      event.stopImmediatePropagation();
-      if (shown()) reset();
-      else open();
+      setOpen(value => !value);
     };
-    const outside = (event: MouseEvent) => {
-      if (
-        event.target instanceof Element &&
-        event.target.classList.contains(production.overlay)
-      )
-        reset();
-    };
-    window.addEventListener('click', outside, true);
-    onCleanup(() => window.removeEventListener('click', outside, true));
-    window.addEventListener('keydown', keydown, true);
-    onCleanup(() => window.removeEventListener('keydown', keydown, true));
+    window.addEventListener('keydown', keydown);
+    onCleanup(() => window.removeEventListener('keydown', keydown));
   });
   return (
     <span class={styles.host} data-shortcut-help>
       <Button
+        ref={trigger}
         size="sm"
         theme="secondary"
         variant="ghost"
         aria-label={t('shortcut.buttonAction')}
         title={t('shortcut.buttonAction')}
         aria-haspopup="dialog"
-        aria-expanded={shown()}
-        onClick={open}
+        aria-expanded={open()}
+        onClick={show}
       >
         <HintIcon size="sm" />
       </Button>
-      <span ref={mount} class={styles.mount}>
-        <Show when={generation()} keyed>
-          {_generation => <KeyboardShortcuts />}
-        </Show>
-      </span>
+      <Dialog open={open()} onOpenChange={setOpen}>
+        <Dialog.Portal>
+          <Dialog.Overlay class={styles.backdrop} />
+          <DialogContent class={styles.content} onCloseAutoFocus={restoreFocus}>
+            <div class={styles.header}>
+              <Dialog.Title>{t('shortcut.buttonAction')}</Dialog.Title>
+              <Dialog.CloseButton
+                as={IconButton}
+                size="sm"
+                theme="secondary"
+                variant="ghost"
+                aria-label={t('common.close')}
+              >
+                <icons.CloseIcon />
+              </Dialog.CloseButton>
+            </div>
+            <dl class={styles.list}>
+              <For each={shortcuts}>
+                {shortcut => (
+                  <>
+                    <dt class={production.keyLabel}>{t(shortcut.label)}</dt>
+                    <dd class={styles.keys}>
+                      <For each={shortcut.key}>
+                        {key => <kbd class={production.key}>{key}</kbd>}
+                      </For>
+                    </dd>
+                  </>
+                )}
+              </For>
+            </dl>
+          </DialogContent>
+        </Dialog.Portal>
+      </Dialog>
     </span>
   );
 }

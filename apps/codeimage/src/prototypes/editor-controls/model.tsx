@@ -1,4 +1,3 @@
-import type {LocaleKeys} from '@codeimage/locale';
 import {
   AVAILABLE_COLORS,
   AVAILABLE_GRADIENTS,
@@ -8,28 +7,33 @@ import {
 } from '@codeimage/config';
 import type {CustomTheme} from '@codeimage/highlight';
 import {useI18n} from '@codeimage/locale';
+import type {LocaleKeys} from '@codeimage/locale';
 import {getRootEditorStore} from '@codeimage/store/editor';
 import {getActiveEditorStore} from '@codeimage/store/editor/activeEditor';
 import {getFrameState} from '@codeimage/store/editor/frame';
 import {getTerminalState} from '@codeimage/store/editor/terminal';
+import {dispatchUpdateTheme} from '@codeimage/store/effects/onThemeChange';
+import {SIGNATURE_STYLES} from '@codeimage/store/frame/model';
 import type {
   FrameSignature,
   SignaturePlatform,
   SignaturePosition,
   SignatureStyle,
 } from '@codeimage/store/frame/model';
-import {SIGNATURE_STYLES} from '@codeimage/store/frame/model';
-import {dispatchUpdateTheme} from '@codeimage/store/effects/onThemeChange';
 import {getThemeStore} from '@codeimage/store/theme/theme.store';
 import {VersionStore} from '@codeimage/store/version/version.store';
 import {appEnvironment} from '@core/configuration';
 import {shadowsLabel} from '@core/configuration/shadow';
+import {AVAILABLE_TERMINAL_THEMES} from '@core/configuration/terminal-themes';
 import {getUmami} from '@core/constants/umami';
-import type {Accessor, Component} from 'solid-js';
 import {createMemo, createSelector} from 'solid-js';
+import type {Accessor, Component} from 'solid-js';
 import {provideState} from 'statebuilder';
-import {FontPicker} from './localized/FontPicker';
-import {ImagePicker} from './localized/ImagePicker';
+import {
+  createAmbientBackground,
+  createWindowPalette,
+} from '../../components/Terminal/windowPalette';
+import type {AppLocaleEntries} from '../../i18n';
 import {SavedSignaturesField} from './controls/SavedSignatures';
 import {
   SignatureAvatarField,
@@ -37,16 +41,12 @@ import {
   SignatureNameField,
   SignatureProfileField,
 } from './controls/SignatureFields';
-import {AVAILABLE_TERMINAL_THEMES} from '@core/configuration/terminal-themes';
-import {
-  createAmbientBackground,
-  createWindowPalette,
-} from '../../components/Terminal/windowPalette';
-import type {AppLocaleEntries} from '../../i18n';
-import type {PreviewSession} from './preview';
+import {FontPicker} from './localized/FontPicker';
+import {ImagePicker} from './localized/ImagePicker';
 import {createPreviewSession} from './preview';
-import type {SyntaxColors} from './syntax';
+import type {PreviewSession} from './preview';
 import {readSyntaxColors} from './syntax';
+import type {SyntaxColors} from './syntax';
 
 const FONT_WEIGHT_KEYS: Partial<Record<number, LocaleKeys<AppLocaleEntries>>> =
   {
@@ -462,8 +462,10 @@ export function createEditorControlsModel(): EditorControlsModel {
             if (target) frame.setExportTarget(target.id);
             else frame.setAspectRatio(value);
           },
-          track: ratio =>
-            getUmami().track('aspect-ratio', {ratio: ratio ?? 'unset'}),
+          track: ratio => {
+            if (!getExportTarget(ratio))
+              getUmami().track('aspect-ratio', {ratio: ratio ?? 'unset'});
+          },
         }),
       ],
     },

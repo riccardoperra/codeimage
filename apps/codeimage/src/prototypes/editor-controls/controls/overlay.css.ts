@@ -6,41 +6,48 @@ export const trigger = style({
   width: '100%',
   minHeight: '36px',
   justifyContent: 'space-between',
-  gap: '8px',
+  gap: themeVars.spacing['2'],
   overflow: 'hidden',
   textOverflow: 'ellipsis',
   '@media': {'(max-width: 768px)': {minHeight: '40px'}},
 });
-export const backdrop = style({
-  position: 'fixed',
-  inset: 0,
-  zIndex: 40,
-  background: c.dialog.overlayBackgroundColor,
-});
 export const content = style({
   position: 'fixed',
   zIndex: 41,
-  left: '50%',
-  top: '50%',
-  transform: 'translate(-50%, -50%)',
+  left: themeVars.spacing['2'],
+  top: themeVars.spacing['2'],
   display: 'flex',
   flexDirection: 'column',
   width: 'min(360px, calc(100vw - 24px))',
   maxHeight: 'calc(100dvh - 32px)',
-  padding: '16px',
-  borderRadius: '20px',
+  padding: themeVars.spacing['4'],
+  borderRadius: themeVars.borderRadius.xl,
   background: c.panel.background,
   color: c.baseText,
-  boxShadow: '0 16px 64px #0004',
+  boxShadow: c.dialog.panelShadow,
+  '@media': {
+    '(max-width: 768px)': {
+      left: '8px',
+      right: '8px',
+      top: 'auto',
+      bottom: '8px',
+      width: 'auto',
+      maxHeight: '45dvh',
+    },
+  },
 });
 export const header = style({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'space-between',
-  gap: '12px',
-  paddingBottom: '12px',
+  gap: themeVars.spacing['3'],
+  paddingBottom: themeVars.spacing['3'],
 });
-export const title = style({margin: 0, fontSize: '14px', fontWeight: 600});
+export const title = style({
+  margin: 0,
+  fontSize: themeVars.fontSize.sm,
+  fontWeight: themeVars.fontWeight.semibold,
+});
 export const body = style({
   minHeight: 0,
   overflowY: 'auto',
@@ -58,6 +65,25 @@ globalStyle(`${body} [data-control] label`, {
   minHeight: '36px',
   height: 'auto',
   paddingLeft: 0,
-  fontSize: '13px',
+  fontSize: themeVars.fontSize.sm,
 });
 globalStyle(`${body} [data-control] > div > div`, {minWidth: 0});
+
+export const value = style({
+  display: 'flex',
+  alignItems: 'center',
+  gap: themeVars.spacing['2'],
+  minWidth: 0,
+});
+export const valueText = style({
+  overflow: 'hidden',
+  textOverflow: 'ellipsis',
+  whiteSpace: 'nowrap',
+});
+export const swatch = style({
+  width: themeVars.spacing['6'],
+  height: themeVars.spacing['6'],
+  flexShrink: 0,
+  objectFit: 'cover',
+  borderRadius: themeVars.borderRadius.md,
+});

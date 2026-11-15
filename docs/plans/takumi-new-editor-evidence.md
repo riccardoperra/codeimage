@@ -79,3 +79,7 @@ The merge applies without conflicts, including the animation-core dependency and
 ## UI localization through b4c0d64e
 
 The merge preserves both the Takumi experiments control and localized section names. The newly localized clipboard button now supplies the persisted renderer, as required by the shared effect payload. On the final source, 214 tests, typecheck, lint and production build pass. The locale checker confirms 448 matching keys/placeholders in it/en/de/es and passes its missing-key and hardcoded-message negative controls. Browser/image checks were not rerun for this localization update; their earlier source snapshots remain recorded.
+
+## UI review corrections through 60f84ab6
+
+The deleted localized clipboard button stays deleted: FrameActions now uses the shared exporter, whose clipboard payload retains the renderer. 214 app tests, typecheck, lint and production build pass. Locale parity passes for 450 keys/placeholders in four locales. The initial UI probe waited for a removed nested picker button; the final probe selects Square directly as a listbox option. It passes all three layouts, one durable reload each, exact Square PNGs, Restore defaults and two actual WASM renders in the ZIP, without page errors or fallback. Test-server HMR is disabled. Earlier image matrices were not rerun.

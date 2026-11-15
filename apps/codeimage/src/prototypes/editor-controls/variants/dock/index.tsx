@@ -1,40 +1,40 @@
-import type {AppLocaleEntries} from '../../../../i18n';
 import {useI18n} from '@codeimage/locale';
-import {keepMarkToolbarAboveSelection} from '../../controls/mark-toolbar';
+import {signatureEditor} from '@codeimage/store/frame/signatureEditor';
 import {Button, IconButton} from '@codeui/kit';
 import {useModality} from '@core/hooks/isMobile';
 import {Popover} from '@kobalte/core/popover';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
-import type {JSX} from 'solid-js';
 import {createSignal, For, onCleanup, onMount, Show} from 'solid-js';
+import type {JSX} from 'solid-js';
 import {Dynamic} from 'solid-js/web';
-import {Footer} from '../../localized/Footer';
 import {sidebarTheme} from '../../../../components/PropertyEditor/EditorSidebar.css';
+import type {AppLocaleEntries} from '../../../../i18n';
 import {shownTheme} from '../../command-menu/listed-model';
 import {commandMenu} from '../../command-menu/state';
+import type {VariantMeta, VariantProps} from '../../contract';
+import {fieldId, SegmentedChoice, SelectChoice} from '../../controls/fields';
+import {FrameActions} from '../../controls/FrameActions';
+import {keepMarkToolbarAboveSelection} from '../../controls/mark-toolbar';
+import {ShortcutHelp} from '../../controls/ShortcutHelp';
+import {Footer} from '../../localized/Footer';
+import type {ControlId} from '../../model';
 import {SettingsIcon} from '../../shell/icons';
 import {claimSettingsEntry, settings} from '../../shell/settings-state';
-import type {VariantMeta, VariantProps} from '../../contract';
-import {FrameActions} from '../../controls/FrameActions';
-import {ShortcutHelp} from '../../controls/ShortcutHelp';
-import type {ControlId} from '../../model';
 import {themeStyle} from '../../theme-styles/style';
 import {ThemeSwatch} from '../../ThemeSwatch';
-import type {DockApi} from './context';
 import {
   closeOnEscape,
   createMediaQuery,
   DockContext,
   isKeyboardClick,
 } from './context';
-import {fieldId, SegmentedChoice, SelectChoice} from '../../controls/fields';
+import type {DockApi} from './context';
+import * as styles from './dock.css';
+import {createFields} from './fields';
 import type {PanelId} from './fields';
-import {createFields, PLACES} from './fields';
 import {CodeIcon, PaddingIcon, SearchIcon, SlidersIcon} from './icons';
 import {PANELS, showMoreGroup} from './panels';
-import {signatureEditor} from '@codeimage/store/frame/signatureEditor';
 import {Sheet} from './Sheet';
-import * as styles from './dock.css';
 
 export const meta: VariantMeta = {
   name: 'editor.dock',
@@ -150,6 +150,7 @@ function DockItem(props: DockItemProps & {host: DockItemHost}) {
           <Popover.Content
             class={`${styles.popover} ${sidebarTheme}`}
             aria-label={t(PANELS[props.panel].title)}
+            data-control-panel
             data-panel={props.panel}
             data-instant={instant() ? '' : undefined}
             style={{
@@ -271,15 +272,6 @@ export default function Dock(props: VariantProps) {
   );
   // The command menu needs the screen to itself, so an open panel makes way.
   onCleanup(commandMenu.beforeOpen(close));
-  // A command for a control without a list of values opens its panel.
-  onCleanup(
-    commandMenu.setReveal(id => {
-      const place = PLACES[id];
-      if (place.group) showMoreGroup(place.group);
-      setPanel(place.panel);
-    }),
-  );
-
   // The Aa list is one narrow column. Every other style is a row of cards as wide as the dock.
   const spansDock = (id: PanelId) => id === 'themes' && themeStyle() !== 'aa';
 
@@ -340,7 +332,7 @@ export default function Dock(props: VariantProps) {
             it over the canvas's bottom edge. The code editor keeps the Tab
             key, so controls after it could not be reached from the keyboard.
           */}
-          <div class={styles.row} ref={row}>
+          <div class={styles.row} ref={row} data-control-dock>
             <div
               ref={bar}
               class={`${styles.bar} ${styles.float}`}
@@ -477,7 +469,7 @@ export default function Dock(props: VariantProps) {
             <ShortcutHelp />
             <Show when={!compact()}>
               <div class={`${styles.frameActions} ${styles.float}`}>
-                <FrameActions frameRef={props.stage.exportRef()} />
+                <FrameActions />
               </div>
             </Show>
           </div>

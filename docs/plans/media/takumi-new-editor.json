@@ -764,7 +764,7 @@
     ]
   },
   "latestUiAlignment": {
-    "uiHead": "b4c0d64e",
+    "uiHead": "60f84ab6",
     "appTests": 214,
     "typecheckExit": 0,
     "lintExit": 0,
@@ -797,7 +797,7 @@
     },
     "staticProbeServerHmr": false,
     "abortedDevelopmentProbes": 2,
-    "uiProbeHead": "f58f886f",
+    "uiProbeHead": "60f84ab6",
     "ui": {
       "rows": [
         {
@@ -842,7 +842,7 @@
     },
     "staticProbeHead": "08737514",
     "localeParity": {
-      "keys": 448,
+      "keys": 450,
       "locales": [
         "it",
         "en",
@@ -851,6 +851,8 @@
       ],
       "placeholdersMatch": true,
       "negativeControlsPass": true
-    }
+    },
+    "uiProbeServerHmr": false,
+    "probeAdjustment": "First attempt used the removed nested aspect-ratio buttons. Final probe selects Square as a listbox option."
   }
 }

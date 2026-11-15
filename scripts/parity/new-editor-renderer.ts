@@ -111,8 +111,7 @@ async function main() {
       await page
         .getByRole('button', {name: 'Aspect ratio', exact: true})
         .click();
-      await page.getByRole('button', {name: 'Free size', exact: true}).click();
-      await page.getByRole('button', {name: /Square\s*1080x1080/}).click();
+      await page.getByRole('option', {name: 'Square', exact: true}).click();
       await page.keyboard.press('Escape');
       await page.keyboard.press('Escape');
       assert.match(
