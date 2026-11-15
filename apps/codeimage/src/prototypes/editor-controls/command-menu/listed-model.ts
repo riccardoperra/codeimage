@@ -1,8 +1,5 @@
 import {getRootEditorStore} from '@codeimage/store/editor';
 import {EditorConfigStore} from '@codeimage/store/editor/config.store';
-import {getTerminalState} from '@codeimage/store/editor/terminal';
-import {AVAILABLE_TERMINAL_THEMES} from '@core/configuration/terminal-themes';
-import {getUmami} from '@core/constants/umami';
 import {provideState} from 'statebuilder';
 import type {
   Control,
@@ -35,23 +32,12 @@ const SWITCHES: Partial<
     on: 'true',
     off: 'false',
   },
-  'window.border': {label: 'Glass border', on: 'glass', off: 'none'},
 };
 
 const LABELS: Partial<Record<ControlId, string>> = {
   'window.style': 'Window style',
   // Picking a theme also sets the background. This one keeps it.
   'editor.theme': 'Syntax theme',
-};
-
-const WINDOW_STYLE_LABELS: Record<
-  (typeof AVAILABLE_TERMINAL_THEMES.keys)[number],
-  string
-> = {
-  macOs: 'macOS',
-  macOsGrayTheme: 'macOS gray',
-  macOsOutlineTheme: 'macOS outline',
-  windows: 'Windows',
 };
 
 export interface ListedModel {
@@ -67,36 +53,14 @@ export interface ListedModel {
 
 /**
  * The model with every control that has values as a list of them. The model
- * hands out the window style and the font as production pickers, which cannot
- * be listed. Here they are also plain choices over the same stores, so that a
- * command menu can offer and preview each window style and each font. The two
- * choices that are an on/off question become switches with a name that says
- * what turns on.
+ * hands out the font as a production picker, which cannot be listed. Here it is
+ * also a plain choice over the same store, so that a command menu can offer and
+ * preview each font. The choice that is an on/off question becomes a switch
+ * with a name that says what turns on.
  */
 export function createListedModel(model: EditorControlsModel): ListedModel {
-  const terminal = getTerminalState();
   const editor = getRootEditorStore();
   const config = provideState(EditorConfigStore);
-
-  const windowStyle = (base: Control): SelectControl => ({
-    kind: 'select',
-    id: base.id,
-    label: base.label,
-    visible: base.visible,
-    disabled: () => false,
-    options: () =>
-      AVAILABLE_TERMINAL_THEMES.keys.map(key => ({
-        key,
-        label: WINDOW_STYLE_LABELS[key],
-      })),
-    value: () => terminal.state.type,
-    set: type => {
-      model.endPreview();
-      terminal.setType(type);
-      getUmami().track('change-terminal-type', {type});
-    },
-    preview: type => model.preview(() => terminal.setType(type)),
-  });
 
   const fontFamily = (base: Control): SelectControl => ({
     kind: 'select',
@@ -128,7 +92,6 @@ export function createListedModel(model: EditorControlsModel): ListedModel {
   });
 
   const adapt = (base: Control): Control => {
-    if (base.id === 'window.style') return windowStyle(base);
     if (base.id === 'font.family') return fontFamily(base);
     if (base.id === 'editor.theme' && base.kind === 'select') {
       // The stored id can be one the registry does not know. The editor then

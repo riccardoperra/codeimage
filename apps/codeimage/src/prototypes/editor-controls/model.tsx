@@ -21,7 +21,11 @@ import {createMemo, createSelector} from 'solid-js';
 import {provideState} from 'statebuilder';
 import {FontPicker} from '../../components/PropertyEditor/controls/FontPicker/FontPicker';
 import {ImagePicker} from '../../components/PropertyEditor/controls/ImagePicker/ImagePicker';
-import {TerminalControlField} from '../../components/PropertyEditor/controls/TerminalControlField/TerminalControlField';
+import {AVAILABLE_TERMINAL_THEMES} from '@core/configuration/terminal-themes';
+import {
+  createAmbientBackground,
+  createWindowPalette,
+} from '../../components/Terminal/windowPalette';
 import type {AppLocaleEntries} from '../../i18n';
 import type {PreviewSession} from './preview';
 import {createPreviewSession} from './preview';
@@ -38,6 +42,7 @@ export type ControlId =
   | 'frame.background'
   | 'frame.backgroundImage'
   | 'frame.aspectRatio'
+  | 'window.surface'
   | 'window.backgroundType'
   | 'window.header'
   | 'window.style'
@@ -114,6 +119,9 @@ export interface BackgroundControl extends ControlBase<'background'> {
   readonly set: (value: string) => void;
   readonly colors: readonly string[];
   readonly gradients: readonly string[];
+  readonly ambient: Accessor<{label: string; value: string}>;
+  readonly preview: (value: string) => void;
+  readonly endPreview: () => void;
 }
 
 /** Renders the production control as is, already bound to the store. */
@@ -354,7 +362,25 @@ export function createEditorControlsModel(): EditorControlsModel {
           label: () => t('frame.background'),
           visible: frameVisible,
           value: () => frame.store.background ?? '',
-          set: commit(frame.setBackground),
+          ...write(frame.setBackground),
+          endPreview: session.end,
+          ambient: () => {
+            const theme = loadedThemes().find(
+              theme => theme.id === editor.state.options.themeId,
+            );
+            return {
+              label: t('frame.ambientBackground'),
+              value: createAmbientBackground(
+                createWindowPalette({
+                  background: terminal.state.background,
+                  text: terminal.state.textColor,
+                  accent:
+                    theme?.properties.terminal.accent ??
+                    theme?.properties.terminal.text,
+                }),
+              ),
+            };
+          },
           colors: AVAILABLE_COLORS,
           gradients: AVAILABLE_GRADIENTS,
         },
@@ -411,23 +437,29 @@ export function createEditorControlsModel(): EditorControlsModel {
           value: headerVisible,
           ...write(terminal.setShowHeader),
         },
-        {
-          kind: 'custom',
+        choice('select', {
           id: 'window.style',
           label: () => t('frame.terminal'),
           visible: headerVisible,
-          Control: () => (
-            <TerminalControlField
-              showAccent={terminal.state.accentVisible}
-              selectedTerminal={terminal.state.type}
-              onTerminalChange={type => {
-                terminal.setType(type);
-                getUmami().track('change-terminal-type', {type});
-              }}
-              onShowAccentChange={terminal.setAccentVisible}
-            />
-          ),
-        },
+          options: () =>
+            Object.values(AVAILABLE_TERMINAL_THEMES.entries).map(entry => ({
+              label: t(entry.label),
+              value: entry.name,
+            })),
+          value: () => terminal.state.type,
+          set: terminal.setType,
+          track: type => getUmami().track('change-terminal-type', {type}),
+        }),
+        choice('segmented', {
+          id: 'window.surface',
+          label: () => t('frame.windowSurface'),
+          options: () => [
+            {label: t('frame.surfaceSolid'), value: 'solid' as const},
+            {label: t('frame.surfaceWash'), value: 'wash' as const},
+          ],
+          value: () => terminal.state.surface,
+          set: terminal.setSurface,
+        }),
         {
           kind: 'toggle',
           id: 'window.accent',
@@ -465,8 +497,9 @@ export function createEditorControlsModel(): EditorControlsModel {
           id: 'window.border',
           label: () => t('frame.border'),
           options: () => [
-            {label: 'None', value: 'none'},
-            {label: 'Glass', value: 'glass'},
+            {label: t('frame.borderNone'), value: 'none'},
+            {label: t('frame.borderGlass'), value: 'glass'},
+            {label: t('frame.borderHairline'), value: 'hairline'},
           ],
           value: () => terminal.state.borderType ?? 'none',
           set: border => terminal.setBorder(border === 'none' ? null : border),

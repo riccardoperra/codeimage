@@ -10,6 +10,7 @@ export const poimandresTheme = createTheme({
     previewBackground:
       'linear-gradient(140deg, rgb(165, 142, 251), rgb(65, 206, 189))',
     terminal: {
+      accent: '#5DE4c7',
       main: palette.bg,
       text: palette.darkerGray,
     },

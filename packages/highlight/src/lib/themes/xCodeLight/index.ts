@@ -9,6 +9,7 @@ export const xCodeLightTheme = createTheme({
     label: 'XCode Light',
     previewBackground: `linear-gradient(to right bottom, #ffcc99, #f6bd83, #edad6e, #e49e59, #da8f44)`,
     terminal: {
+      accent: '#c541ad',
       main: palette.foreground,
       text: palette.text,
     },

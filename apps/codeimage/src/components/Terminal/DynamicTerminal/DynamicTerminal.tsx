@@ -18,11 +18,15 @@ export const DynamicTerminal: ParentComponent<DynamicTerminalProps> = (
 ): JSXElement => {
   const terminalThemes = AVAILABLE_TERMINAL_THEMES;
 
+  // The type comes from a stored document, which a newer build may have
+  // written with a style this build does not know.
   const terminal = createMemo(
     () =>
-      terminalThemes.entries[
-        props.type as (typeof terminalThemes)['keys'][number]
-      ].component,
+      (
+        terminalThemes.entries[
+          props.type as (typeof terminalThemes)['keys'][number]
+        ] ?? terminalThemes.entries[terminalThemes.keys[0]]
+      ).component,
   );
 
   const resolvedChildren = children(() => props.children);

@@ -44,6 +44,7 @@ export const PLACES: Record<ControlId, Place> = {
   'window.style': inGroup('window'),
   // As today, the tab accent is a checkbox inside the window style picker.
   'window.accent': {panel: 'more'},
+  'window.surface': inGroup('window'),
   'window.backgroundType': inGroup('window'),
   'window.reflection': inGroup('window'),
   'window.watermark': inGroup('window'),

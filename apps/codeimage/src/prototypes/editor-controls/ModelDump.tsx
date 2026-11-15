@@ -1,3 +1,4 @@
+import {AmbientSwatch} from './controls/AmbientSwatch';
 import {themeVars} from '@codeimage/ui';
 import type {JSX} from 'solid-js';
 import {For, Show} from 'solid-js';
@@ -81,6 +82,7 @@ function renderInput(control: Control): JSX.Element {
     case 'background':
       return (
         <>
+          <AmbientSwatch control={control} />
           <input
             type="text"
             value={control.value()}

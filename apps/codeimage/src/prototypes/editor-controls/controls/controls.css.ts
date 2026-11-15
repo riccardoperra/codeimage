@@ -142,3 +142,26 @@ export const visuallyHidden = style({
   whiteSpace: 'nowrap',
   border: 0,
 });
+
+export const ambientBackground = createVar();
+export const ambientSwatch = style({
+  display: 'flex',
+  alignItems: 'center',
+  gap: '8px',
+  width: '100%',
+  padding: '8px',
+  border: 0,
+  borderRadius: '8px',
+  background: c.input.backgroundColor,
+  color: c.baseText,
+  fontSize: '12px',
+  cursor: 'pointer',
+  ':focus-visible': focusRing,
+});
+export const ambientSample = style({
+  width: '40px',
+  height: '28px',
+  flexShrink: 0,
+  borderRadius: '5px',
+  background: ambientBackground,
+});
