@@ -395,7 +395,7 @@ async function main() {
         process.env.P5_BASELINE_PATH ??
           path.join(
             __dirname,
-            '../docs/plans/media/p5-gutter/final/export-reference.png',
+            'fixtures/p5-gutter/export-reference.png',
           ),
       ),
     );
