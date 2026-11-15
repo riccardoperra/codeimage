@@ -35,6 +35,7 @@ import type {AppLocaleEntries} from '../../../i18n';
 type ExportAction = 'image' | 'eachTab' | 'share' | 'newTab' | 'copy';
 
 export interface Exporter {
+  readonly ready: Accessor<boolean>;
   /** True while an export runs. */
   readonly busy: Accessor<boolean>;
   /** The number of tabs of the snippet. */
@@ -204,6 +205,7 @@ export function createExporter(
   };
 
   return {
+    ready,
     busy: () => !ready() || busy() || dispatchCopyToClipboard.loading(),
     tabs: () => editor.state.editors.length,
     image: () => request('image'),

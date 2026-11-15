@@ -131,7 +131,7 @@ export function ExportControl(props: {exporter: Exporter; size?: 'sm' | 'xs'}) {
           theme={'primary'}
           size={size()}
           loading={exporter().busy()}
-          disabled={exporter().busy()}
+          disabled={!exporter().ready()}
           leftIcon={<DownloadIcon />}
           title={t('editor.exportAs', {summary: exportSummary()})}
           data-export-image
@@ -159,7 +159,7 @@ export function ExportControl(props: {exporter: Exporter; size?: 'sm' | 'xs'}) {
           <DropdownMenuPortal>
             <DropdownMenuContent>
               <DropdownMenuItem
-                disabled={exporter().busy()}
+                disabled={!exporter().ready()}
                 onSelect={exportImage}
               >
                 <span class={styles.item}>
