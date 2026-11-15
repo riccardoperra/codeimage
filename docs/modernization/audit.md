@@ -6,7 +6,7 @@ This page records the state of CodeImage on `main` at commit `27b185f1`, measure
 
 `main` moved 419 commits after the audit, to `532da1e8`. Every finding below was checked again against that commit. The **On 2026-11-15** column gives the result, with the file, line, command, or pull request that shows it. A number from 2026-11-14 that was not measured again keeps its old value and says so.
 
-The largest change is a new editor. Signed-out visitors at `/` now get it, and the code lives in `apps/codeimage/src/pages/UnifiedEditor/`. A cleanup pull request that moves it there from `apps/codeimage/src/prototypes/editor-controls/` is still open, so on `532da1e8` the files are at the old path. Signed-in users still get the dashboard at `/` and the classic editor at `/:snippetId`, and `/classic` keeps the classic editor for everyone. The new editor reads and writes the same three stores as the classic one (`UnifiedEditor/model.tsx:289-291`), so the state findings apply to both.
+The largest change is a new editor. Signed-out visitors at `/` now get it, and the code lives in `apps/codeimage/src/pages/UnifiedEditor/`. #740 moved it there from `apps/codeimage/src/prototypes/editor-controls/`, so on `532da1e8` the files are at the old path. Signed-in users still get the dashboard at `/` and the classic editor at `/:snippetId`, and `/classic` keeps the classic editor for everyone. The new editor reads and writes the same three stores as the classic one (`UnifiedEditor/model.tsx:289-291`), so the state findings apply to both.
 
 Words used in the new column.
 
