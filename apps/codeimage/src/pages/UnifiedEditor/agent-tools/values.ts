@@ -207,3 +207,49 @@ export function resolveTheme(
     suggestions: (close.length ? close : themes).map(theme => theme.name),
   };
 }
+
+/** A tab as `get_editor_state` reports it. */
+export interface TabEntry {
+  readonly index: number;
+  readonly name: string;
+  readonly language: string;
+  readonly active: boolean;
+}
+
+export const describeTabs = (tabs: readonly TabEntry[]) =>
+  tabs
+    .map(
+      tab =>
+        `${tab.index} "${tab.name || 'untitled'}"${tab.active ? ' (active)' : ''}`,
+    )
+    .join(', ');
+
+/** The tab an agent names by its 0-based index or by its name, ignoring case. */
+export function resolveTab(
+  tabs: readonly TabEntry[],
+  input: {readonly index?: unknown; readonly name?: unknown},
+): Parsed<TabEntry> {
+  const {index, name} = input;
+  const missing = (what: string): Parsed<TabEntry> => ({
+    ok: false,
+    error: `${what} Tabs: ${describeTabs(tabs)}.`,
+  });
+  if ((index === undefined) === (name === undefined))
+    return missing('Pass either "index" or "name".');
+  if (index !== undefined) {
+    const tab =
+      typeof index === 'number' && Number.isInteger(index)
+        ? tabs[index]
+        : undefined;
+    return tab
+      ? {ok: true, value: tab}
+      : missing(`No tab at index ${String(index)}.`);
+  }
+  const tab =
+    typeof name === 'string'
+      ? tabs.find(tab => normalize(tab.name) === normalize(name))
+      : undefined;
+  return tab
+    ? {ok: true, value: tab}
+    : missing(`No tab named "${String(name)}".`);
+}

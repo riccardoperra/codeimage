@@ -1,4 +1,6 @@
+import {getRootEditorStore} from '@codeimage/store/editor';
 import {getActiveEditorStore} from '@codeimage/store/editor/activeEditor';
+import {MAX_EDITOR_TABS} from '@codeimage/store/editor/model';
 import type {Accessor} from 'solid-js';
 import {ExportExtension} from '../../../hooks/use-export-image';
 import type {ListedModel} from '../command-menu/listed-model';
@@ -12,13 +14,14 @@ import {
   savedExportChoice,
 } from '../shell/export-formats';
 import type {ExportOutcome, Exporter} from '../shell/export';
-import type {AgentControl} from './values';
+import type {AgentControl, Parsed, TabEntry} from './values';
 import {
   controlSchema,
   describeControl,
   describeOptions,
   parseControlValue,
   resolveOption,
+  resolveTab,
   resolveTheme,
   unavailableReason,
 } from './values';
@@ -135,13 +138,34 @@ export function createAgentTools(context: AgentToolsContext): AgentTool[] {
     allControls.filter(control => unavailableReason(control) === undefined);
   const language = () => listed.choice('editor.language');
   const active = getActiveEditorStore();
+  const editors = getRootEditorStore();
+  const tabs = (): TabEntry[] =>
+    editors.state.editors.map((editor, index) => ({
+      index,
+      name: editor.tab.tabName ?? '',
+      language: editor.languageId,
+      active: editors.isActive(editor.id),
+    }));
+  const activeTab = () => tabs().find(tab => tab.active);
+  // The option key of a language id or name, checked before anything changes.
+  const languageKey = (raw: unknown): Parsed<string | undefined> => {
+    const control = language();
+    if (raw === undefined || !control) return {ok: true, value: undefined};
+    const option = resolveOption(control.options(), raw);
+    return option
+      ? {ok: true, value: option.key}
+      : {
+          ok: false,
+          error: `Unknown language "${String(raw)}". Valid ids include: ${describeOptions(control.options())}.`,
+        };
+  };
 
   return [
     tool({
       name: 'get_editor_state',
       title: 'Read the CodeImage editor',
       description:
-        'Read the CodeImage editor: the code of the active tab, its language, how many tabs there are, the theme, every setting the agent can change with its current value and valid values, the export settings, how many likely secrets the code shows, and whether the editor can be changed. Call it first, and again to check a change.',
+        'Read the CodeImage editor: the code of the active tab, its language, the tabs as {index, name, language, active}, the theme, every setting the agent can change with its current value and valid values, the export settings, how many likely secrets the code shows, and whether the editor can be changed. Call it first, and again to check a change.',
       inputSchema: {type: 'object', properties: {}},
       annotations: {readOnlyHint: true},
       execute: async () => {
@@ -153,7 +177,7 @@ export function createAgentTools(context: AgentToolsContext): AgentTool[] {
           ready: pageState().ready,
           code: active.editor()?.code ?? '',
           language: language()?.value() ?? null,
-          tabs: exporter.tabs(),
+          tabs: tabs(),
           theme: theme ? {id: theme.id, name: theme.name} : null,
           controls: usable().map(describeControl),
           export: {
@@ -198,19 +222,70 @@ export function createAgentTools(context: AgentToolsContext): AgentTool[] {
         if (!pageState().editable) return NOT_EDITABLE;
         if (typeof input.code !== 'string')
           return fail('"code" must be a string.');
-        const control = language();
-        let key: string | undefined;
-        if (input.language !== undefined && control) {
-          const option = resolveOption(control.options(), input.language);
-          if (!option)
-            return fail(
-              `Unknown language "${String(input.language)}". Valid ids include: ${describeOptions(control.options())}.`,
-            );
-          key = option.key;
-        }
-        if (key !== undefined) control?.set(key);
+        const key = languageKey(input.language);
+        if (!key.ok) return fail(key.error);
+        if (key.value !== undefined) language()?.set(key.value);
         active.setCode(input.code);
-        return {ok: true, language: control?.value() ?? null};
+        return {ok: true, language: language()?.value() ?? null};
+      },
+    }),
+    tool({
+      name: 'add_tab',
+      title: 'Add a tab',
+      description: `Add a tab after the others and make it the active one, optionally with its code, language (as in set_code) and name, such as "main.py". A snippet holds at most ${MAX_EDITOR_TABS} tabs. Invalid input changes nothing.`,
+      inputSchema: {
+        type: 'object',
+        properties: {
+          code: {type: 'string', description: 'The code of the new tab.'},
+          language: {type: 'string', description: 'Language id or name.'},
+          name: {type: 'string', description: 'The tab name.'},
+        },
+      },
+      execute: async input => {
+        if (!pageState().editable) return NOT_EDITABLE;
+        const {code, name} = input;
+        if (code !== undefined && typeof code !== 'string')
+          return fail('"code" must be a string.');
+        if (name !== undefined && (typeof name !== 'string' || !name.trim()))
+          return fail('"name" must be a non-empty string.');
+        const key = languageKey(input.language);
+        if (!key.ok) return fail(key.error);
+        if (!editors.computed.canAddEditor())
+          return fail(
+            `The snippet already has ${MAX_EDITOR_TABS} tabs, the most it can hold. Pick one with select_tab and replace its code with set_code instead.`,
+            {tabs: tabs()},
+          );
+        editors.actions.addEditor(code === undefined ? null : {code}, true);
+        if (key.value !== undefined) language()?.set(key.value);
+        // A name like "main.py" sets the language too, unless one was given.
+        if (name !== undefined)
+          editors.actions.setTabName(
+            editors.state.activeEditorId,
+            name.trim(),
+            key.value === undefined,
+          );
+        return {ok: true, tab: activeTab()};
+      },
+    }),
+    tool({
+      name: 'select_tab',
+      title: 'Select a tab',
+      description:
+        'Make a tab the active one, by its 0-based index or by its name ignoring case, as get_editor_state lists them. set_code and the language act on the active tab. An unknown tab returns an error with the tabs.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          index: {type: 'integer', minimum: 0, description: '0-based index.'},
+          name: {type: 'string', description: 'The tab name.'},
+        },
+      },
+      execute: async input => {
+        const found = resolveTab(tabs(), input);
+        if (!found.ok) return fail(found.error, {tabs: tabs()});
+        editors.actions.setActiveEditorId(
+          editors.state.editors[found.value.index].id,
+        );
+        return {ok: true, tab: activeTab()};
       },
     }),
     tool({

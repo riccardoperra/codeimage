@@ -7,6 +7,8 @@ const TOOLS = [
   'get_editor_state',
   'list_themes',
   'set_code',
+  'add_tab',
+  'select_tab',
   'apply_theme',
   'set_controls',
   'export_image',
@@ -185,11 +187,59 @@ export async function verifyAgentTools({fresh, out}) {
       assert.equal(devtools.result.ok, true, JSON.stringify(devtools.result));
       assert.equal((await state()).theme.id, devtools.result.theme.id);
 
+      const showsCode = async (code, message) => {
+        for (let i = 0; i < 40 && (await editor().innerText()) !== code; i++)
+          await page.waitForTimeout(50);
+        assert.equal(await editor().innerText(), code, message);
+      };
+      assert.deepEqual(
+        (await state()).tabs.map(tab => [tab.index, tab.active]),
+        [[0, true]],
+      );
+      assert.deepEqual(
+        await call('add_tab', {
+          code: 'print("tab")',
+          language: 'Python',
+          name: 'main.py',
+        }),
+        {
+          ok: true,
+          tab: {index: 1, name: 'main.py', language: 'python', active: true},
+        },
+      );
+      await showsCode('print("tab")', 'the editor shows the added tab');
+      const badTab = await call('add_tab', {language: 'Klingon'});
+      assert.equal(badTab.ok, false);
+      assert.equal(
+        (await state()).tabs.length,
+        2,
+        'a bad language adds no tab',
+      );
+
+      assert.equal((await call('select_tab', {index: 0})).ok, true);
+      await showsCode('const agent = 42;', 'select_tab by index');
+      assert.equal((await call('select_tab', {name: 'MAIN.PY'})).ok, true);
+      await showsCode('print("tab")', 'select_tab by name');
+      const missingTab = await call('select_tab', {name: 'nope.rs'});
+      assert.equal(missingTab.ok, false);
+      assert.match(missingTab.error, /1 "main\.py" \(active\)/);
+
+      let tabCount = (await state()).tabs.length;
+      while (tabCount < 6) {
+        assert.equal((await call('add_tab', {})).ok, true);
+        tabCount = (await state()).tabs.length;
+      }
+      const full = await call('add_tab', {code: 'one too many'});
+      assert.equal(full.ok, false);
+      assert.match(full.error, /6 tabs/);
+      assert.equal((await state()).tabs.length, 6);
+
       return {
         png1x: [one.width, one.height],
         png2x: [two.width, two.height],
         padding: target,
         devtoolsTheme: devtools.result.theme.id,
+        tabs: tabCount,
       };
     },
   );

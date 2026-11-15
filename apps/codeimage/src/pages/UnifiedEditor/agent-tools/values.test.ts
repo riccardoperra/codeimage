@@ -10,6 +10,7 @@ import {
   controlSchema,
   parseControlValue,
   resolveOption,
+  resolveTab,
   resolveTheme,
   unavailableReason,
 } from './values';
@@ -206,5 +207,35 @@ describe('resolveTheme', () => {
       ok: false,
       suggestions: ['Dracula', 'Night Owl', 'GitHub Light'],
     });
+  });
+});
+
+describe('resolveTab', () => {
+  const tabs = [
+    {index: 0, name: 'index.tsx', language: 'typescript', active: true},
+    {index: 1, name: 'main.py', language: 'python', active: false},
+  ];
+
+  it('finds a tab by 0-based index or by name ignoring case', () => {
+    expect(resolveTab(tabs, {index: 1})).toEqual({ok: true, value: tabs[1]});
+    expect(resolveTab(tabs, {name: ' MAIN.PY '})).toEqual({
+      ok: true,
+      value: tabs[1],
+    });
+  });
+
+  it('lists the tabs when none matches', () => {
+    for (const input of [{index: 2}, {index: -1}, {index: 0.5}, {name: 'x'}]) {
+      const found = resolveTab(tabs, input);
+      expect(found.ok).toBe(false);
+      expect(!found.ok && found.error).toContain(
+        '0 "index.tsx" (active), 1 "main.py"',
+      );
+    }
+  });
+
+  it('takes exactly one of index and name', () => {
+    expect(resolveTab(tabs, {}).ok).toBe(false);
+    expect(resolveTab(tabs, {index: 0, name: 'main.py'}).ok).toBe(false);
   });
 });

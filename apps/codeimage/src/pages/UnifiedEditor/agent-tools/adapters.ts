@@ -74,7 +74,7 @@ export function installDevtoolsTools(
   const group = {
     name: 'CodeImage',
     description:
-      'Drive the CodeImage editor: read its state, set the code and language, apply a theme, change frame and window settings, and export the image.',
+      'Drive the CodeImage editor: read its state, add and select tabs, set the code and language, apply a theme, change frame and window settings, and export the image.',
     tools: tools.map(({name, description, inputSchema, execute}) => ({
       name,
       description,
