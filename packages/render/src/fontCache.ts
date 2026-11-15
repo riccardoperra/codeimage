@@ -50,10 +50,7 @@ export class FontUnavailableError extends Error {
     detail: string,
     options?: ErrorOptions,
   ) {
-    super(
-      `${fontId}: ${detail}. Run: codeimage fonts install ${fontId}`,
-      options,
-    );
+    super(`${fontId}: ${detail}`, options);
   }
 }
 export class FontFileError extends Error {}
@@ -283,7 +280,7 @@ export function createFontStore(
       throw new FontUnavailableError(
         font.id,
         'offline',
-        'not cached and --offline forbids downloading',
+        'not cached, and downloads are disabled offline',
       );
     if (data === null) {
       await unlink(pathOf(file)).catch(error => {
