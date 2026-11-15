@@ -8,6 +8,7 @@ import {
   warmEncoder,
   type Mp4Config,
   type Mp4Support,
+  type VideoFps,
 } from './encode';
 
 export type AnimationConfig = Mp4Config | GifConfig;
@@ -19,19 +20,20 @@ type Estimate = Size & {
   distinctFrames: number;
 };
 
+const mp4Fps = (fps: AnimationFps): VideoFps => (fps === 25 ? 30 : fps);
+
 export const ANIMATION_FORMATS = {
   mp4: {
     label: 'MP4',
     extension: 'mp4',
     mime: 'video/mp4',
     defaultFps: 30 as const,
+    frameRate: mp4Fps,
     fpsOptions: [24, 30, 50, 60] satisfies AnimationFps[],
     config: (size: Size, fps: AnimationFps): Mp4Config =>
-      mp4Config(size, fps === 25 ? 30 : fps),
+      mp4Config(size, mp4Fps(fps)),
     estimate: ({width, height, fps, durationMs}: Estimate) =>
-      (Number(
-        mp4Config({width, height}, fps === 25 ? 30 : fps).encoder.bitrate,
-      ) *
+      (Number(mp4Config({width, height}, mp4Fps(fps)).encoder.bitrate) *
         durationMs) /
       8000,
     check: checkMp4Support,
@@ -44,6 +46,7 @@ export const ANIMATION_FORMATS = {
     extension: 'gif',
     mime: 'image/gif',
     defaultFps: 25 as const,
+    frameRate: gifFps,
     fpsOptions: [25, 50, 60] satisfies AnimationFps[],
     config: (size: Size, fps: AnimationFps): GifConfig => ({
       kind: 'gif',

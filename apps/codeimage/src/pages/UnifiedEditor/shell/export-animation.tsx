@@ -49,7 +49,7 @@ export function animationSnapshot() {
   ) => {
     const settings = structuredClone({
       ...animation.settings(),
-      fps,
+      fps: ANIMATION_FORMATS[format].frameRate(fps),
     });
     const tab = (editorId: string): PreviewTab => {
       const value = editor.state.editors.find(tab => tab.id === editorId);

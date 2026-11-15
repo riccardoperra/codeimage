@@ -11,6 +11,9 @@ import {
 describe('animation format table', () => {
   it('offers MP4 first with matching metadata and format-specific rates', () => {
     expect(Object.keys(ANIMATION_FORMATS)).toEqual(['mp4', 'gif']);
+    expect(ANIMATION_FORMATS.gif.frameRate(60)).toBe(50);
+    expect(ANIMATION_FORMATS.gif.frameRate(25)).toBe(25);
+    expect(ANIMATION_FORMATS.mp4.frameRate(60)).toBe(60);
     expect(ANIMATION_FORMATS.mp4).toMatchObject({
       extension: 'mp4',
       mime: 'video/mp4',
