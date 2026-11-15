@@ -367,33 +367,41 @@ export function createFontStore(
       }
       return value;
     };
-    const loaders: FontLoader[] = selected.flatMap(font =>
-      font.files.map(file => ({
-        key: `${font.family}/${file.sha256}/${file.weight ?? 'variable'}`,
-        name: font.family,
-        weight: file.weight,
-        unicodeRange: file.unicodeRange,
-        data: () => data(font, file),
-      })),
-    );
-    return {
-      loaders,
-      async primary(): Promise<FontLoader | undefined> {
-        if (!code) return undefined;
-        // Native needs may skip a primary with no matching glyphs; its metrics still affect line boxes.
-        const file =
-          code.files.find(
-            file =>
-              /-latin-(?!ext-)/.test(file.file) &&
-              (file.weight === undefined || file.weight === 400),
-          ) ?? code.files[0];
-        return {
-          name: code.family,
-          data: await data(code, file),
+    const loaderOf = new Map<CatalogFile, FontLoader>();
+    const loaders = selected.flatMap(font =>
+      font.files.map(file => {
+        const loader = {
+          key: `${font.family}/${file.sha256}/${file.weight ?? 'variable'}`,
+          name: font.family,
           weight: file.weight,
           unicodeRange: file.unicodeRange,
+          data: () => data(font, file),
         };
-      },
+        loaderOf.set(file, loader);
+        return loader;
+      }),
+    );
+    // A line box takes its strut from the face that covers U+0020, even when
+    // the box has no text. Takumi's needs pass loads only faces some text
+    // uses, so a box with none (the watermark) took its height from whatever
+    // fallback the code loaded. These faces register before the pass; they
+    // share the loaders' keys, so Takumi loads each once.
+    const primaries = selected
+      .filter(font => font.role !== 'fallback')
+      .flatMap(font => {
+        const spaces = font.files.filter(file =>
+          file.unicodeRange.some(
+            ([start, end]) => start <= 0x20 && end >= 0x20,
+          ),
+        );
+        const file =
+          spaces.find(file => (file.weight ?? 400) === 400) ?? spaces[0];
+        const loader = file && loaderOf.get(file);
+        return loader ? [loader] : [];
+      });
+    return {
+      loaders,
+      primaries,
       async faces() {
         return Promise.all(
           selected.flatMap(font =>

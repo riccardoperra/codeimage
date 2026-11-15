@@ -71,22 +71,29 @@ describe('lazy font selection', {timeout: 60_000}, () => {
             unicodeRange: file.declaredRange,
           });
       }
+      // The second box has no text, like the watermark: its height is the
+      // strut of an Inter face nothing else asks for.
+      const pages = (text: string) => [
+        `<div style="font-family:'${code.family}';font-size:16px;color:black;background:white">${text}<span style="font-family:'Inter var'"> tab.ts ${text}</span></div>`,
+        `<div style="font-family:'Inter var';font-size:16px;background:white"><div style="font-family:'${code.family}'">${text}</div><div style="width:24px;background:black"><svg width="8" height="8"></svg></div></div>`,
+      ];
       for (const text of corpus) {
-        const html = `<div style="font-family:'${code.family}';font-size:16px;color:black;background:white">${text}<span style="font-family:'Inter var'"> tab.ts ${text}</span></div>`;
-        const options = {
-          width: 800,
-          height: 80,
-          format: 'png' as const,
-          fontFamilies: store.fallbackFamilies,
-        };
-        const lazy = new Renderer();
-        const resources = store.resources(code);
-        const primary = await resources.primary();
-        if (primary) await lazy.registerFont(primary);
-        expect(
-          await lazy.render(html, {...options, fonts: resources.loaders}),
-          `${id}: ${text}`,
-        ).toEqual(await eager.render(html, options));
+        for (const html of pages(text)) {
+          const options = {
+            width: 800,
+            height: 80,
+            format: 'png' as const,
+            fontFamilies: store.fallbackFamilies,
+          };
+          const lazy = new Renderer();
+          const resources = store.resources(code);
+          for (const primary of resources.primaries)
+            await lazy.registerFont(primary);
+          expect(
+            await lazy.render(html, {...options, fonts: resources.loaders}),
+            `${id}: ${html}`,
+          ).toEqual(await eager.render(html, options));
+        }
       }
     }
   });

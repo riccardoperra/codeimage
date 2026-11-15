@@ -109,8 +109,8 @@ export function createRenderer(options: RendererOptions = {}) {
     const resources = store.resources(options.codeFontFile ? undefined : code);
     const fonts = resources.loaders;
     const fontFamilies = store.fallbackFamilies;
-    const primary = await resources.primary();
-    if (primary) await renderer.registerFont(primary);
+    for (const primary of resources.primaries)
+      await renderer.registerFont(primary);
     let local: SnapshotFont | undefined;
     if (options.codeFontFile) {
       const path = resolve(options.codeFontFile);
