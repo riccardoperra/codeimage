@@ -4,6 +4,7 @@ import {toast} from '@codeimage/ui';
 import {Button, Tooltip} from '@codeui/kit';
 import {altText} from '@core/altText';
 import type {AppLocaleEntries} from '../../i18n';
+import {getWhatsNew} from '../../state/whats-new';
 import {ClipboardIcon} from '../Icons/Clipboard';
 
 export function CopyAltTextButton(props: {
@@ -23,6 +24,7 @@ export function CopyAltTextButton(props: {
     if (!text) return;
     navigator.clipboard.writeText(text).then(
       () => {
+        getWhatsNew().seen('alt');
         onCopy?.();
         toast.success(() => t('altText.copied'));
       },

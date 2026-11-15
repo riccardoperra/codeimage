@@ -14,6 +14,7 @@ import {
 } from 'solid-js';
 import {Dynamic} from 'solid-js/web';
 import {getWhatsNew, type RELEASES, type WhatsNew} from '../../state/whats-new';
+import {releaseTitle} from './releaseDate';
 import {SparkleIcon} from './SparkleIcon';
 import {tabbableBeside} from './focus';
 import {illustrations} from './illustrations';
@@ -29,10 +30,11 @@ interface View {
 export function Nudge(props: {
   release: (typeof RELEASES)[number];
   dismiss: (keyboard: boolean) => void;
+  keyboardMinimize?: boolean;
   entry: NonNullable<ReturnType<WhatsNew['current']>>['entry'];
 }) {
   const news = getWhatsNew();
-  const [t] = useI18n<AppLocaleEntries>();
+  const [t, {locale}] = useI18n<AppLocaleEntries>();
   const initialEntry = untrack(() => props.entry);
   const fromHeader = () =>
     props.entry === 'pointer' || props.entry === 'keyboard';
@@ -61,6 +63,14 @@ export function Nudge(props: {
   let bar: HTMLDivElement | undefined;
   let barHeight = 0;
   let timer: number | undefined;
+  onMount(() => {
+    if (props.keyboardMinimize) {
+      setInstant(true);
+      card
+        ?.querySelector<HTMLButtonElement>('button')
+        ?.focus({preventScroll: true});
+    }
+  });
   // Focus inside the card would fall to the page when it leaves.
   const restoreFocus = () => {
     if (card?.contains(document.activeElement))
@@ -142,7 +152,7 @@ export function Nudge(props: {
                 })}
               </strong>
               <span class={styles.muted}>
-                {t(`whatsNew.releases.${props.release.id}.title`)}
+                {releaseTitle(props.release, locale())}
               </span>
             </div>
             <Button

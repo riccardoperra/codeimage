@@ -312,3 +312,67 @@ test<TestContext>('PUT /v1/project/:id [Update Project] -> ignores keys outside 
     },
   });
 });
+
+test<TestContext>('PUT /v1/project/:id [Update Project] -> saves and loads the animation', async context => {
+  const fastify = await build(context);
+  const storedTab = context.project1.editorTabs[0].id;
+  const loaded = async () => {
+    const response = await fastify.inject({
+      url: `/api/v1/project/${context.project1.id}`,
+      method: 'GET',
+    });
+    return JSON.parse(response.body) as ProjectUpdateResponse;
+  };
+
+  assert.equal((await loaded()).animation, null, 'loads without an animation');
+
+  const animation = {
+    steps: [
+      {id: 'first', editorId: 'temp', holdMs: 1200},
+      {
+        id: 'second',
+        editorId: storedTab,
+        holdMs: 0,
+        transition: {ms: 701, easing: 'cubic-bezier(0.25, 0.1, 0.25, 1)'},
+      },
+    ],
+    transitionMs: 650,
+    easing: 'strong',
+    header: {mode: 'title', title: 'A story'},
+    fps: 24,
+  } satisfies ProjectUpdateBody['animation'];
+  const response = await fastify.inject({
+    url: `/api/v1/project/${context.project1.id}`,
+    method: 'PUT',
+    payload: {...buildUpdateRequest(storedTab), animation},
+  });
+  assert.equal(response.statusCode, 200, 'return status 200');
+
+  const project = await loaded();
+  const newTab = project.editorTabs.find(tab => tab.tabName === 'index.tsx');
+  assert.ok(newTab && newTab.id !== 'temp', 'the new tab has a server id');
+  assert.deepStrictEqual(project.animation, {
+    ...animation,
+    steps: [
+      {id: 'first', editorId: newTab.id, holdMs: 1200},
+      {
+        id: 'second',
+        editorId: storedTab,
+        holdMs: 0,
+        transition: {ms: 701, easing: 'cubic-bezier(0.25, 0.1, 0.25, 1)'},
+      },
+    ],
+  });
+
+  const withoutAnimation = await fastify.inject({
+    url: `/api/v1/project/${context.project1.id}`,
+    method: 'PUT',
+    payload: buildUpdateRequest(storedTab),
+  });
+  assert.equal(withoutAnimation.statusCode, 200, 'return status 200');
+  assert.deepStrictEqual(
+    (await loaded()).animation?.transitionMs,
+    650,
+    'an update without an animation keeps the saved one',
+  );
+});

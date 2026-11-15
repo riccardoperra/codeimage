@@ -30,6 +30,7 @@ import {useModality} from '@core/hooks/isMobile';
 import {createSignal, For, Match, Switch} from 'solid-js';
 import type {AppLocaleEntries} from '../../i18n';
 import * as styles from './SettingsDialog.css';
+import {getWhatsNew} from '../../state/whats-new';
 
 type SettingsDialogProps = ControlledDialogProps;
 
@@ -154,13 +155,14 @@ export function SettingsDialog(props: SettingsDialogProps) {
                         role={'switch'}
                         aria-label={t('rendering.useTakumi')}
                         aria-checked={config.get.renderer === 'takumi'}
-                        onClick={() =>
+                        onClick={() => {
                           config.setRenderer(
                             config.get.renderer === 'takumi'
                               ? 'dom-export'
                               : 'takumi',
-                          )
-                        }
+                          );
+                          getWhatsNew().seen('takumi');
+                        }}
                         style={{
                           position: 'relative',
                           width: '55px',

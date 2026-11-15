@@ -1,3 +1,4 @@
+import {getEditorStore} from '@codeimage/store/editor';
 import {useI18n} from '@codeimage/locale';
 import {getFrameState} from '@codeimage/store/editor/frame';
 import {displayHandle} from '@codeimage/store/frame/signature';
@@ -174,7 +175,13 @@ export default function Inspector(props: VariantProps) {
   const [t] = useI18n<AppLocaleEntries>();
   // One section at a time. All may be closed, which leaves the summaries.
   const [openSection, setOpenSection] = createSignal<PanelId | null>('themes');
+  const {animation} = getEditorStore();
   const [sheet, setSheet] = createSignal<'short' | 'tall'>('short');
+  createEffect(
+    on(animation.open, open => {
+      if (open) setSheet('short');
+    }),
+  );
   // How far down the page the layout ends, which sets how tall the sheet
   // may grow. The page's header is above the root.
   const [rootHeight, setRootHeight] = createSignal(innerHeight);
@@ -242,6 +249,22 @@ export default function Inspector(props: VariantProps) {
         ?.focus({preventScroll: true});
     });
   };
+  onMount(() => {
+    onCleanup(
+      props.model.controls.register(id => {
+        if (id.startsWith('signature.')) {
+          setSheet('tall');
+          toggleSection('frame', true);
+          controlOverlay.open('signature');
+          return;
+        }
+        const section = props.model.sections.find(section =>
+          section.controls.some(control => control.id === id),
+        );
+        if (section) openQuickControl(section.id, id);
+      }),
+    );
+  });
   // A click on the signature in the canvas opens its section at the handle.
   onCleanup(signatureEditor.register(() => controlOverlay.open('signature')));
   const signatureSummary = () => {
@@ -292,6 +315,9 @@ export default function Inspector(props: VariantProps) {
           <div class={styles.stage}>
             <props.stage.Canvas />
           </div>
+          <EditingControls state={props.pageState()}>
+            <props.stage.AnimatePanel />
+          </EditingControls>
           <Show
             when={
               props.pageState().kind !== 'read-only' || props.stage.compact()

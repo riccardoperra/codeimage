@@ -22,6 +22,16 @@ export const db = factory({
       fontWeight: Number,
     },
     editorTabs: Array,
+    animation: nullable(
+      {
+        steps: Array,
+        transitionMs: Number,
+        easing: String,
+        header: nullable({mode: String, title: String}),
+        fps: (): 24 | 30 | 50 | 60 => 30,
+      },
+      {defaultsToNull: true},
+    ),
     terminal: {
       id: String,
       textColor: String,

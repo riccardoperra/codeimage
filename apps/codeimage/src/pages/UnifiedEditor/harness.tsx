@@ -1,9 +1,10 @@
 import {getEditorSyncAdapter} from '@codeimage/store/editor/createEditorSync';
+import {getWhatsNew} from '../../state/whats-new';
 import {WhatsNewHost} from '../../components/WhatsNew/WhatsNewHost';
 import {commandMenu} from './command-menu/state';
 import {settings} from './shell/settings-state';
 import type {JSX} from 'solid-js';
-import {createEffect, createMemo, on, Show} from 'solid-js';
+import {createEffect, createMemo, For, on, Show} from 'solid-js';
 import {Dynamic} from 'solid-js/web';
 import {CommandMenu} from './command-menu/CommandMenu';
 import {EditorHost} from './EditorHost';
@@ -62,6 +63,23 @@ function Editor() {
 
   return (
     <>
+      <For
+        each={model.sections
+          .flatMap(section => section.controls)
+          .filter(control => control.visible())}
+      >
+        {control => {
+          getWhatsNew().bindLocation(`control:${control.id}`, async () => {
+            settings.close();
+            // Let Settings return focus before opening a dismissable panel.
+            await new Promise<void>(resolve =>
+              requestAnimationFrame(() => resolve()),
+            );
+            return model.controls.reveal(control.id);
+          });
+          return null;
+        }}
+      </For>
       <div
         class={`unified-editor ${pageClass}`}
         ref={page}

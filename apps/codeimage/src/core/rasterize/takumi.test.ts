@@ -108,6 +108,25 @@ describe('Takumi export', () => {
     );
   });
 
+  it('reads valid font bytes when the font server sends an HTML content type', async () => {
+    const data = new Uint8Array([0x77, 0x4f, 0x46, 0x32, 1, 2, 3]);
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(
+        async () =>
+          new Response(data, {headers: {'content-type': 'text/html'}}),
+      ),
+    );
+    const node = exportNode('code');
+    const {collectRasterizeResources, takumi} = await import('./takumi');
+    const collected = await collectRasterizeResources(node, options.codeFont);
+    expect(collected.resources.fonts[0].data).toEqual(data);
+    await expect(takumi(node, options)).resolves.toBeInstanceOf(Blob);
+    expect(renderer.registerFont).toHaveBeenCalledWith(
+      expect.objectContaining({data}),
+    );
+  });
+
   it('uses stored FontData without asking for local-font access at export', async () => {
     const blob = vi.fn(async () => new Blob([new Uint8Array([7, 8, 9])]));
     const source = {

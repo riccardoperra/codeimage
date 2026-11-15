@@ -40,6 +40,7 @@ export function CanvasToolbar(props: {stage: Stage}) {
       >
         {t('editor.copyImage')}
       </Button>
+      <props.stage.AnimateToggle />
     </div>
   );
 }

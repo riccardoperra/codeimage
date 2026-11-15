@@ -60,19 +60,33 @@ export function WhatsNewHost(props: {quiet?: Accessor<boolean>}) {
     () => watchQuiet(props.quiet),
     forced === 'nudge' || forced === 'showcase' ? forced : undefined,
   );
-  const dismiss = (keyboard = false) => news.dismiss(keyboard);
+  const [minimizedWithKeyboard, setMinimizedWithKeyboard] = createSignal(false);
+  const dismiss = (keyboard = false) => {
+    setMinimizedWithKeyboard(false);
+    news.dismiss(keyboard);
+  };
 
   return (
     <Show when={current()}>
       {entry => (
         <Show
           when={entry().surface === 'nudge'}
-          fallback={<Showcase release={entry().release} dismiss={dismiss} />}
+          fallback={
+            <Showcase
+              release={entry().release}
+              dismiss={dismiss}
+              minimize={keyboard => {
+                setMinimizedWithKeyboard(keyboard);
+                news.minimize(entry().release.id);
+              }}
+            />
+          }
         >
           <Nudge
             release={entry().release}
             dismiss={dismiss}
             entry={entry().entry}
+            keyboardMinimize={minimizedWithKeyboard()}
           />
         </Show>
       )}
