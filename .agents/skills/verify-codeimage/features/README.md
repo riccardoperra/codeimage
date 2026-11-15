@@ -12,6 +12,7 @@
 | [What’s new](whats-new.md)           | Eligible first visit, Settings archive, feature dots | Archive → command menu                                                                                      |
 | [Presets](presets.md)                | Studio → Presets                                     | Create/reload/apply; `preset-management` checks rename and persistent delete                                |
 | [Secrets](secrets.md)                | Editor warning, image actions                        | Synthetic key review/cancel, Redact all and real download                                                   |
+| [Animate](animate.md)                | Animate in the frame actions, command menu           | `animate` opens the island, plays, returns to the code through the pill, resizes a hold and reloads         |
 | [Projects](projects.md)              | Sign in, Dashboard New/card, project URL             | Mock login/autosave/reopen, dashboard rename/clone/delete, delayed-start and authorization boundaries       |
 
 Run `VERIFY_AUDIT=1 node .agents/skills/verify-codeimage/scripts/verify.mjs` from repository root. `audit.json` is the authoritative per-journey result; the table describes implemented coverage, not a guarantee every future run passes. The default helper still provides a quick editor-to-PNG smoke run.
@@ -20,8 +21,8 @@ Source paths in feature files are relative to `apps/codeimage/src/` unless expli
 
 Every feature requires both source review and live evidence during maintenance. Each file distinguishes the executable journey from additional sub-features needing targeted proof. Do not claim complete matrix coverage from one convenient entry point.
 
-Scope follows current checkout HEAD, including the November 14–15 unified editor, line marks, signatures, window styles, What's new and Takumi merges. `pages/UnifiedEditor/` now implements the production guest `/` editor; its folder name is not a reason to exclude it. Authenticated `/` is Dashboard; saved project URLs still use classic Editor. The theme-card and editor-controls prototype routes are gone. Animation core is present, but animation UI and CLI from separate branch histories are not reachable features at this HEAD.
+Scope follows current checkout HEAD, including the November 14–15 unified editor, line marks, signatures, window styles, What's new and Takumi merges. `pages/UnifiedEditor/` now implements the production guest `/` editor; its folder name is not a reason to exclude it. Authenticated `/` is Dashboard; saved project URLs still use classic Editor. The theme-card and editor-controls prototype routes are gone. The Animate panel is part of the guest `/` editor. The animation CLI from a separate branch history is not a reachable feature at this HEAD.
 
-Additional case names are `export-options`, `settings-persistence`, `annotations`, `signature-management`, `editor-options`, and `preset-management`. With the original eleven this is seventeen selectable journeys. Source paths are unchanged by the check migration. Read [the legacy-check retirement plan](../references/legacy-checks.md) before deleting old scripts.
+Additional case names are `export-options`, `settings-persistence`, `annotations`, `signature-management`, `editor-options`, `preset-management`, and `animate`. With the original eleven this is eighteen selectable journeys. Source paths are unchanged by the check migration. Read [the legacy-check retirement plan](../references/legacy-checks.md) before deleting old scripts.
 
 For real API and PostgreSQL prerequisites, read [backend modes](../references/backend-modes.md). The automated MSW-specific boundary fixtures cannot establish real API authorization.

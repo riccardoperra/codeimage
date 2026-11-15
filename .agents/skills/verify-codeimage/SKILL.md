@@ -58,7 +58,7 @@ The audit helper `scripts/audit.mjs` is invoked by the main helper when `VERIFY_
 
 ## Scope and maintenance
 
-The feature map follows this checkout, not proposals or unmerged branches. Source readers must check recent commits for new user-facing paths before claiming completeness. Current animation core does not expose an animation editor and there is no CLI package in this checkout. Live runs use the real local web app with its existing MSW/Auth0 boundary; production OAuth, PostgreSQL and platform-native sharing remain separate integration checks. Audit assertions prove selected journeys, not every format, control, language or viewport.
+The feature map follows this checkout, not proposals or unmerged branches. Source readers must check recent commits for new user-facing paths before claiming completeness. The Animate panel of the guest editor is mapped in [features/animate.md](features/animate.md); there is no CLI package in this checkout. Live runs use the real local web app with its existing MSW/Auth0 boundary; production OAuth, PostgreSQL and platform-native sharing remain separate integration checks. Audit assertions prove selected journeys, not every format, control, language or viewport.
 
 ## Legacy check migration
 

@@ -663,6 +663,111 @@ export async function audit({page, context, base, out, server}) {
     await page.getByRole('button', {name: 'Presets', exact: true}).click();
     assert.equal(await item('Renamed preset').count(), 0);
   });
+  await feature('animate', async () => {
+    // The Editor window names its Add tab button; the default one does not.
+    await section('window');
+    await page
+      .locator('[data-control="window.style"]')
+      .getByRole('button')
+      .click();
+    await page.getByRole('radio', {name: 'Editor', exact: true}).focus();
+    await page.keyboard.press('Space');
+    await page
+      .getByRole('dialog', {name: 'Window', exact: true})
+      .getByRole('button', {name: 'Close', exact: true})
+      .click();
+    await editor().fill('const step = 1;');
+    await page
+      .locator('[data-window-tabs]')
+      .filter({has: page.getByRole('button', {name: 'Add tab', exact: true})})
+      .first()
+      .getByRole('button', {name: 'Add tab', exact: true})
+      .click();
+    await editor().fill('const step = 1;\nconst next = 2;');
+    const toggle = page.locator('[data-animate-toggle]');
+    const panel = page.locator('[data-animate-panel]');
+    const stage = page.locator('[data-animation-stage]:visible');
+    const track = page.locator('[data-animation-track]');
+    const hold = page
+      .locator('[data-animation-segment][data-kind="hold"]')
+      .first();
+    const open = async () => {
+      await toggle.click();
+      await panel.waitFor();
+      assert.equal(await toggle.getAttribute('aria-pressed'), 'true');
+    };
+    await open();
+    const kinds = await page
+      .locator('[data-animation-segment]')
+      .evaluateAll(segments => segments.map(segment => segment.dataset.kind));
+    assert.ok(kinds.length >= 3, 'two steps or more');
+    assert.ok(
+      kinds.every((kind, i) => kind === (i % 2 ? 'transition' : 'hold')),
+      'holds and transitions alternate',
+    );
+    await panel
+      .getByRole('button', {name: 'Play animation', exact: true})
+      .click();
+    await stage.waitFor();
+    await page.locator('[data-preview-pill]').waitFor();
+    await page.waitForFunction(
+      () =>
+        parseFloat(
+          document.querySelector('[data-animation-time]')?.textContent ?? '0',
+        ) > 0,
+    );
+    await shot('animate-playing');
+    await page.locator('[data-preview-pill]').click();
+    await stage.waitFor({state: 'hidden'});
+    assert.ok(
+      await editor().evaluate(element => element === document.activeElement),
+      'the pill returns the focus to the code',
+    );
+    const value = async locator =>
+      Number(await locator.getAttribute('aria-valuenow'));
+    const axis = async () => Number(await track.getAttribute('data-axis-ms'));
+    const [before, total] = [await value(hold), await axis()];
+    const handle = await hold.locator('[data-segment-resize]').boundingBox();
+    const [x, y] = [handle.x + handle.width / 2, handle.y + handle.height / 2];
+    await page.mouse.move(x, y);
+    await page.mouse.down();
+    await page.mouse.move(x + 60, y, {steps: 4});
+    await page.mouse.move(x + 120, y, {steps: 4});
+    const dragged = await value(hold);
+    assert.ok(dragged > before && dragged % 100 === 0, 'snaps to 100 ms');
+    assert.equal(await axis(), total, 'the axis is frozen during the drag');
+    await page.mouse.up();
+    assert.equal(await value(hold), dragged);
+    assert.equal(await axis(), total + dragged - before);
+    // The save is debounced, so a reload right after the drag would lose it.
+    // waitForFunction takes a promise as true: poll the stored value here.
+    const savedHold = () =>
+      page.evaluate(
+        () =>
+          new Promise(resolve => {
+            const request = indexedDB.open('keyval-store');
+            request.onsuccess = () => {
+              const read = request.result
+                .transaction('keyval')
+                .objectStore('keyval')
+                .get('document');
+              read.onsuccess = () =>
+                resolve(read.result?.animation?.steps?.[0]?.holdMs);
+            };
+          }),
+      );
+    for (let i = 0; i < 50 && (await savedHold()) !== dragged; i++)
+      await page.waitForTimeout(100);
+    assert.equal(await savedHold(), dragged, 'the drag saves the document');
+    await page.reload();
+    await editor().waitFor();
+    await open();
+    assert.equal(await value(hold), dragged, 'the resize survives a reload');
+    await panel
+      .getByRole('button', {name: 'Close animation', exact: true})
+      .click();
+    await panel.waitFor({state: 'hidden'});
+  });
   await feature('projects', async () => {
     await page
       .getByRole('button', {name: 'Sign in with GitHub', exact: true})
