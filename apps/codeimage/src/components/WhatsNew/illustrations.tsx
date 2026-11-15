@@ -38,6 +38,14 @@ function Frame(props: IllustrationProps & {children: JSX.Element}) {
   return (
     <div
       ref={frame}
+      on:animationend={() => {
+        if (
+          frame
+            .getAnimations({subtree: true})
+            .every(animation => animation.playState === 'finished')
+        )
+          setPlaying(false);
+      }}
       class={styles.frame}
       data-mode={props.mode ?? 'still'}
       data-playing={playing() ? '' : undefined}
@@ -526,15 +534,15 @@ function SocialIllustration(props: IllustrationProps) {
         <rect
           class={styles.wash}
           x="182"
-          y="34"
-          width="88"
-          height="50"
+          y="32"
+          width="96"
+          height="54"
           rx="6"
         />
-        <Window x={194} y={38} w={64} h={42}>
-          <Code x={204} y={67} small />
+        <Window x={198} y={38} w={64} h={42}>
+          <Code x={208} y={67} small />
         </Window>
-        <text class={styles.label} x="211" y="103">
+        <text class={styles.label} x="215" y="103">
           16:9
         </text>
       </g>
