@@ -23,6 +23,11 @@ const {values: args} = parseArgs({
     // render package's files, as Takumi does, so a diff measures the motion
     // and not the app's older Inter.
     'app-fonts': {type: 'boolean', default: false},
+    // Also compares each hold with the static export frame of its tab, in
+    // Chrome and in Takumi, to tell a gap of the preview from a static one.
+    holds: {type: 'boolean', default: false},
+    // Extra rules for the page, to measure what a change to the stage does.
+    'stage-css': {type: 'string'},
   },
 });
 
@@ -35,7 +40,12 @@ const {Renderer} = require('@takumi-rs/core');
 type Document = ReturnType<typeof parseSnapshotDocument>;
 // The part of the app's editor store the script reads in the page.
 type EditorStore = {
-  animation: {playback(): {state: string}; playhead(): number};
+  animation: {
+    playback(): {state: string};
+    playhead(): number;
+    actions: {edit(): void};
+  };
+  editor: {actions: {setActiveEditorId(id: string): void}};
 };
 interface Settings {
   steps: {editorId: string; holdMs: number}[];
@@ -51,7 +61,15 @@ interface Measured {
   runs: {text: string; x: number; y: number; width: number}[];
 }
 interface Entry {
-  renderFrame(document: Document): Promise<{fontFamily: string}>;
+  renderFrame(
+    document: Document,
+    editorId?: string,
+  ): Promise<{fontFamily: string; html: string; css: string}>;
+  frameSizeCss(size?: {width: number; height: number}): string;
+  targetLayout(
+    frame: Document['frame'],
+    natural: {width: number; height: number},
+  ): {size: {width: number; height: number}; css: string} | undefined;
   renderAnimationScenes(
     document: Document,
     settings: Settings,
@@ -338,6 +356,36 @@ async function takumi() {
     };
     return {
       faces,
+      // The static export of one tab, as animation-endpoints.ts renders it.
+      staticOf: async (editorId: string) => {
+        const {scale} = document;
+        const frame = await entry.renderFrame(document, editorId);
+        const html = normalizeHtml(frame.html);
+        const css = pageCss(frame.css);
+        const content = await renderer.measure(html, {
+          css: [...css, entry.frameSizeCss()],
+          fontFamilies,
+          devicePixelRatio: scale,
+        });
+        const natural = {
+          width: content.width / scale,
+          height: content.height / scale,
+        };
+        const target = entry.targetLayout(document.frame, natural);
+        const layout = target?.size ?? natural;
+        return PNG.sync.read(
+          Buffer.from(
+            await renderer.render(html, {
+              width: Math.floor(Math.round(layout.width) * scale),
+              height: Math.floor(Math.round(layout.height) * scale),
+              css: [...css, entry.frameSizeCss(layout), target?.css ?? ''],
+              fontFamilies,
+              format: 'png',
+              devicePixelRatio: scale,
+            }),
+          ),
+        );
+      },
       frameAt: async (ms: number) => {
         const {scene, timeMs} = sceneAt(ms);
         return PNG.sync.read(
@@ -358,13 +406,31 @@ async function takumi() {
   };
 }
 
-// Draws only the preview, at the top left of the page, unzoomed.
-const PREVIEW_ONLY_CSS = `
+const STAGE = '[data-animation-stage]';
+// The frame the web export captures.
+const EXPORT_FRAME = '[class*="previewPortal"]';
+
+// Draws only `selector`, at the top left of the page, unzoomed. The parts it
+// hides itself stay hidden, such as the spacer of the gutter.
+const showOnly = (page: Page, selector: string) =>
+  page.evaluate(
+    css => {
+      const style =
+        window.document.querySelector('#parity-only') ??
+        window.document.head.appendChild(
+          Object.assign(window.document.createElement('style'), {
+            id: 'parity-only',
+          }),
+        );
+      style.textContent = css;
+    },
+    `
 html, body { background: transparent !important; }
-body * { visibility: hidden !important; }
-[data-animation-stage], [data-animation-stage] * { visibility: visible !important; }
-[data-animation-stage] { position: fixed !important; left: 0 !important; top: 0 !important; zoom: 1 !important; z-index: 2147483647 !important; }
-`;
+body *:not(${selector}, ${selector} *) { visibility: hidden !important; }
+${selector} { visibility: visible !important; opacity: 1 !important; position: fixed !important; left: 0 !important; top: 0 !important; zoom: 1 !important; z-index: 2147483647 !important; }
+${selector}::after { display: none !important; }
+`,
+  );
 
 async function openPreview(page: Page) {
   if (args.worker) {
@@ -379,7 +445,8 @@ async function openPreview(page: Page) {
     .waitFor({timeout: 300_000});
   const close = page.getByRole('button', {name: 'close', exact: true});
   if (await close.isVisible()) await close.click();
-  await page.addStyleTag({content: PREVIEW_ONLY_CSS});
+  await showOnly(page, STAGE);
+  if (args['stage-css']) await page.addStyleTag({content: args['stage-css']});
 }
 
 // Loads the case into the editor's stores. The mounted code editor syncs
@@ -473,6 +540,33 @@ async function previewAt(page: Page, ms: number) {
   );
 }
 
+// The static frame of one tab, as the web export draws it.
+async function exportFrameOf(page: Page, editorId: string) {
+  await page.evaluate(editorId => {
+    const {animation, editor} = (
+      window as unknown as {editorStore: EditorStore}
+    ).editorStore;
+    animation.actions.edit();
+    editor.actions.setActiveEditorId(editorId);
+  }, editorId);
+  // The export frame takes the size the editor frame measures after a timeout.
+  await page.waitForTimeout(800);
+  await showOnly(page, EXPORT_FRAME);
+  try {
+    const box = await page
+      .locator(`${EXPORT_FRAME} [class*="Frame_container"]`)
+      .evaluate(element => {
+        const {x, y, width, height} = element.getBoundingClientRect();
+        return {x, y, width, height};
+      });
+    return PNG.sync.read(
+      await page.screenshot({clip: box, omitBackground: true}),
+    );
+  } finally {
+    await showOnly(page, STAGE);
+  }
+}
+
 function diffPercent(a: PNG, b: PNG, file: string) {
   const diff = new PNG({width: a.width, height: a.height});
   const pixels = pixelmatch(a.data, b.data, diff.data, a.width, a.height, {
@@ -544,6 +638,47 @@ async function main() {
           ok,
         });
         console.log(JSON.stringify(rows.at(-1)));
+      }
+      if (!args.holds) continue;
+      const tabs = document.editor.editors.map(({id}) => id);
+      for (const [hold, editorId, progress] of [
+        ['from', tabs[0], 0],
+        ['to', tabs[1], 1],
+      ] as const) {
+        const read = async (renderer: string) =>
+          PNG.sync.read(
+            await readFile(
+              join(args.out, `${name}-${progress * 100}-${renderer}.png`),
+            ),
+          );
+        const images = {
+          stage: await read('chrome'),
+          'takumi hold': await read('takumi'),
+          'export frame': await exportFrameOf(page, editorId),
+          'takumi static': await takumiCase.staticOf(editorId),
+        };
+        const compare = (a: keyof typeof images, b: keyof typeof images) => {
+          const [first, second] = [images[a], images[b]];
+          return first.width === second.width && first.height === second.height
+            ? `${diffPercent(first, second, '').percent.toFixed(3)}%`
+            : 'size differs';
+        };
+        console.log(
+          JSON.stringify({
+            case: name,
+            hold,
+            'stage vs takumi hold': compare('stage', 'takumi hold'),
+            'takumi hold vs takumi static': compare(
+              'takumi hold',
+              'takumi static',
+            ),
+            'export frame vs takumi static': compare(
+              'export frame',
+              'takumi static',
+            ),
+            'stage vs export frame': compare('stage', 'export frame'),
+          }),
+        );
       }
     }
   } finally {
