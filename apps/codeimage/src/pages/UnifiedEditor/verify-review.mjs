@@ -157,7 +157,7 @@ try {
       });
       const menu = async () => {
         await page.locator('[data-export-menu]').click();
-        await page.getByRole('menu').waitFor();
+        await page.locator('[data-export-action]').first().waitFor();
       };
       const command = async query => {
         await page.keyboard.press(isApple ? 'Meta+k' : 'Control+k');
@@ -220,23 +220,16 @@ try {
       await review('Export button', () =>
         page.locator('[data-export-image]').click(),
       );
-      for (const label of [
-        'Export image',
-        'Export one image per tab',
-        'Copy to clipboard',
-        'Open in new tab',
-        'Share your code',
+      for (const [label, action] of [
+        ['Export image', 'image'],
+        ['Export one image per tab', 'tabs'],
+        ['Copy to clipboard', 'copy'],
+        ['Open in new tab', 'new-tab'],
+        ['Share your code', 'share'],
       ]) {
         await review(`menu ${label}`, async () => {
           await menu();
-          await page
-            .getByRole('menuitem', {
-              name: label,
-              exact:
-                label !== 'Export image' &&
-                label !== 'Export one image per tab',
-            })
-            .click();
+          await page.locator(`[data-export-action="${action}"]`).click();
         });
         await review(`command ${label}`, () => command(label));
       }

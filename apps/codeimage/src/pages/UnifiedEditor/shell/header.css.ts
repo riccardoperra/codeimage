@@ -81,3 +81,11 @@ export const actions = style({
   gap: themeVars.spacing['2'],
   marginLeft: 'auto',
 });
+
+export const search = style({gap: '8px'});
+
+export const kbd = style({
+  font: 'inherit',
+  fontSize: '11px',
+  color: c.descriptionTextColor,
+});
