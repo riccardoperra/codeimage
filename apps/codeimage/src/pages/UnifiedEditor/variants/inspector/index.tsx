@@ -16,6 +16,7 @@ import {
 } from 'solid-js';
 import type {ParentProps} from 'solid-js';
 import type {AppLocaleEntries} from '../../../../i18n';
+import {EditingControls} from '../../EditingControls';
 import type {VariantMeta, VariantProps} from '../../contract';
 import {controlOverlay, SignatureRow} from '../../controls/ControlOverlay';
 import {CanvasToolbar} from '../../controls/CanvasToolbar';
@@ -248,6 +249,22 @@ export default function Inspector(props: VariantProps) {
         ?.focus({preventScroll: true});
     });
   };
+  onMount(() => {
+    onCleanup(
+      props.model.controls.register(id => {
+        if (id.startsWith('signature.')) {
+          setSheet('tall');
+          toggleSection('frame', true);
+          controlOverlay.open('signature');
+          return;
+        }
+        const section = props.model.sections.find(section =>
+          section.controls.some(control => control.id === id),
+        );
+        if (section) openQuickControl(section.id, id);
+      }),
+    );
+  });
   // A click on the signature in the canvas opens its section at the handle.
   onCleanup(signatureEditor.register(() => controlOverlay.open('signature')));
   const signatureSummary = () => {
@@ -298,182 +315,196 @@ export default function Inspector(props: VariantProps) {
           <div class={styles.stage}>
             <props.stage.Canvas />
           </div>
-          <props.stage.AnimatePanel />
-          <div class={styles.frameActions}>
-            <CanvasToolbar stage={props.stage} />
-            <Show when={props.stage.compact()}>
-              <props.stage.ExportButton />
-            </Show>
-          </div>
-        </main>
-        <aside
-          class={styles.panel}
-          data-control-panel
-          aria-label={t('editor.imageInspector')}
-          ref={element => {
-            panel = element;
-          }}
-        >
-          <Button
-            class={styles.sheetHandle}
-            size="sm"
-            theme="secondary"
-            variant="ghost"
-            aria-label={
-              sheet() === 'short'
-                ? t('editor.expandInspector')
-                : t('editor.collapseInspector')
+          <EditingControls state={props.pageState()}>
+            <props.stage.AnimatePanel />
+          </EditingControls>
+          <Show
+            when={
+              props.pageState().kind !== 'read-only' || props.stage.compact()
             }
-            aria-expanded={sheet() === 'tall'}
+          >
+            <div class={styles.frameActions}>
+              <EditingControls state={props.pageState()}>
+                <CanvasToolbar stage={props.stage} />
+              </EditingControls>
+              <Show when={props.stage.compact()}>
+                <props.stage.ExportButton />
+              </Show>
+            </div>
+          </Show>
+        </main>
+        <EditingControls state={props.pageState()}>
+          <aside
+            class={styles.panel}
+            data-control-panel
+            aria-label={t('editor.imageInspector')}
             ref={element => {
-              handle = element;
+              panel = element;
             }}
-            onPointerDown={event => {
-              if (!event.isPrimary || event.button !== 0 || !panel) return;
-              drag = {
-                pointerId: event.pointerId,
-                startY: event.clientY,
-                height: panel.clientHeight,
-                time: event.timeStamp,
-              };
-              event.currentTarget.setPointerCapture(event.pointerId);
-            }}
-            onPointerMove={event => {
-              if (!drag || event.pointerId !== drag.pointerId || !panel) return;
-              const distance = drag.startY - event.clientY;
-              if (Math.abs(distance) < 8 && !skipHandleClick) return;
-              skipHandleClick = true;
-              panel.style.height = `${Math.max(92, Math.min(tallSheet(), drag.height + distance))}px`;
-              setSheet('tall');
-            }}
-            onPointerUp={event => {
-              if (!drag || event.pointerId !== drag.pointerId || !panel) return;
-              if (skipHandleClick) {
-                const velocity =
-                  (drag.startY - event.clientY) /
-                  Math.max(1, event.timeStamp - drag.time);
-                setSheet(
-                  Math.abs(velocity) > 0.11
-                    ? velocity > 0
-                      ? 'tall'
-                      : 'short'
-                    : panel.clientHeight > (92 + tallSheet()) / 2
-                      ? 'tall'
-                      : 'short',
-                );
+          >
+            <Button
+              class={styles.sheetHandle}
+              size="sm"
+              theme="secondary"
+              variant="ghost"
+              aria-label={
+                sheet() === 'short'
+                  ? t('editor.expandInspector')
+                  : t('editor.collapseInspector')
               }
-              panel.style.height = '';
-              drag = undefined;
-            }}
-            onPointerCancel={() => {
-              drag = undefined;
-              skipHandleClick = false;
-              if (panel) panel.style.height = '';
-            }}
-            onClick={() => {
-              if (skipHandleClick) {
+              aria-expanded={sheet() === 'tall'}
+              ref={element => {
+                handle = element;
+              }}
+              onPointerDown={event => {
+                if (!event.isPrimary || event.button !== 0 || !panel) return;
+                drag = {
+                  pointerId: event.pointerId,
+                  startY: event.clientY,
+                  height: panel.clientHeight,
+                  time: event.timeStamp,
+                };
+                event.currentTarget.setPointerCapture(event.pointerId);
+              }}
+              onPointerMove={event => {
+                if (!drag || event.pointerId !== drag.pointerId || !panel)
+                  return;
+                const distance = drag.startY - event.clientY;
+                if (Math.abs(distance) < 8 && !skipHandleClick) return;
+                skipHandleClick = true;
+                panel.style.height = `${Math.max(92, Math.min(tallSheet(), drag.height + distance))}px`;
+                setSheet('tall');
+              }}
+              onPointerUp={event => {
+                if (!drag || event.pointerId !== drag.pointerId || !panel)
+                  return;
+                if (skipHandleClick) {
+                  const velocity =
+                    (drag.startY - event.clientY) /
+                    Math.max(1, event.timeStamp - drag.time);
+                  setSheet(
+                    Math.abs(velocity) > 0.11
+                      ? velocity > 0
+                        ? 'tall'
+                        : 'short'
+                      : panel.clientHeight > (92 + tallSheet()) / 2
+                        ? 'tall'
+                        : 'short',
+                  );
+                }
+                panel.style.height = '';
+                drag = undefined;
+              }}
+              onPointerCancel={() => {
+                drag = undefined;
                 skipHandleClick = false;
-                return;
-              }
-              setSheet(current => (current === 'short' ? 'tall' : 'short'));
-            }}
-          >
-            <span class={styles.sheetGrip} />
-          </Button>
-          <div class={styles.quickControls}>
-            <Show when={mobile()}>
-              <ShortcutHelp />
-            </Show>
-            <Button
-              theme="secondary"
-              size="sm"
-              variant="ghost"
-              onClick={() => openQuickControl('themes')}
+                if (panel) panel.style.height = '';
+              }}
+              onClick={() => {
+                if (skipHandleClick) {
+                  skipHandleClick = false;
+                  return;
+                }
+                setSheet(current => (current === 'short' ? 'tall' : 'short'));
+              }}
             >
-              {t('frame.theme')}
+              <span class={styles.sheetGrip} />
             </Button>
-            <Button
-              theme="secondary"
-              size="sm"
-              variant="ghost"
-              onClick={() => openQuickControl('frame', 'frame.background')}
+            <div class={styles.quickControls}>
+              <Show when={mobile()}>
+                <ShortcutHelp editable={props.pageState().editable} />
+              </Show>
+              <Button
+                theme="secondary"
+                size="sm"
+                variant="ghost"
+                onClick={() => openQuickControl('themes')}
+              >
+                {t('frame.theme')}
+              </Button>
+              <Button
+                theme="secondary"
+                size="sm"
+                variant="ghost"
+                onClick={() => openQuickControl('frame', 'frame.background')}
+              >
+                {t('frame.background')}
+              </Button>
+              <Button
+                theme="secondary"
+                size="sm"
+                variant="ghost"
+                onClick={() => openQuickControl('frame', 'frame.padding')}
+              >
+                {t('frame.padding')}
+              </Button>
+              <Button
+                theme="secondary"
+                size="sm"
+                variant="ghost"
+                onClick={() => openQuickControl('editor', 'editor.language')}
+              >
+                {t('frame.language')}
+              </Button>
+            </div>
+            <div
+              class={styles.panelScroll}
+              ref={element => {
+                scroll = element;
+                const observer = new ResizeObserver(measureFill);
+                observer.observe(element);
+                onCleanup(() => observer.disconnect());
+              }}
+              onKeyDown={event => {
+                if (event.key !== 'Escape' || fromPortal(event)) return;
+                event.stopPropagation();
+                setSheet('short');
+                handle?.focus();
+              }}
             >
-              {t('frame.background')}
-            </Button>
-            <Button
-              theme="secondary"
-              size="sm"
-              variant="ghost"
-              onClick={() => openQuickControl('frame', 'frame.padding')}
-            >
-              {t('frame.padding')}
-            </Button>
-            <Button
-              theme="secondary"
-              size="sm"
-              variant="ghost"
-              onClick={() => openQuickControl('editor', 'editor.language')}
-            >
-              {t('frame.language')}
-            </Button>
-          </div>
-          <div
-            class={styles.panelScroll}
-            ref={element => {
-              scroll = element;
-              const observer = new ResizeObserver(measureFill);
-              observer.observe(element);
-              onCleanup(() => observer.disconnect());
-            }}
-            onKeyDown={event => {
-              if (event.key !== 'Escape' || fromPortal(event)) return;
-              event.stopPropagation();
-              setSheet('short');
-              handle?.focus();
-            }}
-          >
-            <Section
-              id="themes"
-              title={t('frame.theme')}
-              summary={selectedTheme()?.name}
-              open={openSection() === 'themes'}
-              onOpenChange={open => toggleSection('themes', open)}
-              height={fill()}
-            >
-              <div class={styles.themes}>
-                <props.ThemePicker size={mobile() ? 'md' : 'sm'} />
-              </div>
-            </Section>
-            <For
-              each={props.model.sections.filter(
-                section => section.id !== 'signature',
-              )}
-            >
-              {section => (
-                <Section
-                  id={section.id}
-                  title={
-                    section.id === 'editor'
-                      ? t('editor.code')
-                      : section.id === 'window'
-                        ? t('frame.terminal')
-                        : section.label()
-                  }
-                  summary={summaries[section.id]()}
-                  open={openSection() === section.id}
-                  onOpenChange={open => toggleSection(section.id, open)}
-                >
-                  <For each={sectionControls(section.id, section.controls)}>
-                    {control => <ControlRow control={control} />}
-                  </For>
-                  <Show when={section.id === 'frame'}>
-                    <SignatureRow />
-                  </Show>
-                </Section>
-              )}
-            </For>
-          </div>
-        </aside>
+              <Section
+                id="themes"
+                title={t('frame.theme')}
+                summary={selectedTheme()?.name}
+                open={openSection() === 'themes'}
+                onOpenChange={open => toggleSection('themes', open)}
+                height={fill()}
+              >
+                <div class={styles.themes}>
+                  <props.ThemePicker size={mobile() ? 'md' : 'sm'} />
+                </div>
+              </Section>
+              <For
+                each={props.model.sections.filter(
+                  section => section.id !== 'signature',
+                )}
+              >
+                {section => (
+                  <Section
+                    id={section.id}
+                    title={
+                      section.id === 'editor'
+                        ? t('editor.code')
+                        : section.id === 'window'
+                          ? t('frame.terminal')
+                          : section.label()
+                    }
+                    summary={summaries[section.id]()}
+                    open={openSection() === section.id}
+                    onOpenChange={open => toggleSection(section.id, open)}
+                  >
+                    <For each={sectionControls(section.id, section.controls)}>
+                      {control => <ControlRow control={control} />}
+                    </For>
+                    <Show when={section.id === 'frame'}>
+                      <SignatureRow />
+                    </Show>
+                  </Section>
+                )}
+              </For>
+            </div>
+          </aside>
+        </EditingControls>
       </div>
     </div>
   );

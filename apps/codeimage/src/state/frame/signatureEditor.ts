@@ -7,7 +7,7 @@ const [handler, setHandler] = createSignal<Open | undefined>();
 /**
  * Lets the editor on screen open its signature settings when the signature
  * on the canvas is clicked. Without a registered layout the canvas draws the
- * signature as plain, unclickable content, as `/classic` and the export do.
+ * signature as plain, unclickable content, as the export does.
  */
 export const signatureEditor = {
   available: () => !!handler(),

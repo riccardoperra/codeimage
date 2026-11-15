@@ -26,7 +26,7 @@ export async function verifyColdStart({fresh, out}) {
             name,
             layout,
             viewport,
-            initialize: async context => {
+            initialize: async (context, page) => {
               await context.addInitScript(() => {
                 window.__frameSamples = JSON.parse(
                   sessionStorage.getItem('verify:frame-samples') ?? '[]',
@@ -109,8 +109,7 @@ export async function verifyColdStart({fresh, out}) {
                   '**/Tabs/TabName/TabName.tsx*',
                   async route => {
                     inputs++;
-                    await context
-                      .pages()[0]
+                    await page
                       .waitForFunction(
                         () =>
                           window.__frameSamples.some(

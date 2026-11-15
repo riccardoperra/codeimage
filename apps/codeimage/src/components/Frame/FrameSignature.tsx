@@ -121,18 +121,22 @@ function FitText(props: ParentProps<{class?: string}>) {
 }
 
 /** The signature itself, without its place in the frame. */
-export function SignatureMark(props: {signature: Signature}) {
+export function SignatureMark(props: {
+  signature: Signature;
+  ref?: (element: HTMLElement) => void;
+}) {
   const handle = () => displayHandle(props.signature);
   return (
     <Switch>
       <Match when={props.signature.style === 'minimal'}>
-        <div class={styles.minimal}>
+        <div ref={element => props.ref?.(element)} class={styles.minimal}>
           <PlatformIcon platform={props.signature.platform} size={16} />
           <FitText>{handle()}</FitText>
         </div>
       </Match>
       <Match when={props.signature.style === 'pill'}>
         <div
+          ref={element => props.ref?.(element)}
           class={styles.pill}
           classList={{[styles.pillWithIcon]: !!props.signature.platform}}
         >
@@ -141,7 +145,7 @@ export function SignatureMark(props: {signature: Signature}) {
         </div>
       </Match>
       <Match when={props.signature.style === 'card'}>
-        <div class={styles.card}>
+        <div ref={element => props.ref?.(element)} class={styles.card}>
           <Avatar signature={props.signature} />
           <div class={styles.cardText}>
             <FitText class={styles.cardName}>
@@ -172,6 +176,8 @@ export function FrameSignature(props: {
   /** Makes the signature a button that opens its settings, in the editor only. */
   onEdit?: () => void;
   editLabel?: string;
+  /** Receives the visible mark: the edit button, or the mark itself. */
+  markRef?: (element: HTMLElement) => void;
 }) {
   const tone = createSignatureTone(() => props.background);
   // Keep the editor's focus and selection, and start no drag.
@@ -199,9 +205,12 @@ export function FrameSignature(props: {
         >
           <Show
             when={props.onEdit}
-            fallback={<SignatureMark signature={signature()} />}
+            fallback={
+              <SignatureMark signature={signature()} ref={props.markRef} />
+            }
           >
             <button
+              ref={element => props.markRef?.(element)}
               type="button"
               class={styles.edit}
               data-signature-style={signature().style}

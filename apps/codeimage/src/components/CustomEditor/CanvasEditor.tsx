@@ -29,6 +29,7 @@ import {unwrap} from 'solid-js/store';
 import type {AppLocaleEntries} from '../../i18n';
 import {MAX_EDITOR_TABS} from '../../state/editor/model';
 import {SparklesIcon} from '../Icons/SparklesIcon';
+import {createWatermarkCodeSource} from '../../core/watermark/codemirror';
 import CustomEditor from './CustomEditor';
 import {createSecretsExtension} from './plugins/secrets';
 
@@ -55,6 +56,7 @@ export default function CanvasEditor(props: CanvasEditorProps) {
   const [t] = useI18n<AppLocaleEntries>();
   const [editorView, setEditorView] = createSignal<EditorView>();
   const activeEditorStore = getActiveEditorStore();
+  createWatermarkCodeSource(editorView);
   const secrets = createSecretsExtension(
     () => ({
       warning: ruleId =>
@@ -170,6 +172,7 @@ export default function CanvasEditor(props: CanvasEditorProps) {
         ),
         importDiff.of({before, after}),
       ],
+      userEvent: 'input.diff-import',
       annotations: isolateHistory.of('full'),
     });
     toast.dismiss(toastId);

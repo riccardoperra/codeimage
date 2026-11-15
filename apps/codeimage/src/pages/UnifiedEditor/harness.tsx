@@ -1,12 +1,16 @@
+import {getEditorSyncAdapter} from '@codeimage/store/editor/createEditorSync';
+import {getWhatsNew} from '../../state/whats-new';
 import {WhatsNewHost} from '../../components/WhatsNew/WhatsNewHost';
 import {commandMenu} from './command-menu/state';
 import {settings} from './shell/settings-state';
 import type {JSX} from 'solid-js';
-import {createEffect, Show} from 'solid-js';
+import {createEffect, createMemo, For, on, Show} from 'solid-js';
 import {Dynamic} from 'solid-js/web';
 import {CommandMenu} from './command-menu/CommandMenu';
 import {EditorHost} from './EditorHost';
 import {createEditorControlsModel} from './model';
+import {controlOverlay} from './controls/ControlOverlay';
+import {resolveEditorPageState} from './page-state';
 import {layouts} from './registry';
 import {Header} from './shell/Header';
 import {page as pageClass} from './shell/header.css';
@@ -18,7 +22,26 @@ import {ThemePicker} from './theme-styles/ThemePicker';
 import {themeStyle} from './theme-styles/style';
 
 function Editor() {
+  const adapter = getEditorSyncAdapter()!;
+  const pageState = createMemo(() =>
+    resolveEditorPageState(
+      adapter.snippetId(),
+      adapter.loadedSnippet.state,
+      adapter.readOnly(),
+    ),
+  );
   const model = createEditorControlsModel();
+  createEffect(
+    on(
+      adapter.snippetId,
+      () => {
+        commandMenu.close();
+        controlOverlay.close();
+        model.endPreview();
+      },
+      {defer: true},
+    ),
+  );
   let page!: HTMLDivElement;
 
   const side = () =>
@@ -40,17 +63,35 @@ function Editor() {
 
   return (
     <>
+      <For
+        each={model.sections
+          .flatMap(section => section.controls)
+          .filter(control => control.visible())}
+      >
+        {control => {
+          getWhatsNew().bindLocation(`control:${control.id}`, async () => {
+            settings.close();
+            // Let Settings return focus before opening a dismissable panel.
+            await new Promise<void>(resolve =>
+              requestAnimationFrame(() => resolve()),
+            );
+            return model.controls.reveal(control.id);
+          });
+          return null;
+        }}
+      </For>
       <div
         class={`unified-editor ${pageClass}`}
         ref={page}
         data-layout={preferences.layout()}
+        data-page-state={pageState().kind}
         data-inspector-side={side()}
       >
         <Show when={layouts[preferences.layout()]} keyed>
           {layout => {
             // Created outside the JSX: a call in a prop compiles to a getter
             // and would build a new stage on every read.
-            const stage = createStage();
+            const stage = createStage(pageState);
             const BoundThemePicker = (slot: ThemePickerSlotProps) => (
               <ThemePicker
                 {...slot}
@@ -66,11 +107,16 @@ function Editor() {
                 <Dynamic
                   component={layout.component}
                   model={model}
+                  pageState={pageState}
                   stage={stage}
                   ThemePicker={BoundThemePicker}
                 />
                 {/* One menu for every layout, bound to the shortcut here. */}
-                <CommandMenu model={model} stage={stage} />
+                <CommandMenu
+                  model={model}
+                  stage={stage}
+                  pageState={pageState}
+                />
               </>
             );
           }}

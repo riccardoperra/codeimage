@@ -1,7 +1,8 @@
+import type {UnifiedWhere} from '../../pages/UnifiedEditor/places';
 import type * as registry from './registry';
 import type * as solid from 'solid-js';
 import {createRoot} from 'solid-js';
-import {expect, it, vi} from 'vitest';
+import {expect, expectTypeOf, it, vi} from 'vitest';
 import {createWhatsNew} from './whats-new.store';
 
 vi.mock('solid-js', () =>
@@ -26,7 +27,20 @@ vi.stubGlobal('window', new EventTarget());
 it('shows one dot per place and gives the next export item its turn within the three-dot cap', async () => {
   const app = createRoot(dispose => ({
     store: createWhatsNew(
-      {get: async () => undefined, update: async () => {}, del: async () => {}},
+      {
+        get: async () => ({
+          seen: [
+            'social',
+            'signature',
+            'marks',
+            'alt',
+            'window-styles',
+            'takumi',
+          ],
+        }),
+        update: async () => {},
+        del: async () => {},
+      },
       () => Date.parse('2026-11-14'),
     ),
     dispose,
@@ -52,7 +66,20 @@ it('shows one dot per place and gives the next export item its turn within the t
 it('draws a highlight only at its place or the place that contains it', async () => {
   const app = createRoot(dispose => ({
     store: createWhatsNew(
-      {get: async () => undefined, update: async () => {}, del: async () => {}},
+      {
+        get: async () => ({
+          seen: [
+            'social',
+            'signature',
+            'marks',
+            'alt',
+            'window-styles',
+            'takumi',
+          ],
+        }),
+        update: async () => {},
+        del: async () => {},
+      },
       () => Date.parse('2026-11-14'),
     ),
     dispose,
@@ -67,4 +94,35 @@ it('draws a highlight only at its place or the place that contains it', async ()
   } finally {
     app.dispose();
   }
+});
+
+it('places the release controls and the shared line-marks UI in registry order', async () => {
+  const app = createRoot(dispose => ({
+    store: createWhatsNew(
+      {get: async () => undefined, update: async () => {}, del: async () => {}},
+      () => Date.parse('2026-11-14'),
+    ),
+    dispose,
+  }));
+  await new Promise(resolve => setTimeout(resolve, 0));
+  expect(app.store.dotAt('setting:layout')).toBe('layouts');
+  expect(app.store.dotAt('setting:rendering-engine')).toBe('takumi');
+  expect(app.store.dotAt('control:frame.aspectRatio')).toBeUndefined();
+  expect(app.store.dotAt('control:signature.saved')).toBeUndefined();
+  expect(app.store.dotAt('editor:line-marks')).toBe('marks');
+  expect(app.store.dotAt('control:window.style')).toBeUndefined();
+  app.store.seen('marks');
+  expect(app.store.dotAt('control:signature.saved')).toBe('signature');
+  expect(app.store.dotAt('control:window.style')).toBeUndefined();
+  app.store.seen('layouts');
+  expect(app.store.dotAt('control:window.style')).toBe('window-styles');
+  expect(app.store.dotAt('editor:line-mark')).toBeUndefined();
+  app.dispose();
+});
+
+it('accepts only shared editor locations and real control ids', () => {
+  expectTypeOf<'editor:line-marks'>().toExtend<UnifiedWhere>();
+  expectTypeOf<'control:signature.saved'>().toExtend<UnifiedWhere>();
+  expectTypeOf<'editor:missing'>().not.toExtend<UnifiedWhere>();
+  expectTypeOf<'control:missing'>().not.toExtend<UnifiedWhere>();
 });

@@ -7,6 +7,7 @@ import {mkdir, writeFile, readFile, mkdtemp, cp, rm} from 'node:fs/promises';
 import {resolve} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {chromium} from 'playwright';
+import {createMockContext} from './mock-context.mjs';
 import {PNG} from 'pngjs';
 const root = fileURLToPath(new URL('../../../..', import.meta.url));
 process.chdir(root);
@@ -88,7 +89,7 @@ try {
   browser = await chromium.launch({
     channel: process.env.VERIFY_BROWSER_CHANNEL || undefined,
   });
-  context = await browser.newContext({
+  context = await createMockContext(browser, base, {
     viewport: {width: 1440, height: 1000},
     locale: 'en-US',
     hasTouch: process.env.VERIFY_TOUCH === '1',

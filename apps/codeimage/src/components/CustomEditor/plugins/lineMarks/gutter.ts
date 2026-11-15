@@ -72,7 +72,8 @@ export function lineMarkGutter(labels: LineMarkLabels): Extension {
             const cell = button?.parentElement;
             if (!button || !cell) return [];
             const rect = cell.getBoundingClientRect();
-            const x = rect.right - 10;
+            // Scaled cells can be narrower than 10px; keep the probe inside.
+            const x = (rect.left + rect.right) / 2;
             const y = rect.top + rect.height / 2;
             if (y < 0 || y > win.innerHeight || x < 0 || x > win.innerWidth)
               return [];

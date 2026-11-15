@@ -30,6 +30,7 @@ import {
 } from './icons';
 import * as styles from './studio.css';
 import {ThemesPanel} from './ThemesPanel';
+import {controlsIn} from './places';
 
 export type PanelId = 'themes' | 'frame' | 'window' | 'code' | 'presets';
 
@@ -84,23 +85,7 @@ function FramePanel(props: PanelProps) {
   return (
     <Form>
       <section class={styles.section}>
-        <Rows
-          {...props}
-          ids={[
-            'frame.visible',
-            'frame.padding',
-            'frame.radius',
-            'frame.opacity',
-            'frame.aspectRatio',
-          ]}
-        />
-        <For each={['frame.background', 'frame.backgroundImage'] as const}>
-          {id => (
-            <Show when={props.model.control(id)}>
-              {control => <Row control={control()} size={props.size} />}
-            </Show>
-          )}
-        </For>
+        <Rows {...props} ids={controlsIn('frame')} />
         <SignatureRow />
       </section>
     </Form>
@@ -113,24 +98,11 @@ function WindowPanel(props: PanelProps) {
     <Form>
       <section class={styles.section}>
         <PanelHeader label={t('editor.titleBar')} />
-        <Rows
-          {...props}
-          ids={['window.header', 'window.style', 'window.accent']}
-        />
+        <Rows {...props} ids={controlsIn('header')} />
       </section>
       <section class={styles.section}>
         <PanelHeader label={t('frame.windowSurface')} />
-        <Rows
-          {...props}
-          ids={[
-            'window.surface',
-            'window.backgroundType',
-            'window.reflection',
-            'window.watermark',
-            'window.border',
-            'window.shadow',
-          ]}
-        />
+        <Rows {...props} ids={controlsIn('surface')} />
       </section>
     </Form>
   );
@@ -213,21 +185,15 @@ function CodePanel(props: PanelProps) {
     <Form>
       <section class={styles.section}>
         <PanelHeader label={t('frame.language')} />
-        <Rows
-          {...props}
-          ids={['editor.language', 'editor.theme', 'editor.formatter']}
-        />
-        <Rows
-          {...props}
-          ids={['editor.lineNumbers', 'editor.lineNumberStart']}
-        />
+        <Rows {...props} ids={controlsIn('language')} />
+        <Rows {...props} ids={controlsIn('lines')} />
       </section>
       <section class={styles.section}>
         <PanelHeader
           label={props.model.control('font.family')?.label() ?? t('frame.font')}
         />
         <FontRows {...props} />
-        <Rows {...props} ids={['font.weight', 'font.ligatures']} />
+        <Rows {...props} ids={controlsIn('font')} />
       </section>
     </Form>
   );

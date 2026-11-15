@@ -307,6 +307,12 @@ function AnimationScenes(props: {plan: PreviewPlan; visible: boolean}) {
                   ) : (
                     <AnimatedCodeView
                       html={scene.code}
+                      timeMs={
+                        props.visible &&
+                        sceneAt(animation.playhead()).index === index()
+                          ? animation.playhead()
+                          : undefined
+                      }
                       languageId={tab.languageId}
                       theme={style.theme()!}
                       fontFamily={style.fontFamily()}
