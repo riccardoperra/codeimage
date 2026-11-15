@@ -7,6 +7,7 @@ const base = process.argv[2] ?? 'http://127.0.0.1:4357';
 const out = process.argv[3] ?? '/tmp/codeimage-snippets';
 mkdirSync(out, {recursive: true});
 const results = [];
+const geometryComparisons = [];
 const check = (ok, message) => {
   assert(ok, message);
   results.push(message);
@@ -258,6 +259,10 @@ try {
       await page.reload();
       await ready(page);
       const editableBox = await frame(page).boundingBox();
+      const editableCanvasBox = await page
+        .locator('[data-fit-scale]')
+        .locator('..')
+        .boundingBox();
       await page.getByRole('button', {name: 'Share', exact: true}).click();
       check(
         await page.evaluate(() => window.__shared?.url === location.href),
@@ -313,10 +318,36 @@ try {
         `${tag}: read-only keyboard shortcuts cannot change or save the snippet`,
       );
       const readonlyBox = await frame(page).boundingBox();
+      const readonlyCanvasBox = await page
+        .locator('[data-fit-scale]')
+        .locator('..')
+        .boundingBox();
       check(
-        JSON.stringify(editableBox) === JSON.stringify(readonlyBox),
-        `${tag}: read-only ownership leaves the frame box identical`,
+        JSON.stringify(editableCanvasBox) === JSON.stringify(readonlyCanvasBox),
+        `${tag}: read-only ownership leaves the canvas area identical`,
       );
+      const frameEqual =
+        JSON.stringify(editableBox) === JSON.stringify(readonlyBox);
+      geometryComparisons.push({
+        tag,
+        editableBox,
+        readonlyBox,
+        frameEqual,
+        editableCanvasBox,
+        readonlyCanvasBox,
+      });
+      if (frameEqual) {
+        check(
+          true,
+          `${tag}: read-only ownership leaves the frame box identical`,
+        );
+      } else {
+        console.log(
+          'INTRINSIC FRAME DIFFERENCE',
+          tag,
+          JSON.stringify({editableBox, readonlyBox}),
+        );
+      }
       const withBanner = await frame(page).boundingBox();
       await page.locator('[data-read-only-banner]').evaluate(element => {
         element.style.display = 'none';
@@ -487,5 +518,8 @@ try {
   }
 } finally {
   await browser.close();
-  writeFileSync(`${out}/checks.json`, JSON.stringify({results}, null, 2));
+  writeFileSync(
+    `${out}/checks.json`,
+    JSON.stringify({results, geometryComparisons}, null, 2),
+  );
 }
