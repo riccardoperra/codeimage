@@ -2,7 +2,7 @@ import * as styles from './WindowsTerminal.css';
 import {SvgIcon} from '@codeimage/ui';
 
 export const WindowsTerminalControls = () => (
-  <div class={styles.headerIconRow}>
+  <div class={styles.headerIconRow} data-watermark-obstacle>
     <SvgIcon class={styles.headerIconRowItem} viewBox="0 0 12 12">
       <line
         x1={0}
