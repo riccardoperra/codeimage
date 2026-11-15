@@ -30,8 +30,6 @@ export interface ExportFormat {
   readonly lossy: boolean;
   /** A vector, sharp at any size. */
   readonly scalable: boolean;
-  /** The clipboard takes it. */
-  readonly copyable: boolean;
 }
 
 /** Every format, in display order. A new format is one more entry. */
@@ -43,7 +41,6 @@ export const EXPORT_FORMATS: Readonly<Record<ExportExtension, ExportFormat>> = {
     description: 'editor.pngHint',
     lossy: false,
     scalable: false,
-    copyable: true,
   },
   [ExportExtension.jpeg]: {
     extension: ExportExtension.jpeg,
@@ -52,7 +49,6 @@ export const EXPORT_FORMATS: Readonly<Record<ExportExtension, ExportFormat>> = {
     description: 'editor.jpegFormatHint',
     lossy: true,
     scalable: false,
-    copyable: false,
   },
   [ExportExtension.svg]: {
     extension: ExportExtension.svg,
@@ -61,7 +57,6 @@ export const EXPORT_FORMATS: Readonly<Record<ExportExtension, ExportFormat>> = {
     description: 'editor.svgHint',
     lossy: false,
     scalable: true,
-    copyable: true,
   },
 };
 

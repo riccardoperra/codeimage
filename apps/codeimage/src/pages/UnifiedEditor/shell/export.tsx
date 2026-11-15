@@ -26,7 +26,7 @@ import {deliverTabFiles, renderTabFiles} from '../../../hooks/export-tabs';
 import {ExportMode, exportImage} from '../../../hooks/use-export-image';
 import type {AppLocaleEntries} from '../../../i18n';
 import type {ExportChoice} from './export-formats';
-import {EXPORT_FORMATS, savedExportChoice} from './export-formats';
+import {savedExportChoice} from './export-formats';
 
 type ExportAction = 'image' | 'eachTab' | 'share' | 'newTab' | 'copy';
 
@@ -52,7 +52,7 @@ export interface Exporter {
   readonly newTab: (choice?: ExportChoice) => void;
   /** Copies a PNG at the choice's scale. */
   readonly copy: (choice?: ExportChoice) => void;
-  readonly canCopy: (choice?: ExportChoice) => boolean;
+  readonly canCopy: Accessor<boolean>;
   readonly canShare: Accessor<boolean>;
   /** A requested export waits here while the user reviews visible secrets. */
   readonly confirming: Accessor<boolean>;
@@ -218,8 +218,7 @@ export function createExporter(
     share: choice => request('share', choice),
     newTab: choice => request('newTab', choice),
     copy: choice => request('copy', choice),
-    canCopy: (choice = savedExportChoice()) =>
-      !!navigator.clipboard?.write && EXPORT_FORMATS[choice.extension].copyable,
+    canCopy: () => !!navigator.clipboard?.write,
     canShare: () => !!navigator.share,
     confirming: () => pending() !== undefined,
     confirm,

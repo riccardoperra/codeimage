@@ -3,8 +3,6 @@ import {Button} from '@codeui/kit';
 import {createAsyncAction} from '@core/hooks/async-action';
 import {Show} from 'solid-js';
 import type {AppLocaleEntries} from '../../../i18n';
-import {exportVariant} from '../shell/export-variants/picker';
-import {ToolbarExportCluster} from '../shell/export-variants/toolbar';
 import {CopyIcon, SparklesIcon} from '../shell/icons';
 import type {Stage} from '../stage';
 import * as styles from './canvas-toolbar.css';
@@ -34,23 +32,16 @@ export function CanvasToolbar(props: {stage: Stage; help?: boolean}) {
       >
         {t('editor.formatCode')}
       </Button>
-      <Show
-        when={exportVariant() === 2 && !props.stage.compact()}
-        fallback={
-          <Button
-            size={'sm'}
-            theme={'secondary'}
-            variant={'ghost'}
-            leftIcon={<CopyIcon size={18} />}
-            disabled={!exporter().canCopy() || exporter().busy()}
-            onClick={() => exporter().copy()}
-          >
-            {t('editor.copyImage')}
-          </Button>
-        }
+      <Button
+        size={'sm'}
+        theme={'secondary'}
+        variant={'ghost'}
+        leftIcon={<CopyIcon size={18} />}
+        disabled={!exporter().canCopy() || exporter().busy()}
+        onClick={() => exporter().copy()}
       >
-        <ToolbarExportCluster exporter={exporter()} />
-      </Show>
+        {t('editor.copyImage')}
+      </Button>
       <Show when={props.help}>
         <ShortcutHelp />
       </Show>

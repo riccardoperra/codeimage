@@ -125,6 +125,7 @@ export function PanelExport(props: ExportControlProps) {
                   size={'md'}
                   leftIcon={<DownloadIcon />}
                   disabled={props.exporter.busy()}
+                  data-export-action="image"
                   onClick={download}
                 >
                   {t('editor.downloadChoice', {
@@ -152,6 +153,7 @@ export function PanelExport(props: ExportControlProps) {
                       type="button"
                       class={shared.actionRow}
                       disabled={action.disabled()}
+                      data-export-action={action.id}
                       onClick={() => run(action)}
                     >
                       <ExportActionContent action={action} />

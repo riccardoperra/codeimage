@@ -74,12 +74,9 @@ export function createExportActions(
       id: 'copy',
       icon: CopyIcon,
       title: () => t('editor.copyImage'),
-      description: () =>
-        EXPORT_FORMATS[choice().extension].copyable
-          ? t('editor.copyImageHint')
-          : t('editor.copyNeedsPng'),
+      description: () => t('editor.copyImageHint'),
       visible: always,
-      disabled: () => !exporter().canCopy(choice()) || exporter().busy(),
+      disabled: () => !exporter().canCopy() || exporter().busy(),
       run: () => exporter().copy(choice()),
     },
     {

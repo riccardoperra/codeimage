@@ -2,15 +2,14 @@ import {useI18n} from '@codeimage/locale';
 import {Button, DialogPanelContent, DialogPanelFooter} from '@codeui/kit';
 import {Dialog} from '@kobalte/core/dialog';
 import type {Accessor} from 'solid-js';
-import {Match, Show, Switch} from 'solid-js';
+import {Show} from 'solid-js';
 import type {AppLocaleEntries} from '../../../i18n';
 import {useExportShortcuts} from '../controls/shortcuts';
 import type {Exporter} from './export';
 import * as styles from './export.css';
-import {PanelExport} from './export-variants/panel';
-import {exportVariant} from './export-variants/picker';
-import {SheetExport} from './export-variants/sheet';
-import {ToolbarExport} from './export-variants/toolbar';
+import {PanelExport} from './export-styles/panel';
+import {SheetExport} from './export-styles/sheet';
+import {preferences} from './preferences';
 
 export interface ExportControlProps {
   exporter: Exporter;
@@ -23,8 +22,8 @@ export interface ExportControlProps {
 
 /**
  * Export, its keyboard shortcuts and the review of visible secrets that
- * every image action passes through. The prototype picker chooses how the
- * one-off export is offered.
+ * every image action passes through. The export style preference chooses
+ * how the one-off export is offered.
  */
 export function ExportControl(props: ExportControlProps) {
   const [t] = useI18n<AppLocaleEntries>();
@@ -48,17 +47,12 @@ export function ExportControl(props: ExportControlProps) {
 
   return (
     <>
-      <Switch>
-        <Match when={exportVariant() === 1}>
-          <PanelExport {...props} />
-        </Match>
-        <Match when={exportVariant() === 2}>
-          <ToolbarExport {...props} />
-        </Match>
-        <Match when={exportVariant() === 3}>
-          <SheetExport {...props} />
-        </Match>
-      </Switch>
+      <Show
+        when={preferences.exportStyle() === 'sheet'}
+        fallback={<PanelExport {...props} />}
+      >
+        <SheetExport {...props} />
+      </Show>
       <Dialog open={exporter().confirming()} onOpenChange={closeConfirmation}>
         <Dialog.Portal>
           <Dialog.Overlay class={styles.backdrop} />

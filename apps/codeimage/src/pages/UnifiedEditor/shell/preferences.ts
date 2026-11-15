@@ -33,10 +33,19 @@ export const THEME_CARDS = [
 
 export type ThemeCardsId = (typeof THEME_CARDS)[number]['id'];
 
+/** How Export offers a one-off format and scale: a menu under the button, or a dialog. */
+export const EXPORT_STYLES = [
+  {id: 'panel', name: 'editor.exportStylePanel'},
+  {id: 'sheet', name: 'editor.exportStyleSheet'},
+] as const;
+
+export type ExportStyleId = (typeof EXPORT_STYLES)[number]['id'];
+
 interface Stored {
   layout?: LayoutId;
   inspectorSide?: InspectorSide;
   themeCards?: ThemeCardsId;
+  exportStyle?: ExportStyleId;
 }
 
 const STORAGE_KEY = 'codeimage:editor-settings';
@@ -44,18 +53,24 @@ const STORAGE_KEY = 'codeimage:editor-settings';
 export const DEFAULT_LAYOUT: LayoutId = 'inspector';
 const DEFAULT_SIDE: InspectorSide = 'right';
 export const DEFAULT_CARDS: ThemeCardsId = 'window';
+const DEFAULT_EXPORT_STYLE: ExportStyleId = 'panel';
 
 const isLayout = (value: unknown): value is LayoutId =>
   LAYOUTS.some(layout => layout.id === value);
 const isCards = (value: unknown): value is ThemeCardsId =>
   THEME_CARDS.some(cards => cards.id === value);
+const isExportStyle = (value: unknown): value is ExportStyleId =>
+  EXPORT_STYLES.some(style => style.id === value);
 
 // Storage is outside the program: read it as unknown and keep what is valid.
 function readStored(): Stored {
   try {
     const raw: unknown = JSON.parse(localStorage.getItem(STORAGE_KEY) ?? '{}');
     if (typeof raw !== 'object' || raw === null) return {};
-    const {layout, inspectorSide, themeCards} = raw as Record<string, unknown>;
+    const {layout, inspectorSide, themeCards, exportStyle} = raw as Record<
+      string,
+      unknown
+    >;
     return {
       layout: isLayout(layout) ? layout : undefined,
       inspectorSide:
@@ -63,6 +78,7 @@ function readStored(): Stored {
           ? inspectorSide
           : undefined,
       themeCards: isCards(themeCards) ? themeCards : undefined,
+      exportStyle: isExportStyle(exportStyle) ? exportStyle : undefined,
     };
   } catch {
     return {};
@@ -76,6 +92,10 @@ const [layout, setLayoutId] = createSignal<LayoutId>(
 );
 const [inspectorSide, setSide] = createSignal<InspectorSide>(
   stored.inspectorSide ?? DEFAULT_SIDE,
+);
+
+const [exportStyle, setExportStyleId] = createSignal<ExportStyleId>(
+  stored.exportStyle ?? DEFAULT_EXPORT_STYLE,
 );
 
 setThemeStyle(stored.themeCards ?? DEFAULT_CARDS);
@@ -106,6 +126,11 @@ export const preferences = {
   setInspectorSide: (side: InspectorSide) => {
     setSide(side);
     save({inspectorSide: side});
+  },
+  exportStyle,
+  setExportStyle: (id: ExportStyleId) => {
+    setExportStyleId(id);
+    save({exportStyle: id});
   },
   /** The theme card style in use. */
   themeCards: themeStyle,

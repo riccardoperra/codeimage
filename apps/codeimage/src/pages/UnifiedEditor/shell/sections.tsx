@@ -40,6 +40,7 @@ import type {ThemeCardsId} from './preferences';
 import {
   DEFAULT_CARDS,
   DEFAULT_LAYOUT,
+  EXPORT_STYLES,
   LAYOUTS,
   preferences,
   THEME_CARDS,
@@ -287,6 +288,26 @@ export function createSettingSections(model: EditorControlsModel) {
                   {label: t('signature.left'), value: 'left'},
                   {label: t('signature.right'), value: 'right'},
                 ]}
+              />
+            ),
+          },
+        ],
+      },
+      {
+        title: t('toolbar.export'),
+        rows: [
+          {
+            id: 'export-style' as const,
+            title: t('editor.exportStyle'),
+            description: () => t('editor.exportStyleHint'),
+            control: () => (
+              <Segmented
+                value={preferences.exportStyle()}
+                onChange={preferences.setExportStyle}
+                items={EXPORT_STYLES.map(style => ({
+                  label: t(style.name),
+                  value: style.id,
+                }))}
               />
             ),
           },

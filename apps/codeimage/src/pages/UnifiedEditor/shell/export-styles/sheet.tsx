@@ -176,6 +176,7 @@ export function SheetExport(props: ExportControlProps) {
                         size={'md'}
                         leftIcon={<action.icon size={18} />}
                         disabled={action.disabled()}
+                        data-export-action={action.id}
                         onClick={() => run(action)}
                       >
                         {action.title()}
@@ -189,6 +190,7 @@ export function SheetExport(props: ExportControlProps) {
                   size={'md'}
                   leftIcon={<DownloadIcon />}
                   disabled={byId('image').disabled()}
+                  data-export-action="image"
                   onClick={() => run(byId('image'))}
                 >
                   {t('editor.downloadChoice', {
@@ -206,6 +208,7 @@ export function SheetExport(props: ExportControlProps) {
                           type="button"
                           class={shared.actionRow}
                           disabled={action.disabled()}
+                          data-export-action={action.id}
                           onClick={() => run(action)}
                         >
                           <ExportActionContent action={action} />

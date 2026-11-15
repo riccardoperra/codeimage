@@ -198,22 +198,6 @@ export function SparklesIcon(props: IconProps) {
   );
 }
 
-export function ChevronDownIcon(props: IconProps) {
-  return (
-    <Icon size={props.size}>
-      <path d="m19.5 8.25-7.5 7.5-7.5-7.5" />
-    </Icon>
-  );
-}
-
-export function EllipsisIcon(props: IconProps) {
-  return (
-    <Icon size={props.size}>
-      <path d="M6.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM12.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM18.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
-    </Icon>
-  );
-}
-
 export function CheckIcon(props: IconProps) {
   return (
     <Icon size={props.size}>

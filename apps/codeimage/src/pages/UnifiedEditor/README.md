@@ -15,14 +15,14 @@ The unified editor and the classic editor use the same stores and local document
 
 ## Preferences
 
-`shell/preferences.ts` saves `{layout, inspectorSide, themeCards}` in `localStorage` under `codeimage:editor-settings`.
-The defaults are Inspector, a panel on the right, and Window theme cards.
+`shell/preferences.ts` saves `{layout, inspectorSide, themeCards, exportStyle}` in `localStorage` under `codeimage:editor-settings`.
+The defaults are Inspector, a panel on the right, Window theme cards, and the Menu export style.
 There is no migration from the previous storage key.
 
 Settings and the command menu change these choices.
 The Experiments section offers the layouts and theme cards.
-Appearance contains the colour mode and Inspector panel side.
-The `t` URL parameter has no effect.
+Appearance contains the colour mode, the Inspector panel side, and the export style.
+The `v` and `t` URL parameters have no effect.
 Changing a preference leaves the URL unchanged.
 
 ## Page and layouts
@@ -126,11 +126,12 @@ Layouts use `CommandMenuButton` for their own trigger.
 `shell/export.tsx` shares the image actions with the command menu and keyboard shortcuts.
 An image action takes an optional `ExportChoice`; without one it uses the saved export settings.
 Every image action passes through `createExporter.request` for the secrets review, which keeps the choice it was asked with.
-`shell/ExportControl.tsx` binds the shortcuts, owns the secrets review and renders the Export variant.
+`shell/ExportControl.tsx` binds the shortcuts, owns the secrets review and renders the chosen Export style.
 
-In development, a picker at the top of the page switches between three Export prototypes, kept in `shell/export-variants/`.
-The `v` URL parameter or the keys 1 to 3 choose one. Production always shows the first.
-Panel keeps the split button and opens a panel for one export. Toolbar moves Export into the canvas toolbar. Sheet opens a dialog with a preview.
+The Appearance setting "Export style" chooses how Export offers a one-off format and scale, saved as `exportStyle` in the editor preferences.
+Menu (`shell/export-styles/panel.tsx`, the default) keeps the split button and opens a panel under its arrow. Dialog (`shell/export-styles/sheet.tsx`) opens a dialog with a preview.
+Both start from the saved settings each time and can save the choice as the default.
+Every action button carries `data-export-action` with its id.
 Export settings use `getExportCanvasStore()`.
 The per-tab export renders a separate preview frame for each tab.
 
