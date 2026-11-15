@@ -1,6 +1,6 @@
 import type {ShippedWhere} from '../../state/whats-new';
 import type {ControlId} from './model';
-import type {ExportItem} from './shell/ExportControl';
+import type {ExportItem} from './shell/export-actions';
 import type {SettingRowId} from './shell/sections';
 
 export type UnifiedWhere =

@@ -2,11 +2,10 @@ import {useI18n} from '@codeimage/locale';
 import {getExportCanvasStore} from '@codeimage/store/canvas';
 import {getFrameState} from '@codeimage/store/editor/frame';
 import {getUiStore} from '@codeimage/store/ui';
-import {ExportExtension} from '../../../hooks/use-export-image';
 import type {AppLocaleEntries} from '../../../i18n';
 import type {Command} from '../command-menu/commands';
 import type {Exporter} from './export';
-import {exportSummary} from './ExportControl';
+import {EXPORT_SCALES, exportFormats, exportSummary} from './export-formats';
 import {LAYOUTS, preferences, THEME_CARDS} from './preferences';
 import {SECTIONS, settings} from './settings-state';
 
@@ -25,18 +24,13 @@ export function exportCommands(exporter: Exporter): Command[] {
   const store = getExportCanvasStore();
   const group = t('toolbar.export');
   const tabs = exporter.tabs();
-  const formats = [
-    {id: ExportExtension.png, name: 'PNG'},
-    {id: ExportExtension.svg, name: 'SVG'},
-    {id: ExportExtension.jpeg, name: 'JPEG'},
-  ];
   return [
     {
       id: 'export=image',
       group,
       label: t('export.title'),
       note: exportSummary(),
-      run: exporter.image,
+      run: () => exporter.image(),
     },
     ...(tabs > 1
       ? [
@@ -45,7 +39,7 @@ export function exportCommands(exporter: Exporter): Command[] {
             group,
             label: t('editor.exportEachTab'),
             note: t('editor.images', {count: String(tabs)}),
-            run: exporter.eachTab,
+            run: () => exporter.eachTab(),
           },
         ]
       : []),
@@ -65,7 +59,7 @@ export function exportCommands(exporter: Exporter): Command[] {
             id: 'export=copy',
             group,
             label: t('toolbar.copyToCliboard'),
-            run: exporter.copy,
+            run: () => exporter.copy(),
           },
         ]
       : []),
@@ -73,7 +67,7 @@ export function exportCommands(exporter: Exporter): Command[] {
       id: 'export=new-tab',
       group,
       label: t('editor.openImageTab'),
-      run: exporter.newTab,
+      run: () => exporter.newTab(),
     },
     ...(exporter.canShare()
       ? [
@@ -81,18 +75,18 @@ export function exportCommands(exporter: Exporter): Command[] {
             id: 'export=share',
             group,
             label: t('export.shareMode'),
-            run: exporter.share,
+            run: () => exporter.share(),
           },
         ]
       : []),
-    ...formats.map((format): Command => ({
-      id: `export-format=${format.id}`,
+    ...exportFormats.map((format): Command => ({
+      id: `export-format=${format.extension}`,
       group,
       label: t('editor.exportFormat', {value: format.name}),
-      current: format.id === store.get.extension,
-      run: () => store.set('extension', format.id),
+      current: format.extension === store.get.extension,
+      run: () => store.set('extension', format.extension),
     })),
-    ...(getFrameState().exportTarget() ? [] : [1, 2, 3, 6]).map(
+    ...(getFrameState().exportTarget() ? [] : EXPORT_SCALES).map(
       (scale): Command => ({
         id: `export-scale=${scale}`,
         group,

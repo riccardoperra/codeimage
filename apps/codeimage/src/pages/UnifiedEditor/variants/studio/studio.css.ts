@@ -315,26 +315,11 @@ export const stage = style({
   display: 'flex',
 });
 
-// The production frame toolbar and footer sit absolutely over today's
-// canvas; here each gets its own row so neither can cover the frame.
 export const frameActions = style({
   display: 'flex',
   justifyContent: 'center',
   padding: '0 16px 12px',
   flexShrink: 0,
-});
-
-globalStyle(`${frameActions} > *`, {
-  position: 'static',
-  transform: 'none',
-  maxWidth: '100%',
-  height: 'auto',
-  minHeight: '50px',
-});
-globalStyle(`${frameActions} > div > div`, {
-  flexWrap: 'wrap',
-  justifyContent: 'center',
-  rowGap: '8px',
 });
 
 export const footer = style({

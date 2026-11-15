@@ -13,7 +13,7 @@ import {shownTheme} from '../../command-menu/listed-model';
 import {commandMenu} from '../../command-menu/state';
 import type {VariantMeta, VariantProps} from '../../contract';
 import {fieldId, SegmentedChoice, SelectChoice} from '../../controls/fields';
-import {FrameActions} from '../../controls/FrameActions';
+import {CanvasToolbar} from '../../controls/CanvasToolbar';
 import {keepMarkToolbarAboveSelection} from '../../controls/mark-toolbar';
 import {ShortcutHelp} from '../../controls/ShortcutHelp';
 import {Footer} from '../../localized/Footer';
@@ -465,10 +465,9 @@ export default function Dock(props: VariantProps) {
               </Show>
             </div>
 
-            <ShortcutHelp />
-            <Show when={!compact()}>
+            <Show when={!compact()} fallback={<ShortcutHelp />}>
               <div class={`${styles.frameActions} ${styles.float}`}>
-                <FrameActions />
+                <CanvasToolbar stage={props.stage} help />
               </div>
             </Show>
           </div>
