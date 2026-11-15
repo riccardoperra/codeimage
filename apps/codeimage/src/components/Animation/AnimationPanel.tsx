@@ -14,7 +14,7 @@ import {
   PopoverTrigger,
 } from '@codeui/kit';
 import {SegmentedField} from '@ui/SegmentedField/SegmentedField';
-import {createSignal, Index, Show} from 'solid-js';
+import {createSignal, For, Show} from 'solid-js';
 import type {AppLocaleEntries} from '../../i18n';
 import {CloseIcon} from '../Icons/CloseIcon';
 import {PanelRow, TwoColumnPanelRow} from '../PropertyEditor/PanelRow';
@@ -37,6 +37,7 @@ export function AnimationPanel() {
         )
       : -1;
   const [drag, setDrag] = createSignal<StepDrag | null>(null);
+  const stepIds = () => settings().steps.map(step => step.editorId);
 
   const timingSummary = () =>
     [
@@ -144,18 +145,19 @@ export function AnimationPanel() {
       </div>
 
       <ol class={styles.steps} aria-label={t('animation.steps')}>
-        {/* Index keeps a step's popover open while its hold changes. */}
-        <Index each={settings().steps}>
-          {(step, index) => (
+        {/* Keyed by tab, a step's popover stays on it while its hold changes
+            and when it moves. */}
+        <For each={stepIds()}>
+          {(_, index) => (
             <AnimationStep
-              step={step()}
-              index={index}
-              current={currentStep() === index}
+              step={settings().steps[index()]}
+              index={index()}
+              current={currentStep() === index()}
               drag={drag()}
               onDragChange={setDrag}
             />
           )}
-        </Index>
+        </For>
       </ol>
     </section>
   );
