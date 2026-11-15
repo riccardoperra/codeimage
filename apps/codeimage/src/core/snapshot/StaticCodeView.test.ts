@@ -117,3 +117,23 @@ test('highlight-only exports omit the sign column and work without a gutter', ()
   assert.ok(html.includes('data-mark="highlight"'));
   assert.ok(!html.includes('cm-gutterElement'));
 });
+
+test('keeps the blank lines of a Plain Text tab without line numbers', async () => {
+  const html = renderToString(() =>
+    createComponent(StaticCodeView, {
+      ...props,
+      code: 'alpha\n\nbeta\n\ngamma',
+      languageId: 'plain-text',
+      language: null,
+      showLineNumbers: false,
+    }),
+  );
+  assert.equal(await loadLanguage('plain-text'), null);
+  const lines = Array.from(
+    html
+      .replace(/<!--.*?-->| data-hk="\w+"/g, '')
+      .matchAll(/<div[^>]*class="cm-line"[^>]*>(.*?)<\/div>/g),
+    match => match[1],
+  );
+  assert.deepEqual(lines, ['alpha', '<br>', 'beta', '<br>', 'gamma']);
+});
