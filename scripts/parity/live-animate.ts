@@ -416,7 +416,76 @@ async function nudge(page: Page) {
   await input.press('Enter');
   assert.equal(await segment.getAttribute('aria-valuenow'), '1350');
 }
+
+async function easing(page: Page) {
+  const segment = page.locator('[data-animation-segment]').nth(1);
+  await segment.click();
+  const trigger = page.locator('[data-easing-trigger]');
+  await trigger.click();
+  await page.getByRole('tab', {name: 'Strong', exact: true}).click();
+  assert.equal(
+    await page.evaluate(
+      () => window.editorStore.animation.settings().steps[1].transition?.easing,
+    ),
+    'strong',
+  );
+  await page.getByRole('tab', {name: 'Custom', exact: true}).click();
+  const input = page.getByRole('textbox', {name: 'Custom', exact: true});
+  await input.fill('cubic-bezier(0.25, -2, 0.3, 8)');
+  await input.press('Enter');
+  assert.equal(
+    await page.evaluate(
+      () => window.editorStore.animation.settings().steps[1].transition?.easing,
+    ),
+    'cubic-bezier(0.25, 0, 0.3, 1)',
+  );
+  await input.fill('cubic-bezier(-1, 0, 1, 1)');
+  await input.press('Enter');
+  assert.equal(await input.getAttribute('aria-invalid'), 'true');
+  assert.equal(
+    await page.evaluate(
+      () => window.editorStore.animation.settings().steps[1].transition?.easing,
+    ),
+    'cubic-bezier(0.25, 0, 0.3, 1)',
+  );
+  await page.evaluate(() => window.editorStore.animation.actions.seek(1150));
+  await page.locator('[data-easing-dot]').waitFor();
+  assert.ok(
+    Number(await page.locator('[data-easing-dot]').getAttribute('cy')) > 10,
+  );
+  await page
+    .getByRole('button', {name: 'Play transition', exact: true})
+    .click();
+  await page.waitForFunction(
+    () => window.editorStore.animation.playback().state === 'paused',
+  );
+  assert.equal(
+    await page.evaluate(() => window.editorStore.animation.playhead()),
+    1500,
+  );
+  await input.press('Escape');
+  await page.waitForFunction(() =>
+    document.activeElement?.hasAttribute('data-easing-trigger'),
+  );
+  await trigger.click();
+  await page.getByRole('tab', {name: 'Strong', exact: true}).focus();
+  await page.keyboard.press('Escape');
+  await page.waitForFunction(() =>
+    document.activeElement?.hasAttribute('data-easing-trigger'),
+  );
+  await page.getByRole('button', {name: 'Apply to all', exact: true}).click();
+  assert.ok(
+    await page
+      .getByRole('button', {name: 'Apply to all', exact: true})
+      .isDisabled(),
+  );
+  assert.equal(
+    await page.evaluate(() => window.editorStore.animation.settings().easing),
+    'cubic-bezier(0.25, 0, 0.3, 1)',
+  );
+}
 const lanes = {
+  Easing: easing,
   Resize: resize,
   Nudge: nudge,
   Placement: placement,
@@ -456,6 +525,27 @@ try {
             console.log(`PASS ${label}`);
             passed++;
           } catch (error) {
+            console.error(
+              await page.locator('[data-animate-panel]').evaluate(e => {
+                const list = [];
+                for (
+                  let a: HTMLElement | null = e as HTMLElement;
+                  a;
+                  a = a.parentElement
+                ) {
+                  const box = a.getBoundingClientRect();
+                  list.push({
+                    class: a.className,
+                    x: box.x,
+                    w: box.width,
+                    scroll: a.scrollLeft,
+                    sw: a.scrollWidth,
+                    cw: a.clientWidth,
+                  });
+                }
+                return list;
+              }),
+            );
             failures.push(label);
             console.error(`FAIL ${label}`, String(error).slice(0, 2000));
             await page.screenshot({

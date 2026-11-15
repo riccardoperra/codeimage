@@ -1,9 +1,13 @@
 import {useI18n} from '@codeimage/locale';
 import {getEditorStore} from '@codeimage/store/editor';
-import {DURATION_LIMITS} from '@codeimage/store/editor/animationSettings';
-import {NumberField} from '@codeui/kit';
+import {
+  DURATION_LIMITS,
+  transitionOf,
+} from '@codeimage/store/editor/animationSettings';
+import {Button, NumberField} from '@codeui/kit';
 import {createEffect, createSignal, Show} from 'solid-js';
 import type {AppLocaleEntries} from '../../i18n';
+import {EasingField} from './EasingField';
 import * as styles from './AnimatePanel.css';
 function DurationInput(props: {
   id: string;
@@ -82,6 +86,24 @@ export function SegmentDetails() {
     if (value.kind === 'hold') animation.actions.setHoldMs(value.stepId, ms);
     else animation.actions.setTransition(value.stepId, {ms});
   };
+  const apply = () => {
+    const value = segment();
+    if (value) animation.actions.applyToAll(value.stepId);
+  };
+  const allMatch = () => {
+    const value = segment();
+    if (!value) return true;
+    const settings = animation.settings();
+    const transition = transitionOf(settings, settings.steps[value.index]);
+    return (
+      settings.transitionMs === transition.ms &&
+      settings.easing === transition.easing &&
+      settings.steps.slice(1).every(step => {
+        const other = transitionOf(settings, step);
+        return other.ms === transition.ms && other.easing === transition.easing;
+      })
+    );
+  };
   return (
     <div class={styles.details}>
       <Show
@@ -104,6 +126,17 @@ export function SegmentDetails() {
           }
           commit={commit}
         />
+        <Show when={segment()?.kind === 'transition'}>
+          <EasingField stepId={segment()!.stepId} />
+          <Button
+            size="xs"
+            theme="secondary"
+            disabled={allMatch()}
+            onClick={apply}
+          >
+            {t('animation.applyAll')}
+          </Button>
+        </Show>
       </Show>
     </div>
   );

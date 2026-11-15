@@ -353,3 +353,9 @@ A4 adds an "Export animation…" entry to the Export menu (`prototypes/editor-co
 - Database integration verification deploys migrations and uses the unit setup
   with the integration test include list, avoiding a reset of the shared local
   Docker test database. The real update/GET routes and Postgres still run.
+- Slice 6: `SegmentedField` now stops Escape in a native item listener and
+  accepts an explicit Escape callback. The kit's tab list otherwise consumes
+  the key before the easing popover can close. Both custom-input and preset
+  Escape paths are checked in Chrome, including focus return.
+- The compact Dock keeps its existing 40 px targets. Its export action uses
+  its icon on phones so Animate fits after More without horizontal scrolling.

@@ -220,7 +220,7 @@ export const item = style({
           flex: '1 1 0',
           flexDirection: 'column',
           gap: '4px',
-          minWidth: '32px',
+          minWidth: '40px',
           height: '52px',
           padding: '0 2px',
           fontSize: '10px',
@@ -564,4 +564,10 @@ export const animate = style({
   right: 0,
   zIndex: 2,
   '@media': {[phone]: {position: 'relative', bottom: 'auto', order: 2}},
+});
+
+globalStyle(`${barExport} [data-export-image]`, {
+  '@media': {
+    [phone]: {fontSize: 0, gap: 0, paddingInline: '10px', minWidth: 36},
+  },
 });

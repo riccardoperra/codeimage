@@ -1,3 +1,6 @@
+import {easingOf} from '@core/animation/easing';
+import {transitionOf} from '@codeimage/store/editor/animationSettings';
+import {EasingCurve} from './EasingCurve';
 import {useI18n} from '@codeimage/locale';
 import {getEditorStore} from '@codeimage/store/editor';
 import {
@@ -5,7 +8,7 @@ import {
   type AnimationSegment,
 } from '@codeimage/store/editor/animationSettings';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
-import {createMemo, createSignal, For} from 'solid-js';
+import {createMemo, createSignal, For, Show} from 'solid-js';
 import type {AppLocaleEntries} from '../../i18n';
 import {createSegmentResize} from './createSegmentResize';
 import {formatDuration, formatSeconds} from './format';
@@ -77,6 +80,17 @@ function Segment(props: {
       onClick={select}
       onFocus={select}
     >
+      <Show when={segment().kind === 'transition'}>
+        <EasingCurve
+          easing={easingOf(
+            transitionOf(
+              animation.settings(),
+              animation.settings().steps[segment().index],
+            ).easing,
+          )}
+          glyph
+        />
+      </Show>
       <span class={styles.label}>
         {segment().kind === 'hold'
           ? `${segment().index + 1} · ${name()}`

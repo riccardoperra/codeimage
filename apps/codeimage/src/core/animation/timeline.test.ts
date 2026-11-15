@@ -461,3 +461,26 @@ test('explicit default transitions preserve the complete timeline bytes', () => 
     ),
   );
 });
+
+test('a custom incoming curve keeps a rescaling window inside its target', () => {
+  const size = {width: 1080, height: 1080};
+  const padding = 64;
+  const destination = {
+    ...targetStep(size, fitted(size, padding, [2644, 139])),
+    transition: {
+      ms: options.transitionMs,
+      easing: [0.25, 0.1, 0.25, 1] as const,
+    },
+  };
+  const timeline = planTimeline(
+    [targetStep(size, fitted(size, padding, [480, 117])), destination],
+    options,
+  );
+  for (const progress of [0.1, 0.25, 0.5, 0.75, 0.9]) {
+    const box = visibleWindowAt(timeline, progress);
+    assert.ok(box.left >= padding - 0.01 && box.top >= padding - 0.01);
+    assert.ok(box.left + box.width <= size.width - padding + 0.01);
+    assert.ok(box.top + box.height <= size.height - padding + 0.01);
+    assert.ok(Math.abs(centerOf(box).x - 540) < 0.01);
+  }
+});
