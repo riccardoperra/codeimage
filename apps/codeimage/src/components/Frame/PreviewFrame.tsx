@@ -16,12 +16,24 @@ import {dispatchCopyToClipboard} from '@codeimage/store/effects/onCopyToClipboar
 import {createRef} from '@core/helpers/create-ref';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 import type {ParentProps, Ref, VoidProps} from 'solid-js';
-import {createMemo, createResource, onMount, Show, Suspense} from 'solid-js';
+import {
+  createEffect,
+  createMemo,
+  createResource,
+  on,
+  onMount,
+  Show,
+  Suspense,
+} from 'solid-js';
 import {Portal} from 'solid-js/web';
 import {provideState} from 'statebuilder';
 import {useHotkey} from '../../hooks/use-hotkey';
 import {DynamicTerminal} from '../Terminal/DynamicTerminal/DynamicTerminal';
 import StaticCodeView from '../CustomEditor/StaticCodeView';
+import {
+  bindWatermarkExport,
+  createWatermarkScope,
+} from '../../core/watermark/scope';
 import * as styles from './Frame.css';
 import {FrameSkeleton} from './FrameSkeleton';
 
@@ -65,6 +77,8 @@ export function PreviewFrame(props: VoidProps<PreviewFrameProps>) {
     {initialValue: null},
   );
   const assetsStore = getAssetsStore();
+  const watermark = createWatermarkScope();
+  createEffect(on(() => frame.signature?.position, watermark.invalidate));
   const exportCanvasStore = getExportCanvasStore();
   const theme = createMemo(() => {
     const themes = getThemeStore().themeArray();
@@ -93,10 +107,14 @@ export function PreviewFrame(props: VoidProps<PreviewFrameProps>) {
     <PreviewPortal>
       <div
         class={styles.previewWrapper}
-        ref={createRef<'div'>(props, el => (ref = el))}
+        ref={createRef<'div'>(props, el => {
+          ref = el;
+          bindWatermarkExport(el, watermark);
+        })}
       >
         <div
           class={styles.container}
+          ref={element => watermark.attach('frame', element)}
           data-watermark-frame
           style={assignInlineVars({
             overflow: 'hidden',
@@ -122,6 +140,7 @@ export function PreviewFrame(props: VoidProps<PreviewFrameProps>) {
         >
           <div
             class={styles.previewOverlay}
+            ref={element => watermark.attach('background', element)}
             data-watermark-background
             style={assignInlineVars({
               [styles.frameVars.backgroundColor]: assetsStore.isAssetUrl(
@@ -150,7 +169,7 @@ export function PreviewFrame(props: VoidProps<PreviewFrameProps>) {
             </Show>
           </div>
 
-          <FittedWindow active={!!target()}>
+          <FittedWindow active={!!target()} watermark={watermark}>
             <DynamicTerminal
               type={terminal.type}
               activeTabId={props.tab?.id}
@@ -196,6 +215,7 @@ export function PreviewFrame(props: VoidProps<PreviewFrameProps>) {
             signature={frame.signature}
             background={frame.background}
             scale={scale()}
+            markRef={element => watermark.attach('signature', element)}
           />
         </div>
       </div>

@@ -70,6 +70,7 @@ export function PanelExport(props: ExportControlProps) {
         leftIcon={<DownloadIcon />}
         title={t('editor.exportAs', {summary: exportSummary()})}
         data-export-image
+        disabled={!props.exporter.ready()}
         onClick={() => props.exporter.image()}
       >
         {t('toolbar.export')}
