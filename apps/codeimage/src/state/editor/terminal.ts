@@ -1,3 +1,4 @@
+import {parseSurface, parseWindowType} from '@core/configuration/windowTypes';
 import {getEditorStore} from '@codeimage/store/editor';
 import type {
   PersistedTerminalState,
@@ -99,7 +100,8 @@ export function createTerminalState() {
       store.set(state => ({
         ...state,
         ...presetData,
-        surface: presetData.surface ?? 'solid',
+        surface: parseSurface(presetData.surface),
+        type: parseWindowType(presetData.type),
       }));
     })
     .hold(store.commands.setFromPersistedState, (persistedState, {state}) => {
@@ -110,7 +112,8 @@ export function createTerminalState() {
       return {
         ...state,
         ...persistedState,
-        surface: persistedState.surface ?? 'solid',
+        surface: parseSurface(persistedState.surface),
+        type: parseWindowType(persistedState.type),
       };
     })
     .hold(store.commands.setBorder, (value, {set}) => {

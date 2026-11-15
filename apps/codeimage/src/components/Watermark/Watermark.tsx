@@ -3,8 +3,12 @@ import {createSignal, onCleanup, onMount, Show} from 'solid-js';
 import {Portal} from 'solid-js/web';
 import type {JSX} from 'solid-js';
 import {registerWatermark} from '../../core/watermark/browser';
-import {placeWatermark} from '../../core/watermark/placement';
-import type {Rect} from '../../core/watermark/placement';
+import {
+  placeWatermark,
+  canHostWatermarkFrame,
+  WATERMARK,
+} from '@codeimage/render/watermark';
+import type {Rect} from '@codeimage/render/watermark';
 import {signatureScale} from '../Frame/signatureLayout';
 import {CodeImageLogoV2} from '../Icons/CodeImageLogoV2';
 import * as styles from '../Terminal/terminal.css';
@@ -75,12 +79,12 @@ function MountedWatermark(props: {darkMode: boolean}) {
     const scale = windowRect.width / window.offsetWidth;
     if (!moved()) setHeight(natural.height / scale);
     const header = window.querySelector<HTMLElement>('[data-watermark-header]');
-    const code = Array.from(window.querySelectorAll('.cm-line')).flatMap(
-      textRects,
-    );
+    const code = Array.from(
+      window.querySelectorAll(`.${WATERMARK.codeClass}`),
+    ).flatMap(textRects);
     const obstacles: Rect[] = [];
     for (const el of window.querySelectorAll<HTMLElement>(
-      '[data-watermark-obstacle], button, [role=tab]',
+      WATERMARK.obstacles,
     )) {
       if (!el.closest('[data-watermark-home], [data-watermark-moved]'))
         obstacles.push(el.getBoundingClientRect());
@@ -96,17 +100,15 @@ function MountedWatermark(props: {darkMode: boolean}) {
       '[data-watermark-background]',
     );
     const paint = backdrop && getComputedStyle(backdrop);
-    const transparent =
-      !paint ||
-      paint.backgroundColor === 'transparent' ||
-      /(?:,|\/)\s*0(?:\.0+)?\s*\)$/.test(paint.backgroundColor);
     const painted =
       paint &&
-      paint.visibility !== 'hidden' &&
-      Number(paint.opacity) > 0 &&
-      (!transparent ||
-        paint.backgroundImage !== 'none' ||
-        !!backdrop?.querySelector('img'));
+      canHostWatermarkFrame({
+        visible: paint.visibility !== 'hidden',
+        opacity: Number(paint.opacity),
+        backgroundColor: paint.backgroundColor,
+        hasImage:
+          paint.backgroundImage !== 'none' || !!backdrop?.querySelector('img'),
+      });
     const placement = placeWatermark({
       home: natural,
       window: windowRect,
@@ -117,7 +119,7 @@ function MountedWatermark(props: {darkMode: boolean}) {
           ? {
               bounds: frame.getBoundingClientRect(),
               inset:
-                (24 *
+                (WATERMARK.frameInset *
                   signatureScale(frame.offsetWidth) *
                   frame.getBoundingClientRect().width) /
                 frame.offsetWidth,
@@ -125,7 +127,7 @@ function MountedWatermark(props: {darkMode: boolean}) {
           : null,
       code,
       obstacles,
-      gap: 4 * scale,
+      gap: WATERMARK.gap * scale,
     });
     home.dataset.watermarkPlacement = placement.slot;
     if (!('rect' in placement)) {
@@ -152,9 +154,9 @@ function MountedWatermark(props: {darkMode: boolean}) {
       ...(start ? {left: `${left}px`} : {right: `${right}px`}),
       ...(end ? {bottom: `${bottom}px`} : {top: `${top}px`}),
       display: 'flex',
-      opacity: 0.35,
+      opacity: WATERMARK.opacity,
       'pointer-events': 'none',
-      'z-index': 3,
+      'z-index': WATERMARK.zIndex,
       transform: `scale(${fit})`,
       'transform-origin': `${end ? 'bottom' : 'top'} ${start ? 'left' : 'right'}`,
     };
@@ -171,10 +173,6 @@ function MountedWatermark(props: {darkMode: boolean}) {
   };
 
   onMount(() => {
-    onCleanup(() => {
-      disposed = true;
-      cancelAnimationFrame(pending);
-    });
     const unregister = registerWatermark(home, measure);
     onCleanup(unregister);
     const root =
@@ -217,12 +215,14 @@ function MountedWatermark(props: {darkMode: boolean}) {
       mutation.disconnect();
       root.removeEventListener('scroll', schedule, true);
       document.fonts.removeEventListener('loadingdone', schedule);
+      disposed = true;
+      cancelAnimationFrame(pending);
     });
   });
 
   const logo = () => (
     <CodeImageLogoV2
-      width={125}
+      width={WATERMARK.width}
       withGradient={false}
       data-theme-mode={props.darkMode ? 'dark' : 'light'}
     />
@@ -236,7 +236,7 @@ function MountedWatermark(props: {darkMode: boolean}) {
             <span
               style={{
                 display: 'inline-block',
-                width: '125px',
+                width: `${WATERMARK.width}px`,
                 height: `${height()}px`,
               }}
             />

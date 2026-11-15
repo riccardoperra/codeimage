@@ -10,7 +10,7 @@ When every candidate is occupied, the watermark stays in its original position. 
 
 `DynamicTerminal` renders one `Watermark`. The component measures non-whitespace text fragments with DOM Ranges, including wrapped fragments. It measures tab and control boxes separately. Full-width code-line elements are not treated as text.
 
-`placeWatermark(scene)` in `core/watermark/placement.ts` accepts geometry and returns the original position, an anchored alternative or the explicit unavoidable case. It has no DOM, framework or persisted state. Repeating the calculation on the same scene produces the same result.
+`placeWatermark(scene)` in `@codeimage/render/watermark` accepts geometry and returns the original position, an anchored alternative or the explicit unavoidable case. It has no DOM, framework or persisted state. Repeating the calculation on the same scene produces the same result.
 
 The component preserves an empty home anchor while the single SVG renders through a Portal at the chosen host. This escapes the content and window clipping without changing their overflow rules. Positions convert viewport geometry back to the host's coordinates, retaining the fitted-window scale.
 
@@ -22,7 +22,11 @@ The selected design combines fixed ranked positions with local component ownersh
 
 No stage-wide placement provider, duplicate hidden SVG or new user setting is needed. The browser measurement adapter handles zoom and DOM details. The pure function owns collision and placement policy.
 
-The CLI renderer `render/entry-server.tsx` is absent from this checkout. A future adapter can supply geometry to the same pure function. Animated capture requires an occupancy envelope for the complete animation and is not integrated here.
+The browser imports only the pure `@codeimage/render/watermark` subpath. The package root imports Node filesystem utilities and Takumi and must never enter the browser graph. The Node renderer supplies geometry measured with Takumi and the same font resources used for the final image. Both adapters call the same policy.
+
+A separate geometry package was considered. It would expose the same scene and function while adding another manifest and build unit. The pure subpath keeps one rule without that extra package. Its independent build entry must exist before the app SSR build, because that build itself imports the policy.
+
+Animated capture requires an occupancy envelope for the complete animation and is not integrated here.
 
 ## Verification
 
@@ -32,4 +36,12 @@ Run the focused browser journey with:
 VERIFY_AUDIT=1 VERIFY_CASES=watermark node .agents/skills/verify-codeimage/scripts/verify.mjs
 ```
 
-The journey drives window styles and code through the UI, records live/export geometry, and downloads images. Its mock backend boundary is the same as the rest of the verification skill. Policy tests cover unchanged positioning, blocked controls, signature collision, unavailable frame space and scaling.
+The journey drives window styles and code through the UI, records live/export geometry, and downloads images. Its mock backend boundary is the same as the rest of the verification skill. Policy tests in `packages/render/src/watermark.test.ts` cover unchanged positioning, blocked controls, signature collision, unavailable frame space and scaling.
+
+Generate the CLI parity documents with `pnpm exec tsx scripts/parity/watermark-cases.mjs`.
+After `pnpm libs:build`, compare their actual web downloads and CLI PNGs with
+`P10_WEB_OUT=/tmp/codeimage-cli-watermark/parity pnpm exec tsx scripts/parity/watermark-cli-vs-web.ts /tmp/codeimage-cli-watermark/cases/*.json`.
+The documents cover all seven window types, four padding values, hidden and transparent frames, header off, signatures, fonts, tabs and portrait output.
+CLI width is a minimum, so the width-minimum case verifies content expansion rather than forced wrapping.
+
+The runner asserts equal watermark slots from browser geometry and Takumi geometry. It records full-image pixel differences separately, including size drift between rasterizers.

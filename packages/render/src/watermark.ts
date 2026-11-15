@@ -122,3 +122,47 @@ export function placeWatermark(scene: WatermarkScene): WatermarkPlacement {
   }
   return {slot: 'unavoidable'};
 }
+
+export const WATERMARK = {
+  width: 125,
+  opacity: 0.35,
+  gap: 4,
+  frameInset: 24,
+  zIndex: 3,
+  codeClass: 'cm-line',
+  obstacles: '[data-watermark-obstacle], button, [role=tab]',
+} as const;
+
+export function isTransparentColor(value: string): boolean {
+  const color = value.trim().toLowerCase();
+  if (!color || color === 'transparent') return true;
+  if (/^#(?:[a-f\d]{3}0|[a-f\d]{6}00)$/.test(color)) return true;
+  const functional =
+    /^(?:rgba?|hsla?|hwb|lab|lch|oklab|oklch|color)\((.*)\)$/.exec(color);
+  if (!functional) return false;
+  const channels = functional[1];
+  const alpha = channels.includes('/')
+    ? channels.slice(channels.lastIndexOf('/') + 1).trim()
+    : channels.split(',').length === 4
+      ? channels.split(',')[3].trim()
+      : undefined;
+  if (
+    alpha === undefined ||
+    !/^[+-]?(?:\d*\.\d+|\d+\.?\d*)(?:e[+-]?\d+)?%?$/.test(alpha)
+  )
+    return false;
+  return Number(alpha.replace(/%$/, '')) <= 0;
+}
+
+export function canHostWatermarkFrame(frame: {
+  visible: boolean;
+  opacity: number;
+  backgroundColor: string;
+  hasImage: boolean;
+}): boolean {
+  return (
+    frame.visible &&
+    frame.opacity > 0 &&
+    (frame.hasImage || !isTransparentColor(frame.backgroundColor))
+  );
+}
