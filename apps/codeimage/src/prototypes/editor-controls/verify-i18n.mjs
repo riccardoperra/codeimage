@@ -63,6 +63,8 @@ async function ready(page) {
     timeout: 60000,
   });
   await page.waitForTimeout(2500);
+  // The What's new nudge covers Dock's bar.
+  await page.addStyleTag({content: '[data-whats-new]{display:none!important}'});
   const close = page.getByRole('button', {name: /^close$/i}).first();
   if (await close.isVisible().catch(() => false)) {
     await close.click();
@@ -310,7 +312,10 @@ try {
           )
           .waitFor();
         await noEnglish(page, locale, `${layout}/${width} theme picker`);
-        await themeSearch.fill('');
+        await page
+          .getByRole('button', {name: messages.editor.showThemes, exact: true})
+          .focus();
+        await page.keyboard.press('Enter');
         if (layout === 'dock') await page.keyboard.press('Escape');
         if (layout === 'studio')
           await closeStudioPanel(
