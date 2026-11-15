@@ -1,3 +1,4 @@
+import {getFrameState} from '@codeimage/store/editor/frame';
 import {createSelectOptions, Select} from '@codeui/kit';
 import {Switch} from '@kobalte/core/switch';
 import {SegmentedField} from '@ui/SegmentedField/SegmentedField';
@@ -106,12 +107,18 @@ export function SelectChoice(props: {
   );
 }
 
-/** Today's aspect ratio picker, bound to the model's select, where `null` is Auto. */
+/**
+ * Today's aspect ratio picker, bound to the model's select, where `null` is
+ * Auto. Its social sizes write the frame's export target directly.
+ */
 export function AspectRatioField(props: {control: SelectControl}) {
+  const frame = getFrameState();
   return (
     <AspectRatioPicker
       value={props.control.value() === 'null' ? null : props.control.value()}
       onChange={ratio => props.control.set(String(ratio))}
+      target={frame.exportTarget()}
+      onTargetChange={frame.setExportTarget}
     />
   );
 }

@@ -14,7 +14,14 @@ import {untrackCommand} from 'statebuilder/commands';
 export interface Snapshot {
   readonly frame: Pick<
     FrameState,
-    'background' | 'opacity' | 'padding' | 'radius' | 'visible' | 'aspectRatio'
+    | 'background'
+    | 'opacity'
+    | 'padding'
+    | 'radius'
+    | 'visible'
+    | 'aspectRatio'
+    | 'exportTarget'
+    | 'signature'
   >;
   readonly terminal: TerminalState;
   readonly options: Omit<EditorUIOptions, 'focused'>;
@@ -47,12 +54,29 @@ export function createPreviewSession(): PreviewSession {
   const [saved, setSaved] = createSignal<Snapshot | null>(null);
 
   const take = (): Snapshot => {
-    const {background, opacity, padding, radius, visible, aspectRatio} =
-      frame.store;
+    const {
+      background,
+      opacity,
+      padding,
+      radius,
+      visible,
+      aspectRatio,
+      exportTarget,
+      signature,
+    } = frame.store;
     const {focused: _, ...options} = editor.state.options;
     const tab = editor.state.editors.find(item => editor.isActive(item.id));
     return {
-      frame: {background, opacity, padding, radius, visible, aspectRatio},
+      frame: {
+        background,
+        opacity,
+        padding,
+        radius,
+        visible,
+        aspectRatio,
+        exportTarget,
+        signature,
+      },
       terminal: {...terminal.state},
       options,
       tab: tab && {

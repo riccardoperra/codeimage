@@ -18,6 +18,11 @@ import {
   SelectChoice,
   SwitchField,
 } from './fields';
+import {
+  SignatureIconChoice,
+  SignaturePositionChoice,
+  SignatureStyleChoice,
+} from './SignatureFields';
 import {WindowStyleTiles} from './WindowStyleTiles';
 
 interface Look {
@@ -68,6 +73,29 @@ export function ControlRow(props: ControlRowProps): JSX.Element {
         labelFor: id,
         full: true,
       };
+    if (control.kind === 'segmented') {
+      if (control.id === 'signature.style')
+        return {
+          element: (
+            <SignatureStyleChoice control={control} id={id} size={size()} />
+          ),
+          labelFor: id,
+        };
+      if (control.id === 'signature.platform')
+        return {
+          element: (
+            <SignatureIconChoice control={control} id={id} size={size()} />
+          ),
+          labelFor: id,
+        };
+      if (control.id === 'signature.position')
+        return {
+          element: (
+            <SignaturePositionChoice control={control} id={id} size={size()} />
+          ),
+          labelFor: id,
+        };
+    }
     switch (control.kind) {
       case 'toggle':
         return {
@@ -154,12 +182,18 @@ export function ControlRow(props: ControlRowProps): JSX.Element {
           labelFor: `${id}-input`,
         };
       case 'custom':
-        // The production pickers the model binds: the font picker fits the
-        // value column, the image upload takes the whole row.
+        // The image upload takes the whole row; the font picker and every
+        // signature field fit the value column. The text fields name their
+        // input `<id>-input`.
         return {
-          element: <Dynamic component={control.Control} />,
-          labelFor: id,
-          full: control.id !== 'font.family',
+          element: <Dynamic component={control.Control} id={id} />,
+          labelFor:
+            control.id === 'signature.handle' ||
+            control.id === 'signature.name' ||
+            control.id === 'signature.profile'
+              ? `${id}-input`
+              : id,
+          full: control.id === 'frame.backgroundImage',
         };
       case 'background':
         return {element: null, labelFor: id};

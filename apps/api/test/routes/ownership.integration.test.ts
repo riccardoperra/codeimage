@@ -6,7 +6,7 @@ import {afterEach, describe, expect, test} from 'vitest';
 import type {PresetApi, ProjectApi} from '../../src/api-types.js';
 import type {HttpMethod} from '../../src/shared/contract.js';
 import {build} from '../helpers/app.js';
-import {presetData} from '../helpers/fakes.js';
+import {presetData, signatureData} from '../helpers/fakes.js';
 import {
   clearAllSeeds,
   client,
@@ -31,6 +31,13 @@ interface OwnershipCase {
 async function seedPreset(owner: User): Promise<Seeded> {
   const {id} = await presetSeed.createPresetV1('owned', owner.id);
   return {id, snapshot: () => client.preset.findUnique({where: {id}})};
+}
+
+async function seedSignature(owner: User): Promise<Seeded> {
+  const {id} = await client.signature.create({
+    data: {name: 'owned', data: signatureData(), ownerId: owner.id},
+  });
+  return {id, snapshot: () => client.signature.findUnique({where: {id}})};
 }
 
 async function seedProject(owner: User): Promise<Seeded> {
@@ -99,6 +106,25 @@ const projectUpdateBody = (): NonNullable<
 });
 
 const cases: readonly OwnershipCase[] = [
+  {
+    operation: 'signature.get',
+    method: 'GET',
+    url: id => `/api/v1/signature/${id}`,
+    seed: seedSignature,
+  },
+  {
+    operation: 'signature.update',
+    method: 'PUT',
+    url: id => `/api/v1/signature/${id}`,
+    body: () => ({name: 'stolen', isDefault: true}),
+    seed: seedSignature,
+  },
+  {
+    operation: 'signature.remove',
+    method: 'DELETE',
+    url: id => `/api/v1/signature/${id}`,
+    seed: seedSignature,
+  },
   {
     operation: 'preset.get',
     method: 'GET',

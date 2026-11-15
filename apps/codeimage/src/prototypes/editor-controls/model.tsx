@@ -10,6 +10,13 @@ import {getRootEditorStore} from '@codeimage/store/editor';
 import {getActiveEditorStore} from '@codeimage/store/editor/activeEditor';
 import {getFrameState} from '@codeimage/store/editor/frame';
 import {getTerminalState} from '@codeimage/store/editor/terminal';
+import type {
+  FrameSignature,
+  SignaturePlatform,
+  SignaturePosition,
+  SignatureStyle,
+} from '@codeimage/store/frame/model';
+import {SIGNATURE_STYLES} from '@codeimage/store/frame/model';
 import {dispatchUpdateTheme} from '@codeimage/store/effects/onThemeChange';
 import {getThemeStore} from '@codeimage/store/theme/theme.store';
 import {VersionStore} from '@codeimage/store/version/version.store';
@@ -21,6 +28,13 @@ import {createMemo, createSelector} from 'solid-js';
 import {provideState} from 'statebuilder';
 import {FontPicker} from '../../components/PropertyEditor/controls/FontPicker/FontPicker';
 import {ImagePicker} from '../../components/PropertyEditor/controls/ImagePicker/ImagePicker';
+import {SavedSignaturesField} from './controls/SavedSignatures';
+import {
+  SignatureAvatarField,
+  SignatureHandleField,
+  SignatureNameField,
+  SignatureProfileField,
+} from './controls/SignatureFields';
 import {AVAILABLE_TERMINAL_THEMES} from '@core/configuration/terminal-themes';
 import {
   createAmbientBackground,
@@ -32,7 +46,7 @@ import {createPreviewSession} from './preview';
 import type {SyntaxColors} from './syntax';
 import {readSyntaxColors} from './syntax';
 
-export type SectionId = 'frame' | 'window' | 'editor' | 'font';
+export type SectionId = 'frame' | 'signature' | 'window' | 'editor' | 'font';
 
 export type ControlId =
   | 'frame.padding'
@@ -42,6 +56,14 @@ export type ControlId =
   | 'frame.background'
   | 'frame.backgroundImage'
   | 'frame.aspectRatio'
+  | 'signature.saved'
+  | 'signature.handle'
+  | 'signature.style'
+  | 'signature.platform'
+  | 'signature.name'
+  | 'signature.avatar'
+  | 'signature.profile'
+  | 'signature.position'
   | 'window.surface'
   | 'window.backgroundType'
   | 'window.header'
@@ -126,7 +148,8 @@ export interface BackgroundControl extends ControlBase<'background'> {
 
 /** Renders the production control as is, already bound to the store. */
 export interface CustomControl extends ControlBase<'custom'> {
-  readonly Control: Component;
+  /** Gets the id the row's label points at. */
+  readonly Control: Component<{id?: string}>;
 }
 
 export type Control =
@@ -311,6 +334,13 @@ export function createEditorControlsModel(): EditorControlsModel {
   );
 
   const frameVisible = () => frame.store.visible;
+  const signature = () => frame.store.signature;
+  const hasSignature = () => !!signature();
+  const isCard = () => signature()?.style === 'card';
+  const patchSignature = (patch: Partial<FrameSignature>) => {
+    const current = signature();
+    if (current) frame.setSignature({...current, ...patch});
+  };
   const headerVisible = () => terminal.state.showHeader;
   const formatters = () => activeEditor.formatter.availableFormatters();
 
@@ -412,6 +442,86 @@ export function createEditorControlsModel(): EditorControlsModel {
           set: frame.setAspectRatio,
           track: ratio =>
             getUmami().track('aspect-ratio', {ratio: ratio ?? 'unset'}),
+        }),
+      ],
+    },
+    {
+      id: 'signature',
+      label: () => t('signature.title'),
+      controls: [
+        {
+          kind: 'custom',
+          id: 'signature.saved',
+          label: () => t('savedSignatures.saved'),
+          visible: always,
+          Control: SavedSignaturesField,
+        },
+        {
+          kind: 'custom',
+          id: 'signature.handle',
+          label: () => t('signature.handle'),
+          visible: always,
+          Control: SignatureHandleField,
+        },
+        choice<'segmented', SignatureStyle>('segmented', {
+          id: 'signature.style',
+          label: () => t('signature.style'),
+          visible: hasSignature,
+          options: () =>
+            SIGNATURE_STYLES.map(style => ({
+              label: t(`signature.${style}`),
+              value: style,
+            })),
+          value: () => signature()?.style ?? 'minimal',
+          set: style => patchSignature({style}),
+        }),
+        choice<'segmented', SignaturePlatform | null>('segmented', {
+          id: 'signature.platform',
+          label: () => t('signature.icon'),
+          visible: hasSignature,
+          options: () => [
+            {label: t('signature.noIcon'), value: null},
+            {label: 'X', value: 'x'},
+            {label: 'Bluesky', value: 'bluesky'},
+            {label: 'GitHub', value: 'github'},
+            {label: 'Mastodon', value: 'mastodon'},
+            {label: 'LinkedIn', value: 'linkedin'},
+          ],
+          value: () => signature()?.platform ?? null,
+          set: platform => patchSignature({platform}),
+        }),
+        {
+          kind: 'custom',
+          id: 'signature.name',
+          label: () => t('signature.name'),
+          visible: isCard,
+          Control: SignatureNameField,
+        },
+        {
+          kind: 'custom',
+          id: 'signature.avatar',
+          label: () => t('signature.avatar'),
+          visible: isCard,
+          Control: SignatureAvatarField,
+        },
+        {
+          kind: 'custom',
+          id: 'signature.profile',
+          label: () => t('signature.profile'),
+          visible: () => isCard() && signature()?.avatar === 'profile',
+          Control: SignatureProfileField,
+        },
+        choice<'segmented', SignaturePosition>('segmented', {
+          id: 'signature.position',
+          label: () => t('signature.position'),
+          visible: hasSignature,
+          options: () => [
+            {label: t('signature.left'), value: 'bottom-left'},
+            {label: t('signature.center'), value: 'bottom-center'},
+            {label: t('signature.right'), value: 'bottom-right'},
+          ],
+          value: () => signature()?.position ?? 'bottom-right',
+          set: position => patchSignature({position}),
         }),
       ],
     },

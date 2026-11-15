@@ -4,6 +4,7 @@ import {lineMarksLocale} from './lineMarks';
 import {notFound} from './ notFound';
 import {dashboard} from './dashboard';
 import {presets} from './presets';
+import {signatures} from './signatures';
 import sidebarLocale from './sidebar';
 import {uiLocale} from './ui';
 import {bottomBar} from './bottombar';
@@ -99,6 +100,7 @@ export const locale = {
     ...bottomBar.it,
     ...notFound.it,
     ...presets.it,
+    ...signatures.it,
     ...exportTabs.it,
     ...altText.it,
     ...lineMarksLocale.it,
@@ -189,6 +191,7 @@ export const locale = {
     ...dashboard.en,
     ...notFound.en,
     ...presets.en,
+    ...signatures.en,
     ...exportTabs.en,
     ...altText.en,
     ...lineMarksLocale.en,
@@ -280,6 +283,7 @@ export const locale = {
     ...dashboard.de,
     ...notFound.de,
     ...presets.de,
+    ...signatures.de,
     ...exportTabs.de,
     ...altText.de,
     ...lineMarksLocale.de,
@@ -371,6 +375,7 @@ export const locale = {
     ...dashboard.es,
     ...notFound.es,
     ...presets.es,
+    ...signatures.es,
     ...exportTabs.es,
     ...altText.es,
     ...lineMarksLocale.es,
