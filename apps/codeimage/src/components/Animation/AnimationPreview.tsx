@@ -219,7 +219,9 @@ function AnimationStage(props: {plan: PreviewPlan; visible: boolean}) {
           ? Math.min(640, target.resolution[0]) / target.resolution[0]
           : undefined,
       }}
-      onKeyDown={onKeyDown}
+      // The app's hotkeys listen on the body, which a key reaches before
+      // Solid's delegated handlers run. A native listener stops it first.
+      on:keydown={onKeyDown}
     >
       <style>{css}</style>
       <For each={timeline.scenes}>
