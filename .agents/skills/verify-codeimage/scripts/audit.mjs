@@ -1159,8 +1159,18 @@ export async function audit({page, context, base, out, server}) {
           await page.getByRole('button', {name: 'Steps', exact: true}).count(),
           0,
         );
-        await rows.nth(1).tap();
-        await sheet.waitFor();
+        // The sheet takes focus just after it shows and returns it just after
+        // it leaves. Typing or reading focus sooner races the dialog.
+        const openSheet = async row => {
+          await row.tap();
+          await sheet.waitFor();
+          await page.waitForFunction(() =>
+            document
+              .querySelector('[data-animation-step-sheet]')
+              ?.contains(document.activeElement),
+          );
+        };
+        await openSheet(rows.nth(1));
         await hold.fill('1234');
         await hold.press('Escape');
         assert.equal(await hold.inputValue(), '800', 'first Escape reverts');
@@ -1168,10 +1178,19 @@ export async function audit({page, context, base, out, server}) {
         await hold.press('Escape');
         await sheet.waitFor({state: 'hidden'});
         assert.ok(
-          await rows.nth(1).evaluate(el => el === document.activeElement),
+          await page
+            .waitForFunction(
+              row => row === document.activeElement,
+              await rows.nth(1).elementHandle(),
+              {timeout: 2000},
+            )
+            .then(
+              () => true,
+              () => false,
+            ),
           'sheet returns focus to row',
         );
-        await rows.nth(1).tap();
+        await openSheet(rows.nth(1));
         await hold.fill('0');
         await hold.press('Enter');
         assert.equal(await hold.inputValue(), '0');
