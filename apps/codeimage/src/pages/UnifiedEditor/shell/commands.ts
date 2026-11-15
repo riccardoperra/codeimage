@@ -6,14 +6,8 @@ import type {AppLocaleEntries} from '../../../i18n';
 import type {Command} from '../command-menu/commands';
 import type {Exporter} from './export';
 import {EXPORT_SCALES, exportFormats, exportSummary} from './export-formats';
-import {LAYOUTS, preferences, THEME_CARDS} from './preferences';
+import {COLOUR_MODES, LAYOUTS, preferences, THEME_CARDS} from './preferences';
 import {SECTIONS, settings} from './settings-state';
-
-const MODES = [
-  {id: 'dark', name: 'editor.dark'},
-  {id: 'light', name: 'editor.light'},
-  {id: 'system', name: 'editor.system'},
-] as const;
 
 /**
  * Export and every export setting as commands. They read and write the
@@ -169,7 +163,7 @@ export function settingsCommands(extra: readonly Command[]): Command[] {
       current: cards.id === preferences.themeCards(),
       run: () => preferences.setThemeCards(cards.id),
     })),
-    ...MODES.map((mode): Command => ({
+    ...COLOUR_MODES.map((mode): Command => ({
       id: `colour-mode=${mode.id}`,
       group: t('editor.settings'),
       label: t('editor.modeCommand', {value: t(mode.name)}),
