@@ -220,3 +220,19 @@ The new test renders two tabs of one size with line numbers as APNG, 319 by 239 
 - `pnpm --filter=@codeimage/app test` passes 121 tests in 20 files, `@codeimage/render` passes 78 in 4 files, and `@codeimage/cli` passes 122 in 7 files.
 
 Lanes 1 to 6 and 8 to 10 and the perf lane were not run again.
+
+## Realigned on the P10 export path
+
+On 2026-11-15 A1 (#707) moved onto the P10/P11 export path of #702 (see "Port to the P10 export path" in `a1-verification.md`), and this branch merged it. Both sides had rewritten `render.ts`, `bin.ts`, and `args.ts`, so the merge took the P11 versions and the next commits put A2 back on top of them. The `media/` screenshots above are per-run evidence and no longer ship in the repo.
+
+**Renderer.** `renderAnimation` runs inside `createRenderer`, with the same renderer, font store faces, `--font-file`, offline mode, and abort signal as a still. The SSR entry resolves the media, so the separate background fetch is gone. Each scene takes the watermark of its step's static export through `watermarkScenes`, so a hold equals the still in every pixel, mark included. A new render test checks that with a line under the watermark's home, where the mark moves.
+
+**CLI.** `--animate` renders through `createRenderer`. Progress, the GIF rate note, and errors go through `ui.ts` on stderr. Stdout carries only image data, and a file output no longer prints its path there. Without `-o` the file is `codeimage.webp`, or stdout when it is redirected. The atomic write and the Ctrl+C handler stay. Clack's spinner listens for SIGINT without exiting, so that handler is also what stops a render under the spinner. `formatIssues` moved to `errors.ts` to break an import cycle (`animate.ts` > `snapshot.ts` > `args.ts` > the flag list) that left `FLAGS` undefined when a test loaded a flag first. A new CLI test writes a GIF and a piped WebP from two files and checks that stdout holds only the image and stderr the rate note.
+
+**Results.**
+
+- All 43 endpoint cases pass. `reference` is 0.000% in every case, the largest start is 0.023%, the largest end is 0.160% in `edge-line-2000`, the frame center stays within 0.705 px, and the window drift within 0.022 px, under the 3/64 device px bound.
+- `--encode` ran on 9 cases: rename, grow, gutter, marks, fallback, `edge-focus-change`, and the three target cases. WebP and APNG are 0.000% on every frame. Every GIF has 0 ghost pixels. The quantizer holes are 5,670 in `edge-target` (4,599 before) and 546 in `edge-target-scale`, and the GIF color diff is 0.042% to 0.273%.
+- Two steps with a `card` window from a preset and a card signature: `--animate --scale 2 -o demo.webp` writes 1848 by 952 px, 29 frames, 1,623,918 bytes in 3.2 s. Frame 0 equals the still of the same command without `--animate` in all 907,872 pixels of the still. `-o demo.gif --fps 30` writes 924 by 476 px, 25 frames, 2,683,834 bytes, and notes the 25 fps rate on stderr only. With `--size x-landscape --signature @codeimage`, the WebP is 1600 by 900 px, 29 frames, 558,762 bytes, and frame 0 equals the still in all 1,440,000 pixels.
+- Known limit, unchanged from A1 and A2: a natural frame keeps its fractional height, and the still's canvas is rounded, so a hold draws one more device row of the frame's bottom edge than the still, 1,127 pixels in the first export above. The endpoint script crops to the still and does not count it.
+- Gates at the realigned head: the CI build order (`prisma generate`, `prisma-models`, the API build, every library), the package, CLI, API, and app typechecks, and oxlint and oxfmt on the touched files all pass. The app passes 292 tests, `@codeimage/render` 157, and `@codeimage/cli` 142. `takumi-vs-chrome.ts` passes 74 of 74 cells and `cli-vs-web.ts` 64 of 64 rows, as on #702.
