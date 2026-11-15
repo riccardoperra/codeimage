@@ -55,3 +55,7 @@ For static export parity after merging main, run the baseline helper against thi
 After two steps are saved, Export video and its arrow open MP4 settings while Animate is open. Export as image returns to the image controls. The dialog owns the 24/30/50/60 fps choice and persists it in the animation settings, so reopening the dialog and later exports use the same rate. The Animate panel still has no fps field. Export measures the same static step layouts and uses planPreviewTimeline, frameRules and the same header/timing/easing settings as this preview. A pure core/animation/target-layout.ts helper places windows in social targets.
 
 The five `animation-mp4` audit cases cover layouts, failures, compositing, export modes and static-frame parity; see [Export](export.md) for controls, worker cancellation, unsupported configurations and remaining platform checks.
+
+## GIF export
+
+Animate's export menu now chooses MP4 or GIF in the same settings. MP4 remains the initial format; GIF defaults to 25 fps and supports 50 fps, with an explicit note when a 60 fps choice plays at 50. The export-only 25 fps value does not change the persisted animation schema. GIF uses the same measured timeline and raw RGBA job as MP4. `animation-gif` and `animation-gif-fallback` cover downloads in all layouts, the fps note, size suggestion, cancel, MP4 fallback and decoded frame fidelity; the five MP4 cases and baseline PNG retain regression coverage. See [Export](export.md) for decoder tolerances and replay commands.

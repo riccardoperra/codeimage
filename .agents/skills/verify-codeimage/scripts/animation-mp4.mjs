@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import {animationGifCases} from './animation-gif.mjs';
 import {execFileSync} from 'node:child_process';
 import {readFile, writeFile} from 'node:fs/promises';
 import {createMockContext} from './mock-context.mjs';
@@ -83,7 +84,8 @@ export function animationMp4Cases({
       () =>
         !!document.querySelector('[data-animation-export] [role="alert"]') ||
         [...document.querySelectorAll('[data-animation-export] button')].some(
-          button => button.textContent === 'Export MP4' && !button.disabled,
+          button =>
+            /^Export (MP4|GIF)$/.test(button.textContent) && !button.disabled,
         ),
       undefined,
       {timeout: 60000},
@@ -778,7 +780,21 @@ export function animationMp4Cases({
     }
     return results;
   }
+  const gif = animationGifCases({
+    page: () => page,
+    out,
+    setup,
+    doctor,
+    open,
+    ready,
+    close,
+    choose,
+    shot: name => shot(name),
+    editor: () => editor(),
+  });
   return {
+    gifLayouts: isolated('animation-gif', gif.layouts),
+    gifFallback: isolated('animation-gif-fallback', gif.fallback),
     layouts: isolated('animation-mp4', layouts),
     errors: isolated('animation-mp4-errors', errors),
     compositing: isolated('animation-mp4-compositing', compositing),
