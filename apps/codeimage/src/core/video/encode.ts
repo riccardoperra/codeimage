@@ -66,6 +66,29 @@ export function mp4Config(size: Size, fps: VideoFps): Mp4Config {
   };
 }
 
+// Extend the frame's edge into the added row or column. This keeps gradients,
+// image backgrounds and alpha intact without painting behind the whole frame.
+export function padVideoFrame(
+  data: Uint8Array<ArrayBuffer>,
+  content: Size,
+  encoded: Size,
+) {
+  if (content.width < encoded.width) {
+    for (let row = 0; row < content.height; row++) {
+      const edge = (row * encoded.width + content.width - 1) * 4;
+      data.copyWithin(edge + 4, edge, edge + 4);
+    }
+  }
+  if (content.height < encoded.height) {
+    const stride = encoded.width * 4;
+    data.copyWithin(
+      content.height * stride,
+      (content.height - 1) * stride,
+      content.height * stride,
+    );
+  }
+}
+
 export async function checkMp4Support(config: Mp4Config): Promise<Mp4Support> {
   if (typeof VideoEncoder === 'undefined' || typeof VideoFrame === 'undefined')
     return {kind: 'unsupported', reason: 'missing'};

@@ -14,7 +14,7 @@ const job: AnimationExport = {
   resources: {css: [], fonts: [], fontFamilies: []},
   css: '',
   pixelRatio: 1,
-  background: '#fff',
+  contentSize: {width: 640, height: 480},
 };
 function fixture(supported = true) {
   const worker: AnimationWorker = {

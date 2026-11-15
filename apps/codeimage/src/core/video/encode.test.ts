@@ -1,5 +1,11 @@
 import {afterEach, describe, expect, it, vi} from 'vitest';
-import {checkMp4Support, evenSize, mp4Config, videoFrame} from './encode';
+import {
+  checkMp4Support,
+  evenSize,
+  mp4Config,
+  padVideoFrame,
+  videoFrame,
+} from './encode';
 
 afterEach(() => vi.unstubAllGlobals());
 describe('MP4 configuration', () => {
@@ -82,5 +88,24 @@ describe('MP4 configuration', () => {
         index === 179 ? 3_000_000 : frames[index + 1].timestamp,
       );
     }
+  });
+});
+
+describe('even video frame padding', () => {
+  it('extends only the right and bottom edge, preserving background colour and alpha', () => {
+    const data = new Uint8Array(4 * 2 * 4);
+    data.set([20, 40, 60, 127, 30, 50, 70, 64, 40, 60, 80, 0]);
+    padVideoFrame(data, {width: 3, height: 1}, {width: 4, height: 2});
+    expect([...data.slice(0, 12)]).toEqual([
+      20, 40, 60, 127, 30, 50, 70, 64, 40, 60, 80, 0,
+    ]);
+    expect([...data.slice(12, 16)]).toEqual([40, 60, 80, 0]);
+    expect(data.slice(16)).toEqual(data.slice(0, 16));
+  });
+  it('leaves an already-even frame unchanged', () => {
+    const data = Uint8Array.from({length: 16}, (_, index) => index);
+    const before = data.slice();
+    padVideoFrame(data, {width: 2, height: 2}, {width: 2, height: 2});
+    expect(data).toEqual(before);
   });
 });

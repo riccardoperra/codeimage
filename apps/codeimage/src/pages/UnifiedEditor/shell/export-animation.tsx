@@ -13,7 +13,6 @@ import {
   type CodeStyle,
   type PreviewTab,
 } from '../../../components/Animation/planPreview';
-import {targetLayout} from '../../../core/animation/target-layout';
 import {frameRules} from '../../../core/animation/timeline';
 import type {
   AnimationSettings,
@@ -68,35 +67,21 @@ export function animationSnapshot() {
       showLineNumbers: style.showLineNumbers(),
     };
     const font = editor.computed.selectedFont();
-    const target = frame.exportTarget();
+    const target = output ?? frame.exportTarget();
     const pixelRatio = frame.exportPixelRatio(1);
-    const background =
-      frame.store.background && !frame.store.background.startsWith('asset:')
-        ? frame.store.background
-        : '#000000';
     const measured = await measurePreview(
       owner,
       tabs,
       codeStyle,
       settings.header,
+      output,
     );
     const {timeline, languages} = planPreviewTimeline(settings, measured);
-    const config = mp4Config(
-      output ?? {
-        width: timeline.width * pixelRatio,
-        height: timeline.height * pixelRatio,
-      },
-      fps,
-    );
-    const placement = output
-      ? targetLayout(
-          {
-            width: config.width / pixelRatio,
-            height: config.height / pixelRatio,
-          },
-          timeline,
-        )
-      : {left: 0, top: 0, scale: 1};
+    const contentSize = {
+      width: timeline.width * pixelRatio,
+      height: timeline.height * pixelRatio,
+    };
+    const config = mp4Config(contentSize, fps);
     const host = document.createElement('div');
     host.style.cssText =
       'position:fixed;left:0;top:0;visibility:hidden;pointer-events:none';
@@ -113,52 +98,40 @@ export function animationSnapshot() {
               overflow: 'hidden',
               width: `${config.width / pixelRatio}px`,
               height: `${config.height / pixelRatio}px`,
-              background: background ?? '#000000',
             }}
           >
-            <div
-              style={{
-                position: 'absolute',
-                left: `${placement.left}px`,
-                top: `${placement.top}px`,
-                width: `${timeline.width}px`,
-                height: `${timeline.height}px`,
-                'transform-origin': 'top left',
-                transform: `scale(${placement.scale})`,
-              }}
-            >
-              <FrameView
-                animated
-                header={settings.header}
-                activeTabId={tab.id}
-                code={
-                  scene.kind === 'hold' ? (
-                    <StaticCodeView
-                      code={tab.code}
-                      marks={tab.marks}
-                      languageId={tab.languageId}
-                      language={languages[scene.step]}
-                      theme={codeStyle.theme}
-                      showLineNumbers={codeStyle.showLineNumbers}
-                      lineNumberStart={tab.lineNumberStart}
-                      fontFamily={codeStyle.fontFamily}
-                      fontWeight={codeStyle.fontWeight}
-                      enableLigatures={codeStyle.enableLigatures}
-                    />
-                  ) : (
-                    <AnimatedCodeView
-                      html={scene.code}
-                      languageId={tab.languageId}
-                      theme={codeStyle.theme}
-                      showLineNumbers={codeStyle.showLineNumbers}
-                      fontFamily={codeStyle.fontFamily}
-                      fontWeight={codeStyle.fontWeight}
-                      enableLigatures={codeStyle.enableLigatures}
-                    />
-                  )
-                }
-              />
-            </div>
+            <FrameView
+              targetSize={output}
+              animated
+              header={settings.header}
+              activeTabId={tab.id}
+              code={
+                scene.kind === 'hold' ? (
+                  <StaticCodeView
+                    code={tab.code}
+                    marks={tab.marks}
+                    languageId={tab.languageId}
+                    language={languages[scene.step]}
+                    theme={codeStyle.theme}
+                    showLineNumbers={codeStyle.showLineNumbers}
+                    lineNumberStart={tab.lineNumberStart}
+                    fontFamily={codeStyle.fontFamily}
+                    fontWeight={codeStyle.fontWeight}
+                    enableLigatures={codeStyle.enableLigatures}
+                  />
+                ) : (
+                  <AnimatedCodeView
+                    html={scene.code}
+                    languageId={tab.languageId}
+                    theme={codeStyle.theme}
+                    showLineNumbers={codeStyle.showLineNumbers}
+                    fontFamily={codeStyle.fontFamily}
+                    fontWeight={codeStyle.fontWeight}
+                    enableLigatures={codeStyle.enableLigatures}
+                  />
+                )
+              }
+            />
           </div>
         );
         const mount = document.createElement('div');
@@ -193,7 +166,7 @@ export function animationSnapshot() {
         resources: (await collecting).resources,
         config,
         pixelRatio,
-        background: background ?? '#000000',
+        contentSize,
         css: [
           `html,body{margin:0;padding:0;background:transparent} [data-video-root]{position:relative;overflow:hidden;width:${config.width / pixelRatio}px!important;height:${config.height / pixelRatio}px!important} .cm-editor .cm-scroller{overflow:hidden}`,
           target

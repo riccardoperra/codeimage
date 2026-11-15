@@ -3,6 +3,7 @@ import wasmUrl from '@takumi-rs/wasm/wasm-url';
 import {
   checkMp4Support,
   createMp4Encoder,
+  padVideoFrame,
   errorMessage,
   warmEncoder,
 } from '../core/video/encode';
@@ -66,6 +67,7 @@ async function exportAnimation(job: AnimationExport) {
         format: 'raw',
       });
       renderMs += performance.now() - before;
+      padVideoFrame(rgba, job.contentSize, job.config);
       await encoder.add(rgba, index);
       if (index % 3 === 0 || index === total - 1)
         send({kind: 'progress', done: index + 1, total});

@@ -9,6 +9,7 @@ import type {
   CodeMetrics,
   GlyphWidths,
   NonEmpty,
+  Size,
 } from '@core/animation/model';
 import {
   planTimeline,
@@ -117,6 +118,7 @@ export async function measurePreview(
   tabs: NonEmpty<PreviewTab>,
   style: CodeStyle,
   header: AnimationHeader,
+  targetSize?: Size,
 ): Promise<PreviewMeasurement> {
   const languages = await Promise.all(
     tabs.map(tab => loadLanguage(tab.languageId, tab.tabName)),
@@ -163,6 +165,7 @@ export async function measurePreview(
         owner,
         () => (
           <FrameView
+            targetSize={targetSize}
             natural
             header={header}
             activeTabId={tab.id}

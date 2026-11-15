@@ -1,3 +1,4 @@
+import type {Size} from '../animation/model';
 import type {Mp4Config} from './encode';
 import type {RasterizeResources} from '../rasterize/takumi';
 
@@ -8,7 +9,7 @@ export type AnimationExport = {
   css: string;
   config: Mp4Config;
   pixelRatio: number;
-  background: string;
+  contentSize: Size;
 };
 export type AnimationRequest =
   | {kind: 'warm'; config: Mp4Config}
