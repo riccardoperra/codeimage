@@ -175,7 +175,7 @@
       }
     },
     {
-      "files": ["**/prototypes/editor-controls/variants/**"],
+      "files": ["**/pages/UnifiedEditor/variants/**"],
       "rules": {
         "no-restricted-imports": [
           "error",
@@ -195,6 +195,28 @@
             ]
           }
         ]
+      }
+    },
+    {
+      "files": ["packages/cli/src/**", "packages/render/src/**"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "paths": [
+              {
+                "name": "@clack/prompts",
+                "message": "Terminal UI belongs in packages/cli/src/ui.ts; use its Ui adapter."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "files": ["packages/cli/src/ui.ts"],
+      "rules": {
+        "no-restricted-imports": "off"
       }
     }
   ]

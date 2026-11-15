@@ -1,3 +1,8 @@
+import {parseSignature} from '../../../apps/codeimage/src/state/frame/model';
+import {
+  parseSurface,
+  parseWindowType,
+} from '../../../apps/codeimage/src/core/configuration/windowTypes';
 import {z} from 'zod';
 
 export const SUPPORTED_SNAPSHOT_MAJOR = 1;
@@ -31,19 +36,12 @@ export const projectSnapshotSchema = z.looseObject({
       .nullable()
       .optional(),
     aspectRatio: z.string().nullable().optional(),
-    // Loose: the style, platform, name and avatar fields pass through to the
-    // app, which reads them like a stored project.
-    signature: z
-      .looseObject({
-        handle: z.string(),
-        position: z.enum(['bottom-left', 'bottom-right']),
-      })
-      .nullable()
-      .optional(),
+    signature: z.unknown().optional().transform(parseSignature),
   }),
   terminal: z.looseObject({
     showHeader: z.boolean(),
-    type: z.enum(['macOs', 'macOsGrayTheme', 'macOsOutlineTheme', 'windows']),
+    type: z.unknown().optional().transform(parseWindowType),
+    surface: z.unknown().optional().transform(parseSurface),
     accentVisible: z.boolean(),
     shadow: z.string().nullable(),
     background: z.string(),

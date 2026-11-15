@@ -1,20 +1,15 @@
-import {getAssetsStore, isAssetUrl} from '@codeimage/store/assets/assets';
+import {isAssetUrl} from '@codeimage/store/assets/assetIds';
+import type {FrameMedia} from './frameMedia';
 import type {
   FrameSignature as Signature,
   FrameState,
   SignaturePlatform,
 } from '@codeimage/store/frame/model';
-import {avatarKey, loadAvatar} from '@codeimage/store/frame/avatar';
-import {
-  avatarSource,
-  displayHandle,
-  initials,
-} from '@codeimage/store/frame/signature';
+import {displayHandle, initials} from '@codeimage/store/frame/signature';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 import type {ParentProps} from 'solid-js';
 import {
   createEffect,
-  createResource,
   createSignal,
   Match,
   on,
@@ -22,11 +17,9 @@ import {
   onMount,
   Show,
   Switch,
-  untrack,
 } from 'solid-js';
 import * as styles from './FrameSignature.css';
 import {platformIconPaths} from './platformIcons';
-import {createSignatureTone} from './signatureTone';
 
 export {
   frameBottomPadding,
@@ -59,29 +52,8 @@ export function PlatformIcon(props: {
   );
 }
 
-function Avatar(props: {signature: Signature}) {
-  const assets = getAssetsStore();
-  const source = () =>
-    props.signature.avatar === 'profile' ? avatarSource(props.signature) : null;
-  const key = () => {
-    const value = source();
-    return value ? avatarKey(value) : null;
-  };
-  // Keyed by the source, so typing a handle does not refetch the same
-  // avatar, and an avatar is only shown for the account it was loaded for.
-  const [profileAvatar] = createResource(key, async loading => {
-    const value = untrack(source);
-    return {key: loading, url: value ? await loadAvatar(value) : null};
-  });
-  const url = () => {
-    const avatar = props.signature.avatar;
-    if (!avatar) return null;
-    if (avatar === 'profile') {
-      const loaded = profileAvatar.latest;
-      return loaded && loaded.key === key() ? loaded.url : null;
-    }
-    return assets.getAsset(avatar)()?.url ?? null;
-  };
+function Avatar(props: {signature: Signature; url: string | null}) {
+  const url = () => props.url;
   const [failed, setFailed] = createSignal<string | null>(null);
   const onError = () => setFailed(url());
   return (
@@ -128,18 +100,23 @@ function FitText(props: ParentProps<{class?: string}>) {
 }
 
 /** The signature itself, without its place in the frame. */
-export function SignatureMark(props: {signature: Signature}) {
+export function SignatureMark(props: {
+  signature: Signature;
+  avatar: string | null;
+  ref?: (element: HTMLElement) => void;
+}) {
   const handle = () => displayHandle(props.signature);
   return (
     <Switch>
       <Match when={props.signature.style === 'minimal'}>
-        <div class={styles.minimal}>
+        <div ref={element => props.ref?.(element)} class={styles.minimal}>
           <PlatformIcon platform={props.signature.platform} size={16} />
           <FitText>{handle()}</FitText>
         </div>
       </Match>
       <Match when={props.signature.style === 'pill'}>
         <div
+          ref={element => props.ref?.(element)}
           class={styles.pill}
           classList={{[styles.pillWithIcon]: !!props.signature.platform}}
         >
@@ -148,8 +125,8 @@ export function SignatureMark(props: {signature: Signature}) {
         </div>
       </Match>
       <Match when={props.signature.style === 'card'}>
-        <div class={styles.card}>
-          <Avatar signature={props.signature} />
+        <div ref={element => props.ref?.(element)} class={styles.card}>
+          <Avatar signature={props.signature} url={props.avatar} />
           <div class={styles.cardText}>
             <FitText class={styles.cardName}>
               {props.signature.name?.trim() ||
@@ -173,14 +150,17 @@ export function SignatureMark(props: {signature: Signature}) {
 
 export function FrameSignature(props: {
   signature: FrameState['signature'];
+  media: FrameMedia;
   background: string | null | undefined;
   /** From `signatureScale()`. */
   scale: number;
   /** Makes the signature a button that opens its settings, in the editor only. */
   onEdit?: () => void;
   editLabel?: string;
+  /** Receives the visible mark: the edit button, or the mark itself. */
+  markRef?: (element: HTMLElement) => void;
 }) {
-  const tone = createSignatureTone(() => props.background);
+  const tone = () => props.media.tone;
   // Keep the editor's focus and selection, and start no drag.
   const preventSelection = (event: Event) => {
     event.preventDefault();
@@ -206,9 +186,16 @@ export function FrameSignature(props: {
         >
           <Show
             when={props.onEdit}
-            fallback={<SignatureMark signature={signature()} />}
+            fallback={
+              <SignatureMark
+                signature={signature()}
+                avatar={props.media.avatar}
+                ref={props.markRef}
+              />
+            }
           >
             <button
+              ref={element => props.markRef?.(element)}
               type="button"
               class={styles.edit}
               data-signature-style={signature().style}
@@ -218,7 +205,10 @@ export function FrameSignature(props: {
               onMouseDown={preventSelection}
               onClick={editSignature}
             >
-              <SignatureMark signature={signature()} />
+              <SignatureMark
+                signature={signature()}
+                avatar={props.media.avatar}
+              />
             </button>
           </Show>
         </div>

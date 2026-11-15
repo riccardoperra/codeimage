@@ -106,7 +106,15 @@ export function DraggableWindowTab(props: VoidProps<WindowTabProps>) {
           }
           when={!props.readonlyTab}
         >
-          <Suspense>
+          <Suspense
+            fallback={
+              props.appearance ? (
+                <span>{props.tabName || 'Untitled'}</span>
+              ) : (
+                <WindowTabContentText>{props.tabName}</WindowTabContentText>
+              )
+            }
+          >
             <TabName
               readonly={props.readonlyTab && !props.active}
               value={props.tabName ?? ''}
