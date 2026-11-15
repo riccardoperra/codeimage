@@ -131,6 +131,7 @@ export function createExporter(
       return;
     }
     setBusy(true);
+    if (action === 'eachTab') getWhatsNew().seen('tabs');
     const mode =
       action === 'share'
         ? ExportMode.share
@@ -190,10 +191,7 @@ export function createExporter(
     busy: () => busy() || dispatchCopyToClipboard.loading(),
     tabs: () => editor.state.editors.length,
     image: () => request('image'),
-    eachTab: () => {
-      getWhatsNew().seen('tabs');
-      request('eachTab');
-    },
+    eachTab: () => request('eachTab'),
     share: () => request('share'),
     newTab: () => request('newTab'),
     copy: () => request('copy'),
