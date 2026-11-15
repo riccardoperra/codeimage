@@ -244,6 +244,28 @@ describe('font cache', () => {
       await chmod(dir, 0o700);
     }
   });
+  it('repairs a corrupt copy in a read-only cache for this render', async () => {
+    await store().install(['test']);
+    await writeFile(objectPath(), Buffer.alloc(3));
+    await chmod(join(dir, 'fonts/sha256'), 0o500);
+    try {
+      const events: string[] = [];
+      const cache = createFontStore({
+        cacheDir: dir,
+        catalog,
+        onEvent: event => events.push(event.type),
+      });
+      expect(await cache.bytes(font, font.files[0])).toEqual(data);
+      expect(events).toEqual([
+        'repaired',
+        'download',
+        'cache-unwritable',
+        'downloaded',
+      ]);
+    } finally {
+      await chmod(join(dir, 'fonts/sha256'), 0o700);
+    }
+  });
   it('supports cancellation', async () => {
     mode = 'slow';
     const controller = new AbortController();

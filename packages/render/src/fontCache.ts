@@ -283,9 +283,9 @@ export function createFontStore(
         'not cached, and downloads are disabled offline',
       );
     if (data === null) {
-      await unlink(pathOf(file)).catch(error => {
-        if (!hasCode(error, 'ENOENT')) throw error;
-      });
+      // A read-only cache keeps the bad copy: publishing then reports the
+      // cache unwritable, and this render still gets verified bytes.
+      await unlink(pathOf(file)).catch(() => undefined);
       emit({type: 'repaired', fontId: font.id, file: file.file});
     }
     let acquisition = pending.get(file.sha256);
