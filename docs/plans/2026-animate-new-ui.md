@@ -347,15 +347,11 @@ A4 adds an "Export animation…" entry to the Export menu (`prototypes/editor-co
 
 ## Changes during implementation
 
-- Slice 3: regenerate the checked-in MSW worker from the installed MSW 2.12.14.
-  The old worker was 0.47.4 and produced `deserializeRequest` errors before the
-  editor could load in the requested mock-API live lanes.
-- Database integration verification deploys migrations and uses the unit setup
-  with the integration test include list, avoiding a reset of the shared local
-  Docker test database. The real update/GET routes and Postgres still run.
-- Slice 6: `SegmentedField` now stops Escape in a native item listener and
-  accepts an explicit Escape callback. The kit's tab list otherwise consumes
-  the key before the easing popover can close. Both custom-input and preset
-  Escape paths are checked in Chrome, including focus return.
-- The compact Dock keeps its existing 40 px targets. Its export action uses
-  its icon on phones so Animate fits after More without horizontal scrolling.
+- Regenerate the stale MSW 0.47.4 worker from installed MSW 2.12.14 so mock lanes load.
+- Verify API update/GET against deployed Docker Postgres migrations without resetting the shared test database. `vitest.animation.config.ts` makes this repeatable.
+- CodeMirror reuses its view across tabs. Publish the synchronized tab ID, wait for that binding when editing a step, and cancel pending focus when preview resumes.
+- Key measurement on persisted styles rather than canvas dimensions/zoom. Animated frames disable the static 100% minimum height, and the pill portals into the unzoomed canvas.
+- Give easing's segmented presets an explicit native Escape callback while preserving existing segmented controls' handling. Title-field Escape reaches the island.
+- Keep compact Dock targets at 40 px by showing the export action's icon. Allow strip grid children to shrink on phones.
+- Keep valid steps when their hold is missing/invalid, applying the documented field-wise default.
+- The branch lacks the CLI renderer/SSR package. A live-markup parity lane reads an existing renderer and fonts without changing its checkout. Target-size parity passes; the extra small free-size comparison remains an explicit follow-up in the verification note.

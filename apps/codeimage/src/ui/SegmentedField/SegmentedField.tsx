@@ -34,9 +34,12 @@ interface SegmentedFieldProps<T> {
  */
 export function SegmentedField<T>(props: SegmentedFieldProps<T>): JSX.Element {
   const leaveEscapeToOverlay = (event: KeyboardEvent) => {
-    if (event.key !== 'Escape') return;
+    if (event.key === 'Escape') event.stopPropagation();
+  };
+  const nativeEscape = (event: KeyboardEvent) => {
+    if (event.key !== 'Escape' || !props.onEscape) return;
     event.stopPropagation();
-    props.onEscape?.();
+    props.onEscape();
   };
   const value = (): string => {
     const index = props.items.findIndex(item => item.value === props.value);
@@ -49,6 +52,11 @@ export function SegmentedField<T>(props: SegmentedFieldProps<T>): JSX.Element {
     props.onChange?.(props.items[index]?.value);
   };
 
+  const escapeProps = () =>
+    props.onEscape
+      ? {'on:keydown': nativeEscape}
+      : {onKeyDown: leaveEscapeToOverlay};
+
   return (
     <SegmentedControl
       value={value()}
@@ -59,10 +67,7 @@ export function SegmentedField<T>(props: SegmentedFieldProps<T>): JSX.Element {
     >
       <For each={props.items}>
         {(item, index) => (
-          <SegmentedControlItem
-            value={index().toString()}
-            on:keydown={leaveEscapeToOverlay}
-          >
+          <SegmentedControlItem value={index().toString()} {...escapeProps()}>
             {item.label}
           </SegmentedControlItem>
         )}

@@ -1,3 +1,4 @@
+import * as animationStyles from '../../components/Animation/AnimationPreview.css';
 import {AnimatePanel} from '../../components/Animation/AnimatePanel';
 import {AnimateToggle} from '../../components/Animation/AnimateToggle';
 import {AnimationPreview} from '../../components/Animation/AnimationPreview';
@@ -164,20 +165,23 @@ export function createStage(): Stage {
     AnimatePanel,
     AnimateToggle,
     Canvas: () => {
+      const [pillHost, setPillHost] = createSignal<HTMLDivElement>();
       onMount(() => getExportCanvasStore().initCanvas(exportRef));
       // Every placeholder sits inside FitFrame, where the frame will be. The
       // export copy renders into a portal, so its place in the tree is free.
       return (
-        <FitFrame onScaleChange={setScale}>
-          <SuspenseEditorItem fallback={null}>
-            <Suspense fallback={<FramePlaceholder frame={exportRef} />}>
-              <AnimationPreview>
-                <ManagedFrame />
-              </AnimationPreview>
-            </Suspense>
-            <PreviewFrame ref={setExportRef} />
-          </SuspenseEditorItem>
-        </FitFrame>
+        <div class={animationStyles.canvas} ref={setPillHost}>
+          <FitFrame onScaleChange={setScale}>
+            <SuspenseEditorItem fallback={null}>
+              <Suspense fallback={<FramePlaceholder frame={exportRef} />}>
+                <AnimationPreview pillHost={pillHost()}>
+                  <ManagedFrame />
+                </AnimationPreview>
+              </Suspense>
+              <PreviewFrame ref={setExportRef} />
+            </SuspenseEditorItem>
+          </FitFrame>
+        </div>
       );
     },
     exportRef,

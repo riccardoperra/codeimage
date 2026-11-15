@@ -4,6 +4,7 @@ const c = themeVars.dynamicColors;
 export const island = style({
   width: 'calc(100% - 24px)',
   maxWidth: 1100,
+  minWidth: 0,
   margin: '0 auto 12px',
   boxSizing: 'border-box',
   flexShrink: 0,
@@ -20,6 +21,7 @@ export const island = style({
   },
 });
 export const transport = style({
+  minWidth: 0,
   display: 'flex',
   gap: 8,
   alignItems: 'center',

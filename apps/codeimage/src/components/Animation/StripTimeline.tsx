@@ -183,7 +183,7 @@ export function StripTimeline() {
     event.stopPropagation();
   };
   return (
-    <div>
+    <div class={styles.root}>
       <div
         ref={ruler}
         class={styles.ruler}

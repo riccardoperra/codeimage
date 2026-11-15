@@ -79,6 +79,7 @@ export default function CustomEditor(props: VoidProps<CustomEditorProps>) {
   const {
     state: editorState,
     computed: {selectedFont},
+    actions: {setActiveEditorViewTabId},
   } = getRootEditorStore();
   const {editor} = getActiveEditorStore();
   const selectedLanguage = createMemo(() =>
@@ -280,7 +281,10 @@ export default function CustomEditor(props: VoidProps<CustomEditorProps>) {
         const changedTab = id !== activeId;
         const current = view.state.doc.toString();
         const changedCode = code !== current;
-        if (!changedTab && !changedCode && !marks) return;
+        if (!changedTab && !changedCode && !marks) {
+          setActiveEditorViewTabId(id);
+          return;
+        }
         if (!changedTab && changedCode && !props.readOnly) {
           // Format rewrites the stored code; map marks by line and keep the step undoable.
           const lines = mapLines(current, code);
@@ -325,6 +329,7 @@ export default function CustomEditor(props: VoidProps<CustomEditorProps>) {
         } finally {
           syncing = false;
         }
+        setActiveEditorViewTabId(id);
       },
     ),
   );

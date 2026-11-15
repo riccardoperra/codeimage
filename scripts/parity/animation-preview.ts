@@ -3,11 +3,15 @@ import {createRequire} from 'node:module';
 import {join} from 'node:path';
 import {parseArgs} from 'node:util';
 import pixelmatch from 'pixelmatch';
-import type {Browser, Page} from 'playwright';
+import {chromium, type Browser, type Page} from 'playwright';
 import {PNG} from 'pngjs';
 import type {SnapshotInput} from '../../packages/render/dist/index.mjs';
-import {parseSnapshotDocument} from '../../packages/render/dist/index.mjs';
-import {launchChrome, MAX_DIFF_PERCENT, PIXELMATCH_THRESHOLD} from './lib';
+import {MAX_DIFF_PERCENT, PIXELMATCH_THRESHOLD} from './lib.ts';
+const launchChrome = (scale = 1) =>
+  chromium.launch({
+    channel: 'chrome',
+    args: [`--force-device-scale-factor=${scale}`],
+  });
 
 // Pauses the editor's animation preview in Chrome at five times of the first
 // transition and renders the same times with Takumi from the SSR scenes.
@@ -15,6 +19,12 @@ import {launchChrome, MAX_DIFF_PERCENT, PIXELMATCH_THRESHOLD} from './lib';
 const {values: args} = parseArgs({
   options: {
     url: {type: 'string', default: 'http://localhost:4200/'},
+    preview: {type: 'boolean', default: false},
+    'free-size': {type: 'boolean', default: false},
+    'render-root': {
+      type: 'string',
+      default: new URL('../../packages/render/', import.meta.url).pathname,
+    },
     out: {type: 'string', default: '/tmp/codeimage-parity/animation-preview'},
     case: {type: 'string', multiple: true},
     scale: {type: 'string', default: '2'},
@@ -31,9 +41,24 @@ const {values: args} = parseArgs({
   },
 });
 
-const dist = new URL('../../packages/render/dist/', import.meta.url);
+if (args.preview) {
+  const {runPreviewParity} = await import('./animation-preview-live.ts');
+  await runPreviewParity({
+    url: args.url!,
+    out: args.out!,
+    renderRoot: args['render-root']!,
+    scale: Number(args.scale),
+    freeSize: args['free-size'],
+  });
+  process.exit(0);
+}
+const {parseSnapshotDocument} = await import(
+  new URL(`${args['render-root']}/dist/index.mjs`, 'file://').href
+);
+
+const dist = new URL(`${args['render-root']}/dist/`, 'file://');
 const require = createRequire(
-  new URL('../../packages/render/package.json', import.meta.url),
+  new URL(`${args['render-root']}/package.json`, 'file://'),
 );
 const {Renderer} = require('@takumi-rs/core');
 
@@ -48,9 +73,15 @@ type EditorStore = {
   editor: {actions: {setActiveEditorId(id: string): void}};
 };
 interface Settings {
-  steps: {editorId: string; holdMs: number}[];
+  steps: {
+    id?: string;
+    editorId: string;
+    holdMs: number;
+    transition?: {ms: number; easing: string};
+  }[];
+  header?: {mode: 'tab' | 'title' | 'tabs'; title: string};
   transitionMs: number;
-  easing: 'smooth' | 'snappy' | 'linear';
+  easing: string;
   fps: 24 | 30 | 50 | 60;
 }
 interface Measured {
@@ -169,6 +200,7 @@ function pair(
     $snippetId: BASE.$snippetId,
     format: BASE.format,
     scale: Number(args.scale),
+    freeSize: args['free-size'],
     frame: {...BASE.frame, ...overrides.frame},
     terminal: BASE.terminal,
     editor: {

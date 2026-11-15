@@ -48,12 +48,7 @@ export function parseDraft(value: unknown): AnimationDraft {
   const used = new Set<string>();
   const steps = (Array.isArray(value.steps) ? value.steps : []).flatMap(
     (step: unknown): AnimationStepSettings[] => {
-      if (
-        !isRecord(step) ||
-        typeof step.editorId !== 'string' ||
-        !finite(step.holdMs)
-      )
-        return [];
+      if (!isRecord(step) || typeof step.editorId !== 'string') return [];
       let id =
         typeof step.id === 'string' &&
         step.id.length > 0 &&
@@ -72,7 +67,9 @@ export function parseDraft(value: unknown): AnimationDraft {
         {
           id,
           editorId: step.editorId,
-          holdMs: clampDuration(step.holdMs, DURATION_LIMITS.holdMs),
+          holdMs: finite(step.holdMs)
+            ? clampDuration(step.holdMs, DURATION_LIMITS.holdMs)
+            : ANIMATION_DEFAULTS.holdMs,
           ...(transition && finite(transition.ms) && easing
             ? {
                 transition: {

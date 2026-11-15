@@ -103,3 +103,15 @@ test('stepAt agrees with scene ownership at every millisecond and boundary', () 
   assert.equal(stepAt(settings, start), settings.steps.length - 1);
   assert.equal(segmentsOf(settings).at(-1)?.startMs, start);
 });
+
+test('a missing or invalid hold defaults independently of a valid step id', () => {
+  assert.deepEqual(
+    parseDraft({
+      steps: [{id: 'kept', editorId: 'a', holdMs: Infinity}, {editorId: 'b'}],
+    }).steps,
+    [
+      {id: 'kept', editorId: 'a', holdMs: 800},
+      {id: 'b', editorId: 'b', holdMs: 800},
+    ],
+  );
+});

@@ -1,3 +1,4 @@
+import {Portal} from 'solid-js/web';
 import {useI18n} from '@codeimage/locale';
 import {getExportCanvasStore} from '@codeimage/store/canvas';
 import {getEditorStore} from '@codeimage/store/editor';
@@ -49,7 +50,9 @@ interface PlanRequest {
 
 // Shows the editor frame, or the animation in its place once a preview has
 // planned it.
-export function AnimationPreview(props: ParentProps) {
+export function AnimationPreview(
+  props: ParentProps<{pillHost: HTMLElement | undefined}>,
+) {
   const {animation, editor} = getEditorStore();
   const frame = getFrameState();
   const terminal = getTerminalState();
@@ -91,7 +94,7 @@ export function AnimationPreview(props: ParentProps) {
       tabs: [first, ...rest],
       style: {...codeStyle, theme: codeStyle.theme.id},
       tabNames: editor.state.editors.map(tab => tab.tab.tabName),
-      frame: frame.store,
+      frame: frame.stateToPersist(),
       target: frame.exportTarget()?.id,
       terminal: terminal.state,
       showOnlyActiveTab: exportCanvas.get.showOnlyActiveTab,
@@ -135,8 +138,12 @@ export function AnimationPreview(props: ParentProps) {
       >
         {props.children}
       </div>
-      <Show when={ready()}>
-        <PreviewPill />
+      <Show when={ready() && props.pillHost} keyed>
+        {host => (
+          <Portal mount={host}>
+            <PreviewPill />
+          </Portal>
+        )}
       </Show>
       <Show when={planned()} keyed>
         {plan => <AnimationStage plan={plan} visible={ready()} />}

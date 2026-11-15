@@ -22,6 +22,7 @@ export function HeaderField() {
       animation.actions.setHeader({title: title()});
   };
   const keyDown = (event: KeyboardEvent) => {
+    if (event.key === 'Escape') return;
     event.stopPropagation();
     if (event.key === 'Enter' && event.target instanceof HTMLInputElement) {
       event.preventDefault();

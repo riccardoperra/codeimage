@@ -109,7 +109,10 @@ export function nextPlayback(
 }
 
 export function createAnimationStore(
-  editor: Pick<ReturnType<typeof createEditorsStore>, 'activeEditorView'> & {
+  editor: Pick<
+    ReturnType<typeof createEditorsStore>,
+    'activeEditorView' | 'activeEditorViewTabId'
+  > & {
     state: Pick<
       ReturnType<typeof createEditorsStore>['state'],
       'editors' | 'activeEditorId'
@@ -138,6 +141,7 @@ export function createAnimationStore(
   const [selection, setSelection] = createSignal<SegmentSelection | null>(null);
   const [resizing, setResizing] = createSignal(false);
   const changes = new Subject<void>();
+  let cancelFocus: (() => void) | undefined;
   onCleanup(() => changes.complete());
   const update = (
     change: (settings: AnimationSettings) => AnimationDraft,
@@ -146,8 +150,14 @@ export function createAnimationStore(
     setDraft(change(settings()));
     if (options.commit !== false) changes.next();
   };
-  const send = (event: PlaybackEvent) =>
+  const cancelEditingFocus = () => {
+    cancelFocus?.();
+    cancelFocus = undefined;
+  };
+  const send = (event: PlaybackEvent) => {
+    cancelEditingFocus();
     setPlayback(playback => nextPlayback(playback, event, durationMs()));
+  };
   const edit = () => send({type: 'edit'});
   const [now, setNow] = createSignal(0);
   createEffect(() => {
@@ -174,15 +184,12 @@ export function createAnimationStore(
     return Math.floor(at / frameMs) * frameMs;
   });
   const currentStep = createMemo(() => stepAt(settings(), playhead()));
-  let cancelFocus: (() => void) | undefined;
   onCleanup(() => cancelFocus?.());
   function editStep(index: number, text?: string) {
     const step = settings().steps[index];
     if (!step) return;
     edit();
     cancelFocus?.();
-    const previousId = editor.state.activeEditorId;
-    const previousView = editor.activeEditorView();
     editor.actions.setActiveEditorId(step.editorId);
     runWithOwner(owner, () =>
       createRoot(dispose => {
@@ -192,7 +199,7 @@ export function createAnimationStore(
           if (
             !view ||
             editor.state.activeEditorId !== step.editorId ||
-            (previousId !== step.editorId && view === previousView)
+            editor.activeEditorViewTabId() !== step.editorId
           )
             return;
           view.focus();
@@ -413,6 +420,7 @@ export function createAnimationStore(
         update(settings => ({...settings, fps}));
       },
       playTransition(stepId: string) {
+        cancelEditingFocus();
         const segment = segments().find(
           segment => segment.kind === 'transition' && segment.stepId === stepId,
         );

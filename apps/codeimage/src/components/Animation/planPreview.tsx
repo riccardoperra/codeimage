@@ -239,15 +239,3 @@ export function planPreviewTimeline(
     header: settings.header,
   };
 }
-
-export async function planPreview(
-  owner: Owner | null,
-  settings: AnimationSettings,
-  tabs: NonEmpty<PreviewTab>,
-  style: CodeStyle,
-): Promise<PreviewPlan> {
-  return planPreviewTimeline(
-    settings,
-    await measurePreview(owner, tabs, style, settings.header),
-  );
-}

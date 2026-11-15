@@ -94,6 +94,7 @@ export function FrameView(props: VoidProps<FrameViewProps>) {
       type={terminal.type}
       activeTabId={props.activeTabId}
       readonlyTab={true}
+      headerMode={props.header?.mode}
       title={props.header?.mode === 'title' ? props.header.title : undefined}
       showTab={props.header?.mode !== 'title'}
       showOnlyActiveTab={
@@ -137,7 +138,8 @@ export function FrameView(props: VoidProps<FrameViewProps>) {
               ? `${frame.height}px`
               : 'auto',
           [styles.frameVars.minWidth]: target() ? '0' : 'max-content',
-          [styles.frameVars.minHeight]: target() ? '0' : '100%',
+          [styles.frameVars.minHeight]:
+            target() || props.animated ? '0' : '100%',
           [styles.frameVars.padding]: framePadding(
             frame.padding,
             frame.signature,

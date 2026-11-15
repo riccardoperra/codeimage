@@ -31,6 +31,7 @@ test('explicit enrollment, stable ids, transitions, commits, duplication and rem
     const animation = createAnimationStore({
       state,
       activeEditorView: () => undefined,
+      activeEditorViewTabId: () => undefined,
       computed: {canAddEditor: () => state.editors.length < 6},
       actions: {
         setActiveEditorId: setActive,

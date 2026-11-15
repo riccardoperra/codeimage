@@ -251,3 +251,35 @@ The phone Dock keeps each label inside its button and preserves its full accessi
 All image actions and Ctrl+S, Ctrl+O and Ctrl+C pass through `createExporter.request` for the secrets review. Shortcut help uses the typed `controls/shortcuts.ts` module. It copies the production definitions because production does not export its list or hotkey hook.
 
 `verify-review.mjs <base-url> <screenshot-directory>` checks the review fixes across all three layouts at desktop and phone sizes. It covers each image action with secrets, focus after review, overlay placement and frame geometry, row values, shortcut help, and the cleanup checks.
+
+## Animate
+
+The stage supplies `AnimatePanel` and `AnimateToggle`. Layouts place the panel
+under the canvas; compact Dock puts it above the bar and closes its sheet when
+Animate opens. Desktop Dock reserves the measured island height in its canvas
+inset. The other layouts give the island its own row so `FitFrame` can refit.
+
+Production animation components live in `components/Animation/`. Holds and
+incoming transitions share one proportional strip. Segment arrows nudge by
+100 ms, or 10 ms with Alt. Dragging keeps the axis fixed until release and
+commits once. Only the ruler scrubs. Duration fields commit on Enter or blur.
+
+Steps enroll explicitly after first-open seeding. Stable step IDs allow the
+same tab to appear repeatedly. The Steps menu adds tabs, duplicates the selected
+step into a new tab, moves steps and removes them. Play needs two steps.
+
+The preview pill edits the step shown at the playhead. A printable key on the
+preview returns to that step and inserts the key. Header modes and incoming
+transition overrides persist with the document; UI selection and playback do
+not. The easing popover accepts presets and validated cubic curves, previews a
+transition and can make its timing the default for every transition.
+
+Run the Chrome lanes with Node 24 and a mock-API Vite on port 4377:
+`node scripts/parity/live-animate.ts`. `--lane` limits the run and `--out` chooses
+the artifact directory. Firefox and WebKit are currently excluded.
+
+`node scripts/parity/animation-defaults.ts` compares every default timeline in
+the pinned base's unchanged unit fixtures byte for byte. The live Takumi check
+is `node scripts/parity/animation-preview.ts --preview --url http://localhost:4377/`.
+Pass `--render-root` when the renderer package is built in a separate checkout;
+this command reads its native renderer and fonts without changing that checkout.

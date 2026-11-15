@@ -6,7 +6,7 @@ import {dictionaries, flatten} from './verify-locale-parity.mjs';
 const base = process.argv[2] ?? 'http://localhost:4343';
 const output = process.argv[3];
 if (output) mkdirSync(output, {recursive: true});
-const browser = await chromium.launch();
+const browser = await chromium.launch({channel: 'chrome'});
 const errors = [];
 const allEnglish = flatten(dictionaries.en);
 const routes = [
@@ -38,7 +38,7 @@ async function noEnglish(page, locale, surface) {
     const visible = element =>
       element.checkVisibility() &&
       !element.closest(
-        '[inert], [aria-hidden=true], [data-frame-content], .cm-editor, [class*=previewPortal]',
+        '[inert], [aria-hidden=true], [data-frame-content], [data-theme-mode], .cm-editor, [class*=previewPortal]',
       );
     for (const element of document.querySelectorAll('body *')) {
       if (!visible(element)) continue;
@@ -74,6 +74,7 @@ async function settings(page) {
   await page.locator('[data-settings-section=general]').click();
 }
 async function closeStudioPanel(page, name) {
+  if (!(await page.locator('#studio-panel').isVisible())) return;
   await page.getByRole('button', {name, exact: true}).click();
   await page.locator('#studio-panel').waitFor({state: 'hidden'});
 }
@@ -111,12 +112,13 @@ try {
         colorScheme: 'dark',
       });
       const page = await ctx.newPage();
+      await page.goto(`${base}/?v=${variant}`, {waitUntil: 'domcontentloaded'});
+      await page.reload({waitUntil: 'domcontentloaded'});
+      await ready(page);
       page.on('pageerror', error => {
         if (!/reading 'url'/.test(error.message)) errors.push(error.message);
       });
-      await page.goto(`${base}/?v=${variant}`, {waitUntil: 'load'});
-      await page.reload({waitUntil: 'load'});
-      await ready(page);
+
       let current = 'en';
       for (const locale of ['it', 'de', 'es', 'en']) {
         const messages = dictionaries[locale];
@@ -174,6 +176,55 @@ try {
           if (await collapse.isVisible()) await collapse.click();
         }
         await noEnglish(page, locale, `${layout}/${width} header`);
+        await page.evaluate(async () => {
+          const module = '/src/state/editor/index.ts';
+          const {getEditorStore} = await import(module);
+          const {editor, animation} = getEditorStore();
+          if (editor.state.editors.length < 2)
+            editor.actions.addEditor(
+              {code: 'const next = true;', tab: {tabName: 'next.ts'}},
+              false,
+            );
+          animation.actions.setOpen(true);
+          animation.actions.setHeader({mode: 'title', title: ''});
+          animation.actions.select({
+            stepId: animation.settings().steps[1].id,
+            kind: 'transition',
+          });
+        });
+        await noEnglish(page, locale, `${layout}/${width} animation island`);
+        await page.evaluate(async () => {
+          const module = '/src/state/editor/index.ts';
+          const {getEditorStore} = await import(module);
+          getEditorStore().animation.actions.seek(100);
+        });
+        const pill = page.locator('[data-preview-pill]');
+        await pill.waitFor();
+        assert.equal(
+          await pill.textContent(),
+          messages.animation.previewPill.replace('{{n}}', '1'),
+        );
+        const pillBox = await pill.boundingBox();
+        assert(
+          pillBox && pillBox.x >= 0 && pillBox.x + pillBox.width <= width,
+          `${locale}: preview pill fits the canvas`,
+        );
+
+        await page.locator('[data-easing-trigger]').click();
+        await page
+          .getByRole('tab', {
+            name: messages.animation.easing.custom,
+            exact: true,
+          })
+          .click();
+        await noEnglish(page, locale, `${layout}/${width} easing popover`);
+        await page.keyboard.press('Escape');
+        await page.evaluate(async () => {
+          const module = '/src/state/editor/index.ts';
+          const {getEditorStore} = await import(module);
+          getEditorStore().animation.actions.setOpen(false);
+        });
+
         if (layout === 'dock' && width === 390) {
           const labels = await page
             .locator('button[data-panel]')
@@ -259,10 +310,7 @@ try {
           )
           .waitFor();
         await noEnglish(page, locale, `${layout}/${width} theme picker`);
-        await page
-          .getByRole('button', {name: messages.editor.showThemes, exact: true})
-          .focus();
-        await page.keyboard.press('Enter');
+        await themeSearch.fill('');
         if (layout === 'dock') await page.keyboard.press('Escape');
         if (layout === 'studio')
           await closeStudioPanel(
@@ -275,7 +323,7 @@ try {
         await openPanel(page, layout, messages);
         await noEnglish(page, locale, `${layout}/${width} panel`);
         if (output && locale === 'it') {
-          await page.reload({waitUntil: 'load'});
+          await page.reload({waitUntil: 'domcontentloaded'});
           await ready(page);
           await openPanel(page, layout, messages);
           await page.screenshot({path: `${output}/${layout}-${width}.png`});

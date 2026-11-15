@@ -1,6 +1,7 @@
 import {themeVars} from '@codeimage/ui';
 import {createVar, style} from '@vanilla-extract/css';
 const c = themeVars.dynamicColors;
+export const root = style({minWidth: 0});
 export const fraction = createVar();
 export const gaps = createVar();
 export const position = createVar();
@@ -41,6 +42,7 @@ export const playhead = style({
   },
 });
 export const track = style({
+  minWidth: 0,
   display: 'flex',
   gap: 3,
   height: 36,

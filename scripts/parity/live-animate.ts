@@ -9,6 +9,8 @@ const {values: args} = parseArgs({
     url: {type: 'string', default: 'http://localhost:4377/'},
     lane: {type: 'string', multiple: true},
     out: {type: 'string', default: '/tmp/codeimage-animate'},
+    video: {type: 'boolean', default: false},
+    variant: {type: 'string'},
   },
 });
 const out = args.out!;
@@ -94,39 +96,92 @@ async function pill(page: Page) {
     assert.equal(
       await page.evaluate(() => window.editorStore.animation.playback().state),
       'editing',
+      `${key} returns to editing`,
     );
   }
 }
 async function header(page: Page) {
-  for (const mode of ['tab', 'tabs', 'title'] as const) {
+  for (const type of ['macOs', 'windows', 'card', 'editor', 'shell']) {
     await page.evaluate(
-      mode =>
-        window.editorStore.animation.actions.setHeader({
-          mode,
-          title: 'A story',
-        }),
-      mode,
+      type => window.editorStore.terminal.setType(type),
+      type,
     );
-    await preview(page, 100);
-    const frame = page
-      .locator('[data-animation-scene="0"] [data-animation-frame]')
-      .first();
-    if (mode === 'title')
-      assert.equal(
-        await frame.locator('[data-animation-title]').textContent(),
-        'A story',
+    for (const mode of ['tab', 'tabs', 'title'] as const) {
+      await page.evaluate(
+        mode =>
+          window.editorStore.animation.actions.setHeader({
+            mode,
+            title: 'A story',
+          }),
+        mode,
       );
-    else {
-      assert.equal(
-        await frame.getByText('user.ts', {exact: true}).count(),
-        mode === 'tabs' ? 2 : 1,
-      );
-      assert.equal(
-        await frame.getByText('user.test.ts', {exact: true}).count(),
-        mode === 'tabs' ? 1 : 0,
-      );
+      await preview(page, 100);
+      const frame = page
+        .locator('[data-animation-scene="0"] [data-animation-frame]')
+        .first();
+      if (mode === 'title')
+        assert.equal(
+          await frame.locator('[data-animation-title]').textContent(),
+          'A story',
+        );
+      else {
+        assert.equal(
+          await frame.getByText('user.ts', {exact: true}).count(),
+          mode === 'tabs' ? 2 : 1,
+        );
+        assert.equal(
+          await frame.getByText('user.test.ts', {exact: true}).count(),
+          mode === 'tabs' ? 1 : 0,
+        );
+      }
     }
   }
+  await page.evaluate(() => window.editorStore.terminal.setType('macOs'));
+  await page.evaluate(() =>
+    window.editorStore.animation.actions.setHeader({mode: 'tab'}),
+  );
+  await preview(page, 100);
+  // Compare at a common pixel origin, independently of frame centering and zoom.
+  const headerPixels = async (scene: number) => {
+    await page
+      .locator(`[data-animation-scene="${scene}"] [data-header-visible=true]`)
+      .first()
+      .evaluate(element => {
+        const clone = element.cloneNode(true) as HTMLElement;
+        const computed = getComputedStyle(element);
+        for (const name of computed)
+          if (name.startsWith('--'))
+            clone.style.setProperty(name, computed.getPropertyValue(name));
+        Object.assign(clone.style, {
+          position: 'fixed',
+          left: '0',
+          top: '0',
+          width: `${element.clientWidth}px`,
+          fontFamily: computed.fontFamily,
+          fontSize: computed.fontSize,
+          lineHeight: computed.lineHeight,
+          zIndex: '2147483647',
+        });
+        clone.setAttribute('data-header-parity', '');
+        document.body.append(clone);
+      });
+    const png = await page
+      .locator('[data-header-parity] > div')
+      .first()
+      .screenshot();
+    await page
+      .locator('[data-header-parity]')
+      .evaluate(element => element.remove());
+    return png;
+  };
+  const beforeHeader = await headerPixels(0);
+  await preview(page, 1600);
+  const afterHeader = await headerPixels(3);
+  assert.equal(
+    beforeHeader.equals(afterHeader),
+    true,
+    'same-name steps keep identical header pixels',
+  );
   // A timing edit must not mount any of the hidden measuring frames.
   await page.evaluate(() => {
     window.measuredFrames = 0;
@@ -337,6 +392,33 @@ async function hotkeys(page: Page) {
     ),
     'FPBDHW',
   );
+  await title.focus();
+  await title.press('Escape');
+  assert.ok(
+    await page
+      .locator('.cm-content[contenteditable=true]')
+      .evaluate(element => element === document.activeElement),
+  );
+  for (const key of ['F', 'P', 'B', 'D', 'H', 'W']) {
+    await preview(page, 1600);
+    await page.locator('[data-animation-stage]:visible').focus();
+    await page.keyboard.press(key);
+    await page.waitForFunction(
+      key =>
+        window.editorStore.editor.state.editors
+          .find(tab => tab.id === 'b')
+          ?.code.includes(key),
+      key,
+    );
+  }
+  assert.deepEqual(
+    await page.evaluate(() => [
+      window.editorStore.frame.store.padding,
+      window.editorStore.frame.store.visible,
+      window.editorStore.terminal.state.showHeader,
+    ]),
+    before,
+  );
 }
 
 async function resize(page: Page) {
@@ -497,10 +579,37 @@ const lanes = {
   Pill: pill,
   Header: header,
 };
+async function recordLayout(layout: number) {
+  const context = await browser.newContext({
+    viewport: {width: 1440, height: 900},
+    recordVideo: {dir: `${out}/videos`, size: {width: 1440, height: 900}},
+  });
+  const page = await context.newPage();
+  await page.goto(`${args.url}?v=${layout}`, {waitUntil: 'domcontentloaded'});
+  await load(page);
+  await seed(page);
+  await page.getByRole('button', {name: 'Play animation', exact: true}).click();
+  await page.waitForTimeout(1800);
+  await page
+    .getByRole('button', {name: 'Pause animation', exact: true})
+    .click();
+  await page.locator('[data-animation-segment]').nth(1).click();
+  await page.locator('[data-easing-trigger]').click();
+  await page.getByRole('tab', {name: 'Strong', exact: true}).click();
+  await page.waitForTimeout(600);
+  await page.keyboard.press('Escape');
+  await page.locator('[data-preview-pill]').click();
+  await page.waitForTimeout(600);
+  const video = page.video()!;
+  await context.close();
+  await video.saveAs(`${out}/layout-${layout}.webm`);
+}
 let passed = 0;
 const failures: string[] = [];
 try {
-  for (const layout of [2, 3, 4])
+  for (const layout of [2, 3, 4].filter(
+    layout => !args.variant || layout === Number(args.variant),
+  ))
     for (const viewport of [
       {width: 1440, height: 900},
       {width: 390, height: 844},
@@ -508,6 +617,7 @@ try {
       const context = await browser.newContext({viewport});
       const page = await context.newPage();
       page.setDefaultTimeout(10000);
+      page.setDefaultNavigationTimeout(120000);
       page.on('pageerror', error =>
         console.error(`PAGE ${layout}`, error.message),
       );
@@ -525,27 +635,6 @@ try {
             console.log(`PASS ${label}`);
             passed++;
           } catch (error) {
-            console.error(
-              await page.locator('[data-animate-panel]').evaluate(e => {
-                const list = [];
-                for (
-                  let a: HTMLElement | null = e as HTMLElement;
-                  a;
-                  a = a.parentElement
-                ) {
-                  const box = a.getBoundingClientRect();
-                  list.push({
-                    class: a.className,
-                    x: box.x,
-                    w: box.width,
-                    scroll: a.scrollLeft,
-                    sw: a.scrollWidth,
-                    cw: a.clientWidth,
-                  });
-                }
-                return list;
-              }),
-            );
             failures.push(label);
             console.error(`FAIL ${label}`, String(error).slice(0, 2000));
             await page.screenshot({
@@ -554,9 +643,12 @@ try {
           }
         }
       } finally {
+        const video = page.video();
         await context.close();
+        if (video) await video.saveAs(`${out}/layout-${layout}.webm`);
       }
     }
+  if (args.video) for (const layout of [2, 3, 4]) await recordLayout(layout);
 } finally {
   await browser.close();
 }

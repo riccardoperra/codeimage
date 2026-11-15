@@ -112,7 +112,10 @@ test('only-active exports use the live selection when no explicit tab id is give
 vi.mock('../TerminalHost', () => ({
   TerminalHost: (props: {children: unknown}) => props.children,
 }));
-vi.mock('../terminal.css', () => ({content: 'code-content', title: 'title'}));
+vi.mock('../terminal.css', () => ({
+  content: 'code-content',
+  title: 'title',
+}));
 vi.mock('../WindowStyles/WindowStyles.css', () => ({
   theme: 'theme',
   body: 'body',
