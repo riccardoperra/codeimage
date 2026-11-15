@@ -1,3 +1,5 @@
+import {ShortcutHelp} from './controls/ShortcutHelp';
+import * as shortcutStyles from './controls/shortcut-help.css';
 import {getExportCanvasStore} from '@codeimage/store/canvas';
 import {getActiveEditorStore} from '@codeimage/store/editor/activeEditor';
 import {getFrameState} from '@codeimage/store/editor/frame';
@@ -7,10 +9,12 @@ import {TERMINAL_SHADOWS} from '@core/configuration/shadow';
 import {useModality} from '@core/hooks/isMobile';
 import {
   createEffect,
+  createResource,
   createSignal,
   lazy,
   onCleanup,
   onMount,
+  Show,
   Suspense,
 } from 'solid-js';
 import type {Accessor, Component} from 'solid-js';
@@ -51,15 +55,15 @@ export interface Stage {
   /** The hidden copy of the frame that export and copy capture. Set once Canvas mounts. */
   readonly exportRef: Accessor<HTMLElement | undefined>;
   /**
-   * Export: the button exports at once with the export settings, the arrow
-   * beside it exports one image per tab or opens the export settings. It
-   * binds Ctrl+S.
+   * Export: the button exports at once with the export settings; the way to
+   * choose a one-off export depends on the prototype variant. It binds Ctrl+S.
    */
   readonly ExportButton: Component;
-  /** What the Export control runs, for the command menu. */
+  /** What the Export control runs, for the command menu and the canvas toolbar. */
   readonly exporter: Exporter;
   /** The mini editor that today's theme cards show, drawn in the given theme. */
   readonly ThemePreview: Component<{theme: ThemeEntry}>;
+  /** Randomize stays in the command menu and its shortcut, with no button. */
   readonly randomize: () => void;
   readonly format: () => Promise<unknown>;
   readonly canFormat: Accessor<boolean>;
@@ -116,17 +120,26 @@ function FramePlaceholder(props: {frame: Accessor<HTMLElement | undefined>}) {
     const element = props.frame();
     if (!element) return;
     let frame = 0;
+    let fontsReady = false;
     const measure = () => {
       const box = element.getBoundingClientRect();
       if (!box.width || !box.height) return;
       setSize({width: box.width, height: box.height});
+      setSettled(false);
       cancelAnimationFrame(frame);
-      frame = requestAnimationFrame(() => setSettled(true));
+      if (fontsReady) frame = requestAnimationFrame(() => setSettled(true));
     };
     const observer = new ResizeObserver(measure);
     observer.observe(element);
     measure();
+    let disposed = false;
+    void document.fonts.ready.then(() => {
+      if (disposed) return;
+      fontsReady = true;
+      measure();
+    });
     onCleanup(() => {
+      disposed = true;
       cancelAnimationFrame(frame);
       observer.disconnect();
     });
@@ -139,7 +152,7 @@ function FramePlaceholder(props: {frame: Accessor<HTMLElement | undefined>}) {
       style={{
         width: `${size()?.width ?? 0}px`,
         height: `${size()?.height ?? 0}px`,
-        visibility: settled() ? undefined : 'hidden',
+        opacity: settled() ? 1 : 0,
       }}
     >
       <FrameSkeleton />
@@ -167,25 +180,50 @@ export function createStage(pageState: Accessor<EditorPageState>): Stage {
   return {
     compact,
     Canvas: () => {
+      let canvas: HTMLDivElement | undefined;
       onMount(() => getExportCanvasStore().initCanvas(exportRef));
+      const [fontsReady] = createResource(exportRef, element => {
+        // Layout starts loading the preview's code font before awaiting it.
+        element.getBoundingClientRect();
+        return document.fonts.ready.then(() => true);
+      });
       // Every placeholder sits inside FitFrame, where the frame will be. The
       // export copy renders into a portal, so its place in the tree is free.
       return (
-        <FitFrame
-          onScaleChange={setScale}
-          overlay={<ReadOnlyNotice state={pageState()} />}
-        >
-          <SuspenseEditorItem fallback={<FramePlaceholder frame={exportRef} />}>
-            <Suspense fallback={<FramePlaceholder frame={exportRef} />}>
-              <ManagedFrame />
-            </Suspense>
-          </SuspenseEditorItem>
-          <PreviewFrame ref={setExportRef} />
-        </FitFrame>
+        <div ref={canvas} class={shortcutStyles.canvas}>
+          <FitFrame
+            onScaleChange={setScale}
+            overlay={<ReadOnlyNotice state={pageState()} />}
+          >
+            <SuspenseEditorItem
+              fallback={<FramePlaceholder frame={exportRef} />}
+            >
+              <Suspense fallback={<FramePlaceholder frame={exportRef} />}>
+                <Show when={fontsReady()}>
+                  <ManagedFrame />
+                </Show>
+              </Suspense>
+            </SuspenseEditorItem>
+            <PreviewFrame ref={setExportRef} />
+          </FitFrame>
+          <Show when={!compact() && pageState().kind !== 'read-only'}>
+            <ShortcutHelp
+              canvas={() => canvas}
+              editable={pageState().editable}
+            />
+          </Show>
+        </div>
       );
     },
     exportRef,
-    ExportButton: () => <ExportControl exporter={exporter} size={size} />,
+    ExportButton: () => (
+      <ExportControl
+        exporter={exporter}
+        exportRef={exportRef}
+        size={size}
+        compact={compact()}
+      />
+    ),
     exporter,
     ThemePreview,
     randomize: () => dispatchRandomTheme(),

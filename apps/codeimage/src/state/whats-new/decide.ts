@@ -35,6 +35,8 @@ export interface Decision<R extends Release = Release> {
     readonly surface: 'nudge' | 'showcase';
     readonly release: R;
   } | null;
+  /** Newest release is within its window, regardless of stored facts. */
+  readonly headerEntry: boolean;
   /** At most DOT_LIMIT ids, in registry order, so seeing one reveals the next. */
   readonly dots: readonly HighlightIdOf<R>[];
   /** Not seen and not expired. */
@@ -75,6 +77,7 @@ export function decide<R extends Release>(
     latest.highlights.some(highlight => fresh.has(highlight.id));
 
   return {
+    headerEntry: latest !== undefined && !isExpired(latest, now),
     announcement: announce
       ? {surface: latest.major ? 'showcase' : 'nudge', release: latest}
       : null,

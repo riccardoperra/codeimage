@@ -8,10 +8,13 @@ import {
   createUniqueId,
   For,
   onCleanup,
+  onMount,
   Show,
+  untrack,
 } from 'solid-js';
 import {Dynamic} from 'solid-js/web';
-import {getWhatsNew, type RELEASES} from '../../state/whats-new';
+import {getWhatsNew, type RELEASES, type WhatsNew} from '../../state/whats-new';
+import {SparkleIcon} from './SparkleIcon';
 import {tabbableBeside} from './focus';
 import {illustrations} from './illustrations';
 import {duration, fromKeyboard} from './motion';
@@ -25,14 +28,20 @@ interface View {
 
 export function Nudge(props: {
   release: (typeof RELEASES)[number];
-  dismiss: () => void;
+  dismiss: (keyboard: boolean) => void;
+  entry: NonNullable<ReturnType<WhatsNew['current']>>['entry'];
 }) {
   const news = getWhatsNew();
   const [t] = useI18n<AppLocaleEntries>();
-  const [expanded, setExpanded] = createSignal(false);
+  const initialEntry = untrack(() => props.entry);
+  const fromHeader = () =>
+    props.entry === 'pointer' || props.entry === 'keyboard';
+  const [expanded, setExpanded] = createSignal(
+    initialEntry === 'pointer' || initialEntry === 'keyboard',
+  );
   const [view, setView] = createSignal<View>({step: 0});
   const [closing, setClosing] = createSignal(false);
-  const [instant, setInstant] = createSignal(false);
+  const [instant, setInstant] = createSignal(initialEntry === 'keyboard');
   const step = createMemo(() => view().step);
   const highlight = () => props.release.highlights[step()];
   const located = () => {
@@ -57,6 +66,9 @@ export function Nudge(props: {
     if (card?.contains(document.activeElement))
       tabbableBeside(card, 'before')?.focus({preventScroll: true});
   };
+  onMount(() => {
+    if (fromHeader()) primary?.focus({preventScroll: true});
+  });
   onCleanup(() => {
     clearTimeout(timer);
     restoreFocus();
@@ -69,9 +81,20 @@ export function Nudge(props: {
     if (closing()) return;
     clearTimeout(timer);
     restoreFocus();
-    if (keyboard) return props.dismiss();
+    if (keyboard) {
+      props.dismiss(true);
+      // Dismissal mounts the way back. Mobile has no header entry.
+      queueMicrotask(() => {
+        const trigger = document.querySelector<HTMLElement>(
+          '[data-whats-new-trigger]',
+        );
+        if (trigger?.checkVisibility()) trigger.focus({preventScroll: true});
+      });
+      return;
+    }
     setClosing(true);
-    timer = window.setTimeout(props.dismiss, duration.nudgeOut);
+    const dismiss = props.dismiss;
+    timer = window.setTimeout(() => dismiss(false), duration.nudgeOut);
   };
   const next = (event: MouseEvent) => {
     if (last()) return close(fromKeyboard(event));
@@ -91,7 +114,9 @@ export function Nudge(props: {
 
   return (
     <aside
+      id="whats-new-nudge"
       ref={card}
+      tabIndex={-1}
       on:keydown={event => {
         if (event.key !== 'Escape' || !expanded()) return;
         event.preventDefault();
@@ -109,7 +134,7 @@ export function Nudge(props: {
         when={expanded()}
         fallback={
           <div ref={bar} class={styles.collapsed}>
-            <span aria-hidden="true">✦</span>
+            <SparkleIcon />
             <div class={styles.summary}>
               <strong>
                 {t(count() === 1 ? 'whatsNew.newOne' : 'whatsNew.newMany', {

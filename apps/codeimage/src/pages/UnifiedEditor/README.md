@@ -14,13 +14,13 @@ The unified editor uses the shared stores and local document.
 
 ## Preferences
 
-`shell/preferences.ts` saves `{layout, inspectorSide, themeCards}` in `localStorage` under `codeimage:editor-settings`.
-The defaults are Inspector, a panel on the right, and Window theme cards.
+`shell/preferences.ts` saves `{layout, inspectorSide, themeCards, exportStyle}` in `localStorage` under `codeimage:editor-settings`.
+The defaults are Inspector, a panel on the right, Window theme cards, and the Menu export style.
 There is no migration from the previous storage key.
 
 Settings and the command menu change these choices.
 The Experiments section offers the layouts and theme cards.
-Appearance contains the colour mode and Inspector panel side.
+Appearance contains the colour mode, the Inspector panel side, and the export style.
 The `v` and `t` URL parameters have no effect.
 Changing a preference leaves the URL unchanged.
 
@@ -66,11 +66,12 @@ Previews do not save or send analytics.
 `syntax.ts` reads token colours from CodeMirror extensions with `highlightingFor()` and the theme's style modules.
 Tokens without a colour use the base text colour.
 
-`stage.tsx` supplies the live `Canvas`, `ExportButton`, `exporter`, `ThemePreview`, and frame actions.
+`stage.tsx` supplies the live `Canvas`, `ExportButton`, `exporter`, `ThemePreview`, format and randomize.
 Each layout renders `Canvas` once inside a container with a definite size.
 A snippet load uses the same frame placeholder as a lazy editor load.
 `ReadOnlyNotice` floats at the top of that container, outside the fitted frame.
-`EditingControls` hides and makes the existing controls inert while preserving their footprint.
+`EditingControls` hides and makes controls inert while loading, preserving the owner's layout.
+Read-only pages remove those controls and their containers so the canvas can take the space.
 Export waits for a snippet to load, so it cannot capture the previous document.
 Read-only commands contain only export and settings; editing shortcuts and destructive redaction are disabled.
 `FitFrame.tsx` scales the frame to the available space.
@@ -82,15 +83,30 @@ Read-only commands contain only export and settings; editing shortcuts and destr
 `controls/fields.tsx` supplies shared fields.
 `ControlOverlay.tsx` opens pickers without changing the frame's rectangle or zoom.
 `WindowStyleTiles.tsx` renders window previews.
-`ShortcutHelp.tsx` uses the definitions in `controls/shortcuts.ts`.
+`ShortcutHelp.tsx` uses the definitions in `controls/shortcuts.ts`, including the `?` opening key.
+The shared stage places its labelled desktop trigger at the top left of the canvas, outside the export frame.
+It opens an anchored overlay without a backdrop and leaves the frame rectangle and zoom unchanged.
+A resize observer hides the trigger if it would overlap the frame or extend beyond the canvas.
+The keyboard shortcut and command-menu entry still open help when the trigger is hidden.
+Phones keep their existing help trigger, placement, and dialog.
+
+`CanvasToolbar.tsx` contains Format code and Copy image on desktop in all three layouts.
+Shortcut help has its own trigger. Randomize stays in the command menu and its shortcut, without a button.
 
 `shell/Header.tsx` contains the logo, account controls, Share, and Export.
-The settings trigger moves into Dock or Studio when that layout has room for it.
-`claimSettingsEntry()` keeps exactly one trigger visible.
+`shell/header-actions.ts` lets mounted layout entries claim Commands, Settings, or Experiments.
+The header renders only unclaimed actions, and cleanup returns ownership when an entry unmounts.
+Inspector keeps Commands before Experiments and Settings in the header.
+Dock claims Commands and Settings; Studio claims all three in its desktop rail.
+Studio groups Commands, Settings, Experiments, and GitHub at the bottom, retaining `CommandMenuButton` and its announcement dot.
+Phones claim no header actions and keep the existing header.
 
 `shell/SettingsDialog.tsx` stays mounted while layouts change.
 `shell/sections.tsx` defines the sections, groups, and rows.
 Search reads those same rows.
+About contains the repository, Bugs and feedback, Releases, and Better Comments for GitHub links.
+`shell/links.ts` shares their destinations with the existing external-link commands and Studio's repository button.
+Better Comments retains its Umami event. Dock and Studio have no footer.
 `shell/settings-state.ts` controls the open section and restores focus when the dialog closes.
 Dialogs opened by a settings row live in `SettingsDialog`, so closing the row's panel cannot dispose them.
 
@@ -124,9 +140,17 @@ The highlighted command previews its value.
 Enter applies it, and closing the menu ends the preview.
 Layouts use `CommandMenuButton` for their own trigger.
 
-`shell/ExportControl.tsx` contains the Export button and its menu.
+`shell/export-formats.ts` lists the formats in display order, with their icon, description and abilities, and defines `ExportChoice`, a format, scale and JPEG quality for one export.
+`shell/export-actions.tsx` lists every export action with its icon, title, one-line description, visibility and disabled state. Every Export surface renders its rows from it.
 `shell/export.tsx` shares the image actions with the command menu and keyboard shortcuts.
-Every image action passes through `createExporter.request` for the secrets review.
+An image action takes an optional `ExportChoice`; without one it uses the saved export settings.
+Every image action passes through `createExporter.request` for the secrets review, which keeps the choice it was asked with.
+`shell/ExportControl.tsx` binds the shortcuts, owns the secrets review and renders the chosen Export style.
+
+The Appearance setting "Export style" chooses how Export offers a one-off format and scale, saved as `exportStyle` in the editor preferences.
+Menu (`shell/export-styles/panel.tsx`, the default) keeps the split button and opens a panel under its arrow. Dialog (`shell/export-styles/sheet.tsx`) opens a dialog with a preview.
+Both start from the saved settings each time and can save the choice as the default.
+Every action button carries `data-export-action` with its id.
 Export settings use `getExportCanvasStore()`.
 The per-tab export renders a separate preview frame for each tab.
 
@@ -141,6 +165,22 @@ Each snippet keeps its own signature copy, so later edits to a saved signature l
 Shared controls render the dots and bind reveal actions.
 Layouts do not import What's new modules. The root oxlint override enforces that boundary.
 
+The shell offers a permanent Experiments button that opens Settings on that section.
+Studio hosts it beside Settings in the desktop rail; Inspector and Dock keep it in the header.
+Its labelled, secondary ghost What's new button is available for `NEW_FOR_DAYS` (45 days)
+from the newest release's date, only while neither Nudge nor Showcase is on screen.
+It reopens the newest release expanded for this session, without resetting stored facts.
+Keyboard dismissal focuses the header entry when visible; keyboard reopening focuses the Nudge.
+Pointer dismissal restores nearby non-text-field focus and, after the Nudge's exit, fades and
+scales the header entry from 0.96. Reopening fades it out as the Nudge enters.
+The entry is first in the right-aligned action row, retaining its width through its exit and
+reserving nothing afterwards, so the later header actions keep their positions throughout.
+Page-load entries and keyboard handovers are instant; reduced motion uses opacity only.
+Reloading respects the stored dismissal. A still unread dot on the sparkle icon appears with
+unseen highlights, outside the three feature-dot slots.
+Both extra buttons hide at widths of 768px and below; the mobile header stays unchanged.
+After expiry, the Settings archive remains available.
+
 `components/WhatsNew/motion.ts` defines curves, durations, and stagger delays for announcements.
 The announcement styles and exit timers read those constants.
 Keyboard actions do not animate.
@@ -154,7 +194,6 @@ From the repository root, with the dev server running on port 4347:
 node apps/codeimage/src/pages/UnifiedEditor/verify-locale-parity.mjs
 node apps/codeimage/src/pages/UnifiedEditor/verify-i18n.mjs http://localhost:4347 /tmp/codeimage-i18n-shots
 node apps/codeimage/src/pages/UnifiedEditor/verify-review.mjs http://localhost:4347 /tmp/codeimage-review-shots
-node apps/codeimage/src/pages/UnifiedEditor/verify-snippets.mjs http://localhost:4347 /tmp/codeimage-snippet-shots
 ```
 
 The live scripts set the layout in saved preferences before opening `/`.
@@ -164,6 +203,6 @@ The parity script checks keys, placeholders, empty translations, and hard-coded 
 Its negative controls prove that missing keys and hard-coded text fail.
 The review script checks secrets review, focus restoration, overlay geometry, row values, and shortcut help.
 
-The snippet script needs the mock API and mock auth enabled, with the installed MSW worker served at `/mockServiceWorker.js`. It creates projects through the dashboard and checks loading, account saves, previews, read-only geometry, Share, export, Clone, missing/failed loads, and route navigation in all six layout/viewport combinations.
+Snippet verification lives in `.agents/skills/verify-codeimage/scripts/snippets.mjs`, registered as six `snippet-*` cases in the skill audit. Run them through `VERIFY_AUDIT=1 VERIFY_CASES=snippet-save,snippet-previews,snippet-read-only,snippet-clone,snippet-missing,snippet-navigation node .agents/skills/verify-codeimage/scripts/verify.mjs`. The helper owns Vite, the installed MSW worker, mock sign-in and disposable contexts. Case coverage is documented in the skill's `features/projects.md`.
 
 Known limitation: for a signed-out viewer with a saved local document, Clone restores that local document instead of keeping the viewed snippet. The shared sync adapter navigates to `/` without handing the clone to the next provider. Account Clone works.

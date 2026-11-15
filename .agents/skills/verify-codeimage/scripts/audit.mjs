@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import assert from 'node:assert/strict';
+import {auditSnippets} from './snippets.mjs';
 import {writeFile, readFile} from 'node:fs/promises';
 import {resolve} from 'node:path';
 import {PNG} from 'pngjs';
@@ -24,40 +25,57 @@ export async function audit({page, context, base, out, server}) {
     page.screenshot({path: resolve(out, `${name}.png`), fullPage: true});
   // `layout` saves that layout as the preference first. Without it the
   // stored preference stands, which the persistence case relies on.
-  async function doctor(route = '/', expected = 'editor', layout) {
+  async function doctor(
+    route = '/',
+    expected = 'editor',
+    layout,
+    target = page,
+  ) {
     assert.equal(server.exitCode, null);
     assert.ok((await fetch(base)).ok);
-    await page.goto(base + route);
+    await target.goto(base + route);
     const changed =
       layout !== undefined &&
-      (await page.evaluate(layout => {
+      (await target.evaluate(layout => {
         const key = 'codeimage:editor-settings';
         const stored = JSON.parse(localStorage.getItem(key) ?? '{}');
         if ((stored.layout ?? 'inspector') === layout) return false;
         localStorage.setItem(key, JSON.stringify({...stored, layout}));
         return true;
       }, layout));
-    if (changed) await page.reload();
+    if (changed) await target.reload();
     if (expected === 'dashboard') {
-      await page
+      await target
         .getByRole('button', {name: 'New', exact: true})
         .first()
         .waitFor();
       return;
     }
-    await editor().waitFor();
-    const close = page.getByRole('button', {name: 'close', exact: true});
+    await target
+      .locator('.cm-content[contenteditable="true"]')
+      .first()
+      .waitFor();
+    const close = target.getByRole('button', {name: 'close', exact: true});
     if (await close.isVisible()) await close.click();
-    await page.evaluate(() => document.fonts.ready);
-    assert.ok(await editor().isVisible());
+    await target.evaluate(() => document.fonts.ready);
+    assert.ok(
+      await target
+        .locator('.cm-content[contenteditable="true"]')
+        .first()
+        .isVisible(),
+    );
   }
   async function feature(name, run) {
     if (requested.size && !requested.has(name)) return;
     try {
       await doctor('/', 'editor', 'inspector');
-      await run();
+      const measurements = await run();
       await shot(name);
-      results.push({feature: name, status: 'passed'});
+      results.push({
+        feature: name,
+        status: 'passed',
+        ...(measurements ? {measurements} : {}),
+      });
       console.log(`PASS ${name}`);
     } catch (error) {
       await shot(`${name}-failure`).catch(() => {});
@@ -105,6 +123,94 @@ export async function audit({page, context, base, out, server}) {
     if ((await button.getAttribute('aria-expanded')) !== 'true')
       await button.click();
   }
+  async function fresh({name, layout, viewport, initialize}, run) {
+    const previous = {page, context};
+    context = await context.browser().newContext({
+      viewport,
+      locale: 'en-US',
+      colorScheme: 'dark',
+      permissions: ['clipboard-read', 'clipboard-write'],
+    });
+    try {
+      await context.addInitScript(layout => {
+        localStorage.setItem(
+          'codeimage:editor-settings',
+          JSON.stringify({layout}),
+        );
+        localStorage.setItem(
+          '@store/ui',
+          JSON.stringify({themeMode: 'dark', locale: 'en'}),
+        );
+      }, layout);
+      await context.tracing.start({
+        screenshots: true,
+        snapshots: true,
+        sources: true,
+      });
+      if (initialize) await initialize(context);
+      page = await context.newPage();
+      page.setDefaultTimeout(60000);
+      const errors = [];
+      page.on('pageerror', error => errors.push(String(error)));
+      try {
+        const result = await run({
+          page,
+          context,
+          doctor,
+          editor,
+          section,
+          settings,
+          closeSettings,
+          download,
+        });
+        assert.deepEqual(errors, [], `${name}: no uncaught browser errors`);
+        return result;
+      } catch (error) {
+        await shot(`${name}-failure`).catch(() => {});
+        await writeFile(
+          resolve(out, `${name}-failure.aria.txt`),
+          await page
+            .locator('body')
+            .ariaSnapshot()
+            .catch(() => ''),
+        );
+        throw error;
+      }
+    } finally {
+      await context.tracing
+        .stop({path: resolve(out, `${name}-trace.zip`)})
+        .catch(() => {});
+      await context.close();
+      ({page, context} = previous);
+    }
+  }
+  await feature('frame-cold-start', async () => {
+    const {verifyColdStart} = await import('./frame-regressions.mjs');
+    return verifyColdStart({fresh, out});
+  });
+  await feature('export-screen-parity', async () => {
+    const {verifyExportScreen} = await import('./frame-regressions.mjs');
+    return verifyExportScreen({fresh, out});
+  });
+  await feature('retired-classic-route', () =>
+    fresh(
+      {
+        name: 'retired-classic-route',
+        layout: 'inspector',
+        viewport: {width: 1440, height: 900},
+      },
+      async ({page}) => {
+        await page.goto(`${base}/classic`, {waitUntil: 'domcontentloaded'});
+        await page.waitForURL('**/404');
+        await page.getByText('404', {exact: true}).waitFor();
+        assert.equal(await page.locator('.unified-editor').count(), 0);
+        await page.screenshot({
+          path: resolve(out, 'retired-classic-route-404.png'),
+        });
+        return {url: page.url(), editorMounted: false};
+      },
+    ),
+  );
   await feature('editor', async () => {
     await doctor();
     await editor().fill('const audit = 1;');
@@ -140,6 +246,10 @@ export async function audit({page, context, base, out, server}) {
     assert.equal(await surface.getAttribute('data-surface'), 'wash');
     await surface.screenshot({path: resolve(out, 'appearance-wash.png')});
     PNG.sync.read(await download('wash.png'));
+  });
+  await feature('watermark', async () => {
+    const {verifyWatermark} = await import('./watermark.mjs');
+    await verifyWatermark({page, out, download, section});
   });
   await feature('tabs', async () => {
     await section('window');
@@ -180,7 +290,7 @@ export async function audit({page, context, base, out, server}) {
     await page.locator('[data-export-menu]').click();
     const [zip] = await Promise.all([
       page.waitForEvent('download', {timeout: 60000}),
-      page.getByRole('menuitem', {name: /^Export one image per tab/}).click(),
+      page.locator('[data-export-action=tabs]').click(),
     ]);
     await zip.saveAs(resolve(out, 'tabs.zip'));
     const entries = Object.entries(
@@ -465,9 +575,7 @@ export async function audit({page, context, base, out, server}) {
         .click();
       await closeSettings();
       await page.locator('[data-export-menu]').click();
-      await page
-        .getByRole('menuitem', {name: 'Copy alt text', exact: true})
-        .click();
+      await page.locator('[data-export-action=alt]').click();
       assert.match(
         await page.evaluate(() => navigator.clipboard.readText()),
         /exportOptions/,
@@ -616,7 +724,7 @@ export async function audit({page, context, base, out, server}) {
     await page.getByRole('option', {name: /^Typescript$/i}).click();
     assert.match(await language.innerText(), /Typescript/i);
     await editor().fill('const value={answer:42}');
-    await page.getByRole('button', {name: 'Format', exact: true}).click();
+    await page.getByRole('button', {name: 'Format code', exact: true}).click();
     await page.waitForFunction(() =>
       document
         .querySelector('.cm-content[contenteditable="true"]')
@@ -663,6 +771,7 @@ export async function audit({page, context, base, out, server}) {
     await page.getByRole('button', {name: 'Presets', exact: true}).click();
     assert.equal(await item('Renamed preset').count(), 0);
   });
+  await auditSnippets({feature, doctor, context, base, out});
   await feature('projects', async () => {
     await page
       .getByRole('button', {name: 'Sign in with GitHub', exact: true})
@@ -715,6 +824,7 @@ export async function audit({page, context, base, out, server}) {
         r =>
           r.request().method() === 'GET' &&
           new URL(r.url()).pathname === `/api/v1/project/${project.id}`,
+        {timeout: 60000},
       ),
       page.reload(),
     ]);

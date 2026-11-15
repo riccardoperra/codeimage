@@ -8,6 +8,7 @@ import * as baseStyles from '../terminal.css';
 import type {BaseTerminalProps} from '../TerminalHost';
 import {TerminalHost} from '../TerminalHost';
 import * as styles from './MacOsTerminal.css';
+import {useWatermarkPart} from '../../../core/watermark/scope';
 
 export const exportExclude = _exportExclude;
 
@@ -17,17 +18,22 @@ export interface MacOsTerminalProps extends BaseTerminalProps {
 
 export const MacOsTerminal: ParentComponent<MacOsTerminalProps> = props => {
   const showTab = () => props.accentVisible && !props.alternativeTheme;
+  const headerRef = useWatermarkPart('header');
+  const contentRef = useWatermarkPart('content');
 
   return (
     <TerminalHost {...props} themeClass={styles.theme}>
       <Show when={props.showHeader}>
         <div
           class={baseStyles.header}
+          ref={headerRef}
+          data-watermark-header
           data-lite={props.lite}
           data-accent-visible={showTab()}
         >
           <div
             class={styles.headerIconRow}
+            data-watermark-obstacle
             data-lite={props.lite}
             data-header-type={props.headerType ?? 'default'}
           >
@@ -64,7 +70,7 @@ export const MacOsTerminal: ParentComponent<MacOsTerminalProps> = props => {
         </div>
       </Show>
       <Show when={props.children}>
-        <div class={baseStyles.content}>
+        <div class={baseStyles.content} ref={contentRef} data-watermark-content>
           <Box position={'relative'}>
             <div>{props.children}</div>
           </Box>

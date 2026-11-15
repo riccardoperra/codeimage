@@ -134,17 +134,6 @@ export const canvas = style({
   },
 });
 
-export const footer = style({
-  position: 'absolute',
-  right: 0,
-  bottom: safe,
-});
-
-// The production footer brings its own position.
-globalStyle(`${footer} > div`, {
-  position: 'static',
-});
-
 /* Dock */
 
 /*
@@ -320,8 +309,6 @@ export const barExport = style({
   paddingLeft: '4px',
 });
 
-// The production frame toolbar brings its own floating surface. Here it
-// takes the dock's.
 export const frameActions = style({
   display: 'flex',
   alignItems: 'center',
@@ -331,13 +318,8 @@ export const frameActions = style({
   pointerEvents: 'auto',
 });
 
-globalStyle(`${root} ${frameActions} > div`, {
-  position: 'static',
-  height: 'auto',
-  background: 'none',
-  boxShadow: 'none',
-  transform: 'none',
-});
+// The canvas toolbar takes the dock's surface.
+globalStyle(`${frameActions} > *`, {background: 'transparent'});
 
 /* Popovers */
 

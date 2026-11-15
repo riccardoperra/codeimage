@@ -11,7 +11,6 @@ import {
   Show,
 } from 'solid-js';
 import {Dynamic} from 'solid-js/web';
-import {ColorSwatchIcon} from '../../../../components/Icons/ColorSwatch';
 import {SparklesIcon} from '../../../../components/Icons/SparklesIcon';
 import {ShareButton} from '../../../../components/Toolbar/ShareButton';
 import type {AppLocaleEntries} from '../../../../i18n';
@@ -20,12 +19,13 @@ import {CommandMenuButton} from '../../command-menu/CommandMenuButton';
 import {commandMenu} from '../../command-menu/state';
 import type {VariantMeta, VariantProps} from '../../contract';
 import {controlOverlay} from '../../controls/ControlOverlay';
-import {FrameActions} from '../../controls/FrameActions';
+import {CanvasToolbar} from '../../controls/CanvasToolbar';
 import {keepMarkToolbarAboveSelection} from '../../controls/mark-toolbar';
 import {ShortcutHelp} from '../../controls/ShortcutHelp';
-import {Footer} from '../../localized/Footer';
-import {SettingsIcon} from '../../shell/icons';
-import {claimSettingsEntry, settings} from '../../shell/settings-state';
+import {ExperimentsIcon, SettingsIcon, GitHubIcon} from '../../shell/icons';
+import {editorLinks} from '../../shell/links';
+import {settings} from '../../shell/settings-state';
+import {claimHeaderActions} from '../../shell/header-actions';
 import {ownCompositeKeys} from './controls';
 import {CloseIcon, CollapseIcon, SearchIcon} from './icons';
 import {PANELS} from './panels';
@@ -54,24 +54,49 @@ function rubberband(overshoot: number, dimension: number) {
   return (overshoot * dimension * 0.55) / (dimension + 0.55 * overshoot);
 }
 
-/** The settings entry at the foot of the rail, under Search. */
-function RailSettings() {
+/** Layout-hosted header actions, followed by the repository link. */
+function RailActions() {
   const [t] = useI18n<AppLocaleEntries>();
-  claimSettingsEntry();
+  claimHeaderActions(['commands', 'settings', 'experiments']);
   return (
-    <button
-      type="button"
-      class={styles.railButton}
-      aria-haspopup="dialog"
-      aria-expanded={settings.isOpen()}
-      data-settings-trigger
-      onClick={() => settings.open()}
-    >
-      <span class={styles.railIcon}>
-        <SettingsIcon size={20} />
-      </span>
-      {t('editor.settings')}
-    </button>
+    <>
+      <button
+        type="button"
+        class={styles.railButton}
+        aria-haspopup="dialog"
+        aria-expanded={settings.isOpen()}
+        data-settings-trigger
+        onClick={() => settings.open()}
+      >
+        <span class={styles.railIcon}>
+          <SettingsIcon size={20} />
+        </span>
+        {t('editor.settings')}
+      </button>
+      <button
+        type="button"
+        class={`${styles.railButton} ${styles.railLink}`}
+        aria-label={t('editor.experiments')}
+        title={t('editor.experiments')}
+        aria-haspopup="dialog"
+        data-experiments-trigger
+        onClick={() => settings.open('experiments')}
+      >
+        <span class={styles.railIcon}>
+          <ExperimentsIcon size={20} />
+        </span>
+      </button>
+      <a
+        class={`${styles.railButton} ${styles.railLink}`}
+        href={editorLinks[0].href}
+        target="_blank"
+        rel="noreferrer"
+        aria-label={t('editor.openGithub')}
+        title={t('editor.openGithub')}
+      >
+        <GitHubIcon size={20} />
+      </a>
+    </>
   );
 }
 
@@ -106,7 +131,9 @@ export default function Studio(props: VariantProps) {
     ),
   });
   const sheetHeight = () =>
-    isPhone() && openId() ? sheetHeights()[stop()] : 0;
+    isPhone() && openId() && props.pageState().kind !== 'read-only'
+      ? sheetHeights()[stop()]
+      : 0;
 
   const stopAnimations = () =>
     panelEl.getAnimations().forEach(animation => animation.cancel());
@@ -260,12 +287,14 @@ export default function Studio(props: VariantProps) {
     const onQuery = (e: MediaQueryListEvent) => setIsPhone(e.matches);
     compactQuery.addEventListener('change', onQuery);
 
-    const measure = () =>
+    const measure = () => {
+      if (!railEl?.isConnected) return;
       setAvailable(
         railEl.getBoundingClientRect().top -
           bodyEl.getBoundingClientRect().top -
           GAP,
       );
+    };
     const observer = new ResizeObserver(measure);
     observer.observe(bodyEl);
     measure();
@@ -281,58 +310,65 @@ export default function Studio(props: VariantProps) {
       <div
         ref={bodyEl}
         class={styles.body}
+        data-read-only={props.pageState().kind === 'read-only' ? '' : undefined}
         style={assignInlineVars({
           [styles.sheetHeight]: `${sheetHeight()}px`,
           [styles.sheetSpace]: `${sheetHeight() ? sheetHeight() + GAP : 0}px`,
         })}
       >
-        <nav
-          ref={railEl}
-          class={styles.rail}
-          aria-label={t('editor.editorPanels')}
-        >
-          <EditingControls state={props.pageState()}>
-            <For each={PANELS}>
-              {panel => (
-                <button
-                  ref={el => openers.set(panel.id, el)}
-                  type="button"
-                  class={styles.railButton}
-                  aria-controls={PANEL_ID}
-                  aria-expanded={openId() === panel.id}
-                  onClick={() => toggle(panel)}
-                >
-                  <span class={styles.railIcon}>
-                    <panel.Icon />
-                  </span>
-                  {t(panel.label)}
-                </button>
-              )}
-            </For>
-          </EditingControls>
-          <Show when={!isPhone()}>
-            <CommandMenuButton>
-              {trigger => (
-                <button
-                  {...trigger}
-                  type="button"
-                  class={`${styles.railButton} ${styles.railSearch}`}
-                  title={`${t('editor.searchOptions')} (${commandMenu.shortcut})`}
-                >
-                  <span class={styles.railIcon}>
-                    <SearchIcon />
-                  </span>
-                  {t('editor.search')}
-                  <kbd class={styles.railHint}>{commandMenu.shortcut}</kbd>
-                </button>
-              )}
-            </CommandMenuButton>
-            <RailSettings />
-          </Show>
-          <EditingControls state={props.pageState()}>
-            <ShortcutHelp editable={props.pageState().editable} />
-          </EditingControls>
-        </nav>
+        <Show when={!isPhone() || props.pageState().kind !== 'read-only'}>
+          <nav
+            ref={railEl}
+            class={styles.rail}
+            aria-label={t('editor.editorPanels')}
+          >
+            <EditingControls state={props.pageState()}>
+              <For each={PANELS}>
+                {panel => (
+                  <button
+                    ref={el => openers.set(panel.id, el)}
+                    type="button"
+                    class={styles.railButton}
+                    aria-controls={PANEL_ID}
+                    aria-expanded={openId() === panel.id}
+                    onClick={() => toggle(panel)}
+                  >
+                    <span class={styles.railIcon}>
+                      <panel.Icon />
+                    </span>
+                    {t(panel.label)}
+                  </button>
+                )}
+              </For>
+            </EditingControls>
+            <Show when={!isPhone()}>
+              <div class={styles.railUtilities}>
+                <CommandMenuButton>
+                  {trigger => (
+                    <button
+                      {...trigger}
+                      type="button"
+                      class={styles.railButton}
+                      title={`${t('editor.searchOptions')} (${commandMenu.shortcut})`}
+                    >
+                      <span class={styles.railIcon}>
+                        <SearchIcon />
+                      </span>
+                      {t('editor.commands')}
+                      <kbd class={styles.railHint}>{commandMenu.shortcut}</kbd>
+                    </button>
+                  )}
+                </CommandMenuButton>
+                <RailActions />
+              </div>
+            </Show>
+            <Show when={isPhone()}>
+              <EditingControls state={props.pageState()}>
+                <ShortcutHelp editable={props.pageState().editable} />
+              </EditingControls>
+            </Show>
+          </nav>
+        </Show>
 
         <EditingControls state={props.pageState()}>
           <section
@@ -417,13 +453,6 @@ export default function Studio(props: VariantProps) {
                   <Button
                     size="xs"
                     theme="secondary"
-                    aria-label={t('shortcut.pickRandomTheme')}
-                    leftIcon={<ColorSwatchIcon />}
-                    onClick={() => props.stage.randomize()}
-                  />
-                  <Button
-                    size="xs"
-                    theme="secondary"
                     aria-label={t('editor.formatCode')}
                     leftIcon={<SparklesIcon />}
                     disabled={!props.stage.canFormat()}
@@ -434,14 +463,11 @@ export default function Studio(props: VariantProps) {
               </div>
             }
           >
-            <div class={styles.frameActions}>
-              <EditingControls state={props.pageState()}>
-                <FrameActions />
-              </EditingControls>
-            </div>
-            <div class={styles.footer}>
-              <Footer />
-            </div>
+            <EditingControls state={props.pageState()}>
+              <div class={styles.frameActions}>
+                <CanvasToolbar stage={props.stage} />
+              </div>
+            </EditingControls>
           </Show>
         </main>
       </div>

@@ -8,7 +8,7 @@ Mock GitHub login, New, autosave, project URL, dashboard reopening; card Menu of
 
 ## How to get to it (user POV)
 
-Click Sign in with GitHub. Authenticated `/` is Dashboard; `/dashboard` redirects there, and `/login` signs in (with the mock, straight to Dashboard). New opens `/<id>` in the unified editor. Dashboard search filters only after more than two characters. Unknown paths redirect to `/404`.
+Click Sign in with GitHub. Authenticated `/` is Dashboard; `/dashboard` redirects there, and `/login` signs in (with the mock, straight to Dashboard). New opens `/<id>` in the unified editor using the saved layout preference. Dashboard search filters only after more than two characters. Unknown paths redirect to `/404`.
 
 ## Driving it with Playwright
 
@@ -21,3 +21,26 @@ The projects journey now renames through the dashboard, reloads the name, clones
 ## Gotchas
 
 Doctor after login must expect Dashboard, not an editor. Autosave has a roughly 3s debounce. No real OAuth/Postgres claim: Auth0 and project services use existing development mocks. Closing context removes guest test database. Search and real backend integration still need separate journeys.
+
+## Snippet audit cases
+
+`projects` retains dashboard CRUD, code persistence, owner isolation and delayed MSW startup. The cases below cover the unified snippet page. Each runs Inspector, Dock and Studio at 1440x900 and 390x844 in a disposable browser context. They use the helper's owned Vite instance, installed MSW worker and real mock sign-in button. Layouts come from `codeimage:editor-settings` through the shared doctor.
+
+| Case                 | Assertions                                                                                                                                                                                                                                                                                                                       |
+| -------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `snippet-save`       | Dashboard New opens the unified route. Delayed loading shows the frame placeholder, disables Export and preserves the header and layout boxes. Padding and theme send a successful account save and survive reload.                                                                                                              |
+| `snippet-previews`   | Picker hover and command previews change the rendered token colours, restore the applied colours and send no save during the autosave window. Persisted data stays unchanged.                                                                                                                                                    |
+| `snippet-read-only`  | A non-owner gets one banner with Clone, immutable code and no editing controls, shortcuts or mutation commands. Inspector and Studio reclaim the panel width. Dock has one compact pill. The frame stays centred and the banner takes no layout space. Settings, PNG download, clipboard PNG and the Share URL remain available. |
+| `snippet-clone`      | The read-only banner's Clone opens a new editable account snippet with the same code. Dashboard Clone remains covered by `projects`.                                                                                                                                                                                             |
+| `snippet-missing`    | A missing id and a failed GET both reach the visible 404 page.                                                                                                                                                                                                                                                                   |
+| `snippet-navigation` | Switching ids loads the correct code and ownership, closes old commands, overlays and Dock pickers, and preserves the separate signed-out local document across route changes.                                                                                                                                                   |
+
+Run the replacement cases from the repository root:
+
+```sh
+VERIFY_AUDIT=1 VERIFY_CASES=snippet-save,snippet-previews,snippet-read-only,snippet-clone,snippet-missing,snippet-navigation node .agents/skills/verify-codeimage/scripts/verify.mjs
+```
+
+Implementation: `.agents/skills/verify-codeimage/scripts/snippets.mjs`, registered by `scripts/audit.mjs`. The cases dismiss a visible What's new nudge through its button before bottom controls and read-only screenshots. Each case writes a six-row `<case>-matrix.json` and one trace per layout and size. `read-only/` holds the six requested screenshots. A failing row also saves its accessibility snapshot and screenshot.
+
+Ownership and failed-load fixtures use the existing MSW boundary. Navigation uses an anchor fixture to exercise route updates without reloading the provider. Mock logout reloads the current snippet, so the case waits for the signed-out view before following a link to `/`. Share supplies a Web Share input fixture because headless Chromium has no OS share sheet. It checks the snippet URL passed to that API, not native platform sharing. Clipboard and image downloads use real browser APIs. No editor store or exporter internal is called.

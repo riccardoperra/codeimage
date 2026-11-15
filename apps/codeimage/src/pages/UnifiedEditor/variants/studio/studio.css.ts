@@ -1,11 +1,6 @@
 import {panelRow} from '../../../../components/PropertyEditor/EditorSidebar.css';
 import {themeVars} from '@codeimage/ui';
-import {
-  createContainer,
-  createVar,
-  globalStyle,
-  style,
-} from '@vanilla-extract/css';
+import {createVar, globalStyle, style} from '@vanilla-extract/css';
 
 const c = themeVars.dynamicColors;
 
@@ -72,11 +67,24 @@ export const body = style({
   gap,
   padding: `0 ${gap} ${gap}`,
   vars: {[sheetHeight]: '0px', [sheetSpace]: '0px'},
+  selectors: {
+    '&[data-read-only]': {
+      gridTemplateAreas: '"rail main"',
+      gridTemplateColumns: 'auto minmax(0, 1fr)',
+    },
+  },
   '@media': {
     [compact]: {
       gridTemplateAreas: '"main" "rail"',
       gridTemplateColumns: 'minmax(0, 1fr)',
       gridTemplateRows: 'minmax(0, 1fr) auto',
+      selectors: {
+        '&[data-read-only]': {
+          gridTemplateAreas: '"main"',
+          gridTemplateColumns: 'minmax(0, 1fr)',
+          gridTemplateRows: 'minmax(0, 1fr)',
+        },
+      },
       paddingBottom: `calc(${gap} + env(safe-area-inset-bottom, 0px))`,
     },
   },
@@ -137,12 +145,14 @@ export const railButton = style([
   },
 ]);
 
-// The command menu's button sits apart from the panels, at the foot of the rail.
-// The command menu's button sits apart from the panels, at the foot of the rail.
-// It is not rendered on phones, where the rail is a tab bar sized for five rooms.
-export const railSearch = style({
+export const railUtilities = style({
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  gap: '4px',
   marginTop: 'auto',
 });
+export const railLink = style({textDecoration: 'none', minHeight: '40px'});
 
 export const railHint = style({
   color: c.descriptionTextColor,
@@ -288,13 +298,9 @@ export const fullWidth = style({
   paddingBottom: '6px',
 });
 
-const mainContainer = createContainer();
-
 export const main = style([
   island,
   {
-    containerName: mainContainer,
-    containerType: 'inline-size',
     gridArea: 'main',
     position: 'relative',
     display: 'flex',
@@ -315,39 +321,13 @@ export const stage = style({
   display: 'flex',
 });
 
-// The production frame toolbar and footer sit absolutely over today's
-// canvas; here each gets its own row so neither can cover the frame.
+// Frame actions keep their own row so they cannot cover the frame.
 export const frameActions = style({
   display: 'flex',
   justifyContent: 'center',
   padding: '0 16px 12px',
   flexShrink: 0,
 });
-
-globalStyle(`${frameActions} > *`, {
-  position: 'static',
-  transform: 'none',
-  maxWidth: '100%',
-  height: 'auto',
-  minHeight: '50px',
-});
-globalStyle(`${frameActions} > div > div`, {
-  flexWrap: 'wrap',
-  justifyContent: 'center',
-  rowGap: '8px',
-});
-
-export const footer = style({
-  display: 'flex',
-  justifyContent: 'flex-end',
-  padding: '0 12px 6px',
-  flexShrink: 0,
-  '@container': {
-    [`${mainContainer} (max-width: 720px)`]: {display: 'none'},
-  },
-});
-
-globalStyle(`${footer} > *`, {position: 'static'});
 
 export const compactActions = style({
   display: 'flex',

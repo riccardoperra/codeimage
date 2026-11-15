@@ -14,20 +14,24 @@ import {showExportSuccessToast} from '../../components/Toolbar/ExportSuccessToas
 interface CopyToClipboardEvent {
   ref: HTMLElement;
   renderer: RasterizerName;
+  /** The export settings' scale without one. */
+  pixelRatio?: number;
 }
 
 const owner = getOwner()!;
 
 export const dispatchCopyToClipboard = effect<CopyToClipboardEvent>(
   pipe(
-    exhaustMap(({ref, renderer}) => {
+    exhaustMap(({ref, renderer, pixelRatio}) => {
       const editor = getActiveEditorStore().editor();
       const text = editor && altText(editor);
       const exportSettings = getExportCanvasStore();
       const options: ExportOptions = {
         mode: ExportMode.getBlob,
         quality: exportSettings.get.jpegQuality / 100,
-        pixelRatio: Math.floor(exportSettings.get.devicePixelRatio),
+        pixelRatio: Math.floor(
+          pixelRatio ?? exportSettings.get.devicePixelRatio,
+        ),
         extension: ExportExtension.png,
       };
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
