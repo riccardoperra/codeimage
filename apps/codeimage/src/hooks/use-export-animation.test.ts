@@ -65,6 +65,29 @@ describe('animation job and worker protocol', () => {
     });
     expect(f.worker.terminate).toHaveBeenCalledOnce();
   });
+  it('runs GIF in the same job and returns image/gif without WebCodecs', async () => {
+    const f = fixture();
+    const gifJob: AnimationExport = {
+      ...job,
+      config: {kind: 'gif', width: 640, height: 480, fps: 50},
+    };
+    await f.controller.check(gifJob.config);
+    await f.controller.start(async () => gifJob);
+    f.event({
+      kind: 'done',
+      buffer: new ArrayBuffer(10),
+      frames: 50,
+      durationMs: 1000,
+      renderMs: 20,
+      elapsedMs: 30,
+    });
+    const result = f.controller.state();
+    expect(result.kind === 'done' && result.blob.type).toBe('image/gif');
+    expect(f.worker.postMessage).toHaveBeenCalledWith({
+      kind: 'export',
+      job: gifJob,
+    });
+  });
   it('terminates on cancel and ignores late completion (no download)', async () => {
     const f = fixture();
     await f.controller.check(config);

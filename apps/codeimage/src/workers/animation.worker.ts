@@ -1,12 +1,13 @@
 import init, {Renderer} from '@takumi-rs/wasm';
 import wasmUrl from '@takumi-rs/wasm/wasm-url';
+import {padVideoFrame, errorMessage} from '../core/video/encode';
 import {
-  checkMp4Support,
-  createMp4Encoder,
-  padVideoFrame,
-  errorMessage,
-  warmEncoder,
-} from '../core/video/encode';
+  ANIMATION_FORMATS,
+  checkAnimationSupport,
+  createAnimationEncoder,
+  warmAnimationEncoder,
+} from '../core/video/formats';
+import {paletteFrameIndices, palettePixels} from '../core/gif/encode';
 import type {
   AnimationEvent,
   AnimationFailure,
@@ -23,7 +24,7 @@ async function exportAnimation(job: AnimationExport) {
   const started = performance.now();
   let reason: Extract<AnimationFailure, 'renderer' | 'fonts' | 'encoder'> =
     'renderer';
-  let encoder: Awaited<ReturnType<typeof createMp4Encoder>> | undefined;
+  let encoder: Awaited<ReturnType<typeof createAnimationEncoder>> | undefined;
   try {
     await warming;
     try {
@@ -35,10 +36,9 @@ async function exportAnimation(job: AnimationExport) {
     reason = 'fonts';
     for (const font of job.resources.fonts) await renderer.registerFont(font);
     reason = 'encoder';
-    const support = await checkMp4Support(job.config);
+    const support = await checkAnimationSupport(job.config);
     if (support.kind === 'unsupported')
       throw new Error(`H.264 configuration unavailable (${support.reason})`);
-    encoder = await createMp4Encoder(job.config);
     const durationMs = job.scenes.reduce(
       (sum, scene) => sum + scene.durationMs,
       0,
@@ -51,13 +51,11 @@ async function exportAnimation(job: AnimationExport) {
       css: [...job.resources.css, job.css],
       fontFamilies: job.resources.fontFamilies,
     };
-    let sceneIndex = 0;
-    let sceneStart = 0;
     let renderMs = 0;
-    send({kind: 'progress', done: 0, total});
-    for (let index = 0; index < total; index++) {
-      if (cancelled) return;
+    const render = async (index: number) => {
       const timeMs = Math.floor((index * 1000) / job.config.fps);
+      let sceneIndex = 0;
+      let sceneStart = 0;
       while (
         sceneIndex < job.scenes.length - 1 &&
         timeMs >= sceneStart + job.scenes[sceneIndex].durationMs
@@ -74,10 +72,33 @@ async function exportAnimation(job: AnimationExport) {
       });
       renderMs += performance.now() - before;
       padVideoFrame(rgba, job.contentSize, job.config);
+      return rgba;
+    };
+    const indices = ANIMATION_FORMATS[job.config.kind].paletteSamples
+      ? paletteFrameIndices(total)
+      : [];
+    const progressTotal = total + indices.length;
+    send({kind: 'progress', done: 0, total: progressTotal});
+    const samples: Uint8Array[] = [];
+    for (const index of indices) {
+      if (cancelled) return;
+      samples.push(palettePixels(await render(index)));
+      send({kind: 'progress', done: samples.length, total: progressTotal});
+    }
+    reason = 'encoder';
+    encoder = await createAnimationEncoder(job.config, samples);
+    samples.length = 0;
+    for (let index = 0; index < total; index++) {
+      if (cancelled) return;
+      const rgba = await render(index);
       reason = 'encoder';
       await encoder.add(rgba, index);
       if (index % 3 === 0 || index === total - 1)
-        send({kind: 'progress', done: index + 1, total});
+        send({
+          kind: 'progress',
+          done: indices.length + index + 1,
+          total: progressTotal,
+        });
     }
     const buffer = await encoder.finish();
     if (!cancelled)
@@ -103,7 +124,7 @@ self.onmessage = ({data}: MessageEvent<AnimationRequest>) => {
   switch (data.kind) {
     case 'warm':
       // Warming is advisory. A failed real encode is reported by the job.
-      warming = warmEncoder(data.config).catch(() => undefined);
+      warming = warmAnimationEncoder(data.config).catch(() => undefined);
       void warming.then(() => send({kind: 'warmed'}));
       break;
     case 'cancel':
