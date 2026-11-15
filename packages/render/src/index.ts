@@ -18,6 +18,7 @@ export type {
 } from './document';
 export {
   animationFps,
+  createRenderer,
   annotateCode,
   renderAnimation,
   renderSnapshot,
@@ -26,3 +27,13 @@ export {
   supportedThemeIds,
 } from './render';
 export type {AnnotatedCode, SnapshotFont, SnapshotMarkup} from './render';
+
+export {openFontCache, FontUnavailableError, FontFileError} from './fontCache';
+export type {
+  FontCacheOptions,
+  FontEvent,
+  FontStatus,
+  FontCache,
+} from './fontCache';
+export type {RendererOptions} from './render';
+export {resolveFontId} from './fontManifest';

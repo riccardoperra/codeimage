@@ -1,17 +1,22 @@
-import {readFile} from 'node:fs/promises';
-import {fileURLToPath} from 'node:url';
-import {Renderer} from '@takumi-rs/core';
-import type {ImageSource, MeasuredNode} from '@takumi-rs/core';
 import type {
-  AnimationDocument,
-  AnimationInput,
-  AnimationSettings,
+  FrameSize,
+  RenderEntry,
+} from '../../../apps/codeimage/src/render/contract';
+import {readFile} from 'node:fs/promises';
+import {createHash} from 'node:crypto';
+import {resolve} from 'node:path';
+import {createFontStore, FontFileError} from './fontCache';
+import type {FontCacheOptions} from './fontCache';
+import {findFont} from './fontManifest';
+import {Renderer} from '@takumi-rs/core';
+import {positionWatermark} from './watermarkGeometry';
+import type {ImageSource} from '@takumi-rs/core';
+import type {
   ProjectSnapshot,
   SnapshotDocument,
   SnapshotInput,
 } from './document';
-import {parseAnimationDocument, parseSnapshotDocument} from './document';
-import {clearGifFrames} from './gif';
+import {parseSnapshotDocument} from './document';
 
 export interface AnnotatedCode {
   code: string;
@@ -28,73 +33,12 @@ export async function annotateCode(
   return (await getRuntime()).entry.annotateCode(code, languageId, tabName);
 }
 
-interface FrameMarkup {
-  html: string;
-  css: string;
-  fontFamily: string;
-  backgroundImage: string | null;
-}
-
-interface FrameSize {
-  width: number;
-  height: number;
-}
-
-// A laid-out page in CSS pixels, with the text runs it draws.
-interface PageLayout {
-  width: number;
-  height: number;
-  children: PageLayout[];
-  runs: {text: string; width: number}[];
-}
-
-interface AnimationScenes {
-  scenes: {html: string; durationMs: number}[];
-  // One stylesheet for every scene.
-  css: string;
-  // The largest frame over all steps, in CSS pixels.
-  width: number;
-  height: number;
-  backgroundImage: string | null;
-}
-
-interface RenderEntry {
-  SUPPORTED_FONT_IDS: string[];
-  SUPPORTED_THEME_IDS: string[];
-  renderFrame(snapshot: ProjectSnapshot): Promise<FrameMarkup>;
-  renderAnimationScenes(
-    snapshot: ProjectSnapshot,
-    settings: Omit<AnimationSettings, 'fps'> & {fps: number},
-    measure: (html: string, css: string) => Promise<PageLayout>,
-  ): Promise<AnimationScenes>;
-  annotateCode(
-    code: string,
-    languageId: string,
-    tabName: string,
-  ): Promise<AnnotatedCode>;
-  frameSizeCss(size?: FrameSize): string;
-  targetLayout(
-    frame: SnapshotDocument['frame'],
-    natural: FrameSize,
-  ): {size: FrameSize; css: string} | undefined;
-}
-
-interface FontFile {
+export interface SnapshotFont {
+  family: string;
   file: string;
+  data: Uint8Array;
   weight?: number;
   unicodeRange?: [number, number][];
-}
-
-interface FontManifest {
-  // The files of each app font and of the UI font.
-  fonts: Record<string, FontFile[]>;
-  // Families for glyphs the app fonts lack, in the order Takumi tries them.
-  fallbacks: {family: string; files: FontFile[]}[];
-}
-
-export interface SnapshotFont extends Omit<FontFile, 'file'> {
-  family: string;
-  path: string;
 }
 
 export interface SnapshotMarkup {
@@ -104,74 +48,22 @@ export interface SnapshotMarkup {
   // Browser layout, before Takumi's frame sizing overrides.
   naturalCss: string[];
   size: FrameSize;
-  // The UI and code fonts the markup names. Fallbacks are not listed.
+  // Verified buffers used by measurement, in catalog order.
   fonts: SnapshotFont[];
   // The fallback chain every measure and render uses.
   fontFamilies: string[];
   images: ImageSource[];
 }
 
-const UI_FONT = {id: 'ui', family: 'Inter var'} as const;
-
 const dist = new URL('../dist/', import.meta.url);
-
 async function loadRuntime() {
-  const [entry, stylesheet, manifest] = await Promise.all([
-    import(new URL('ssr/entry-server.js', dist).href) as Promise<RenderEntry>,
+  const [entry, stylesheet] = await Promise.all([
+    import(new URL('ssr/entry-server.js', dist).href) as Promise<
+      RenderEntry<ProjectSnapshot, AnnotatedCode>
+    >,
     readFile(new URL('ssr/assets/style.css', dist), 'utf8'),
-    readFile(new URL('fonts/manifest.json', dist), 'utf8').then(
-      text => JSON.parse(text) as FontManifest,
-    ),
   ]);
-  const renderer = new Renderer();
-  const faces = (family: string, files: FontFile[]): SnapshotFont[] =>
-    files.map(({file, ...face}) => ({
-      family,
-      path: fileURLToPath(new URL(`fonts/${file}`, dist)),
-      ...face,
-    }));
-  const fontsFor = (fontId: string, family: string) => {
-    const files = manifest.fonts[fontId];
-    if (!files) throw new Error(`No font files for font "${fontId}"`);
-    return faces(family, files);
-  };
-  const register = async (fonts: SnapshotFont[]) => {
-    const files = await Promise.all(fonts.map(font => readFile(font.path)));
-    for (const [index, font] of fonts.entries()) {
-      await renderer.registerFont({
-        name: font.family,
-        data: files[index],
-        weight: font.weight,
-        unicodeRange: font.unicodeRange,
-      });
-    }
-  };
-  // The fallbacks and the UI font register once, in a fixed order, before the
-  // first render. Each render names the same fallback chain, so the image never
-  // depends on which app fonts earlier renders registered.
-  for (const {family, files} of manifest.fallbacks) {
-    await register(faces(family, files));
-  }
-  const uiFonts = fontsFor(UI_FONT.id, UI_FONT.family);
-  await register(uiFonts);
-  const appFonts = new Map<string, Promise<void>>();
-  const registerAppFont = (fontId: string, family: string) => {
-    let pending = appFonts.get(fontId);
-    if (!pending) {
-      pending = register(fontsFor(fontId, family));
-      appFonts.set(fontId, pending);
-    }
-    return pending;
-  };
-  return {
-    entry,
-    stylesheet,
-    renderer,
-    uiFonts,
-    fontsFor,
-    registerAppFont,
-    fontFamilies: manifest.fallbacks.map(({family}) => family),
-  };
+  return {entry, stylesheet};
 }
 
 let runtime: ReturnType<typeof loadRuntime> | undefined;
@@ -195,14 +87,6 @@ const normalizeStyleAttributes = (html: string) =>
     ),
   );
 
-async function fetchImage(url: string): Promise<ImageSource> {
-  const response = await fetch(url);
-  if (!response.ok) {
-    throw new Error(`Background image ${url} answered ${response.status}`);
-  }
-  return {src: url, data: await response.arrayBuffer()};
-}
-
 export async function supportedThemeIds(): Promise<string[]> {
   return (await getRuntime()).entry.SUPPORTED_THEME_IDS;
 }
@@ -211,151 +95,161 @@ export async function supportedFontIds(): Promise<string[]> {
   return (await getRuntime()).entry.SUPPORTED_FONT_IDS;
 }
 
-export async function snapshotMarkup(
-  input: SnapshotInput,
-): Promise<SnapshotMarkup> {
-  const document = parseSnapshotDocument(input);
-  const {
-    entry,
-    stylesheet,
-    renderer,
-    uiFonts,
-    fontsFor,
-    registerAppFont,
-    fontFamilies,
-  } = await getRuntime();
-  const frame = await entry.renderFrame(document);
-  const html = normalizeStyleAttributes(frame.html);
-  const css = [frame.css, stylesheet].map(normalizeGradients);
-  const {fontId} = document.editor.options;
-  await registerAppFont(fontId, frame.fontFamily);
-  // Like the web frame, the frame is at least as wide as its code, so no line
-  // wraps. The borderless frame's clientWidth/clientHeight round to the nearest
-  // CSS pixel before the web exporter applies the scale.
-  const scale = document.format === 'svg' ? 1 : document.scale;
-  const content = await renderer.measure(html, {
-    css: [...css, entry.frameSizeCss()],
-    fontFamilies,
-    devicePixelRatio: scale,
-  });
-  const natural = {
-    width: content.width / scale,
-    height: content.height / scale,
-  };
-  const target = entry.targetLayout(document.frame, natural);
-  const layoutSize = target?.size ?? {
-    width: Math.max(document.width ?? 0, natural.width),
-    height: natural.height,
-  };
+export interface RendererOptions extends FontCacheOptions {
+  codeFontFile?: string;
+}
+export function createRenderer(options: RendererOptions = {}) {
+  const store = createFontStore(options);
+  async function prepare(input: SnapshotInput) {
+    const document = parseSnapshotDocument(input);
+    const {entry, stylesheet} = await getRuntime();
+    const renderer = new Renderer();
+    const code = findFont(store.catalog, document.editor.options.fontId);
+    const resources = store.resources(options.codeFontFile ? undefined : code);
+    const fonts = resources.loaders;
+    const fontFamilies = store.fallbackFamilies;
+    for (const primary of resources.primaries)
+      await renderer.registerFont(primary);
+    let local: SnapshotFont | undefined;
+    if (options.codeFontFile) {
+      const path = resolve(options.codeFontFile);
+      try {
+        const data = await readFile(path);
+        const magic = data.subarray(0, 4).toString('latin1');
+        const format =
+          magic === 'wOF2'
+            ? 'woff2'
+            : magic === 'wOFF'
+              ? 'woff'
+              : magic === 'OTTO'
+                ? 'otf'
+                : magic === '\x00\x01\x00\x00' || magic === 'true'
+                  ? 'ttf'
+                  : undefined;
+        if (!format)
+          throw new Error(
+            'Expected a single TTF, OTF, WOFF or WOFF2 font; collections are unsupported',
+          );
+        const registered = await renderer.registerFont({
+          name: code.family,
+          data,
+        });
+        if (!registered.length) throw new Error('No usable font faces');
+        local = {
+          family: code.family,
+          file: `${createHash('sha256').update(data).digest('hex')}.${format}`,
+          data,
+        };
+      } catch (cause) {
+        throw new FontFileError(
+          `Cannot load --font-file ${path}: ${cause instanceof Error ? cause.message : String(cause)}`,
+          {cause},
+        );
+      }
+    }
+    const scale = document.format === 'svg' ? 1 : document.scale;
+    const frame = await entry.composeFrame(document, {
+      offline: options.offline,
+      async measure(markup) {
+        if (code.family !== markup.fontFamily)
+          throw new Error(
+            `Font family differs from catalog: ${markup.fontFamily}`,
+          );
+        const content = await renderer.measure(
+          normalizeStyleAttributes(markup.html),
+          {
+            css: [...markup.css, stylesheet].map(normalizeGradients),
+            images: markup.images,
+            fontFamilies,
+            fonts,
+            signal: options.signal,
+            devicePixelRatio: scale,
+          },
+        );
+        return {width: content.width / scale, height: content.height / scale};
+      },
+      async pixels(markup, size) {
+        return renderer.render(markup.html, {
+          css: markup.css,
+          images: markup.images,
+          width: size,
+          height: size,
+          format: 'raw',
+          devicePixelRatio: 1,
+          signal: options.signal,
+        });
+      },
+    });
+    const css = [...frame.css, stylesheet].map(normalizeGradients);
+    const html = await positionWatermark({
+      html: normalizeStyleAttributes(frame.html),
+      ...frame.watermarkFrame,
+      pixelRatio: scale,
+      measure: html =>
+        renderer.measure(html, {
+          css,
+          images: frame.images,
+          fonts,
+          fontFamilies,
+          width: frame.size.width * scale,
+          height: frame.size.height * scale,
+          devicePixelRatio: scale,
+          signal: options.signal,
+        }),
+    });
+    const prepared = await renderer.prepare(html, {
+      css,
+      images: options.offline
+        ? {
+            sources: frame.images,
+            fetch: async () => {
+              throw new Error(
+                'Remote background is unavailable with --offline',
+              );
+            },
+          }
+        : frame.images,
+      signal: options.signal,
+      fontFamilies,
+      fonts,
+      width: Math.floor(frame.size.width * scale),
+      height: Math.floor(frame.size.height * scale),
+      devicePixelRatio: scale,
+    });
+    const markup: SnapshotMarkup = {
+      document,
+      html,
+      css,
+      naturalCss: [...frame.browserCss, stylesheet].map(normalizeGradients),
+      size: frame.size,
+      fonts: [...(await resources.faces()), ...(local ? [local] : [])],
+      fontFamilies,
+      images: frame.images,
+    };
+    return {markup, renderer, prepared};
+  }
+
   return {
-    document,
-    html,
-    css: [...css, entry.frameSizeCss(layoutSize), target?.css ?? ''],
-    naturalCss: css,
-    size: {
-      width: Math.round(layoutSize.width),
-      height: Math.round(layoutSize.height),
+    async markup(input: SnapshotInput): Promise<SnapshotMarkup> {
+      return (await prepare(input)).markup;
     },
-    fonts: [...uiFonts, ...fontsFor(fontId, frame.fontFamily)],
-    fontFamilies,
-    images: frame.backgroundImage
-      ? [await fetchImage(frame.backgroundImage)]
-      : [],
+    async render(input: SnapshotInput): Promise<Uint8Array | string> {
+      const {markup, renderer, prepared} = await prepare(input);
+      if (markup.document.format === 'svg')
+        return renderer.renderSvg(prepared, {signal: options.signal});
+      const image = await renderer.render(prepared, {
+        format: markup.document.format,
+        signal: options.signal,
+      });
+      return new Uint8Array(image.buffer, image.byteOffset, image.byteLength);
+    },
   };
 }
-
-export async function renderSnapshot(
+export function snapshotMarkup(input: SnapshotInput): Promise<SnapshotMarkup> {
+  return createRenderer().markup(input);
+}
+export function renderSnapshot(
   input: SnapshotInput,
 ): Promise<Uint8Array | string> {
-  const {document, html, css, images, fontFamilies, size} =
-    await snapshotMarkup(input);
-  const {renderer} = await getRuntime();
-  if (document.format === 'svg') {
-    return renderer.renderSvg(html, {css, images, fontFamilies, ...size});
-  }
-  const image = await renderer.render(html, {
-    width: Math.floor(size.width * document.scale),
-    height: Math.floor(size.height * document.scale),
-    css,
-    images,
-    fontFamilies,
-    format: document.format,
-    devicePixelRatio: document.scale,
-  });
-  return new Uint8Array(image.buffer, image.byteOffset, image.byteLength);
-}
-
-// The frame rate a file of `format` plays at when the settings ask for `fps`.
-// A GIF frame lasts whole hundredths of a second, and Takumi rejects one
-// shorter than two of them, so a GIF plays at 50, 25 or 20 fps.
-export function animationFps(
-  format: AnimationDocument['format'],
-  fps: number,
-): number {
-  return format === 'gif' ? 100 / Math.ceil(100 / Math.min(fps, 50)) : fps;
-}
-
-const inCssPixels = (node: MeasuredNode, scale: number): PageLayout => ({
-  width: node.width / scale,
-  height: node.height / scale,
-  children: node.children.map(child => inCssPixels(child, scale)),
-  runs: node.runs.map(run => ({text: run.text, width: run.width / scale})),
-});
-
-// Each step holds its tab, then morphs into the next one. The first and last
-// frame of a transition are the static exports of the two steps. WebP is
-// lossless: Takumi writes lossy animated WebP without an alpha channel, which
-// fills the frame's rounded corners and paints the margin of a smaller step
-// black.
-export async function renderAnimation(
-  input: AnimationInput,
-): Promise<Uint8Array> {
-  const document = parseAnimationDocument(input);
-  const {entry, stylesheet, renderer, registerAppFont, fontFamilies} =
-    await getRuntime();
-  const {scale, format} = document;
-  // The entry lays out the scenes through this renderer, so the code font
-  // registers first. renderFrame names its family.
-  const {fontFamily} = await entry.renderFrame(document);
-  await registerAppFont(document.editor.options.fontId, fontFamily);
-  // Like snapshotMarkup, the scene CSS holds the CodeMirror rules and loads
-  // first, so the app's line mark rules win over them.
-  const pageCss = (css: string) => [css, stylesheet].map(normalizeGradients);
-  const fps = animationFps(format, document.animation.fps);
-  const animation = await entry.renderAnimationScenes(
-    document,
-    {...document.animation, fps},
-    async (html, css) =>
-      inCssPixels(
-        await renderer.measure(normalizeStyleAttributes(html), {
-          css: pageCss(css),
-          fontFamilies,
-          devicePixelRatio: scale,
-        }),
-        scale,
-      ),
-  );
-  const image = await renderer.renderAnimation({
-    scenes: animation.scenes.map(({html, durationMs}) => ({
-      node: normalizeStyleAttributes(html),
-      durationMs,
-    })),
-    width: Math.floor(animation.width * scale),
-    height: Math.floor(animation.height * scale),
-    css: pageCss(animation.css),
-    images: animation.backgroundImage
-      ? [await fetchImage(animation.backgroundImage)]
-      : [],
-    fontFamilies,
-    fps,
-    format,
-    devicePixelRatio: scale,
-  });
-  const bytes = new Uint8Array(
-    image.buffer,
-    image.byteOffset,
-    image.byteLength,
-  );
-  if (format === 'gif') clearGifFrames(bytes);
-  return bytes;
+  return createRenderer().render(input);
 }

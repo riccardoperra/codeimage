@@ -28,10 +28,49 @@ The format comes from `--format`, else from the `-o` extension, else PNG.
 `--scale` is the pixel ratio, above 0 and at most 3, default 1. The image width
 follows the content.
 
-`-o -` writes only image data to stdout. A file output prints its path once
-written. Errors go to stderr. Exit codes are 0 for success, 1 for render or
+`-o -` writes only image data to stdout. Without `-o`, redirected stdout receives
+the image; a terminal writes `codeimage.<format>`. Help, lists, paths, progress and
+errors go to stderr. `--quiet`, CI and non-TTY output use plain text. Exit codes are 0 for success, 1 for render or
 write failures, and 2 for invalid options, presets, or inputs. Running with no
 files from a terminal prints usage and exits with 2.
+
+## Fonts and offline rendering
+
+Inter and JetBrains Mono are bundled. Other code fonts and emoji/CJK fallbacks
+download on first use. Each URL pins a version or Git commit and a SHA-256.
+Every cached read verifies the size and hash. A corrupt entry downloads again;
+a mismatched download fails without installing the bytes.
+
+```sh
+codeimage foo.ts --font fira-code -o out.png
+codeimage fonts install fira-code noto-sans-kr twemoji
+codeimage fonts install --all
+codeimage fonts list --json
+codeimage foo.ts --font fira-code --offline -o out.png
+codeimage foo.ts --font-file ./MyMono.ttf --offline -o out.png
+codeimage fonts clean -y
+```
+
+The cache defaults to `~/Library/Caches/codeimage` on macOS,
+`$XDG_CACHE_HOME/codeimage` or `~/.cache/codeimage` on Linux, and
+`%LOCALAPPDATA%\codeimage` on Windows. `CODEIMAGE_CACHE_DIR` overrides the root.
+Verified objects live in `fonts/sha256/<hash>`. Two CLI versions can share them.
+A read-only cache uses verified downloaded bytes for that operation and reports
+how to choose a writable directory.
+
+`fonts list` reports bundled, cached, partial or missing families, file counts,
+and available/total bytes. `install` fetches every subset of a named family;
+`--all` also installs fallbacks. `install --offline` verifies existing files.
+Without names, an interactive terminal offers a selection; scripts require
+names or `--all`. `clean` confirms in an interactive terminal unless `-y` is set.
+It removes only the managed font subtree. Active renders can refill it.
+
+A default Latin render works offline with an empty cache. `--offline` disables
+all network access, including background and avatar requests. Avatars use
+initials; a remote background fails. A missing font prints its install command.
+`--font-file` accepts one TTF, OTF, WOFF or WOFF2 file. It overrides preset font
+selection, cannot be combined with `--font`, and never enters the cache.
+Collections are unsupported. Local font output depends on that file.
 
 ## Feature flags
 

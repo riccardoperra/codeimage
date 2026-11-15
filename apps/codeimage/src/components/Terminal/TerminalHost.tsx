@@ -8,10 +8,11 @@ import {TerminalGlassReflection} from './GlassReflection/TerminalGlassReflection
 import {createTabTheme} from './Tabs/createTabTheme';
 import * as styles from './terminal.css';
 import {getThemeStore} from '@codeimage/store/theme/theme.store';
-import {createMemo} from 'solid-js';
+import {createMemo, Show} from 'solid-js';
 import {createWindowPalette} from './windowPalette';
 import {windowVars} from './windowPalette.css';
 import {getFrameState} from '@codeimage/store/editor/frame';
+import {useWatermarkPart} from '../../core/watermark/scope';
 
 export interface BaseTerminalProps extends Omit<
   TerminalState,
@@ -63,6 +64,7 @@ export const TerminalHost: FlowComponent<TerminalHostProps> = props => {
     );
   const darkMode = () => tabTheme().darkMode;
   const frameState = getFrameState().store;
+  const windowRef = useWatermarkPart('window');
 
   const background = () => {
     if (props.alternativeTheme) {
@@ -77,6 +79,7 @@ export const TerminalHost: FlowComponent<TerminalHostProps> = props => {
 
   return (
     <div
+      ref={windowRef}
       class={clsx(styles.wrapper, props.themeClass)}
       data-lite={props.lite}
       data-preview={props.preview || ''}
@@ -93,7 +96,10 @@ export const TerminalHost: FlowComponent<TerminalHostProps> = props => {
       data-surface={props.surface ?? 'solid'}
       style={assignInlineVars({
         ...paletteVars(),
-        [windowVars.background]: background(),
+        // A tab painting a translucent window's fill again would stack it
+        // into a darker patch, so it lets the window show through instead.
+        [windowVars.background]:
+          background() === props.background ? background() : 'transparent',
         [styles.terminalVars.headerBackgroundColor]: tabTheme()?.background,
         [styles.terminalVars.backgroundColor]: background(),
         [styles.terminalVars.textColor]: props.textColor,
@@ -115,6 +121,10 @@ export const TerminalHost: FlowComponent<TerminalHostProps> = props => {
       </FadeInOutTransition>
 
       {props.children}
+
+      <Show when={props.surface === 'wash'}>
+        <div class={styles.wash} />
+      </Show>
     </div>
   );
 };

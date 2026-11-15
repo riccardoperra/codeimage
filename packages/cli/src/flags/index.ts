@@ -6,6 +6,7 @@ import {redact} from './redact';
 import {size} from './size';
 import {split} from './split';
 import {alt} from './alt';
+import {fonts} from './fonts';
 import {animate} from './animate';
 
 export type FlagValues = Record<
@@ -41,5 +42,6 @@ export const FLAGS: readonly Flag[] = [
   size,
   split,
   alt,
+  fonts,
   animate,
 ];

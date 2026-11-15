@@ -19,17 +19,16 @@ vi.mock('@codeimage/store/editor/frame', () => ({
   }),
 }));
 vi.mock('@codeimage/store/assets/assets', () => ({
-  getAssetsStore: () => ({isAssetUrl: () => false}),
-  isAssetUrl: () => false,
-}));
-vi.mock('@codeimage/store/assets/AssetsImage', () => ({
-  AssetsImage: () => null,
+  getAssetsStore: () => ({}),
 }));
 vi.mock('@codeimage/store/canvas', () => ({
   getExportCanvasStore: () => ({get: {}}),
 }));
 vi.mock('@codeimage/store/editor', () => ({
-  getRootEditorStore: () => ({state: {options: {}}}),
+  getRootEditorStore: () => ({
+    state: {options: {}},
+    computed: {selectedFont: () => ({name: 'Mono'})},
+  }),
 }));
 vi.mock('@codeimage/store/editor/activeEditor', () => ({
   getActiveEditorStore: () => ({editor: () => undefined}),
@@ -40,8 +39,11 @@ vi.mock('@codeimage/store/editor/config.store', () => ({
 vi.mock('@codeimage/store/editor/terminal', () => ({
   getTerminalState: () => ({state: {}}),
 }));
+// Each entry stands for a theme resource; undefined while it loads.
+const loaded = vi.hoisted(() => () => ({id: 'stub', editorTheme: []}));
+const themes = vi.hoisted(() => ({list: [loaded] as (() => unknown)[]}));
 vi.mock('@codeimage/store/theme/theme.store', () => ({
-  getThemeStore: () => ({themeArray: () => [() => ({})]}),
+  getThemeStore: () => ({themeArray: () => themes.list}),
 }));
 vi.mock('@codeimage/store/effects/onCopyToClipboard', () => ({
   dispatchCopyToClipboard: vi.fn(),
@@ -52,7 +54,7 @@ vi.mock('solid-js/web', async importOriginal => ({
   Portal: (props: ParentProps) => props.children,
 }));
 vi.mock('../Terminal/DynamicTerminal/DynamicTerminal', () => ({
-  DynamicTerminal: () => null,
+  DynamicTerminal: (props: ParentProps) => props.children,
 }));
 vi.mock('./FrameSkeleton', () => ({FrameSkeleton: () => null}));
 vi.mock('./FrameSignature.css', () => ({}));
@@ -94,7 +96,12 @@ for (const [width, height, resolution] of [
     exportState.resolution = resolution;
     const expectedWidth = resolution?.[0] ?? width;
     const expectedHeight = resolution?.[1] ?? height;
-    Object.assign(frame, {width, height});
+    Object.assign(frame, {
+      width,
+      height,
+      exportTarget:
+        resolution?.[0] === 1200 ? 'open-graph' : resolution ? 'square' : null,
+    });
     for (const selectedTab of [undefined, tab]) {
       const html = renderToString(() =>
         createComponent(PreviewFrame, {
@@ -105,7 +112,7 @@ for (const [width, height, resolution] of [
       );
       assert.ok(
         html.includes(
-          `--width:${expectedWidth ? `${expectedWidth}px` : 'auto'}`,
+          `--width:${expectedWidth ? `${expectedWidth}px` : 'max-content'}`,
         ),
         html,
       );
@@ -118,3 +125,22 @@ for (const [width, height, resolution] of [
     }
   });
 }
+
+// The new editor mounts the export copy while the theme resources still load.
+test('waits for a loaded theme before drawing the code', () => {
+  const draw = () =>
+    renderToString(() =>
+      createComponent(PreviewFrame, {
+        ref: () => undefined,
+        tab,
+        language: null,
+      }),
+    );
+  themes.list = [() => undefined, () => undefined];
+  try {
+    assert.ok(!draw().includes('data-static-code-view'));
+  } finally {
+    themes.list = [loaded];
+  }
+  assert.ok(draw().includes('data-static-code-view'));
+});

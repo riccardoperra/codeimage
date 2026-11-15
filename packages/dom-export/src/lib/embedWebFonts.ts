@@ -263,7 +263,7 @@ const getUsedFontFamiliesRecursively = <T extends Element>(
     parentFont = fontFamily;
   }
   if (fontFamily || fontStyle || fontWeight) {
-    const computedFont = getFontName(fontFamily ?? parentFont ?? 'default')[0];
+    const computedFont = getFontName(fontFamily || parentFont || 'default')[0];
     const fontId = `${computedFont}-${fontWeight}-${fontStyle}`;
     if (!acc.includes(fontId) && !!fontsMap[computedFont]) {
       acc.push(fontId);
@@ -301,13 +301,33 @@ export function getUsedFontFamiliesByNode<T extends Element>(
     const {fontFamily, fontWeight, fontStyle} =
       getStylesheetFontValues(styleRule);
 
-    const id = `${getFontName(fontFamily)[0]}-${fontWeight}-${fontStyle}`;
+    const family = getFontName(fontFamily)[0];
+    const weightOf = (weight: string) =>
+      weight === 'bold'
+        ? 700
+        : !weight || weight === 'normal'
+          ? 400
+          : Number(weight);
+    const [minimum, maximum = minimum] = (fontWeight || '400')
+      .split(/\s+/)
+      .map(weightOf);
+    const used = fontFamilies.some(id => {
+      const prefix = `${family}-`;
+      if (!id.startsWith(prefix)) return false;
+      const [weight, style] = id.slice(prefix.length).split('-');
+      return (
+        weightOf(weight) >= minimum &&
+        weightOf(weight) <= maximum &&
+        (style || 'normal') === (fontStyle || 'normal')
+      );
+    });
     if (
-      !fontFamilies.includes(id) &&
-      !experimental_includeExternalFonts.some(font => font.startsWith(id))
-    ) {
+      !used &&
+      !experimental_includeExternalFonts.some(font =>
+        getFontName(font).includes(family),
+      )
+    )
       return acc;
-    }
     return acc.concat(styleRule);
   }, [] as CSSStyleRule[]);
 }

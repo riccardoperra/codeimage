@@ -17,6 +17,7 @@ import {
   tooltips,
   ViewPlugin,
 } from '@codemirror/view';
+import {isApple} from '../../../../core/constants/platform';
 import type {MarkKind} from './state';
 import {hasMark, markLines, readMarks, toggleMark} from './state';
 
@@ -46,13 +47,10 @@ export const markCommands: {
   {id: 'clear', key: 'Mod-Alt-0', kind: null},
 ];
 
-const isApple = () =>
-  /Mac|iPhone|iPad/.test(globalThis.navigator?.platform ?? '');
-
 /** Key caps for a `Mod-Alt-N` binding, as the platform prints them. */
 export function shortcutKeys(key: string): string[] {
   const digit = key.slice(-1);
-  return isApple() ? ['⌘', '⌥', digit] : ['Ctrl', 'Alt', digit];
+  return isApple ? ['⌘', '⌥', digit] : ['Ctrl', 'Alt', digit];
 }
 
 export function selectedLines(state: EditorState): number[] {
@@ -103,12 +101,12 @@ function toolbarView(labels: LineMarkLabels) {
       const keys = shortcutKeys(command.key);
       const element = button(
         labels[command.id],
-        `${command.id === 'focus' ? labels.focusHint : labels[command.id]} (${keys.join(isApple() ? '' : '+')})`,
+        `${command.id === 'focus' ? labels.focusHint : labels[command.id]} (${keys.join(isApple ? '' : '+')})`,
         () => toggleMark(view, selectedLines(view.state), command.kind),
       );
       element.setAttribute(
         'aria-keyshortcuts',
-        `${isApple() ? 'Meta' : 'Control'}+Alt+${command.key.slice(-1)}`,
+        `${isApple ? 'Meta' : 'Control'}+Alt+${command.key.slice(-1)}`,
       );
       if (command.kind) toggles.push([element, command.kind]);
     }

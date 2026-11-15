@@ -1,4 +1,6 @@
 import {crc32} from 'node:zlib';
+import {fixtureCache} from './font-fixtures';
+process.env.CODEIMAGE_CACHE_DIR = await fixtureCache();
 import {PNG} from 'pngjs';
 import type {SnapshotInput} from './document';
 import {sampleDocument} from './sample';

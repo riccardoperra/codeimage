@@ -1,3 +1,4 @@
+import {createFrameMedia} from './frameMedia';
 import type {getExportTarget} from '@codeimage/config';
 import type {FrameState} from '@codeimage/store/frame/model';
 import {FittedWindow} from './FittedWindow';
@@ -14,10 +15,11 @@ import {createHorizontalResize} from '@core/hooks/resizable';
 import {createResizeObserver} from '@solid-primitives/resize-observer';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 import type {ParentComponent} from 'solid-js';
-import {onMount, Show} from 'solid-js';
+import {createEffect, on, onMount, Show} from 'solid-js';
 import {useI18n} from '@codeimage/locale';
 import {signatureEditor} from '@codeimage/store/frame/signatureEditor';
 import type {AppLocaleEntries} from '../../i18n';
+import {createWatermarkScope} from '../../core/watermark/scope';
 import * as styles from './Frame.css';
 
 export const exportExclude = _exportExclude;
@@ -39,6 +41,10 @@ interface FrameProps {
 }
 
 export const Frame: ParentComponent<FrameProps> = props => {
+  const media = createFrameMedia(() => ({
+    background: props.background ?? null,
+    signature: props.signature,
+  }));
   const [t] = useI18n<AppLocaleEntries>();
   const target = () => props.exportTarget;
   const targetWidth = () => Math.min(640, target()?.resolution[0] ?? 640);
@@ -55,6 +61,8 @@ export const Frame: ParentComponent<FrameProps> = props => {
     });
 
   const assetsStore = getAssetsStore();
+  const watermark = createWatermarkScope();
+  createEffect(on(() => props.signature?.position, watermark.invalidate));
   const scale = () =>
     signatureScale(
       target()?.resolution[0] ?? (width() || props.measuredWidth || 0),
@@ -119,8 +127,12 @@ export const Frame: ParentComponent<FrameProps> = props => {
       class={styles.wrapper}
     >
       <div
-        ref={setRef}
+        ref={element => {
+          setRef(element);
+          watermark.attach('frame', element);
+        }}
         class={styles.container}
+        data-watermark-frame
         style={assignInlineVars({
           [styles.frameVars.width]: computedWidth(),
           [styles.frameVars.height]: computedHeight(),
@@ -136,6 +148,8 @@ export const Frame: ParentComponent<FrameProps> = props => {
         <div
           data-frame-content
           class={styles.overlay}
+          ref={element => watermark.attach('background', element)}
+          data-watermark-background
           style={assignInlineVars({
             [styles.frameVars.backgroundColor]: assetsStore.isAssetUrl(
               props.background,
@@ -176,9 +190,12 @@ export const Frame: ParentComponent<FrameProps> = props => {
           </div>
         </Show>
 
-        <FittedWindow active={!!target()}>{props.children}</FittedWindow>
+        <FittedWindow active={!!target()} watermark={watermark}>
+          {props.children}
+        </FittedWindow>
         <FrameSignature
           signature={props.signature}
+          media={media()}
           background={props.background}
           scale={scale()}
           onEdit={
@@ -187,6 +204,7 @@ export const Frame: ParentComponent<FrameProps> = props => {
               : undefined
           }
           editLabel={t('signature.edit')}
+          markRef={element => watermark.attach('signature', element)}
         />
       </div>
 

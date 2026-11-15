@@ -1,3 +1,7 @@
+import type {ParentComponent} from 'solid-js';
+import type {BaseTerminalProps} from '../../components/Terminal/TerminalHost';
+import {WINDOW_TYPES} from './windowTypes';
+import type {WindowType} from './windowTypes';
 import {MacOsTerminal} from '../../components/Terminal/MacOsTerminal/MacOsTerminal';
 import {MacOsTerminalGrayTheme} from '../../components/Terminal/MacOsTerminal/MacOsTerminalGrayTheme';
 import {MacOsTerminalOutlineTheme} from '../../components/Terminal/MacOsTerminal/MacOsTerminalOutlineTheme';
@@ -10,15 +14,7 @@ import {
 } from '../../components/Terminal/WindowStyles/WindowStyles';
 
 export const AVAILABLE_TERMINAL_THEMES = {
-  keys: [
-    'macOs',
-    'macOsGrayTheme',
-    'macOsOutlineTheme',
-    'windows',
-    'card',
-    'editor',
-    'shell',
-  ] as const,
+  keys: WINDOW_TYPES,
   entries: {
     windows: {
       name: 'windows',
@@ -51,5 +47,12 @@ export const AVAILABLE_TERMINAL_THEMES = {
       label: 'frame.windowShell',
       component: ShellTerminal,
     },
-  },
+  } as const satisfies Record<
+    WindowType,
+    {
+      name: WindowType;
+      label: string;
+      component: ParentComponent<BaseTerminalProps>;
+    }
+  >,
 } as const;

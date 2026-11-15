@@ -1,3 +1,7 @@
+import {planImages} from '../images';
+import {parsePreset} from '../snapshot';
+import {sampleDocument} from '../../../render/src/sample';
+import {createSignature} from '../../../../apps/codeimage/src/state/frame/model';
 import {describe, expect, it} from 'vitest';
 import {renderSnapshot, snapshotMarkup} from '@codeimage/render';
 import {prepare} from './test-utils';
@@ -39,7 +43,54 @@ describe('size flag', () => {
       const markup = await snapshotMarkup(snapshot);
       expect(markup.html).toContain(`data-frame-signature="${position}"`);
       expect(markup.html).toContain('@me');
-      expect(markup.css.join('')).toMatch(/transform:scale\(0\./);
+      expect(markup.html).toMatch(/transform:scale\(0\./);
+    },
+  );
+  it.each([
+    {argv: []},
+    {argv: ['--size', 'square']},
+    {argv: ['--signature', '  @me  ']},
+    {argv: ['--signature', '@new']},
+    {argv: ['--signature-position', 'bottom-left']},
+  ])(
+    'preserves presentation and resets identity only for a changed handle with %j',
+    async ({argv: flags}) => {
+      const args = parseArgs(flags);
+      if (args.kind !== 'render') throw new Error('Expected render arguments');
+      const signature = {
+        ...createSignature('@me'),
+        style: 'card',
+        platform: 'github',
+        name: 'The Octocat',
+        avatar: 'profile',
+        profile: 'github.com/octocat',
+        savedId: 'saved',
+        position: 'bottom-center',
+      };
+      const preset = parsePreset(
+        JSON.stringify({
+          frame: {...sampleDocument.frame, signature},
+          terminal: {...sampleDocument.terminal, type: 'card', surface: 'wash'},
+          editor: sampleDocument.editor.options,
+        }),
+      );
+      const [output] = await planImages(
+        args,
+        [{name: 'index.ts', code: 'const x = 1;'}],
+        preset,
+      );
+      expect(output.snapshot.frame.signature).toEqual({
+        ...signature,
+        ...(flags.includes('@new') && {
+          ...createSignature('@new'),
+          style: signature.style,
+          platform: signature.platform,
+          position: signature.position,
+        }),
+        ...(flags.includes('--signature-position') && {
+          position: 'bottom-left',
+        }),
+      });
     },
   );
   it('names invalid size and signature options', () => {

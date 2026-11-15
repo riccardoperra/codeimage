@@ -6,9 +6,9 @@ import {defineCommand} from 'citty';
 import {THEME_REGISTRY} from '../../../apps/codeimage/src/state/theme/themeRegistry';
 import {FLAGS} from './flags';
 import type {FlagArg, FlagValues} from './flags';
-import {parseAnimation} from './flags/animate';
 import {UsageError} from './errors';
 export {UsageError} from './errors';
+import {parseFontArgs} from './commands/fonts';
 
 const DEFAULT_SCALE = 1;
 
@@ -17,13 +17,13 @@ const CORE_ARGS = {
     type: 'string',
     alias: 'o',
     valueHint: 'path',
-    description: 'Output file, or - for stdout (default: codeimage.png)',
+    description:
+      'Output file, or - for stdout (default: stdout when redirected, else codeimage.png)',
   },
   format: {
     type: 'string',
     valueHint: 'type',
-    description:
-      'png, jpeg, webp, or svg (default: from -o, else png). With --animate: webp, gif, or apng',
+    description: 'png, jpeg, webp, or svg (default: from -o, else png)',
   },
   theme: {
     type: 'string',
@@ -97,7 +97,8 @@ export function resolveTheme(id: string, flag = '--theme') {
   return theme;
 }
 
-export function parseArgs(argv: string[]) {
+export function parseArgs(argv: string[], stdoutIsTTY = true) {
+  if (argv[0] === 'fonts') return parseFontArgs(argv.slice(1));
   let parsed;
   try {
     parsed = parseNodeArgs({
@@ -114,11 +115,8 @@ export function parseArgs(argv: string[]) {
   if (values.help) return {kind: 'help'} as const;
 
   if (values.output === '') throw new UsageError('-o: expected a path or -');
-  const animation = parseAnimation(values);
-  // An animation has its own formats, and its snapshot keeps the default.
-  const format = animation
-    ? 'png'
-    : values.format === undefined
+  const format =
+    values.format === undefined
       ? (formatOf(
           extname(values.output ?? '')
             .slice(1)
@@ -169,9 +167,8 @@ export function parseArgs(argv: string[]) {
     theme: values.theme,
     preset: values.preset,
     format,
-    animation,
     scale,
-    output: values.output ?? `codeimage.${animation?.format ?? format}`,
+    output: values.output ?? (stdoutIsTTY ? `codeimage.${format}` : '-'),
     values: values as FlagValues,
   } as const;
 }

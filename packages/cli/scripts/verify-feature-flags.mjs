@@ -272,7 +272,9 @@ const redacted = await cli('p6-redacted', [
   file('p6-redacted.png'),
 ]);
 assert.match(redacted.stderr, /redacted 3 secrets/);
-assert.equal(redacted.stderr.trim().split('\n').length, 4);
+const diagnostics = stderr =>
+  stderr.split('\n').filter(line => line && !line.startsWith('codeimage: '));
+assert.equal(diagnostics(redacted.stderr).length, 4);
 assert.match(redacted.stderr, /secrets.ts:1:22: github-pat/);
 const maskedAlt = await readFile(file('p6-redacted.png.alt.txt'), 'utf8');
 for (const token of tokens) assert.ok(!maskedAlt.includes(token));
@@ -310,7 +312,7 @@ const unredacted = await cli('p6-no-redact', [
   '-o',
   file('p6-no-redact.png'),
 ]);
-assert.equal(unredacted.stderr, '');
+assert.deepEqual(diagnostics(unredacted.stderr), []);
 const originalAlt = await readFile(file('p6-no-redact.png.alt.txt'), 'utf8');
 for (const token of tokens) assert.ok(originalAlt.includes(token));
 assert.notDeepEqual(
