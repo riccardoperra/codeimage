@@ -16,6 +16,8 @@ Audit highlights a selected line through keyboard, asserts `[data-mark="highligh
 
 Source: `components/CustomEditor/plugins/lineMarks/controls.ts`, `lineMarks/state.ts`, `CanvasEditor.tsx`, `core/diff/parseAnnotations.ts`.
 
+Run `annotations` to paste a real `[!code ++]` comment, assert the annotation disappears and an added mark appears, then apply and clear focus through keyboard shortcuts. Multi-file import history remains in the legacy specialist script.
+
 ## Gotchas
 
-Use real clipboard input, not synthetic ClipboardEvent or store setters. Read clipboard permissions failures as failures. Audit covers highlight/clear and diff import, not every mark kind or annotation conversion. It invokes the toast Undo action; restoration of the full prior document/tab state needs a separate assertion before claiming Undo coverage.
+Use real clipboard input, not synthetic ClipboardEvent or store setters. Read clipboard permissions failures as failures. Audit covers highlight/clear and diff import, not every mark kind; the separate annotations journey now covers annotation conversion. It invokes the toast Undo action; restoration of the full prior document/tab state needs a separate assertion before claiming Undo coverage.

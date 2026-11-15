@@ -16,6 +16,8 @@ The audit opens `/?v=4`, clicks button Presets, then the first Add preset button
 
 Source: `apps/codeimage/src/prototypes/editor-controls/variants/studio/panels.tsx`, `localized/PresetSwitcher.tsx`, `state/presets/bridge.ts`.
 
+Run `preset-management` to create a preset, rename it in the naming alertdialog, delete it through the menu and reload to assert absence. Applying a preset after deliberately changing appearance, sharing and the limit remain separate coverage.
+
 ## Gotchas
 
 Studio is a required precondition, not an auth requirement for guest presets. Presets store appearance, signature and target settings, not code. The configured guest limit applies. Audit does not certify signed-in preset synchronization or every menu action. Disposable context cleanup removes its IndexedDB state.

@@ -9,6 +9,8 @@ Primary surface: SolidJS browser app in `apps/codeimage`. Secondary surfaces: Fa
 
 ## Launch
 
+Choose the backend first using [backend modes](references/backend-modes.md). The automated commands below use MSW. For API and PostgreSQL integration, follow the real-backend prerequisites and doctor in that reference. Record which mode was actually exercised.
+
 From the repository root, use Node >=24 and pnpm >=12 (packageManager pins pnpm 12.18.0):
 
 ```sh
@@ -48,8 +50,14 @@ The helper's `finally` closes its browser/context and terminates only its own Vi
 
 ## Helpers
 
-`node .agents/skills/verify-codeimage/scripts/verify.mjs` runs the full baseline. It is executable and accepts `VERIFY_PORT` and `ARTIFACT_DIR` environment overrides. The audit helper `scripts/audit.mjs` is invoked by the main helper when `VERIFY_AUDIT=1`; it is not a standalone server command. It resolves fflate from the app workspace for ZIP checks. All dependencies come from this workspace. Chromium clipboard permissions are granted for real paste journeys; no browser APIs are faked. Keep feature files aligned using `/maintain-verification-skill`.
+`node .agents/skills/verify-codeimage/scripts/verify.mjs` runs the full baseline. It is executable and accepts `VERIFY_PORT` and `ARTIFACT_DIR` environment overrides. To re-run selected journeys, set `VERIFY_CASES=export-options,settings-persistence` together with `VERIFY_AUDIT=1`. Omit `VERIFY_CASES` for the complete pass. Unknown names fail the run. `audit.json` lists only the journeys actually selected.
+
+The audit helper `scripts/audit.mjs` is invoked by the main helper when `VERIFY_AUDIT=1`; it is not a standalone server command. It resolves fflate from the app workspace for ZIP checks. All dependencies come from this workspace. Chromium clipboard permissions are granted for real paste journeys; no browser APIs are faked. Keep feature files aligned using `/maintain-verification-skill`.
 
 ## Scope and maintenance
 
 The feature map follows this checkout, not proposals or unmerged branches. Source readers must check recent commits for new user-facing paths before claiming completeness. Current animation core does not expose an animation editor and there is no CLI package in this checkout. Live runs use the real local web app with its existing MSW/Auth0 boundary; production OAuth, PostgreSQL and platform-native sharing remain separate integration checks. Audit assertions prove selected journeys, not every format, control, language or viewport.
+
+## Legacy check migration
+
+Read [the retirement plan](references/legacy-checks.md) before deleting another verification script. Functional journeys do not replace renderer parity, geometry matrices, locale matrices or performance measurements. The extended `projects` journey includes the unique MSW persistence checks required to retire its old smoke script.

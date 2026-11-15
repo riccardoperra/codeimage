@@ -16,6 +16,8 @@ Baseline waits for a download before clicking `[data-export-image]` and decodes 
 
 Source: `prototypes/editor-controls/shell/ExportControl.tsx`, `shell/export.tsx`, `shell/sections.tsx`, `core/rasterize/takumi.ts`.
 
+Run `export-options` for actual 1x and 2x PNG dimensions, JPEG magic bytes and alt-text clipboard contents. It restores PNG and 1x afterward. The Takumi case asserts the switch is checked before exporting and rejects fallback diagnostics.
+
 ## Gotchas
 
 Clipboard is available for PNG/SVG and needs permission. Share requires navigator.share. Do not mock those browser APIs to claim native sharing. Redaction modifies documents. Animation core exists but no animation editor UI is wired at this HEAD; CLI and animation preview on other branches are excluded.

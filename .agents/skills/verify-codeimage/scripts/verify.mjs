@@ -15,6 +15,10 @@ const out = resolve(
   process.env.ARTIFACT_DIR ?? `/tmp/codeimage-verification-${Date.now()}`,
 );
 const port = Number(process.env.VERIFY_PORT ?? 4437);
+assert.ok(
+  !process.env.VERIFY_CASES || process.env.VERIFY_AUDIT === '1',
+  'VERIFY_CASES requires VERIFY_AUDIT=1',
+);
 await mkdir(out, {recursive: true});
 console.log(`Evidence: ${out}`);
 // Fail before launching if another instance owns this port.

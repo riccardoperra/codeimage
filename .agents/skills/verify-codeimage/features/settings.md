@@ -16,6 +16,8 @@ Audit changes `[data-setting="panel-side"]` to Left, checks inspector geometry, 
 
 Source: `prototypes/editor-controls/shell/SettingsDialog.tsx`, `shell/sections.tsx`, `shell/preferences.ts`, `command-menu/CommandMenu.tsx`.
 
+Run `settings-persistence` for Dock and Orb persisted across navigation to `/` without query overrides. It checks checked radios after reload, Restore defaults and the visible no-results message. Restore defaults resets layout and theme cards; it leaves panel side unchanged.
+
 ## Gotchas
 
 Palette refuses to open over another modal/popover. Close it first. Escape clears a nonempty search before closing; use the Close button for deterministic teardown. Audit only claims the actions it records; all layouts/locale/phone behavior need explicit runs. Preferences persist in localStorage `codeimage:prototype-settings`; a query v=2 forces Inspector.

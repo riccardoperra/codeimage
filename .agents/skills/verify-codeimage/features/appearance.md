@@ -16,6 +16,8 @@ Audit selects Dracula through textbox Search themes and option Dracula Dark them
 
 Source: `prototypes/editor-controls/theme-styles/ThemePicker.tsx`, `theme-styles/browser.ts`, `model.tsx`.
 
+The surface choice now asserts aria-selected. Modern window controls and exact ZIP names are exercised by the tabs journey. Social target dimensions and preview cancellation still need dedicated cases.
+
 ## Gotchas
 
 The old Syntax highlight button applies to `/classic`. Window choices affect available controls. Baseline does not cover appearance; audit covers theme commit and surface. Hover cancellation, every window style, fonts and social dimensions remain targeted follow-ups.

@@ -16,6 +16,8 @@ Run the audit editor journey. Fill `.cm-content[contenteditable="true"]`, type a
 
 Source: `components/CustomEditor/CustomEditor.tsx`, `prototypes/editor-controls/model.tsx`, `controls/fields.tsx` (paths relative to `apps/codeimage/src`).
 
+The `editor-options` journey changes language to Python without changing the document, restores TypeScript, formats unformatted code and asserts formatted text. Formatter undo is not claimed.
+
 ## Gotchas
 
 The baseline covers text replacement; the audit adds history on both routes. Language/formatter coverage requires explicitly exercising those controls. Do not count internal CodeMirror dispatch as user input.

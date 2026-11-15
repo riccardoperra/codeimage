@@ -12,14 +12,27 @@ export async function audit({page, context, base, out, server}) {
   page.setDefaultTimeout(12000);
   await context.grantPermissions(['clipboard-read', 'clipboard-write']);
   const results = [];
+  const requested = new Set(
+    (process.env.VERIFY_CASES ?? '')
+      .split(',')
+      .map(name => name.trim())
+      .filter(Boolean),
+  );
   const editor = () =>
     page.locator('.cm-content[contenteditable="true"]').first();
   const shot = name =>
     page.screenshot({path: resolve(out, `${name}.png`), fullPage: true});
-  async function doctor(route = '/') {
+  async function doctor(route = '/', expected = 'editor') {
     assert.equal(server.exitCode, null);
     assert.ok((await fetch(base)).ok);
     await page.goto(base + route);
+    if (expected === 'dashboard') {
+      await page
+        .getByRole('button', {name: 'New', exact: true})
+        .first()
+        .waitFor();
+      return;
+    }
     await editor().waitFor();
     const close = page.getByRole('button', {name: 'close', exact: true});
     if (await close.isVisible()) await close.click();
@@ -27,6 +40,7 @@ export async function audit({page, context, base, out, server}) {
     assert.ok(await editor().isVisible());
   }
   async function feature(name, run) {
+    if (requested.size && !requested.has(name)) return;
     try {
       await doctor('/?v=2');
       await run();
@@ -44,8 +58,7 @@ export async function audit({page, context, base, out, server}) {
       );
       results.push({feature: name, status: 'failed', error: String(error)});
       console.log(`FAIL ${name}: ${String(error).slice(0, 400)}`);
-      // Reset the wedged UI and re-doctor before the next independent feature.
-      await doctor('/?v=2');
+      await doctor('/?v=2', name === 'projects' ? 'dashboard' : 'editor');
     }
     await writeFile(
       resolve(out, 'audit.json'),
@@ -104,6 +117,13 @@ export async function audit({page, context, base, out, server}) {
       .locator('[data-control="window.surface"]')
       .getByRole('tab', {name: 'Accent wash', exact: true})
       .click();
+    assert.equal(
+      await page
+        .locator('[data-control="window.surface"]')
+        .getByRole('tab', {name: 'Accent wash', exact: true})
+        .getAttribute('aria-selected'),
+      'true',
+    );
   });
   await feature('tabs', async () => {
     await section('window');
@@ -150,7 +170,10 @@ export async function audit({page, context, base, out, server}) {
     const entries = Object.entries(
       unzipSync(await readFile(resolve(out, 'tabs.zip'))),
     );
-    assert.equal(entries.length, 2);
+    assert.deepEqual(entries.map(([name]) => name).sort(), [
+      '01-first.ts.png',
+      '02-hello.py.png',
+    ]);
     for (const [, data] of entries) PNG.sync.read(Buffer.from(data));
     await strip
       .locator('[data-active="true"]')
@@ -316,8 +339,13 @@ export async function audit({page, context, base, out, server}) {
     await settings('experiments');
     await page.locator('#settings-rendering-engine').focus();
     await page.keyboard.press('Space');
+    assert.equal(
+      await page
+        .locator('#settings-rendering-engine')
+        .getAttribute('aria-checked'),
+      'true',
+    );
     await closeSettings();
-    assert.equal(await page.locator('#settings-rendering-engine').count(), 0);
     PNG.sync.read(await download('takumi.png'));
     page.off('console', observe);
     assert.deepEqual(fallbacks, [], 'Takumi should not fall back');
@@ -336,7 +364,28 @@ export async function audit({page, context, base, out, server}) {
       resolve(out, 'secrets.aria.txt'),
       await warning.ariaSnapshot(),
     );
+    let downloads = 0;
+    const count = () => downloads++;
+    page.on('download', count);
     await warning.getByRole('button', {name: 'Close', exact: true}).click();
+    await warning.waitFor({state: 'hidden'});
+    assert.equal(downloads, 0);
+    await page.locator('[data-export-image]').click();
+    await warning.waitFor();
+    await warning
+      .getByRole('button', {name: 'Redact all', exact: true})
+      .click();
+    assert.match(await editor().innerText(), /•/);
+    assert.doesNotMatch(await editor().innerText(), /K7v9Qp2X/);
+    assert.equal(downloads, 0);
+    const [redacted] = await Promise.all([
+      page.waitForEvent('download', {timeout: 60000}),
+      warning.getByRole('button', {name: 'Confirm', exact: true}).click(),
+    ]);
+    await redacted.saveAs(resolve(out, 'redacted.png'));
+    PNG.sync.read(await readFile(resolve(out, 'redacted.png')));
+    assert.equal(downloads, 1);
+    page.off('download', count);
   });
   await feature('presets', async () => {
     await doctor('/?v=4');
@@ -358,6 +407,246 @@ export async function audit({page, context, base, out, server}) {
     await page.locator('li').filter({hasText: 'Verification preset'}).click();
     await shot('preset-reopened');
   });
+  await feature('export-options', async () => {
+    try {
+      await editor().fill('const exportOptions = true;');
+      await settings('export');
+      await page
+        .locator('[data-setting=export-scale]')
+        .getByRole('tab', {name: '1x', exact: true})
+        .click();
+      await closeSettings();
+      const one = PNG.sync.read(await download('scale-1.png'));
+      await settings('export');
+      await page
+        .locator('[data-setting=export-scale]')
+        .getByRole('tab', {name: '2x', exact: true})
+        .click();
+      await closeSettings();
+      const two = PNG.sync.read(await download('scale-2.png'));
+      assert.ok(
+        Math.abs(two.width - one.width * 2) <= 1 &&
+          Math.abs(two.height - one.height * 2) <= 1,
+      );
+      await settings('export');
+      await page
+        .locator('[data-setting=export-format]')
+        .getByRole('tab', {name: 'JPEG', exact: true})
+        .click();
+      await closeSettings();
+      assert.equal(
+        (await download('snippet.jpeg')).subarray(0, 3).toString('hex'),
+        'ffd8ff',
+      );
+      await settings('export');
+      await page
+        .locator('[data-setting=export-format]')
+        .getByRole('tab', {name: 'PNG', exact: true})
+        .click();
+      await page
+        .locator('[data-setting=export-scale]')
+        .getByRole('tab', {name: '1x', exact: true})
+        .click();
+      await closeSettings();
+      await page.locator('[data-export-menu]').click();
+      await page
+        .getByRole('menuitem', {name: 'Copy alt text', exact: true})
+        .click();
+      assert.match(
+        await page.evaluate(() => navigator.clipboard.readText()),
+        /exportOptions/,
+      );
+    } finally {
+      await doctor('/?v=2');
+      await settings('export');
+      await page
+        .locator('[data-setting=export-format]')
+        .getByRole('tab', {name: 'PNG', exact: true})
+        .click();
+      await page
+        .locator('[data-setting=export-scale]')
+        .getByRole('tab', {name: '1x', exact: true})
+        .click();
+      await closeSettings();
+    }
+  });
+  await feature('settings-persistence', async () => {
+    try {
+      await settings('experiments');
+      await page.getByRole('radio', {name: /^Dock /}).focus();
+      await page.keyboard.press('Space');
+      await page.getByRole('radio', {name: /^Orb /}).focus();
+      await page.keyboard.press('Space');
+      await closeSettings();
+      await doctor('/');
+      await settings('experiments');
+      assert.equal(
+        await page.getByRole('radio', {name: /^Dock /}).isChecked(),
+        true,
+      );
+      assert.equal(
+        await page.getByRole('radio', {name: /^Orb /}).isChecked(),
+        true,
+      );
+      await page
+        .getByRole('button', {name: 'Restore defaults', exact: true})
+        .click();
+      assert.equal(
+        await page.getByRole('radio', {name: /^Inspector /}).isChecked(),
+        true,
+      );
+      assert.equal(
+        await page.getByRole('radio', {name: /^Window /}).isChecked(),
+        true,
+      );
+      assert.equal(
+        await page
+          .getByRole('button', {name: 'Restore defaults', exact: true})
+          .isDisabled(),
+        true,
+      );
+      const search = page.getByRole('textbox', {
+        name: 'Search settings',
+        exact: true,
+      });
+      await search.fill('zzqx');
+      assert.match(
+        await page.locator('[data-settings-body] [role=status]').innerText(),
+        /No settings match/,
+      );
+      await closeSettings();
+    } finally {
+      await doctor('/?v=2');
+      await settings('experiments');
+      const restore = page.getByRole('button', {
+        name: 'Restore defaults',
+        exact: true,
+      });
+      if (await restore.isEnabled()) await restore.click();
+      await closeSettings();
+    }
+  });
+  await feature('annotations', async () => {
+    const code = 'const annotated = 1; // [!code ++]';
+    await editor().fill('');
+    await page.evaluate(text => navigator.clipboard.writeText(text), code);
+    await editor().click();
+    await editor().press('ControlOrMeta+v');
+    await editor().locator('[data-mark=added]').first().waitFor();
+    assert.doesNotMatch(await editor().innerText(), /\[!code/);
+    await editor().press('ControlOrMeta+Home');
+    await editor().press('ControlOrMeta+Alt+4');
+    assert.equal(await editor().locator('[data-focused=true]').count(), 1);
+    await editor().press('ControlOrMeta+Alt+0');
+    assert.equal(await editor().locator('[data-focused=true]').count(), 0);
+  });
+  await feature('signature-management', async () => {
+    await section('frame');
+    await page.locator('#signature-options').click();
+    await page
+      .getByPlaceholder('@handle or profile link', {exact: true})
+      .fill('@managed');
+    await page.getByRole('tab', {name: 'Pill', exact: true}).click();
+    assert.equal(
+      await page
+        .locator('[data-frame-signature]')
+        .first()
+        .getAttribute('data-signature-style'),
+      'pill',
+    );
+    await page
+      .getByRole('button', {name: 'Saved signatures', exact: true})
+      .click();
+    await page
+      .getByRole('menuitem', {name: 'Save as new', exact: true})
+      .click();
+    await page
+      .getByRole('group', {name: 'Signature name', exact: true})
+      .getByRole('textbox')
+      .fill('Management signature');
+    await page.getByRole('button', {name: 'Save', exact: true}).click();
+
+    await page
+      .getByRole('button', {name: 'Saved signatures', exact: true})
+      .click();
+    await page.getByRole('menuitem', {name: 'Rename', exact: true}).click();
+    await page
+      .getByRole('group', {name: 'Signature name', exact: true})
+      .getByRole('textbox')
+      .fill('Renamed signature');
+    await page.getByRole('button', {name: 'Save', exact: true}).click();
+    await page
+      .getByRole('button', {name: 'Saved signatures', exact: true})
+      .click();
+    await page.getByRole('menuitem', {name: /Renamed signature/}).waitFor();
+    await page.getByRole('menuitem', {name: 'Delete', exact: true}).click();
+    await page
+      .getByRole('button', {name: 'Saved signatures', exact: true})
+      .click();
+    assert.equal(
+      await page.getByRole('menuitem', {name: /Renamed signature/}).count(),
+      0,
+    );
+  });
+  await feature('editor-options', async () => {
+    await editor().fill('const unchanged = 1;');
+    await section('editor');
+    const language = page.locator('#inspector-editor-language-trigger');
+    await language.click();
+    await page.getByRole('option', {name: 'Python', exact: true}).click();
+    assert.match(await language.innerText(), /Python/);
+    assert.equal(await editor().innerText(), 'const unchanged = 1;');
+    await language.click();
+    await page.getByRole('option', {name: /^Typescript$/i}).click();
+    assert.match(await language.innerText(), /Typescript/i);
+    await editor().fill('const value={answer:42}');
+    await page.getByRole('button', {name: 'Format', exact: true}).click();
+    await page.waitForFunction(() =>
+      document
+        .querySelector('.cm-content[contenteditable="true"]')
+        ?.textContent.includes('const value ='),
+    );
+    assert.match(await editor().innerText(), /const value = \{.*answer: 42/);
+  });
+  await feature('preset-management', async () => {
+    await doctor('/?v=4');
+    await page.getByRole('button', {name: 'Presets', exact: true}).click();
+    await page
+      .getByRole('button', {name: 'Add preset', exact: true})
+      .first()
+      .click();
+    const add = page.getByRole('alertdialog', {
+      name: 'Add a new preset',
+      exact: true,
+    });
+    await add.getByRole('textbox').fill('Managed preset');
+    await add.getByRole('button', {name: 'Confirm', exact: true}).click();
+    const item = name => page.locator('li').filter({hasText: name});
+    await item('Managed preset')
+      .getByRole('button', {name: 'Preset menu', exact: true})
+      .click();
+    await page.getByRole('menuitem', {name: 'Rename', exact: true}).click();
+    const rename = page.getByRole('alertdialog', {
+      name: 'Rename preset',
+      exact: true,
+    });
+    await rename.getByRole('textbox').fill('Renamed preset');
+    await rename.getByRole('button', {name: 'Confirm', exact: true}).click();
+    await item('Renamed preset').waitFor();
+    assert.equal(await item('Managed preset').count(), 0);
+    await item('Renamed preset')
+      .getByRole('button', {name: 'Preset menu', exact: true})
+      .click();
+    await page.getByRole('menuitem', {name: 'Delete', exact: true}).click();
+    await page
+      .getByRole('alertdialog', {name: 'Delete preset', exact: true})
+      .getByRole('button', {name: 'Confirm', exact: true})
+      .click();
+    await page.reload();
+    await editor().waitFor();
+    await page.getByRole('button', {name: 'Presets', exact: true}).click();
+    assert.equal(await item('Renamed preset').count(), 0);
+  });
   await feature('projects', async () => {
     await page
       .getByRole('button', {name: 'Sign in with GitHub', exact: true})
@@ -375,6 +664,25 @@ export async function audit({page, context, base, out, server}) {
     const project = await (await created).json();
     assert.ok(project.id);
     await editor().waitFor();
+    const api = (path = '', method = 'GET', body, owner) =>
+      page.evaluate(
+        async ({path, method, body, owner}) => {
+          const response = await fetch('/api/v1/project' + path, {
+            method,
+            headers: {
+              'Content-Type': 'application/json',
+              ...(owner ? {'auth-mock-user-id': owner} : {}),
+            },
+            body: body === undefined ? undefined : JSON.stringify(body),
+          });
+          const text = await response.text();
+          return {
+            status: response.status,
+            body: text ? JSON.parse(text) : null,
+          };
+        },
+        {path, method, body, owner},
+      );
     const saved = page.waitForResponse(
       r =>
         r.request().method() === 'PUT' &&
@@ -382,7 +690,22 @@ export async function audit({page, context, base, out, server}) {
     );
     await editor().fill('const persisted = "verification";');
     assert.equal((await saved).status(), 200);
-    await page.reload();
+    assert.equal(
+      (await api(`/${project.id}`)).body.editorTabs[0].code,
+      'const persisted = "verification";',
+    );
+    const [reloaded] = await Promise.all([
+      page.waitForResponse(
+        r =>
+          r.request().method() === 'GET' &&
+          new URL(r.url()).pathname === `/api/v1/project/${project.id}`,
+      ),
+      page.reload(),
+    ]);
+    assert.equal(
+      (await reloaded.json()).editorTabs[0].code,
+      'const persisted = "verification";',
+    );
     await editor().waitFor();
     assert.equal(
       await editor().innerText(),
@@ -395,11 +718,155 @@ export async function audit({page, context, base, out, server}) {
       await editor().innerText(),
       'const persisted = "verification";',
     );
+    const lateContext = await context.browser().newContext({
+      viewport: {width: 1440, height: 1000},
+      storageState: await context.storageState({indexedDB: true}),
+    });
+    try {
+      await lateContext.addInitScript(() =>
+        sessionStorage.setItem(
+          '_mockAuth',
+          JSON.stringify({authenticated: true}),
+        ),
+      );
+      const latePage = await lateContext.newPage();
+      latePage.setDefaultTimeout(60000);
+      let lateStarts = 0;
+      await latePage.route(
+        url => url.pathname === '/src/mocks/browser.ts',
+        async route => {
+          await latePage.waitForFunction(
+            () => document.readyState === 'complete',
+          );
+          lateStarts++;
+          await route.continue();
+        },
+      );
+      await latePage.goto(`${base}/${project.id}`);
+      const lateEditor = latePage
+        .locator('.cm-content[contenteditable="true"]')
+        .first();
+      await lateEditor.waitFor();
+      assert.equal(
+        await lateEditor.innerText(),
+        'const persisted = "verification";',
+      );
+      assert.equal(lateStarts, 1);
+      await latePage.screenshot({path: resolve(out, 'mock-late-start.png')});
+    } finally {
+      await lateContext.close();
+    }
+    assert.equal(
+      (await api(`/${project.id}`, 'DELETE', undefined, 'another-user')).status,
+      404,
+    );
+    await page.goto(base);
+    const card = id =>
+      page.locator('li').filter({has: page.locator(`a[href="/${id}"]`)});
+    await card(project.id)
+      .getByRole('button', {name: 'Menu', exact: true})
+      .click();
+    await page.getByRole('menuitem', {name: 'Rename', exact: true}).click();
+    const rename = page.getByRole('dialog', {
+      name: 'Rename project',
+      exact: true,
+    });
+    await rename.getByRole('textbox').fill('Renamed verification');
+    const [renamed] = await Promise.all([
+      page.waitForResponse(
+        r =>
+          r.request().method() === 'PUT' &&
+          new URL(r.url()).pathname === `/api/v1/project/${project.id}/name`,
+      ),
+      rename.getByRole('button', {name: 'Confirm', exact: true}).click(),
+    ]);
+    assert.equal(renamed.status(), 200);
+    assert.ok(
+      (await api()).body.some(
+        item => item.id === project.id && item.name === 'Renamed verification',
+      ),
+    );
+    await page.reload();
+    await card(project.id)
+      .getByText('Renamed verification', {exact: true})
+      .waitFor();
+    await card(project.id)
+      .getByRole('button', {name: 'Menu', exact: true})
+      .click();
+    const [cloned] = await Promise.all([
+      page.waitForResponse(
+        r =>
+          r.request().method() === 'POST' &&
+          new URL(r.url()).pathname === `/api/v1/project/${project.id}/clone`,
+      ),
+      page.getByRole('menuitem', {name: 'Clone', exact: true}).click(),
+    ]);
+    assert.equal(cloned.status(), 200);
+    const clone = await cloned.json();
+    assert.notEqual(clone.id, project.id);
+    await page.waitForURL(`${base}/${clone.id}`);
+    await editor().waitFor();
+    assert.equal(
+      await editor().innerText(),
+      'const persisted = "verification";',
+    );
+    await page.goto(base);
+    await card(clone.id).waitFor();
+    assert.ok((await api()).body.some(item => item.id === clone.id));
+    assert.equal(
+      (await api(`/${clone.id}`)).body.editorTabs[0].code,
+      'const persisted = "verification";',
+    );
+    await shot('project-cloned');
+    for (const id of [clone.id, project.id]) {
+      await card(id).getByRole('button', {name: 'Menu', exact: true}).click();
+      await page.getByRole('menuitem', {name: 'Delete', exact: true}).click();
+      const dialog = page.getByRole('dialog', {
+        name: 'Delete project',
+        exact: true,
+      });
+      const [removed] = await Promise.all([
+        page.waitForResponse(
+          r =>
+            r.request().method() === 'DELETE' &&
+            new URL(r.url()).pathname === `/api/v1/project/${id}`,
+        ),
+        dialog.getByRole('button', {name: 'Confirm', exact: true}).click(),
+      ]);
+      assert.equal(removed.status(), 200);
+      const [listed] = await Promise.all([
+        page.waitForResponse(
+          r =>
+            r.request().method() === 'GET' &&
+            new URL(r.url()).pathname === '/api/v1/project',
+        ),
+        page.reload(),
+      ]);
+      assert.equal(listed.status(), 200);
+      assert.ok(!(await listed.json()).some(item => item.id === id));
+      await page
+        .getByRole('button', {name: 'New', exact: true})
+        .first()
+        .waitFor();
+      assert.equal(await card(id).count(), 0);
+      assert.equal((await api(`/${id}`)).status, 404);
+    }
+    assert.equal(
+      (await api(`/${project.id}/name`, 'PUT', {name: 'Missing'})).status,
+      404,
+    );
+    assert.equal((await api(`/${project.id}`, 'DELETE')).status, 404);
+    assert.ok(!(await api()).body.some(item => item.id === project.id));
     await writeFile(
       resolve(out, 'project.json'),
       JSON.stringify({id: project.id, url: page.url()}, null, 2),
     );
   });
+  for (const name of requested)
+    assert.ok(
+      results.some(result => result.feature === name),
+      `Unknown case: ${name}`,
+    );
   assert.ok(
     results.every(r => r.status === 'passed'),
     'Audit has failed features; inspect audit.json',
