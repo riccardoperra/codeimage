@@ -59,5 +59,5 @@ Cache policy and CLI commands are documented in [the CLI README](../cli/README.m
 Font source recipes live in `build-fonts.mjs`. Package versions must match exact
 `devDependencies` pins. The generator derives every hash and Unicode range.
 `node packages/render/scripts/verify-font-urls.mjs` checks all remote artifacts.
-`node packages/render/scripts/verify-font-parity.mjs <P10-dist/index.mjs>` compares
-all font families and weights against a P10 build using the shared cache.
+`node packages/render/scripts/verify-font-parity.mjs <baseline/dist/index.mjs>`
+compares every font family and weight with another build, byte for byte.
