@@ -165,3 +165,5 @@ Its negative controls prove that missing keys and hard-coded text fail.
 The review script checks secrets review, focus restoration, overlay geometry, row values, and shortcut help.
 
 The snippet script needs the mock API and mock auth enabled, with the installed MSW worker served at `/mockServiceWorker.js`. It creates projects through the dashboard and checks loading, account saves, previews, read-only geometry, Share, export, Clone, missing/failed loads, and route navigation in all six layout/viewport combinations.
+
+Known limitation: for a signed-out viewer with a saved local document, Clone restores that local document instead of keeping the viewed snippet. The shared sync adapter navigates to `/` without handing the clone to the next provider. Resolve this before removing the classic editor. Account Clone works.
