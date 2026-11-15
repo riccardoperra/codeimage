@@ -10,7 +10,7 @@ export const trigger = style({
 });
 
 export const popover = style({
-  width: '304px',
+  selectors: {'&&': {width: '360px', maxWidth: 'calc(100vw - 24px)'}},
   display: 'flex',
   flexDirection: 'column',
   gap: '12px',

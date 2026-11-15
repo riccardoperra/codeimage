@@ -2,11 +2,7 @@ import type {CustomTheme} from '@codeimage/highlight';
 import type {EditorState} from '@codeimage/store/editor/model';
 import type {Language} from '@codemirror/language';
 import {measureCode, type MeasuredNode} from '@core/animation/measure';
-import type {
-  AnimationSettings,
-  Easing,
-  NonEmpty,
-} from '@core/animation/model';
+import type {AnimationSettings, Easing, NonEmpty} from '@core/animation/model';
 import {
   planTimeline,
   type StepLayout,

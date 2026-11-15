@@ -90,7 +90,8 @@ function DurationInput(props: {
 }
 
 function HoldInspector(props: {store: AnimateStore; step: ProtoStep}) {
-  const index = () => props.store.steps().findIndex(s => s.id === props.step.id);
+  const index = () =>
+    props.store.steps().findIndex(s => s.id === props.step.id);
   const count = () => props.store.steps().length;
   const {actions} = props.store;
   return (
@@ -147,7 +148,8 @@ function TransitionInspector(props: {
   step: ProtoStep;
   curve: CurveFeedback;
 }) {
-  const index = () => props.store.steps().findIndex(s => s.id === props.step.id);
+  const index = () =>
+    props.store.steps().findIndex(s => s.id === props.step.id);
   return (
     <>
       <span class={styles.inspectorTitle}>
@@ -305,7 +307,9 @@ export function AnimateScreen(props: {
               Preview · click or type to edit step {store.currentStep() + 1}
             </button>
           </Show>
-          <Show when={editMode() === 'auto' && store.playback().state !== 'editing'}>
+          <Show
+            when={editMode() === 'auto' && store.playback().state !== 'editing'}
+          >
             <span
               class={styles.status}
               data-editing={!shown() ? '' : undefined}
@@ -372,7 +376,9 @@ export function AnimateScreen(props: {
                         onSelect={() => store.actions.addStep(item.tab.id)}
                       >
                         {item.tab.tab.tabName ?? 'Untitled'}
-                        {item.uses ? ` · used ${item.uses}×` : ' · not in animation'}
+                        {item.uses
+                          ? ` · used ${item.uses}×`
+                          : ' · not in animation'}
                       </DropdownMenuItem>
                     )}
                   </For>

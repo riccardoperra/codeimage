@@ -129,6 +129,7 @@ test('a clone points its animation steps at its own tabs', () => {
       opacity: 100,
       alternativeTheme: false,
       borderType: null,
+      surface: 'solid',
     },
     editorOptions: {
       id: 'options',

@@ -247,10 +247,7 @@ export function Timeline(props: {store: AnimateStore; layout: TimelineLayout}) {
 
         <Show when={props.layout === 'rails'}>
           <div class={styles.lane} data-lane="hold">
-            <span
-              class={styles.laneLabel}
-              style={{left: '-78px', top: '13px'}}
-            >
+            <span class={styles.laneLabel} style={{left: '-78px', top: '13px'}}>
               Holds
             </span>
             <Index each={holds()}>
@@ -327,7 +324,11 @@ export function Timeline(props: {store: AnimateStore; layout: TimelineLayout}) {
           {d => (
             <span
               class={styles.dragValue}
-              style={{left: `${d().leftPercent}%`, top: '-26px', bottom: 'auto'}}
+              style={{
+                left: `${d().leftPercent}%`,
+                top: '-26px',
+                bottom: 'auto',
+              }}
             >
               {formatMs(d().atMs)}
             </span>

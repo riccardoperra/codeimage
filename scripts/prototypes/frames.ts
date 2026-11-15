@@ -8,7 +8,9 @@ const page = await browser.newPage({viewport: {width: 1440, height: 900}});
 await page.goto(`file://${resolve(video)}`);
 const duration = await page.evaluate(async () => {
   const v = document.querySelector('video')!;
-  await new Promise(r => (v.readyState >= 1 ? r(null) : v.addEventListener('loadedmetadata', r)));
+  await new Promise(r =>
+    v.readyState >= 1 ? r(null) : v.addEventListener('loadedmetadata', r),
+  );
   if (!Number.isFinite(v.duration)) {
     v.currentTime = 1e9;
     await new Promise(r => v.addEventListener('timeupdate', r, {once: true}));

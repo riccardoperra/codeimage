@@ -29,7 +29,10 @@ import {
 import AnimatedCodeView from '../../components/CustomEditor/AnimatedCodeView';
 import StaticCodeView from '../../components/CustomEditor/StaticCodeView';
 import {FITTED_WINDOW_MIN_WIDTH} from '../../components/Frame/FittedWindow';
-import {FrameView, useFrameCodeStyle} from '../../components/Frame/PreviewFrame';
+import {
+  FrameView,
+  useFrameCodeStyle,
+} from '../../components/Frame/PreviewFrame';
 import * as terminalStyles from '../../components/Terminal/terminal.css';
 import type {AnimateStore} from './store';
 import {curveOfStep} from './store';
@@ -84,6 +87,8 @@ export function Preview(props: PreviewOptions & {children: JSX.Element}) {
     if (!props.shown() || props.store.dragging()) return previous;
     const steps = props.store.steps();
     if (steps.length < 2) return undefined;
+    // The themes load after the page, and an autoplay can come first.
+    if (!style.theme()) return previous;
     const tabs = steps.map((step): PreviewTab => {
       const tab = editor.state.editors.find(({id}) => id === step.editorId)!;
       return {
@@ -168,9 +173,7 @@ export function Preview(props: PreviewOptions & {children: JSX.Element}) {
   );
 }
 
-function Stage(
-  props: PreviewOptions & {plan: PreviewPlan; visible: boolean},
-) {
+function Stage(props: PreviewOptions & {plan: PreviewPlan; visible: boolean}) {
   const style = useFrameCodeStyle();
   const target = untrack(() => getFrameState().exportTarget());
   const {timeline, tabs, languages} = untrack(() => props.plan);

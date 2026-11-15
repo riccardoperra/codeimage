@@ -1,13 +1,7 @@
 import {getEditorSyncAdapter} from '@codeimage/store/editor/createEditorSync';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 import type {JSX} from 'solid-js';
-import {
-  createResource,
-  createSignal,
-  onCleanup,
-  onMount,
-  Show,
-} from 'solid-js';
+import {createResource, createSignal, onCleanup, onMount, Show} from 'solid-js';
 import {EditorHost} from '../editor-controls/EditorHost';
 import {numberKeys, Picker} from '../editor-controls/picker/Picker';
 import * as styles from '../editor-controls/picker/picker-route.css';
@@ -74,7 +68,10 @@ function initialIndex(count: number): number {
   return requested >= 1 && requested <= count ? requested - 1 : 0;
 }
 
-function Variants(props: {variants: readonly AnimateVariant[]; autoplay: boolean}) {
+function Variants(props: {
+  variants: readonly AnimateVariant[];
+  autoplay: boolean;
+}) {
   const stage = createStage();
   const store = getAnimateStore();
   const [mounted, setMounted] = createSignal({
@@ -161,7 +158,10 @@ export function AnimateRoute(props: {
   return (
     <EditorHost>
       <AfterDocument>
-        <Variants variants={props.variants} autoplay={props.autoplay ?? false} />
+        <Variants
+          variants={props.variants}
+          autoplay={props.autoplay ?? false}
+        />
       </AfterDocument>
     </EditorHost>
   );

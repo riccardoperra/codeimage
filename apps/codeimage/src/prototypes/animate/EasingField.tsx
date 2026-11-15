@@ -107,10 +107,7 @@ function TokenRun(props: {easing: StepEasing; durationMs: number}) {
     const distance = track.clientWidth - chip.offsetWidth - 16;
     chip.getAnimations().forEach(animation => animation.cancel());
     chip.animate(
-      [
-        {transform: 'translateX(0)'},
-        {transform: `translateX(${distance}px)`},
-      ],
+      [{transform: 'translateX(0)'}, {transform: `translateX(${distance}px)`}],
       {
         duration: props.durationMs,
         easing: cssEasing(props.easing),
@@ -186,7 +183,8 @@ export function EasingField(props: {
     setDraft(text);
     const curve = parseCurve(text);
     setError(curve === null);
-    if (curve) props.store.actions.setEasing(props.step.id, {kind: 'custom', curve});
+    if (curve)
+      props.store.actions.setEasing(props.step.id, {kind: 'custom', curve});
   };
 
   // Plays this transition from a little before it, so the dot runs.
@@ -233,7 +231,7 @@ export function EasingField(props: {
           />
         </Show>
         <SegmentedField
-          size="xs"
+          size="sm"
           adapt
           value={selected()}
           onChange={onPreset}

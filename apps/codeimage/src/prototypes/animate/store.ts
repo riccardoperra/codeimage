@@ -87,7 +87,10 @@ export function parseCurve(text: string): EasingCurve | null {
     .trim()
     .replace(/^cubic-bezier\s*\(/i, '')
     .replace(/\)\s*$/, '');
-  const values = inner.split(/[\s,]+/).filter(Boolean).map(Number);
+  const values = inner
+    .split(/[\s,]+/)
+    .filter(Boolean)
+    .map(Number);
   if (values.length !== 4 || values.some(value => !Number.isFinite(value)))
     return null;
   const [x1, y1, x2, y2] = values;
@@ -320,7 +323,7 @@ function createAnimateStore() {
             code: tab.code,
             languageId: tab.languageId,
             lineNumberStart: tab.lineNumberStart,
-            marks: structuredClone(tab.marks),
+            marks: JSON.parse(JSON.stringify(tab.marks)),
             tab: {tabName: tab.tab.tabName},
           },
           true,

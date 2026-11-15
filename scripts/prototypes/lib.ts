@@ -4,11 +4,13 @@ import {chromium} from 'playwright';
 export const WORKER =
   'node_modules/.pnpm/msw@2.12.14_@types+node@25.9.9_typescript@6.0.3/node_modules/msw/lib/mockServiceWorker.js';
 
-export async function launch(opts: {
-  width?: number;
-  height?: number;
-  video?: string;
-} = {}): Promise<{browser: Browser; context: BrowserContext; page: Page}> {
+export async function launch(
+  opts: {
+    width?: number;
+    height?: number;
+    video?: string;
+  } = {},
+): Promise<{browser: Browser; context: BrowserContext; page: Page}> {
   const browser = await chromium.launch({channel: 'chrome'});
   const size = {width: opts.width ?? 1440, height: opts.height ?? 900};
   const context = await browser.newContext({
@@ -32,7 +34,7 @@ export async function open(page: Page, base: string, route: string) {
   await page
     .locator('.cm-content[contenteditable]')
     .first()
-    .waitFor({timeout: 300_000});
+    .waitFor({state: 'attached', timeout: 300_000});
   await page.waitForTimeout(600);
   const dialog = page.getByRole('dialog');
   if (await dialog.isVisible()) {

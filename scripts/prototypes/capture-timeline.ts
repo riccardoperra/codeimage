@@ -30,14 +30,17 @@ async function dragEdge(page: Page, label: RegExp, dx: number, alt = false) {
 async function scrubTo(page: Page, ms: number, total: number) {
   const ruler = page.locator('[class*="ruler"]').first();
   const box = (await ruler.boundingBox())!;
-  await page.mouse.click(box.x + (box.width * ms) / total, box.y + box.height / 2);
+  await page.mouse.click(
+    box.x + (box.width * ms) / total,
+    box.y + box.height / 2,
+  );
 }
 
 const total = async (page: Page) =>
   Number(
     (await page.locator('[class*="time"]').first().innerText())
       .split('/')[1]
-      .replace(/[^\d.]/g, '') ,
+      .replace(/[^\d.]/g, ''),
   ) * 1000;
 
 {
@@ -79,7 +82,10 @@ const total = async (page: Page) =>
     await page.waitForTimeout(600);
     await page.getByRole('button', {name: 'Play', exact: true}).click();
     await page.waitForTimeout(4200);
-    await page.getByRole('button', {name: /edit step/}).click().catch(() => {});
+    await page
+      .getByRole('button', {name: /edit step/})
+      .click()
+      .catch(() => {});
     await page.waitForTimeout(500);
   }
   const video = page.video()!;
