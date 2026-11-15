@@ -300,7 +300,7 @@ export default function Inspector(props: VariantProps) {
           </div>
           <props.stage.AnimatePanel />
           <div class={styles.frameActions}>
-            <CanvasToolbar stage={props.stage} help={!mobile()} />
+            <CanvasToolbar stage={props.stage} />
             <Show when={props.stage.compact()}>
               <props.stage.ExportButton />
             </Show>

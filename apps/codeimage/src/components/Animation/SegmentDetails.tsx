@@ -5,7 +5,7 @@ import {
   transitionOf,
 } from '@codeimage/store/editor/animationSettings';
 import {Button, NumberField} from '@codeui/kit';
-import {createEffect, createSignal, Show, untrack} from 'solid-js';
+import {createEffect, createMemo, createSignal, Show, untrack} from 'solid-js';
 import type {AppLocaleEntries} from '../../i18n';
 import {EasingField} from './EasingField';
 import * as styles from './AnimatePanel.css';
@@ -16,6 +16,18 @@ function DurationInput(props: {
   limits: {min: number; max: number};
   commit: (value: number) => void;
 }) {
+  const [t] = useI18n<AppLocaleEntries>();
+  let field!: HTMLDivElement;
+  createEffect(() => {
+    const labels = [
+      t('animation.increaseDuration'),
+      t('animation.decreaseDuration'),
+    ];
+    field.querySelectorAll('button').forEach((button, index) => {
+      button.tabIndex = -1;
+      button.setAttribute('aria-label', labels[index]);
+    });
+  });
   const [pending, setPending] = createSignal<number | null | undefined>(
     untrack(() => props.value),
   );
@@ -30,15 +42,48 @@ function DurationInput(props: {
     )
       props.commit(value);
   };
+  const setInputValue = (input: HTMLInputElement, value: number) => {
+    input.value = String(value);
+    input.dispatchEvent(new Event('input', {bubbles: true}));
+    setPending(value);
+  };
   const keyDown = (event: KeyboardEvent) => {
-    if (event.key === 'Enter' && event.target instanceof HTMLInputElement) {
-      event.preventDefault();
-      event.stopPropagation();
-      commit();
+    if (!(event.target instanceof HTMLInputElement)) return;
+    if (!['Escape', 'Enter', 'ArrowUp', 'ArrowDown'].includes(event.key))
+      return;
+    event.preventDefault();
+    event.stopPropagation();
+    if (event.key === 'Escape') {
+      setInputValue(event.target, props.value);
+      return;
     }
+    if (event.key === 'ArrowUp' || event.key === 'ArrowDown') {
+      const value =
+        (pending() ?? props.value) + (event.key === 'ArrowUp' ? 100 : -100);
+      setInputValue(
+        event.target,
+        Math.max(props.limits.min, Math.min(props.limits.max, value)),
+      );
+    }
+    commit();
+  };
+  const pointerDown = (event: PointerEvent) => {
+    if (event.target instanceof Element && event.target.closest('button'))
+      event.preventDefault();
+  };
+  const stepperClick = (event: MouseEvent) => {
+    if (event.target instanceof Element && event.target.closest('button'))
+      commit();
   };
   return (
-    <div class={styles.field} onFocusOut={commit} on:keydown={keyDown}>
+    <div
+      ref={field}
+      class={styles.field}
+      onFocusOut={commit}
+      on:keydown={keyDown}
+      onPointerDown={pointerDown}
+      onClick={stepperClick}
+    >
       <label for={`${props.id}-input`}>{props.label}</label>
       <div class={styles.number}>
         <NumberField
@@ -65,6 +110,11 @@ export function SegmentDetails() {
           segment.stepId === animation.selection()?.stepId &&
           segment.kind === animation.selection()?.kind,
       );
+  const limits = createMemo(() =>
+    segment()?.kind === 'hold'
+      ? DURATION_LIMITS.holdMs
+      : DURATION_LIMITS.transitionMs,
+  );
   const name = () => {
     const value = segment();
     return value
@@ -89,6 +139,7 @@ export function SegmentDetails() {
     else animation.actions.setTransition(value.stepId, {ms});
   };
   const apply = () => {
+    if (allMatch()) return;
     const value = segment();
     if (value) animation.actions.applyToAll(value.stepId);
   };
@@ -121,11 +172,7 @@ export function SegmentDetails() {
               : t('animation.transition')
           }
           value={segment()?.durationMs ?? 0}
-          limits={
-            segment()?.kind === 'hold'
-              ? DURATION_LIMITS.holdMs
-              : DURATION_LIMITS.transitionMs
-          }
+          limits={limits()}
           commit={commit}
         />
         <Show
@@ -138,7 +185,8 @@ export function SegmentDetails() {
               <Button
                 size="xs"
                 theme="secondary"
-                disabled={allMatch()}
+                aria-disabled={allMatch()}
+                data-disabled={allMatch() ? '' : undefined}
                 onClick={apply}
               >
                 {t('animation.applyAll')}

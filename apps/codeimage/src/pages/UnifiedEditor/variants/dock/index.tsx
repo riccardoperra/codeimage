@@ -25,10 +25,10 @@ import {fieldId, SegmentedChoice, SelectChoice} from '../../controls/fields';
 import {CanvasToolbar} from '../../controls/CanvasToolbar';
 import {keepMarkToolbarAboveSelection} from '../../controls/mark-toolbar';
 import {ShortcutHelp} from '../../controls/ShortcutHelp';
-import {Footer} from '../../localized/Footer';
 import type {ControlId} from '../../model';
 import {SettingsIcon} from '../../shell/icons';
-import {claimSettingsEntry, settings} from '../../shell/settings-state';
+import {settings} from '../../shell/settings-state';
+import {claimHeaderActions} from '../../shell/header-actions';
 import {themeStyle} from '../../theme-styles/style';
 import {ThemeSwatch} from '../../ThemeSwatch';
 import {
@@ -193,7 +193,7 @@ function DockItem(props: DockItemProps & {host: DockItemHost}) {
 /** The settings entry in the floating bar, beside Search. */
 function BarSettings() {
   const [t] = useI18n<AppLocaleEntries>();
-  claimSettingsEntry();
+  claimHeaderActions(['commands', 'settings']);
   return (
     <IconButton
       class={styles.item}
@@ -497,9 +497,12 @@ export default function Dock(props: VariantProps) {
               </Show>
             </div>
 
-            <Show when={!compact()} fallback={<ShortcutHelp />}>
+            <Show when={props.stage.compact()}>
+              <ShortcutHelp />
+            </Show>
+            <Show when={!compact()}>
               <div class={`${styles.frameActions} ${styles.float}`}>
-                <CanvasToolbar stage={props.stage} help />
+                <CanvasToolbar stage={props.stage} />
               </div>
             </Show>
           </div>
@@ -515,11 +518,6 @@ export default function Dock(props: VariantProps) {
             <div class={styles.canvas}>
               <props.stage.Canvas />
             </div>
-            <Show when={!compact()}>
-              <div class={styles.footer}>
-                <Footer />
-              </div>
-            </Show>
           </main>
         </div>
       </div>

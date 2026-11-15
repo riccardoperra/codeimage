@@ -8,7 +8,16 @@ export const content = style({
   padding: 16,
 });
 globalStyle(`${content} > p`, {display: 'grid', gap: 12});
-globalStyle(`${content} [data-cui="segmentedControl"]`, {height: 28});
+globalStyle(`${content} [data-cui="segmentedControl"]`, {
+  height: 28,
+  '@media': {'(max-width: 768px)': {height: 40}},
+});
+globalStyle(
+  `${content} [role="tab"], ${content} [data-cui="button"], ${content} input`,
+  {
+    '@media': {'(max-width: 768px)': {minHeight: 40, minWidth: 40}},
+  },
+);
 export const curve = style({
   width: '100%',
   height: 144,

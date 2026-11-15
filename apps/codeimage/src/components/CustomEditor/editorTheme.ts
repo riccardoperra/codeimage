@@ -21,7 +21,7 @@ export const baseEditorTheme = EditorView.theme({
     textAlign: 'right',
     padding: '0 16px 0 8px',
   },
-  '.cm-line': {
+  '&.cm-editor .cm-line': {
     padding: '0 2px 0 8px',
   },
   '.cm-cursor': {

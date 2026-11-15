@@ -3,11 +3,11 @@ import {createVar, style} from '@vanilla-extract/css';
 const c = themeVars.dynamicColors;
 export const root = style({minWidth: 0, overflowX: 'auto', padding: '2px 4px'});
 export const axis = style({width: '100%'});
-export const fraction = createVar();
-export const gaps = createVar();
+export const segmentWidth = createVar();
 export const position = createVar();
 export const ruler = style({
   height: 24,
+  '@media': {'(max-width: 768px)': {height: 40}},
   position: 'relative',
   cursor: 'ew-resize',
   touchAction: 'none',
@@ -61,8 +61,8 @@ export const segment = style({
   alignItems: 'center',
   justifyContent: 'center',
   gap: 6,
-  minWidth: 0,
-  width: `calc(${fraction} * (100% - ${gaps}))`,
+  minWidth: 8,
+  width: segmentWidth,
   flexShrink: 0,
   padding: 0,
   border: 0,
@@ -97,6 +97,7 @@ export const handle = style({
   top: 0,
   bottom: 0,
   width: 8,
+  '@media': {'(max-width: 768px)': {width: 40}},
   cursor: 'ew-resize',
   touchAction: 'none',
 });

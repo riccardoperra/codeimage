@@ -134,17 +134,6 @@ export const canvas = style({
   },
 });
 
-export const footer = style({
-  position: 'absolute',
-  right: 0,
-  bottom: safe,
-});
-
-// The production footer brings its own position.
-globalStyle(`${footer} > div`, {
-  position: 'static',
-});
-
 /* Dock */
 
 /*

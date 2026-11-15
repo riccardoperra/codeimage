@@ -49,6 +49,7 @@ import {LayoutPreview} from './previews';
 import type {SectionId} from './settings-state';
 import {SECTIONS, settings} from './settings-state';
 import * as styles from './settings.css';
+import {editorLinks, trackEditorLink} from './links';
 
 /** One setting: a title, a line that explains it, and its control. */
 export interface SettingRow {
@@ -626,25 +627,28 @@ export function createSettingSections(model: EditorControlsModel) {
               <span class={styles.value}>{appEnvironment.version}</span>
             ),
           },
-          {
-            id: 'github' as const,
+          ...editorLinks.map(link => ({
+            id: link.id,
             small: true,
-            title: 'GitHub',
-            description: () => t('editor.githubHint'),
+            title: t(link.label),
+            description: () => link.href.replace('https://', ''),
             control: () => (
               <a
                 class={buttonStyles.button({theme: 'secondary', size: 'sm'})}
                 style={{'text-decoration': 'unset'}}
                 target="_blank"
                 rel="noreferrer"
-                href="https://github.com/riccardoperra/codeimage"
-                aria-label={t('editor.openGithub')}
+                href={link.href}
+                aria-label={
+                  link.id === 'github' ? t('editor.openGithub') : t(link.label)
+                }
+                onClick={() => trackEditorLink(link.id)}
               >
                 {t('toolbar.openNewTab')}
                 <ExternalIcon size={14} />
               </a>
             ),
-          },
+          })),
         ],
       },
       ...(auth.loggedIn()

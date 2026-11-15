@@ -46,7 +46,7 @@ const server = spawn(
   [
     '--input-type=module',
     '-e',
-    `import {createServer} from 'vite'; const server = await createServer({publicDir:process.env.VERIFY_PUBLIC, server:{host:'127.0.0.1',port:Number(process.env.VERIFY_PORT),strictPort:true}}); await server.listen();`,
+    `import {createServer} from 'vite'; const server = await createServer({cacheDir:process.env.VERIFY_PUBLIC+'-cache',publicDir:process.env.VERIFY_PUBLIC, server:{host:'127.0.0.1',port:Number(process.env.VERIFY_PORT),strictPort:true}}); await server.listen();`,
   ],
   {
     cwd: resolve(root, 'apps/codeimage'),
@@ -79,18 +79,19 @@ try {
         ready = true;
         break;
       }
-    } catch {}
+    } catch {
+      // The owned server may still be binding its socket.
+    }
     await new Promise(r => setTimeout(r, 500));
   }
   assert.ok(ready, 'Vite HTTP readiness');
-  browser = await chromium.launch(
-    process.env.VERIFY_BROWSER_CHANNEL
-      ? {channel: process.env.VERIFY_BROWSER_CHANNEL}
-      : undefined,
-  );
+  browser = await chromium.launch({
+    channel: process.env.VERIFY_BROWSER_CHANNEL || undefined,
+  });
   context = await browser.newContext({
     viewport: {width: 1440, height: 1000},
     locale: 'en-US',
+    hasTouch: process.env.VERIFY_TOUCH === '1',
   });
   await context.tracing.start({
     screenshots: true,
@@ -112,11 +113,15 @@ try {
     JSON.stringify(
       {
         pid: server.pid,
+        publicDir: scratch,
+        cacheDir: `${scratch}-cache`,
         base,
         head: execFileSync('git', ['rev-parse', 'HEAD'], {
           encoding: 'utf8',
         }).trim(),
         editorVisible: await editor.isVisible(),
+        browserVersion: browser.version(),
+        browserChannel: process.env.VERIFY_BROWSER_CHANNEL || 'chromium',
         msw: log.some(s => s.includes('Mocking enabled')),
         version: log.find(s => s.includes('CodeImage version')),
       },
@@ -196,6 +201,7 @@ try {
     });
   }
   await rm(scratch, {recursive: true, force: true});
+  await rm(`${scratch}-cache`, {recursive: true, force: true});
   await writeFile(resolve(out, 'run.log'), log.join(''));
   assert.ok(
     (await readFile(resolve(out, 'result.json'))).length,

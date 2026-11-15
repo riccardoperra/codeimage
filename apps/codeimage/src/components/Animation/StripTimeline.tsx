@@ -9,14 +9,23 @@ import {
 } from '@codeimage/store/editor/animationSettings';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 import {createResizeObserver} from '@solid-primitives/resize-observer';
-import {createMemo, createSignal, For, onMount, Show} from 'solid-js';
+import {
+  createEffect,
+  createMemo,
+  createSignal,
+  For,
+  on,
+  onMount,
+  Show,
+} from 'solid-js';
+import {timelineGeometry, type TimelineGeometry} from './timelineGeometry';
 import type {AppLocaleEntries} from '../../i18n';
 import {createSegmentResize} from './createSegmentResize';
 import {formatDuration, formatSeconds} from './format';
 import * as styles from './StripTimeline.css';
 function Segment(props: {
   segment: AnimationSegment;
-  total: number;
+  geometry: TimelineGeometry['entries'][number];
   resize: (event: PointerEvent, segment: AnimationSegment) => void;
   tabStop: boolean;
   navigate: (event: KeyboardEvent) => void;
@@ -83,7 +92,7 @@ function Segment(props: {
       aria-label={label()}
       title={`${label()} · ${formatDuration(segment().durationMs, locale())}`}
       style={assignInlineVars({
-        [styles.fraction]: String(segment().durationMs / props.total),
+        [styles.segmentWidth]: `${props.geometry.width}px`,
       })}
       onClick={select}
       onFocus={select}
@@ -118,16 +127,23 @@ export function StripTimeline() {
   const [t, {locale}] = useI18n<AppLocaleEntries>();
   let ruler!: HTMLDivElement;
   let track!: HTMLDivElement;
-  let timeAxis!: HTMLDivElement;
+  let scroller!: HTMLDivElement;
   const [width, setWidth] = createSignal(0);
+  const [minimum, setMinimum] = createSignal(8);
   onMount(() =>
     createResizeObserver(
-      () => timeAxis,
-      ({width}) => setWidth(width),
+      () => scroller,
+      () => {
+        setWidth(scroller.clientWidth - 8);
+        setMinimum(window.innerWidth <= 768 ? 80 : 8);
+      },
     ),
   );
-  const [frozen, setFrozen] = createSignal<number>();
-  const axis = () => frozen() ?? animation.durationMs();
+  const [frozen, setFrozen] = createSignal<{total: number; scale: number}>();
+  const axis = () => frozen()?.total ?? animation.durationMs();
+  const geometry = createMemo(() =>
+    timelineGeometry(animation.segments(), width(), minimum(), frozen()?.scale),
+  );
   const keys = createMemo(() =>
     animation.segments().map(segment => `${segment.kind}:${segment.stepId}`),
   );
@@ -158,30 +174,53 @@ export function StripTimeline() {
     event.stopPropagation();
     segments[next]?.focus();
   };
-  const minimumWidth = createMemo<number>((previous = 0) =>
-    animation.resizing()
-      ? previous
-      : Math.max(
-          0,
-          ...animation
-            .segments()
-            .map(segment =>
-              segment.durationMs ? (28 * axis()) / segment.durationMs : 0,
-            ),
-        ) +
-        Math.max(0, keys().length - 1) * 3,
+  let userScrollUntil = 0;
+  const userScroll = () => {
+    userScrollUntil = performance.now() + 1500;
+  };
+  const reveal = (left: number, right = left) => {
+    if (animation.resizing()) return;
+    const inset = 12;
+    const visibleLeft = scroller.scrollLeft;
+    const visibleRight = visibleLeft + scroller.clientWidth - 8;
+    if (left < visibleLeft + inset)
+      scroller.scrollLeft = Math.max(0, left - inset);
+    else if (right > visibleRight - inset)
+      scroller.scrollLeft = Math.min(
+        left - inset,
+        right - (scroller.clientWidth - 8) + inset,
+      );
+  };
+  createEffect(
+    on(animation.selection, selection => {
+      if (!selection) return;
+      const entry = geometry().entries.find(
+        ({segment}) =>
+          segment.stepId === selection.stepId &&
+          segment.kind === selection.kind,
+      );
+      if (entry) reveal(entry.x, entry.x + entry.width);
+    }),
+  );
+  createEffect(
+    on(animation.playhead, ms => {
+      if (
+        animation.playback().state === 'playing' &&
+        performance.now() >= userScrollUntil
+      )
+        reveal(geometry().timeToX(ms));
+    }),
   );
   const resize = createSegmentResize({
     total: animation.durationMs,
-    width: () =>
-      track.clientWidth - Math.max(0, animation.segments().length - 1) * 3,
+    geometry,
     limits: segment =>
       segment.kind === 'hold'
         ? DURATION_LIMITS.holdMs
         : DURATION_LIMITS.transitionMs,
     begin: total => {
       animation.actions.setResizing(true);
-      setFrozen(total);
+      setFrozen({total, scale: geometry().scale});
     },
     end: () => {
       setFrozen(undefined);
@@ -206,13 +245,7 @@ export function StripTimeline() {
   });
   const at = (event: PointerEvent) => {
     const box = ruler.getBoundingClientRect();
-    return Math.max(
-      0,
-      Math.min(
-        animation.durationMs(),
-        ((event.clientX - box.left) / box.width) * animation.durationMs(),
-      ),
-    );
+    return geometry().xToTime(event.clientX - box.left);
   };
   const pointerDown = (event: PointerEvent) => {
     event.preventDefault();
@@ -243,12 +276,14 @@ export function StripTimeline() {
     event.stopPropagation();
   };
   return (
-    <div class={styles.root}>
-      <div
-        class={styles.axis}
-        ref={timeAxis}
-        style={{'min-width': `${minimumWidth()}px`}}
-      >
+    <div
+      class={styles.root}
+      ref={scroller}
+      data-animation-scroller
+      onWheel={userScroll}
+      onTouchMove={userScroll}
+    >
+      <div class={styles.axis} style={{width: `${geometry().width}px`}}>
         <div
           ref={ruler}
           class={styles.ruler}
@@ -269,10 +304,11 @@ export function StripTimeline() {
             {ms => (
               <span
                 class={styles.tick}
+                data-animation-tick={ms}
                 data-first={ms === 0 ? '' : undefined}
                 data-last={ms === ticks().at(-1) ? '' : undefined}
                 style={assignInlineVars({
-                  [styles.position]: `${(ms / axis()) * 100}%`,
+                  [styles.position]: `${geometry().timeToX(ms)}px`,
                 })}
               >
                 {formatSeconds(ms, locale())}
@@ -281,8 +317,9 @@ export function StripTimeline() {
           </For>
           <span
             class={styles.playhead}
+            data-animation-playhead
             style={assignInlineVars({
-              [styles.position]: `${(animation.playhead() / axis()) * 100}%`,
+              [styles.position]: `${geometry().timeToX(animation.playhead())}px`,
             })}
           />
         </div>
@@ -291,9 +328,6 @@ export function StripTimeline() {
           ref={track}
           data-animation-track
           data-axis-ms={axis()}
-          style={assignInlineVars({
-            [styles.gaps]: `${Math.max(0, keys().length - 1) * 3}px`,
-          })}
         >
           <For each={keys()}>
             {key => (
@@ -305,7 +339,10 @@ export function StripTimeline() {
                 {segment => (
                   <Segment
                     segment={segment()}
-                    total={axis()}
+                    geometry={geometry().entries.find(
+                      entry =>
+                        `${entry.segment.kind}:${entry.segment.stepId}` === key,
+                    )!}
                     resize={resize}
                     tabStop={key === tabStop()}
                     navigate={navigate}

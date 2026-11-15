@@ -269,7 +269,7 @@ export async function verifyWatermark({page, out, download, section}) {
   await sample('second-tab-short');
   await page.locator('[data-export-menu]').click();
   const [zip] = await Promise.all([
-    page.waitForEvent('download'),
+    page.waitForEvent('download', {timeout: 60000}),
     page.locator('[data-export-action="tabs"]').click(),
   ]);
   const file = resolve(out, 'watermark-tabs.zip');

@@ -23,7 +23,7 @@ export const island = style({
 globalStyle(
   `${island} [data-cui="button"], ${island} [data-cui="icon-button"], ${island} [aria-haspopup="listbox"]`,
   {
-    '@media': {'(max-width: 768px)': {minHeight: 40}},
+    '@media': {'(max-width: 768px)': {minHeight: 40, minWidth: 40}},
   },
 );
 export const transport = style({
@@ -73,5 +73,24 @@ export const field = style({
   gap: 8,
   minWidth: 0,
 });
-export const number = style({width: 110});
+export const number = style({
+  width: 110,
+  '@media': {'(max-width: 768px)': {width: 142}},
+});
 export const hint = style({margin: 0, opacity: 0.7, fontSize: 12});
+
+globalStyle(`${island} input`, {
+  '@media': {'(max-width: 768px)': {minHeight: 40}},
+});
+globalStyle(`${number} input`, {
+  '@media': {'(max-width: 768px)': {paddingRight: 84}},
+});
+globalStyle(`${number} input + div`, {
+  '@media': {'(max-width: 768px)': {flexDirection: 'row', right: 4}},
+});
+globalStyle(`${number} button svg`, {
+  '@media': {'(max-width: 768px)': {width: 16, height: 16}},
+});
+globalStyle('[data-animation-steps-menu] [role="menuitem"]', {
+  '@media': {'(max-width: 768px)': {minHeight: 40, minWidth: 40}},
+});

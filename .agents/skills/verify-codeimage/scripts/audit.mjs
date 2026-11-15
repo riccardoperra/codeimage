@@ -45,7 +45,7 @@ export async function audit({page, context, base, out, server}) {
         .waitFor();
       return;
     }
-    await editor().waitFor();
+    await editor().waitFor({timeout: 60000});
     const close = page.getByRole('button', {name: 'close', exact: true});
     if (await close.isVisible()) await close.click();
     await page.evaluate(() => document.fonts.ready);
@@ -53,11 +53,16 @@ export async function audit({page, context, base, out, server}) {
   }
   async function feature(name, run) {
     if (requested.size && !requested.has(name)) return;
+    console.log(`RUN ${name}`);
     try {
       await doctor('/', 'editor', 'inspector');
-      await run();
+      const measurements = await run();
       await shot(name);
-      results.push({feature: name, status: 'passed'});
+      results.push({
+        feature: name,
+        status: 'passed',
+        ...(measurements ? {measurements} : {}),
+      });
       console.log(`PASS ${name}`);
     } catch (error) {
       await shot(`${name}-failure`).catch(() => {});
@@ -105,6 +110,75 @@ export async function audit({page, context, base, out, server}) {
     if ((await button.getAttribute('aria-expanded')) !== 'true')
       await button.click();
   }
+  async function fresh({name, layout, viewport, initialize}, run) {
+    const previous = {page, context};
+    context = await context.browser().newContext({
+      viewport,
+      locale: 'en-US',
+      colorScheme: 'dark',
+      permissions: ['clipboard-read', 'clipboard-write'],
+    });
+    try {
+      await context.addInitScript(layout => {
+        localStorage.setItem(
+          'codeimage:editor-settings',
+          JSON.stringify({layout}),
+        );
+        localStorage.setItem(
+          '@store/ui',
+          JSON.stringify({themeMode: 'dark', locale: 'en'}),
+        );
+      }, layout);
+      await context.tracing.start({
+        screenshots: true,
+        snapshots: true,
+        sources: true,
+      });
+      if (initialize) await initialize(context);
+      page = await context.newPage();
+      page.setDefaultTimeout(60000);
+      const errors = [];
+      page.on('pageerror', error => errors.push(String(error)));
+      try {
+        const result = await run({
+          page,
+          context,
+          doctor,
+          editor,
+          section,
+          settings,
+          closeSettings,
+          download,
+        });
+        assert.deepEqual(errors, [], `${name}: no uncaught browser errors`);
+        return result;
+      } catch (error) {
+        await shot(`${name}-failure`).catch(() => {});
+        await writeFile(
+          resolve(out, `${name}-failure.aria.txt`),
+          await page
+            .locator('body')
+            .ariaSnapshot()
+            .catch(() => ''),
+        );
+        throw error;
+      }
+    } finally {
+      await context.tracing
+        .stop({path: resolve(out, `${name}-trace.zip`)})
+        .catch(() => {});
+      await context.close();
+      ({page, context} = previous);
+    }
+  }
+  await feature('frame-cold-start', async () => {
+    const {verifyColdStart} = await import('./frame-regressions.mjs');
+    return verifyColdStart({fresh, out});
+  });
+  await feature('export-screen-parity', async () => {
+    const {verifyExportScreen} = await import('./frame-regressions.mjs');
+    return verifyExportScreen({fresh, out});
+  });
   await feature('editor', async () => {
     for (const route of ['/', '/classic']) {
       await doctor(route);
@@ -840,6 +914,528 @@ export async function audit({page, context, base, out, server}) {
       .click();
     await panel.waitFor({state: 'hidden'});
   });
+  async function animationFixture() {
+    await section('window');
+    await page
+      .locator('[data-control="window.style"]')
+      .getByRole('button')
+      .click();
+    const windowDialog = page.getByRole('dialog', {
+      name: 'Window',
+      exact: true,
+    });
+    await windowDialog.waitFor();
+    const editorStyle = page.getByRole('radio', {name: 'Editor', exact: true});
+    await editorStyle.focus();
+    await page.waitForFunction(
+      () => document.activeElement?.getAttribute('value') === 'editor',
+    );
+    await page.keyboard.press('Space');
+    await page.waitForFunction(() =>
+      document.querySelector('[data-window-tabs]'),
+    );
+    await windowDialog
+      .getByRole('button', {name: 'Close', exact: true})
+      .click();
+    await editor().fill('const first = 1;');
+    await page
+      .locator('[data-window-tabs]')
+      .filter({
+        has: page.getByRole('button', {name: 'Add tab', exact: true}),
+      })
+      .first()
+      .getByRole('button', {name: 'Add tab', exact: true})
+      .click();
+    await editor().fill('const second = 2;');
+    await page.locator('[data-animate-toggle]').click();
+    await page.locator('[data-animate-panel]').waitFor();
+    const saved = () =>
+      page.evaluate(
+        () =>
+          new Promise(resolve => {
+            const request = indexedDB.open('keyval-store');
+            request.onsuccess = () => {
+              const read = request.result
+                .transaction('keyval')
+                .objectStore('keyval')
+                .get('document');
+              read.onsuccess = () => {
+                request.result.close();
+                resolve(read.result?.animation?.steps?.length === 2);
+              };
+            };
+          }),
+      );
+    for (let i = 0; i < 50 && !(await saved()); i++)
+      await page.waitForTimeout(100);
+    assert.equal(await saved(), true, 'animation fixture saved before reload');
+  }
+  async function animationMatrix(caseName, run) {
+    const original = page;
+    try {
+      for (const layout of ['inspector', 'dock', 'studio']) {
+        for (const viewport of [
+          {width: 1440, height: 900},
+          {width: 390, height: 844},
+        ]) {
+          const isolated = await context
+            .browser()
+            .newContext({viewport, hasTouch: true, locale: 'en-US'});
+          await isolated.tracing.start({snapshots: true});
+          page = await isolated.newPage();
+          page.setDefaultTimeout(12000);
+          await page.addLocatorHandler(
+            page.locator('[data-whats-new="nudge"]'),
+            async nudge => {
+              await nudge
+                .getByRole('button', {name: "Dismiss what's new", exact: true})
+                .click();
+              await nudge.waitFor({state: 'hidden'});
+            },
+          );
+          const warnings = [];
+          const errors = [];
+          page.on('pageerror', error => errors.push(String(error)));
+          page.on('console', message => {
+            if (
+              /computations created outside|nonexistent droppable/i.test(
+                message.text(),
+              )
+            )
+              warnings.push(message.text());
+          });
+          await page.addInitScript(() => {
+            const warn = console.warn;
+            console.warn = (...args) =>
+              warn(...args, new Error('warning source').stack);
+          });
+          const name = `${layout}-${viewport.width}`;
+          console.log(`RUN animate-${caseName} ${name}`);
+          try {
+            await page.setViewportSize({width: 1440, height: 900});
+            await doctor('/', 'editor', 'inspector');
+            await animationFixture();
+            await page.evaluate(
+              layout =>
+                localStorage.setItem(
+                  'codeimage:editor-settings',
+                  JSON.stringify({layout}),
+                ),
+              layout,
+            );
+            await page.setViewportSize(viewport);
+            await page.reload();
+            await editor().waitFor();
+            await page.locator('[data-animate-toggle]').click();
+            await page.locator('[data-animate-panel]').waitFor();
+            await run({layout, viewport, name});
+            assert.deepEqual(errors, [], `${name}: no page errors`);
+            assert.deepEqual(
+              warnings,
+              [],
+              `${name}: no Solid ownership warnings`,
+            );
+            await shot(`animate-${caseName}-${name}`);
+            console.log(`PASS animate matrix ${name}`);
+          } catch (error) {
+            await shot(`animate-${caseName}-${name}-failure`).catch(() => {});
+            await writeFile(
+              resolve(out, `animate-${caseName}-${name}-failure.txt`),
+              String(error) +
+                '\n' +
+                warnings.join('\n') +
+                '\n' +
+                (await page.locator('body').ariaSnapshot()),
+            );
+            throw error;
+          } finally {
+            await isolated.tracing.stop({
+              path: resolve(out, `animate-${caseName}-${name}.zip`),
+            });
+            await isolated.close();
+          }
+        }
+      }
+    } finally {
+      page = original;
+    }
+  }
+  const animationSegments = () => page.locator('[data-animation-segment]');
+  const durationInput = () => page.locator('#animationDuration-input');
+  async function typeDuration(value, key = 'Enter') {
+    await durationInput().focus();
+    await page.keyboard.press('ControlOrMeta+A');
+    await page.keyboard.type(String(value));
+    await page.keyboard.press(key);
+  }
+  async function animationMenu(name) {
+    await page.getByRole('button', {name: 'Steps', exact: true}).click();
+    await page.getByRole('menuitem', {name, exact: true}).click();
+    await page.locator('[role=menu]').waitFor({state: 'hidden'});
+  }
+  await feature('animate-focus', async () => {
+    await animationMatrix('focus', async ({viewport}) => {
+      const transition = animationSegments().nth(1);
+      const hold = animationSegments().first();
+      await transition.click();
+      await durationInput().focus();
+      await page.keyboard.press('Tab');
+      assert.equal(
+        await page
+          .locator('[data-easing-trigger]')
+          .evaluate(el => el === document.activeElement),
+        true,
+        'Tab skips the transient number steppers and reaches Easing',
+      );
+      await page.keyboard.press('Shift+Tab');
+      assert.ok(
+        await durationInput().evaluate(el => el === document.activeElement),
+      );
+      const before = Number(await transition.getAttribute('aria-valuenow'));
+      await typeDuration(before + 200, 'Escape');
+      assert.equal(
+        Number(await transition.getAttribute('aria-valuenow')),
+        before,
+        'Escape reverts duration',
+      );
+      assert.equal(
+        (await durationInput().inputValue()).replace(/\D/g, ''),
+        String(before),
+      );
+      assert.equal(
+        await transition.getAttribute('data-selected'),
+        '',
+        'Escape keeps the selection',
+      );
+      assert.ok(
+        await durationInput().evaluate(el => el === document.activeElement),
+      );
+      const increment = page.getByRole('button', {
+        name: 'Increase duration by 100 ms',
+        exact: true,
+      });
+      await page.keyboard.press('ArrowUp');
+      assert.equal(
+        Number(await transition.getAttribute('aria-valuenow')),
+        before + 100,
+        'keyboard increment commits',
+      );
+      await page.keyboard.press('ArrowDown');
+      assert.equal(
+        Number(await transition.getAttribute('aria-valuenow')),
+        before,
+        'keyboard decrement commits',
+      );
+      if (viewport.width === 390) {
+        await shot('animate-duration-touch');
+        for (const label of [
+          'Increase duration by 100 ms',
+          'Decrease duration by 100 ms',
+        ]) {
+          const button = page.getByRole('button', {name: label, exact: true});
+          const box = await button.boundingBox();
+          assert.ok(
+            box.width >= 40 && box.height >= 40,
+            'duration stepper touch target',
+          );
+          assert.ok(
+            await button.evaluate(el => {
+              const b = el.getBoundingClientRect();
+              return el.contains(
+                document.elementFromPoint(
+                  b.x + b.width / 2,
+                  b.y + b.height / 2,
+                ),
+              );
+            }),
+            'duration stepper can be hit',
+          );
+        }
+        await page.locator('[data-easing-trigger]').click();
+        const easing = page.getByRole('dialog', {name: 'Easing', exact: true});
+        for (const control of [
+          easing.getByRole('tab', {name: 'Smooth', exact: true}),
+          easing.getByRole('button', {name: 'Play transition', exact: true}),
+        ]) {
+          const box = await control.boundingBox();
+          assert.ok(box.width >= 40 && box.height >= 40, 'easing touch target');
+        }
+        await easing.getByRole('tab', {name: 'Smooth', exact: true}).focus();
+        await page.keyboard.press('Escape');
+        await easing.waitFor({state: 'hidden'});
+        await durationInput().focus();
+      }
+      if (viewport.width === 390) await increment.tap();
+      else await increment.click();
+      assert.equal(
+        Number(await transition.getAttribute('aria-valuenow')),
+        before + 100,
+        'stepper commits immediately',
+      );
+      await page
+        .getByRole('button', {name: 'Apply to all', exact: true})
+        .focus();
+      await page.keyboard.press('Enter');
+      assert.ok(
+        await page
+          .getByRole('button', {name: 'Apply to all', exact: true})
+          .evaluate(el => el === document.activeElement),
+        'Apply to all retains keyboard focus',
+      );
+      await hold.click();
+      await transition.click();
+      await hold.click();
+      await animationMenu('Duplicate as next step');
+      await page.waitForFunction(() =>
+        document.activeElement?.classList.contains('cm-content'),
+      );
+      assert.ok(
+        (await editor().innerText()).includes('const first = 1;'),
+        'duplicate code holds focus',
+      );
+      if (viewport.width === 390) {
+        for (const name of ['Play animation', 'Close animation']) {
+          const box = await page
+            .getByRole('button', {name, exact: true})
+            .boundingBox();
+          assert.ok(
+            box.width >= 40 && box.height >= 40,
+            `${name}: 40px touch target`,
+          );
+        }
+        assert.ok(
+          (
+            await page
+              .getByRole('slider', {name: 'Playhead', exact: true})
+              .boundingBox()
+          ).height >= 40,
+        );
+      }
+    });
+  });
+
+  async function addAnimationStep() {
+    await page.getByRole('button', {name: 'Steps', exact: true}).click();
+    await page
+      .getByRole('menuitem', {name: 'Add to animation', exact: true})
+      .hover();
+    const submenu = page.getByRole('menu').last();
+    await submenu
+      .getByRole('menuitem', {name: 'index.tsx', exact: true})
+      .click();
+    await page.waitForFunction(() => !document.querySelector('[role=menu]'));
+  }
+  async function visibleInStrip(locator) {
+    const box = await locator.boundingBox();
+    const root = await page.locator('[data-animation-scroller]').boundingBox();
+    return (
+      box &&
+      root &&
+      box.x >= root.x - 1 &&
+      box.x + box.width <= root.x + root.width + 1
+    );
+  }
+  await feature('animate-geometry', async () => {
+    await animationMatrix('geometry', async ({viewport, name}) => {
+      const hold = animationSegments().first();
+      const transition = animationSegments().nth(1);
+      const ruler = page.getByRole('slider', {name: 'Playhead', exact: true});
+      const scroller = page.locator('[data-animation-scroller]');
+      await hold.click();
+      const handle = await hold.locator('[data-segment-resize]').boundingBox();
+      const x = handle.x + handle.width / 2;
+      const y = handle.y + handle.height / 2;
+      await page.mouse.move(x, y);
+      await page.mouse.down();
+      await page.mouse.move(x - 1200, y, {steps: 8});
+      await page.mouse.up();
+      assert.equal(await hold.getAttribute('aria-valuenow'), '0');
+      assert.ok(
+        (await hold.boundingBox()).width >= 8,
+        'zero hold keeps a visible slot',
+      );
+      await transition.click();
+      await hold.click();
+      assert.equal(
+        await hold.getAttribute('data-selected'),
+        '',
+        'zero hold selectable with a click',
+      );
+      if (viewport.width === 390) {
+        await transition.tap();
+        await hold.tap();
+        assert.equal(
+          await hold.getAttribute('data-selected'),
+          '',
+          'zero hold selectable with touch',
+        );
+        assert.ok(
+          (await hold.locator('[data-segment-resize]').boundingBox()).width >=
+            40,
+        );
+      }
+      await typeDuration(10000);
+      await transition.click();
+      await typeDuration(100);
+      await page
+        .getByRole('button', {name: 'Apply to all', exact: true})
+        .click();
+      await animationSegments().last().click();
+      await typeDuration(100);
+      let count = 2;
+      const measurements = [];
+      for (const target of [3, 8, 40]) {
+        while (count < target) {
+          await addAnimationStep();
+          count++;
+          assert.equal(
+            await animationSegments().last().getAttribute('data-selected'),
+            '',
+          );
+          assert.ok(
+            await visibleInStrip(animationSegments().last()),
+            'new step scrolls into view',
+          );
+          await typeDuration(100);
+        }
+        assert.equal(await animationSegments().count(), target * 2 - 1);
+        const tickDrift = await page.evaluate(() => {
+          const segments = [
+            ...document.querySelectorAll('[data-animation-segment]'),
+          ];
+          const axis = document
+            .querySelector('[data-animation-track]')
+            .getBoundingClientRect();
+          const rows = segments.map(element => ({
+            x: element.getBoundingClientRect().left - axis.left,
+            width: element.getBoundingClientRect().width,
+            ms: Number(element.getAttribute('aria-valuenow')),
+          }));
+          return [...document.querySelectorAll('[data-animation-tick]')].map(
+            tick => {
+              const ms = Number(tick.dataset.animationTick);
+              let start = 0;
+              const row = rows.find(row => {
+                if (ms < start + row.ms) return true;
+                start += row.ms;
+                return false;
+              });
+              const expected = row
+                ? row.x + ((ms - start) / row.ms) * row.width
+                : axis.width;
+              return Math.abs(
+                parseFloat(getComputedStyle(tick).left) - expected,
+              );
+            },
+          );
+        });
+        assert.ok(
+          Math.max(...tickDrift) < 1,
+          `${target} steps: ruler ticks share segment geometry`,
+        );
+        const indices = [
+          ...new Set([
+            1,
+            2,
+            Math.floor(target / 2) * 2 - 1,
+            target * 2 - 3,
+            target * 2 - 2,
+          ]),
+        ];
+        for (const index of indices) {
+          const segment = animationSegments().nth(index);
+          await segment.scrollIntoViewIfNeeded();
+          const box = await segment.boundingBox();
+          const rulerBox = await ruler.boundingBox();
+          const durations = await animationSegments().evaluateAll(elements =>
+            elements.map(el => Number(el.getAttribute('aria-valuenow'))),
+          );
+          const expected =
+            durations.slice(0, index).reduce((sum, ms) => sum + ms, 0) +
+            durations[index] / 2;
+          await page.mouse.click(
+            box.x + box.width / 2,
+            rulerBox.y + rulerBox.height / 2,
+          );
+          assert.equal(
+            await segment.getAttribute('data-current'),
+            '',
+            `${target} steps: ruler selects the segment under the pointer`,
+          );
+          const actual = Number(await ruler.getAttribute('aria-valuenow'));
+          assert.ok(
+            Math.abs(actual - expected) <= durations[index] / box.width + 2,
+            `${target} steps: pointer time matches its segment`,
+          );
+        }
+        await page
+          .getByRole('button', {name: 'Stop and edit the code', exact: true})
+          .click();
+        measurements.push({
+          steps: target,
+          maxTickDrift: Math.max(...tickDrift),
+        });
+      }
+      await hold.scrollIntoViewIfNeeded();
+      await hold.click();
+      await typeDuration(100);
+      await scroller.evaluate(el => {
+        el.scrollLeft = 0;
+      });
+      await page
+        .getByRole('button', {name: 'Play animation', exact: true})
+        .click();
+      await page.waitForFunction(
+        () =>
+          document.querySelector('[data-animation-scroller]').scrollLeft > 100,
+      );
+      const root = await scroller.boundingBox();
+      await page.mouse.move(root.x + root.width / 2, root.y + root.height / 2);
+      await page.mouse.wheel(-120, 0);
+      await page.waitForTimeout(100);
+      const manuallyScrolled = await scroller.evaluate(el => el.scrollLeft);
+      await page.waitForTimeout(250);
+      assert.equal(
+        await scroller.evaluate(el => el.scrollLeft),
+        manuallyScrolled,
+        'playback respects a user scroll',
+      );
+      await page.waitForTimeout(1400);
+      for (let i = 0; i < 10; i++) {
+        assert.ok(
+          await visibleInStrip(page.locator('[data-animation-playhead]')),
+          'playhead follows in the scrolling strip',
+        );
+        await page.waitForTimeout(100);
+      }
+      await page
+        .getByRole('button', {name: 'Stop and edit the code', exact: true})
+        .click();
+      // Select through the keyboard, without Playwright scrolling a locator.
+      await animationSegments().first().focus();
+      await page.keyboard.press('End');
+      assert.ok(
+        await visibleInStrip(animationSegments().last()),
+        'keyboard selection stays visible',
+      );
+      const scrollBox = await scroller.boundingBox();
+      await page.mouse.move(
+        scrollBox.x + scrollBox.width / 2,
+        scrollBox.y + scrollBox.height / 2,
+      );
+      await page.mouse.wheel(-160, 0);
+      await addAnimationStep();
+      assert.ok(
+        await visibleInStrip(animationSegments().last()),
+        'added step stays visible after playback',
+      );
+      await writeFile(
+        resolve(out, `animate-geometry-${name}.json`),
+        JSON.stringify(measurements, null, 2),
+      );
+    });
+  });
+
   await feature('projects', async () => {
     await page
       .getByRole('button', {name: 'Sign in with GitHub', exact: true})
