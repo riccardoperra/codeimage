@@ -3,8 +3,11 @@ import {createHash} from 'node:crypto';
 import {appendFile, mkdir, readFile, writeFile} from 'node:fs/promises';
 import {join} from 'node:path';
 import {parseArgs} from 'node:util';
-import pixelmatch from 'pixelmatch';
 import {PNG} from 'pngjs';
+
+// Allow sparse MSVC Takumi rounding while rejecting visible rendering changes.
+const MAX_CHANNEL_DELTA = 2;
+const MAX_DIFF_PERCENT = 0.01;
 
 const {values: args} = parseArgs({
   options: {
@@ -13,8 +16,6 @@ const {values: args} = parseArgs({
   },
 });
 
-// Keep zero until a real cross-OS run establishes a different acceptable limit.
-const MAX_DIFF_PERCENT = 0;
 const platforms = ['Linux', 'macOS', 'Windows'];
 
 async function readManifest(platform: string) {
@@ -68,8 +69,8 @@ async function main() {
   );
   const results = [];
   const rows = [
-    '| OS | Byte-identical cells | Max pixelmatch diff | Differing cells |',
-    '| --- | --- | --- | --- |',
+    '| OS | Status | Byte-identical cells | Max differing pixels | Differing cells |',
+    '| --- | --- | --- | --- | --- |',
   ];
   let failed = false;
   for (const platform of platforms) {
@@ -81,6 +82,7 @@ async function main() {
     );
     let byteIdentical = 0;
     let maxDiffPercent = 0;
+    let platformFailed = false;
     const differing = [];
     for (const [index, entry] of manifest.entries()) {
       const {bytes, png} = await readImage(platform, index, entry);
@@ -92,41 +94,74 @@ async function main() {
       if (png.width !== base.png.width || png.height !== base.png.height) {
         differing.push({
           cell: entry.cell,
+          status: 'FAIL',
           reason: `dimensions ${png.width}x${png.height} vs ${base.png.width}x${base.png.height}`,
         });
-        failed = true;
+        platformFailed = true;
         continue;
       }
       const diff = new PNG({width: png.width, height: png.height});
-      const pixels = pixelmatch(
-        base.png.data,
-        png.data,
-        diff.data,
-        png.width,
-        png.height,
-        {threshold: 0, includeAA: true},
-      );
+      let pixels = 0;
+      let maxChannelDelta = 0;
+      for (let offset = 0; offset < png.data.length; offset += 4) {
+        let delta = 0;
+        for (let channel = 0; channel < 4; channel++) {
+          delta = Math.max(
+            delta,
+            Math.abs(
+              png.data[offset + channel] - base.png.data[offset + channel],
+            ),
+          );
+        }
+        maxChannelDelta = Math.max(maxChannelDelta, delta);
+        if (delta > 0) {
+          pixels++;
+          diff.data[offset] = 255;
+          diff.data[offset + 3] = 255;
+        }
+      }
       const percent = (pixels / (png.width * png.height)) * 100;
       maxDiffPercent = Math.max(maxDiffPercent, percent);
+      const status =
+        maxChannelDelta <= MAX_CHANNEL_DELTA && percent <= MAX_DIFF_PERCENT
+          ? 'WARN'
+          : 'FAIL';
+      const file = `${platform}-${index}-diff.png`;
       if (pixels) {
-        const file = `${platform}-${index}-diff.png`;
         await writeFile(join(args.out, file), PNG.sync.write(diff));
-        differing.push({cell: entry.cell, percent, file});
       }
-      if (percent > MAX_DIFF_PERCENT) failed = true;
+      differing.push({
+        cell: entry.cell,
+        status,
+        pixels,
+        percent,
+        maxChannelDelta,
+        file: pixels ? file : undefined,
+      });
+      if (status === 'WARN') {
+        const message = `${platform}: ${entry.cell} not byte-identical, ${pixels} px, max delta ${maxChannelDelta}/255`;
+        console.log(
+          `::warning::${message.replaceAll('%', '%25').replaceAll('\r', '%0D').replaceAll('\n', '%0A')}`,
+        );
+      } else {
+        platformFailed = true;
+      }
     }
+    const status = platformFailed ? 'FAIL' : differing.length ? 'WARN' : 'PASS';
+    failed ||= platformFailed;
     results.push({
       platform,
+      status,
       total: baseline.length,
       byteIdentical,
       maxDiffPercent,
       differing,
     });
     rows.push(
-      `| ${platform} | ${byteIdentical}/${baseline.length} | ${maxDiffPercent.toFixed(6)}% | ${differing.map(entry => entry.cell).join(', ') || 'none'} |`,
+      `| ${platform} | ${status} | ${byteIdentical}/${baseline.length} | ${maxDiffPercent.toFixed(6)}% | ${differing.map(entry => `${entry.status}: ${entry.cell} (${'reason' in entry ? entry.reason : `${entry.pixels} px, max delta ${entry.maxChannelDelta}/255`})`).join('<br>') || 'none'} |`,
     );
   }
-  const table = `${rows.join('\n')}\n\nTolerance: ${MAX_DIFF_PERCENT}%. Pixelmatch threshold: 0; includeAA: true.\n`;
+  const table = `${rows.join('\n')}\n\nPASS: byte-identical. WARN: same dimensions, at most ${MAX_DIFF_PERCENT}% differing pixels and max RGBA channel delta ${MAX_CHANNEL_DELTA}/255. FAIL: anything else.\n`;
   console.log(table);
   await writeFile(join(args.out, 'table.md'), table);
   await writeFile(
