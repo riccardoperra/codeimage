@@ -161,17 +161,14 @@ export function createWhatsNew(
         release: current.release.id,
       });
     },
-    dotAt: at => {
-      const highlight = RELEASES.flatMap(release => release.highlights)
+    dotAt: at =>
+      RELEASES.flatMap(release => release.highlights)
         .filter(highlight => highlight.where !== null)
         .find(
           highlight =>
-            highlight.where !== null &&
             holds(at, highlight.where) &&
             decision().dots.includes(highlight.id),
-        );
-      return highlight?.id;
-    },
+        )?.id,
     isNew: id => decision().fresh.has(id),
     opened: (id, surface) => track('opened', {surface, highlight: id}),
     seen(id) {
