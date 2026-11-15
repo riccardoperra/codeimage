@@ -11,11 +11,10 @@ import {
   PanelRow,
   TwoColumnPanelRow,
 } from '../../../../components/PropertyEditor/PanelRow';
-import {ColorPickerPopover} from '../../../../components/PropertyEditor/controls/ColorPicker/ColorPicker';
 import {FontSystemPicker} from '../../../../components/PropertyEditor/controls/FontPicker/FontSystemPicker';
 import {PresetSwitcher} from '../../../../components/Presets/PresetSwitcher/PresetSwitcher';
 import type {VariantProps} from '../../contract';
-import {AmbientSwatch} from '../../controls/AmbientSwatch';
+import {SignatureRow} from '../../controls/ControlOverlay';
 import {ControlRow} from '../../controls/ControlRow';
 import type {Control, ControlId} from '../../model';
 import type {IconComponent} from './icons';
@@ -79,61 +78,27 @@ function Form(props: ParentProps) {
 }
 
 function FramePanel(props: PanelProps) {
-  const visible = () => props.model.control('frame.visible');
-  const background = () => props.model.control('frame.background');
   return (
     <Form>
       <section class={styles.section}>
-        <PanelHeader label={background()?.label() ?? 'Background'} />
-        <Show when={visible()}>
-          {control => <Row control={control()} size={props.size} />}
-        </Show>
-        <Show when={background()?.visible() && background()}>
-          {control => {
-            const bg = control();
-            return bg.kind === 'background' ? (
-              <div class={styles.fullWidth}>
-                <AmbientSwatch control={bg} />
-                <ColorPickerPopover
-                  value={bg.value()}
-                  onChange={bg.set}
-                  colors={[...bg.colors]}
-                  gradientColors={[...bg.gradients]}
-                />
-              </div>
-            ) : null;
-          }}
-        </Show>
-        <Rows {...props} ids={['frame.opacity']} />
-      </section>
-      <section class={styles.section}>
-        <PanelHeader label="Layout" />
-        <Rows
-          {...props}
-          ids={['frame.padding', 'frame.radius', 'frame.aspectRatio']}
-        />
-      </section>
-      <section class={styles.section}>
-        <PanelHeader
-          label={
-            props.model.sections
-              .find(section => section.id === 'signature')
-              ?.label() ?? 'Signature'
-          }
-        />
         <Rows
           {...props}
           ids={[
-            'signature.saved',
-            'signature.handle',
-            'signature.style',
-            'signature.platform',
-            'signature.name',
-            'signature.avatar',
-            'signature.profile',
-            'signature.position',
+            'frame.visible',
+            'frame.padding',
+            'frame.radius',
+            'frame.opacity',
+            'frame.aspectRatio',
           ]}
         />
+        <For each={['frame.background', 'frame.backgroundImage'] as const}>
+          {id => (
+            <Show when={props.model.control(id)}>
+              {control => <Row control={control()} size={props.size} />}
+            </Show>
+          )}
+        </For>
+        <SignatureRow />
       </section>
     </Form>
   );
@@ -242,7 +207,10 @@ function CodePanel(props: PanelProps) {
     <Form>
       <section class={styles.section}>
         <PanelHeader label="Language" />
-        <Rows {...props} ids={['editor.language', 'editor.formatter']} />
+        <Rows
+          {...props}
+          ids={['editor.language', 'editor.theme', 'editor.formatter']}
+        />
         <Rows
           {...props}
           ids={['editor.lineNumbers', 'editor.lineNumberStart']}

@@ -1,3 +1,4 @@
+import {panelRow} from '../../../../components/PropertyEditor/EditorSidebar.css';
 import {themeVars} from '@codeimage/ui';
 import {
   createContainer,
@@ -268,6 +269,14 @@ export const panelBody = style({
   padding: '0 16px 16px 0',
 });
 
+globalStyle(`${panelBody} ${panelRow}`, {
+  minHeight: '40px',
+  paddingTop: '2px',
+  paddingBottom: '2px',
+  alignItems: 'center',
+  '@media': {'(max-width: 768px)': {paddingTop: 0, paddingBottom: 0}},
+});
+
 export const section = style({
   display: 'flex',
   flexDirection: 'column',
@@ -318,6 +327,14 @@ export const frameActions = style({
 globalStyle(`${frameActions} > *`, {
   position: 'static',
   transform: 'none',
+  maxWidth: '100%',
+  height: 'auto',
+  minHeight: '50px',
+});
+globalStyle(`${frameActions} > div > div`, {
+  flexWrap: 'wrap',
+  justifyContent: 'center',
+  rowGap: '8px',
 });
 
 export const footer = style({

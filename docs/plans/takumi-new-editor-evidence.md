@@ -67,3 +67,7 @@ The branch follows the UI merge of main and PR #733, including the Inspector/Doc
 ## UI export restoration through cabace36
 
 The new UI export flow now includes share, new-tab, clipboard, alt text and secret confirmation. Its current flow is preserved; normal actions and clipboard receive the persisted renderer, and ZIP captures it once per batch. Target summaries show exact dimensions. 170 app tests, typecheck, lint and production build pass. The UI probe passes Inspector, Dock and Studio with one durable reload each, exact Square dimensions, Restore defaults and two actual WASM renders in the ZIP, with no errors or fallback. Share/new-tab/clipboard and secret-confirmation flows were not exercised by this browser probe.
+
+## Compact panels and line marks through f58f886f
+
+The UI merge applied without conflicts and includes the social-target control fix and compact panel/line-mark integration. 170 app tests, typecheck, lint and production build pass. The actual three-layout probe passes target selection, one durable reload each, exact Square PNGs, Restore defaults and two WASM renders in the ZIP, with no errors or fallback. The earlier image matrices were not rerun.

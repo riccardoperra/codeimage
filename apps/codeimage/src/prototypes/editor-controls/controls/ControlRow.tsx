@@ -4,7 +4,6 @@ import type {JSX} from 'solid-js';
 import {Show} from 'solid-js';
 import {Dynamic} from 'solid-js/web';
 import {
-  FullWidthPanelRow,
   PanelRow,
   TwoColumnPanelRow,
 } from '../../../components/PropertyEditor/PanelRow';
@@ -23,7 +22,7 @@ import {
   SignaturePositionChoice,
   SignatureStyleChoice,
 } from './SignatureFields';
-import {WindowStyleTiles} from './WindowStyleTiles';
+import {PickerField} from './ControlOverlay';
 
 interface Look {
   readonly label?: string;
@@ -65,13 +64,15 @@ export function ControlRow(props: ControlRowProps): JSX.Element {
   const field = (): {
     element: JSX.Element;
     labelFor: string;
-    full?: boolean;
   } => {
-    if (control.id === 'window.style' && control.kind === 'select')
+    if (
+      control.id === 'window.style' ||
+      control.id === 'frame.backgroundImage' ||
+      control.kind === 'background'
+    )
       return {
-        element: <WindowStyleTiles control={control} />,
+        element: <PickerField control={control} id={id} />,
         labelFor: id,
-        full: true,
       };
     if (control.kind === 'segmented') {
       if (control.id === 'signature.style')
@@ -182,8 +183,8 @@ export function ControlRow(props: ControlRowProps): JSX.Element {
           labelFor: `${id}-input`,
         };
       case 'custom':
-        // The image upload takes the whole row; the font picker and every
-        // signature field fit the value column. The text fields name their
+        // The font picker and signature fields fit the value column.
+        // The text fields name their
         // input `<id>-input`.
         return {
           element: <Dynamic component={control.Control} id={id} />,
@@ -193,14 +194,11 @@ export function ControlRow(props: ControlRowProps): JSX.Element {
             control.id === 'signature.profile'
               ? `${id}-input`
               : id,
-          full: control.id === 'frame.backgroundImage',
         };
-      case 'background':
-        return {element: null, labelFor: id};
     }
   };
 
-  const {element, labelFor, full} = field();
+  const {element, labelFor} = field();
   return (
     <Show when={element && control.visible()}>
       <div
@@ -209,12 +207,7 @@ export function ControlRow(props: ControlRowProps): JSX.Element {
         data-kind={control.kind}
       >
         <PanelRow for={labelFor} label={look.label ?? control.label()}>
-          <Show
-            when={full}
-            fallback={<TwoColumnPanelRow>{element}</TwoColumnPanelRow>}
-          >
-            <FullWidthPanelRow>{element}</FullWidthPanelRow>
-          </Show>
+          <TwoColumnPanelRow>{element}</TwoColumnPanelRow>
         </PanelRow>
       </div>
     </Show>

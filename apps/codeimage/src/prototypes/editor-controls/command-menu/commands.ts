@@ -86,6 +86,10 @@ function controlCommands(
       })),
       ...control.colors.map(fill => ({fill, name: fill})),
     ];
+    fills.unshift({
+      fill: control.ambient().value,
+      name: control.ambient().label,
+    });
     return fills.map(({fill, name}) => ({
       group,
       id: `${control.id}=${fill}`,
@@ -145,9 +149,23 @@ export function buildCommands(input: {
     ...listed.sections.flatMap(section =>
       section.controls
         .filter(control => control.visible())
-        .flatMap(control =>
-          controlCommands(control, section.label(), model, reveal),
-        ),
+        .flatMap(control => [
+          ...controlCommands(control, section.label(), model, reveal),
+          ...(reveal &&
+          (control.id === 'frame.aspectRatio' ||
+            control.id === 'font.family' ||
+            control.kind === 'range' ||
+            control.kind === 'background')
+            ? [
+                {
+                  id: `${control.id}.picker`,
+                  group: section.label(),
+                  label: `${control.label()}…`, // i18n
+                  run: () => reveal(control.id),
+                },
+              ]
+            : []),
+        ]),
     ),
   ];
 }

@@ -1,3 +1,4 @@
+import {keepMarkToolbarAboveSelection} from '../../controls/mark-toolbar';
 import {Button, IconButton} from '@codeui/kit';
 import {useModality} from '@core/hooks/isMobile';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
@@ -8,7 +9,6 @@ import {
   onCleanup,
   onMount,
   Show,
-  untrack,
 } from 'solid-js';
 import {Dynamic} from 'solid-js/web';
 import {Footer} from '../../../../components/Footer/Footer';
@@ -21,6 +21,8 @@ import {SettingsIcon} from '../../shell/icons';
 import {claimSettingsEntry, settings} from '../../shell/settings-state';
 import type {VariantMeta, VariantProps} from '../../contract';
 import {FrameActions} from '../../controls/FrameActions';
+import {controlOverlay} from '../../controls/ControlOverlay';
+import {ShortcutHelp} from '../../controls/ShortcutHelp';
 import {ownCompositeKeys} from './controls';
 import {CloseIcon, CollapseIcon, SearchIcon} from './icons';
 import type {Panel, PanelId} from './panels';
@@ -71,6 +73,7 @@ function RailSettings() {
 }
 
 export default function Studio(props: VariantProps) {
+  keepMarkToolbarAboveSelection();
   // The production header and buttons pick their layout once, at load.
   const modality = useModality();
   const compactQuery = matchMedia(styles.COMPACT_QUERY);
@@ -152,22 +155,8 @@ export default function Studio(props: VariantProps) {
     exit.onfinish = () => finishClose(id, returnFocus);
   };
 
-  // A click on the signature in the canvas opens Frame at its Signature group.
-  onCleanup(
-    signatureEditor.register(() => {
-      const frame = PANELS.find(panel => panel.id === 'frame');
-      if (!frame) return;
-      if (untrack(openId) !== 'frame') open(frame);
-      requestAnimationFrame(() => {
-        const row = bodyEl?.querySelector<HTMLElement>(
-          '[data-control="signature.handle"]',
-        );
-        const target = row?.closest('section') ?? row;
-        target?.scrollIntoView({block: 'start', behavior: 'smooth'});
-        row?.querySelector<HTMLElement>('input')?.focus({preventScroll: true});
-      });
-    }),
-  );
+  // Canvas clicks and the Frame row share the same signature editor.
+  onCleanup(signatureEditor.register(() => controlOverlay.open('signature')));
 
   const toggle = (panel: Panel) =>
     openId() === panel.id ? close() : open(panel);
@@ -330,6 +319,7 @@ export default function Studio(props: VariantProps) {
             </button>
             <RailSettings />
           </Show>
+          <ShortcutHelp />
         </nav>
 
         <section

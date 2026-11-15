@@ -1,3 +1,4 @@
+import {keepMarkToolbarAboveSelection} from '../../controls/mark-toolbar';
 import {Button, IconButton} from '@codeui/kit';
 import {useModality} from '@core/hooks/isMobile';
 import {Popover} from '@kobalte/core/popover';
@@ -13,6 +14,7 @@ import {SettingsIcon} from '../../shell/icons';
 import {claimSettingsEntry, settings} from '../../shell/settings-state';
 import type {VariantMeta, VariantProps} from '../../contract';
 import {FrameActions} from '../../controls/FrameActions';
+import {ShortcutHelp} from '../../controls/ShortcutHelp';
 import type {ControlId} from '../../model';
 import {themeStyle} from '../../theme-styles/style';
 import {ThemeSwatch} from '../../ThemeSwatch';
@@ -197,6 +199,7 @@ function BarSettings() {
 }
 
 export default function Dock(props: VariantProps) {
+  keepMarkToolbarAboveSelection();
   const fields = createFields(props.model);
   // The production header shows Export only when the page loaded on a wide
   // window, so the bar offers it in exactly the other case.
@@ -264,7 +267,13 @@ export default function Dock(props: VariantProps) {
   // The command menu needs the screen to itself, so an open panel makes way.
   onCleanup(commandMenu.beforeOpen(close));
   // A command for a control without a list of values opens its panel.
-  onCleanup(commandMenu.setReveal(id => setPanel(PLACES[id].panel)));
+  onCleanup(
+    commandMenu.setReveal(id => {
+      const place = PLACES[id];
+      if (place.group) showMoreGroup(place.group);
+      setPanel(place.panel);
+    }),
+  );
 
   // The Aa list is one narrow column. Every other style is a row of cards as wide as the dock.
   const spansDock = (id: PanelId) => id === 'themes' && themeStyle() !== 'aa';
@@ -460,6 +469,7 @@ export default function Dock(props: VariantProps) {
               </Show>
             </div>
 
+            <ShortcutHelp />
             <Show when={!compact()}>
               <div class={`${styles.frameActions} ${styles.float}`}>
                 <FrameActions frameRef={props.stage.exportRef()} />

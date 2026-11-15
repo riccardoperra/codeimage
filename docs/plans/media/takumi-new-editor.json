@@ -764,7 +764,7 @@
     ]
   },
   "latestUiAlignment": {
-    "uiHead": "cabace36",
+    "uiHead": "f58f886f",
     "appTests": 170,
     "typecheckExit": 0,
     "lintExit": 0,
@@ -810,7 +810,6 @@
       "errors": [],
       "fallbacks": [],
       "wasm": 3
-    },
-    "scope": "Actual download, persistence and per-tab ZIP checked; share/new-tab/clipboard use the same typed renderer payload but were not exercised by this browser probe."
+    }
   }
 }
