@@ -1,7 +1,7 @@
 import {getRootEditorStore} from '@codeimage/store/editor';
-import {Prec, StateEffect} from '@codemirror/state';
-import type {EditorView} from '@codemirror/view';
+import {Compartment, Prec, StateEffect} from '@codemirror/state';
 import {getTooltip, showTooltip, tooltips} from '@codemirror/view';
+import type {EditorView} from '@codemirror/view';
 import {createEffect} from 'solid-js';
 
 function toolbarSpace(view: EditorView) {
@@ -27,6 +27,8 @@ function toolbarSpace(view: EditorView) {
     : viewport;
 }
 
+const placement = new Compartment();
+
 export function keepMarkToolbarAboveSelection() {
   const editor = getRootEditorStore();
   createEffect(() => {
@@ -34,9 +36,10 @@ export function keepMarkToolbarAboveSelection() {
     if (!view) return;
     queueMicrotask(() => {
       if (editor.activeEditorView() !== view) return;
+      if (placement.get(view.state) !== undefined) return;
       view.dispatch({
         effects: StateEffect.appendConfig.of(
-          Prec.highest(tooltips({tooltipSpace: toolbarSpace})),
+          placement.of(Prec.highest(tooltips({tooltipSpace: toolbarSpace}))),
         ),
       });
     });

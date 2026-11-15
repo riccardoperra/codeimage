@@ -1,6 +1,5 @@
-import type {AppLocaleEntries} from '../../../../i18n';
 import {useI18n} from '@codeimage/locale';
-import {keepMarkToolbarAboveSelection} from '../../controls/mark-toolbar';
+import {signatureEditor} from '@codeimage/store/frame/signatureEditor';
 import {Button, IconButton} from '@codeui/kit';
 import {useModality} from '@core/hooks/isMobile';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
@@ -13,23 +12,23 @@ import {
   Show,
 } from 'solid-js';
 import {Dynamic} from 'solid-js/web';
-import {Footer} from '../../localized/Footer';
 import {ColorSwatchIcon} from '../../../../components/Icons/ColorSwatch';
 import {SparklesIcon} from '../../../../components/Icons/SparklesIcon';
-import {ExportInNewTabButton} from '../../../../components/Toolbar/ExportNewTabButton';
 import {ShareButton} from '../../../../components/Toolbar/ShareButton';
+import type {AppLocaleEntries} from '../../../../i18n';
 import {commandMenu} from '../../command-menu/state';
+import type {VariantMeta, VariantProps} from '../../contract';
+import {controlOverlay} from '../../controls/ControlOverlay';
+import {FrameActions} from '../../controls/FrameActions';
+import {keepMarkToolbarAboveSelection} from '../../controls/mark-toolbar';
+import {ShortcutHelp} from '../../controls/ShortcutHelp';
+import {Footer} from '../../localized/Footer';
 import {SettingsIcon} from '../../shell/icons';
 import {claimSettingsEntry, settings} from '../../shell/settings-state';
-import type {VariantMeta, VariantProps} from '../../contract';
-import {FrameActions} from '../../controls/FrameActions';
-import {controlOverlay} from '../../controls/ControlOverlay';
-import {ShortcutHelp} from '../../controls/ShortcutHelp';
 import {ownCompositeKeys} from './controls';
 import {CloseIcon, CollapseIcon, SearchIcon} from './icons';
-import type {Panel, PanelId} from './panels';
-import {signatureEditor} from '@codeimage/store/frame/signatureEditor';
 import {PANELS} from './panels';
+import type {Panel, PanelId} from './panels';
 import * as styles from './studio.css';
 
 export const meta: VariantMeta = {
@@ -332,6 +331,7 @@ export default function Studio(props: VariantProps) {
 
         <section
           ref={panelEl}
+          data-control-panel
           id={PANEL_ID}
           role="region"
           aria-label={openPanel() ? t(openPanel()!.label) : undefined}
@@ -415,13 +415,12 @@ export default function Studio(props: VariantProps) {
                   disabled={!props.stage.canFormat()}
                   onClick={() => props.stage.format()}
                 />
-                <ExportInNewTabButton canvasRef={props.stage.exportRef()} />
                 <props.stage.ExportButton />
               </div>
             }
           >
             <div class={styles.frameActions}>
-              <FrameActions frameRef={props.stage.exportRef()} />
+              <FrameActions />
             </div>
             <div class={styles.footer}>
               <Footer />

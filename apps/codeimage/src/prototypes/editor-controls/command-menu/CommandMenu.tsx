@@ -1,15 +1,6 @@
 import {useI18n} from '@codeimage/locale';
-import {getRootEditorStore} from '@codeimage/store/editor';
-import type {AppLocaleEntries} from '../../../i18n';
-import {
-  markCommands,
-  selectedLines,
-  shortcutKeys,
-} from '../../../components/CustomEditor/plugins/lineMarks/controls';
-import {toggleMark} from '../../../components/CustomEditor/plugins/lineMarks/state';
-import {ControlOverlay, controlOverlay} from '../controls/ControlOverlay';
-import {shortcutHelp} from '../controls/ShortcutHelp';
 import {getAuth0State} from '@codeimage/store/auth/auth0';
+import {getRootEditorStore} from '@codeimage/store/editor';
 import {icons} from '@codeui/kit';
 import {createControlledDialog} from '@core/hooks/createControlledDialog';
 import {Dialog} from '@kobalte/core/dialog';
@@ -25,12 +16,21 @@ import {
   untrack,
 } from 'solid-js';
 import {Changelog} from '../../../components/Changelog/Changelog';
+import {
+  markCommands,
+  selectedLines,
+  shortcutKeys,
+} from '../../../components/CustomEditor/plugins/lineMarks/controls';
+import {toggleMark} from '../../../components/CustomEditor/plugins/lineMarks/state';
+import type {AppLocaleEntries} from '../../../i18n';
+import {ControlOverlay, controlOverlay} from '../controls/ControlOverlay';
+import {shortcutHelp} from '../controls/ShortcutHelp';
 import type {EditorControlsModel} from '../model';
 import {exportCommands, settingsCommands} from '../shell/commands';
 import type {Stage} from '../stage';
 import * as styles from './command-menu.css';
-import type {Action, Command} from './commands';
 import {buildCommands, filterCommands} from './commands';
+import type {Action, Command} from './commands';
 import {createListedModel} from './listed-model';
 import {commandMenu} from './state';
 

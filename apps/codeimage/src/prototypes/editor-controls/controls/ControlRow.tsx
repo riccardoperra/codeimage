@@ -1,31 +1,25 @@
-import type {LocaleKeys} from '@codeimage/locale';
-import type {AppLocaleEntries} from '../../../i18n';
 import {useI18n} from '@codeimage/locale';
+import type {LocaleKeys} from '@codeimage/locale';
 import {RangeField} from '@codeimage/ui';
 import {NumberField} from '@codeui/kit';
-import type {JSX} from 'solid-js';
 import {createEffect, Show} from 'solid-js';
+import type {JSX} from 'solid-js';
 import {Dynamic} from 'solid-js/web';
 import {
   PanelRow,
   TwoColumnPanelRow,
 } from '../../../components/PropertyEditor/PanelRow';
+import type {AppLocaleEntries} from '../../../i18n';
 import type {Control, ControlId} from '../model';
+import {PickerField} from './ControlOverlay';
 import * as styles from './controls.css';
+import {fieldId, SegmentedChoice, SelectChoice, SwitchField} from './fields';
 import type {FieldSize} from './fields';
-import {
-  AspectRatioField,
-  fieldId,
-  SegmentedChoice,
-  SelectChoice,
-  SwitchField,
-} from './fields';
 import {
   SignatureIconChoice,
   SignaturePositionChoice,
   SignatureStyleChoice,
 } from './SignatureFields';
-import {PickerField} from './ControlOverlay';
 
 interface Look {
   readonly label?: LocaleKeys<AppLocaleEntries>;
@@ -70,6 +64,7 @@ export function ControlRow(props: ControlRowProps): JSX.Element {
     labelFor: string;
   } => {
     if (
+      control.id === 'frame.aspectRatio' ||
       control.id === 'window.style' ||
       control.id === 'frame.backgroundImage' ||
       control.kind === 'background'
@@ -125,11 +120,6 @@ export function ControlRow(props: ControlRowProps): JSX.Element {
                 onChange={on => control.set(on ? asSwitch.on : asSwitch.off)}
               />
             ),
-            labelFor: id,
-          };
-        if (control.id === 'frame.aspectRatio' && control.kind === 'select')
-          return {
-            element: <AspectRatioField control={control} />,
             labelFor: id,
           };
         if (control.kind === 'segmented')
