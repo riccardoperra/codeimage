@@ -11,12 +11,14 @@ import {
   FrameSignature,
   frameBottomPadding,
   framePadding,
+  signatureScale,
 } from '../components/Frame/FrameSignature';
 
 import '../theme/global.css';
 import {isAssetLinkUrl, isAssetUrl} from '@codeimage/store/assets/assets';
 import {getEditorStore} from '@codeimage/store/editor';
 import type {ProjectEditorPersistedState} from '@codeimage/store/editor/model';
+import {parseSignature} from '@codeimage/store/frame/model';
 import {getThemeStore} from '@codeimage/store/theme/theme.store';
 import {THEME_REGISTRY} from '@codeimage/store/theme/themeRegistry';
 import type {CustomTheme} from '@codeimage/highlight';
@@ -131,6 +133,12 @@ const SNAPSHOT_SELECTORS: FrameSelectors = {
   window: '[data-snapshot-window]',
 };
 
+// Matches the web Frame for export targets. A snapshot carries no frame
+// width, so a free-size frame draws the signature at scale 1.
+function snapshotSignatureScale(frame: RenderSnapshot['frame']) {
+  return signatureScale(getExportTarget(frame.exportTarget)?.resolution[0]);
+}
+
 // The web FittedWindow centers the window in a named target's content box and
 // scales it down to fit. Takumi cannot run that DOM measurement, so the
 // renderer measures the natural frame first and this places the window.
@@ -142,7 +150,11 @@ export function targetLayout(
   if (!target) return undefined;
   const [width, height] = target.resolution;
   const {padding} = frame;
-  const bottom = frameBottomPadding(padding, frame.signature);
+  const bottom = frameBottomPadding(
+    padding,
+    parseSignature(frame.signature),
+    snapshotSignatureScale(frame),
+  );
   const window = {
     width: Math.max(1, Math.ceil(natural.width) - 2 * padding),
     height: Math.max(1, Math.ceil(natural.height) - padding - bottom),
@@ -218,7 +230,8 @@ function renderFrameBody(
             [styles.frameVars.radius]: `${frame.radius}px`,
             [styles.frameVars.padding]: framePadding(
               frame.padding,
-              frame.signature,
+              parseSignature(frame.signature),
+              snapshotSignatureScale(frame),
             ),
           })}
         >
@@ -269,7 +282,13 @@ function renderFrameBody(
               {code()}
             </DynamicTerminal>
           </div>
-          <FrameSignature signature={frame.signature ?? null} />
+          <FrameSignature
+            // A CLI handle or an older snapshot carries only some fields;
+            // the web reads them the same way.
+            signature={parseSignature(frame.signature)}
+            background={background}
+            scale={snapshotSignatureScale(frame)}
+          />
         </div>
       </div>
     );

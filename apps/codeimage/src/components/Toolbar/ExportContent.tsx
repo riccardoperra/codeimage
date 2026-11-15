@@ -136,7 +136,7 @@ export function ExportPopoverContent() {
             />
             <Checkbox
               checked={exportCanvasStore.get.oneImagePerTab}
-              onChange={value => exportCanvasStore.set('oneImagePerTab', value)}
+              onChange={exportCanvasStore.setOneImagePerTab}
               size={'md'}
               label={t('exportTabs.oneImagePerTab')}
             />

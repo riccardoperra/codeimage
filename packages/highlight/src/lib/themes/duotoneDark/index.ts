@@ -9,6 +9,7 @@ export const duotoneDarkTheme = createTheme({
     label: 'Duotone Dark',
     previewBackground: palette.salmon,
     terminal: {
+      accent: '#ffcc99',
       main: '#2D2B38',
       text: palette.white,
     },

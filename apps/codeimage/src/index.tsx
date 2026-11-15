@@ -4,7 +4,6 @@ import { getRootEditorStore } from "@codeimage/store/editor";
 import { EditorConfigStore } from "@codeimage/store/editor/config.store";
 import { getThemeStore } from "@codeimage/store/theme/theme.store";
 import { getUiStore } from "@codeimage/store/ui";
-import { VersionStore } from "@codeimage/store/version/version.store";
 import type { ThemeProviderProps } from "@codeimage/ui";
 import { backgroundColorVar, CodeImageThemeProvider, SnackbarHost } from "@codeimage/ui";
 import "@codeimage/ui/themes/lightTheme";
@@ -54,16 +53,18 @@ const Editor = () => {
   getThemeStore().loadThemes();
 
   const editorConfig = provideState(EditorConfigStore);
-  const versionState = provideState(VersionStore);
 
   return (
     <Suspense fallback={<EditorPageSkeleton />}>
-      <Show fallback={<EditorPageSkeleton />} when={editorConfig.get.ready && versionState.ready()}>
+      <Show fallback={<EditorPageSkeleton />} when={editorConfig.get.ready}>
         <Page />
       </Show>
     </Suspense>
   );
 };
+
+// The editor in the layout the user chose. It lives with the prototypes for now.
+const UnifiedEditor = lazyWithNoLauncher(() => import("./prototypes/editor-controls"));
 
 const NotFoundPage = lazyWithNoLauncher(() => import("./pages/NotFound/NotFoundPage"));
 
@@ -81,11 +82,24 @@ export function Bootstrap() {
       component: () => {
         const state = getAuth0State();
         return (
-          <Show fallback={<Editor />} when={state.loggedIn()}>
+          <Show fallback={<UnifiedEditor />} when={state.loggedIn()}>
             <Dashboard />
           </Show>
         );
       },
+    },
+    {
+      // Today's editor, kept for comparison.
+      path: "classic",
+      component: Editor,
+    },
+    {
+      path: "prototypes/editor-controls",
+      component: UnifiedEditor,
+    },
+    {
+      path: "prototypes/theme-card",
+      component: lazyWithNoLauncher(() => import("./prototypes/theme-card")),
     },
     {
       path: ":snippetId",

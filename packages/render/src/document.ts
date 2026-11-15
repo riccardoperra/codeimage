@@ -31,8 +31,10 @@ export const projectSnapshotSchema = z.looseObject({
       .nullable()
       .optional(),
     aspectRatio: z.string().nullable().optional(),
+    // Loose: the style, platform, name and avatar fields pass through to the
+    // app, which reads them like a stored project.
     signature: z
-      .object({
+      .looseObject({
         handle: z.string(),
         position: z.enum(['bottom-left', 'bottom-right']),
       })
