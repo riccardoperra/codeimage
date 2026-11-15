@@ -27,7 +27,8 @@ import './dock.css';
 import type {PanelId} from './fields';
 import {createFields, PLACES} from './fields';
 import {CodeIcon, PaddingIcon, SearchIcon, SlidersIcon} from './icons';
-import {PANELS} from './panels';
+import {PANELS, showMoreGroup} from './panels';
+import {signatureEditor} from '@codeimage/store/frame/signatureEditor';
 import {Sheet} from './Sheet';
 import {tokens} from './tokens.css';
 
@@ -245,6 +246,21 @@ export default function Dock(props: VariantProps) {
     onCleanup(() => observer.disconnect());
   });
 
+  // A click on the signature in the canvas opens More at the Signature group.
+  onCleanup(
+    signatureEditor.register(() => {
+      showMoreGroup('signature');
+      setPanel('more');
+      // The panel mounts in the overlay layer on the next frame.
+      requestAnimationFrame(() =>
+        document
+          .querySelector<HTMLElement>(
+            '.dock-more [data-control="signature.handle"] input',
+          )
+          ?.focus({preventScroll: true}),
+      );
+    }),
+  );
   // The command menu needs the screen to itself, so an open panel makes way.
   onCleanup(commandMenu.beforeOpen(close));
   // A command for a control without a list of values opens its panel.

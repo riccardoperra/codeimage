@@ -2,6 +2,7 @@ import AutoLoad from '@fastify/autoload';
 import identity from './modules/identity/index.js';
 import project from './modules/project/index.js';
 import preset from './modules/preset/index.js';
+import signature from './modules/signature/index.js';
 import appApi from './http/app-api.js';
 import configPlugin, {type Config} from './config.js';
 import type {FastifyServerOptions, FastifyPluginAsync} from 'fastify';
@@ -36,6 +37,7 @@ const app: FastifyPluginAsync<AppOptions> = async (
   await fastify.register(identity);
   await fastify.register(project);
   await fastify.register(preset);
+  await fastify.register(signature);
   await fastify.register(appApi);
 };
 export default app;

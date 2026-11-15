@@ -762,5 +762,182 @@
       "http://localhost:4403/@fs/Users/riccardoperra/.t3/worktrees/codeimage/takumi-new-editor/node_modules/.pnpm/@takumi-rs+wasm@2.19.0_csstype@3.2.3_react@19.2.4/node_modules/@takumi-rs/wasm/pkg/takumi_wasm_bg.wasm",
       "http://localhost:4403/@fs/Users/riccardoperra/.t3/worktrees/codeimage/takumi-new-editor/node_modules/.pnpm/@takumi-rs+wasm@2.19.0_csstype@3.2.3_react@19.2.4/node_modules/@takumi-rs/wasm/pkg/takumi_wasm_bg.wasm"
     ]
+  },
+  "latestUiAlignment": {
+    "uiHead": "ad5b2bd0",
+    "appTests": 170,
+    "apiUnitTests": 71,
+    "typecheckExit": 0,
+    "lintExit": 0,
+    "buildExit": 0,
+    "signatureAt1x": {
+      "results": [
+        {
+          "platform": "github",
+          "style": "minimal",
+          "background": "#202028",
+          "position": "bottom-left",
+          "ratio": 1,
+          "displayDpr": 1,
+          "percent": 0.023222060957910014
+        },
+        {
+          "platform": "github",
+          "style": "minimal",
+          "background": "#202028",
+          "position": "bottom-center",
+          "ratio": 1,
+          "displayDpr": 1,
+          "percent": 0.011611030478955007
+        },
+        {
+          "platform": "github",
+          "style": "minimal",
+          "background": "#202028",
+          "position": "bottom-right",
+          "ratio": 1,
+          "displayDpr": 1,
+          "percent": 0.023222060957910014
+        },
+        {
+          "platform": "github",
+          "style": "minimal",
+          "background": "#f8fafc",
+          "position": "bottom-left",
+          "ratio": 1,
+          "displayDpr": 1,
+          "percent": 0.011611030478955007
+        },
+        {
+          "platform": "github",
+          "style": "minimal",
+          "background": "#f8fafc",
+          "position": "bottom-center",
+          "ratio": 1,
+          "displayDpr": 1,
+          "percent": 0.005805515239477504
+        },
+        {
+          "platform": "github",
+          "style": "minimal",
+          "background": "#f8fafc",
+          "position": "bottom-right",
+          "ratio": 1,
+          "displayDpr": 1,
+          "percent": 0.005805515239477504
+        },
+        {
+          "platform": "github",
+          "style": "pill",
+          "background": "#202028",
+          "position": "bottom-left",
+          "ratio": 1,
+          "displayDpr": 1,
+          "percent": 0.042936882782310004
+        },
+        {
+          "platform": "github",
+          "style": "pill",
+          "background": "#202028",
+          "position": "bottom-center",
+          "ratio": 1,
+          "displayDpr": 1,
+          "percent": 0.042936882782310004
+        },
+        {
+          "platform": "github",
+          "style": "pill",
+          "background": "#202028",
+          "position": "bottom-right",
+          "ratio": 1,
+          "displayDpr": 1,
+          "percent": 0.034349506225848
+        },
+        {
+          "platform": "github",
+          "style": "pill",
+          "background": "#f8fafc",
+          "position": "bottom-left",
+          "ratio": 1,
+          "displayDpr": 1,
+          "percent": 0.051524259338772006
+        },
+        {
+          "platform": "github",
+          "style": "pill",
+          "background": "#f8fafc",
+          "position": "bottom-center",
+          "ratio": 1,
+          "displayDpr": 1,
+          "percent": 0.068699012451696
+        },
+        {
+          "platform": "github",
+          "style": "pill",
+          "background": "#f8fafc",
+          "position": "bottom-right",
+          "ratio": 1,
+          "displayDpr": 1,
+          "percent": 0.055817947617003004
+        },
+        {
+          "platform": "github",
+          "style": "card",
+          "background": "#202028",
+          "position": "bottom-left",
+          "ratio": 1,
+          "displayDpr": 1,
+          "percent": 0.010047390190398044
+        },
+        {
+          "platform": "github",
+          "style": "card",
+          "background": "#202028",
+          "position": "bottom-center",
+          "ratio": 1,
+          "displayDpr": 1,
+          "percent": 0.07870455649145135
+        },
+        {
+          "platform": "github",
+          "style": "card",
+          "background": "#202028",
+          "position": "bottom-right",
+          "ratio": 1,
+          "displayDpr": 1,
+          "percent": 0.011721955222131052
+        },
+        {
+          "platform": "github",
+          "style": "card",
+          "background": "#f8fafc",
+          "position": "bottom-left",
+          "ratio": 1,
+          "displayDpr": 1,
+          "percent": 0.015071085285597067
+        },
+        {
+          "platform": "github",
+          "style": "card",
+          "background": "#f8fafc",
+          "position": "bottom-center",
+          "ratio": 1,
+          "displayDpr": 1,
+          "percent": 0.021769345412529097
+        },
+        {
+          "platform": "github",
+          "style": "card",
+          "background": "#f8fafc",
+          "position": "bottom-right",
+          "ratio": 1,
+          "displayDpr": 1,
+          "percent": 0.015071085285597067
+        }
+      ],
+      "errors": [],
+      "fallbacks": [],
+      "fontNetworkIssues": []
+    }
   }
 }

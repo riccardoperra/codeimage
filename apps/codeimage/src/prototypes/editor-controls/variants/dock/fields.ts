@@ -10,7 +10,7 @@ export type PanelId =
   | 'font'
   | 'more';
 
-export type GroupId = 'frame' | 'window' | 'code';
+export type GroupId = 'frame' | 'signature' | 'window' | 'code';
 
 interface Place {
   readonly panel: PanelId;
@@ -40,6 +40,15 @@ export const PLACES: Record<ControlId, Place> = {
   'frame.radius': inGroup('frame'),
   'frame.aspectRatio': inGroup('frame'),
 
+  'signature.saved': inGroup('signature'),
+  'signature.handle': inGroup('signature'),
+  'signature.style': inGroup('signature'),
+  'signature.platform': inGroup('signature'),
+  'signature.name': inGroup('signature'),
+  'signature.avatar': inGroup('signature'),
+  'signature.profile': inGroup('signature'),
+  'signature.position': inGroup('signature'),
+
   'window.header': inGroup('window'),
   'window.style': inGroup('window'),
   // As today, the tab accent is a checkbox inside the window style picker.
@@ -59,6 +68,7 @@ export const PLACES: Record<ControlId, Place> = {
 
 export const GROUPS: readonly {id: GroupId; label: string}[] = [
   {id: 'frame', label: 'Frame'},
+  {id: 'signature', label: 'Signature'},
   {id: 'window', label: 'Window'},
   {id: 'code', label: 'Code'},
 ];

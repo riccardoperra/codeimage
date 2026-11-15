@@ -1,4 +1,8 @@
-import {readFrameExportProperties, parseTabMarks} from './project.model.js';
+import {
+  readFrameExportProperties,
+  writeFrameSignature,
+  parseTabMarks,
+} from './project.model.js';
 import type * as repository from './project.repository.js';
 import type {
   Project as ProjectRow,
@@ -80,14 +84,7 @@ export async function createProject(
         create: {
           exportTarget: draft.frame.exportTarget,
           aspectRatio: draft.frame.aspectRatio,
-          signatureHandle:
-            draft.frame.signature === undefined
-              ? undefined
-              : (draft.frame.signature?.handle ?? null),
-          signaturePosition:
-            draft.frame.signature === undefined
-              ? undefined
-              : (draft.frame.signature?.position ?? null),
+          ...writeFrameSignature(draft.frame.signature),
           background: draft.frame.background,
           opacity: draft.frame.opacity,
           radius: draft.frame.radius,
@@ -157,14 +154,7 @@ export async function updateProject(
           update: {
             exportTarget: changes.frame.exportTarget,
             aspectRatio: changes.frame.aspectRatio,
-            signatureHandle:
-              changes.frame.signature === undefined
-                ? undefined
-                : (changes.frame.signature?.handle ?? null),
-            signaturePosition:
-              changes.frame.signature === undefined
-                ? undefined
-                : (changes.frame.signature?.position ?? null),
+            ...writeFrameSignature(changes.frame.signature),
             background: changes.frame.background,
             opacity: changes.frame.opacity,
             radius: changes.frame.radius,

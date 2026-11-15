@@ -55,3 +55,7 @@ Main through `1ffe0c9d` is included. After rebuilding the updated config package
 The first repeat of the UI probe after this merge completed its export actions but failed its page-error gate because a dynamic editor module failed to load during development-server startup. That run is retained separately and is not a pass.
 
 At a running server, the repeat passes Inspector, Dock and Studio with one persisted and hydrated reload per layout, target picker and scale summaries, 1080×1080 PNGs, Restore defaults and the per-tab ZIP. Two actual WASM renders are observed, with no page errors or fallback. The earlier five-reload-per-layout result remains recorded separately.
+
+## Following the UI signature merge
+
+The integration now includes UI head `ad5b2bd0` (#729). The merge keeps tab marks, window surfaces and the current saved-signature schema together. 170 app tests, 71 API unit tests, app typecheck, lint and production build pass. The native 1x signature matrix was rerun against the actual merged frontend: all 18 combinations pass, with no page errors, fallback or font network issues. Avatar loading and signature CRUD runtime flows remain outside this image probe.

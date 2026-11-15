@@ -107,7 +107,10 @@ export function SelectChoice(props: {
   );
 }
 
-/** Today's aspect ratio picker, bound to the model's select, where `null` is Auto. */
+/**
+ * Today's aspect ratio picker, bound to the model's select, where `null` is
+ * Auto. Its social sizes write the frame's export target directly.
+ */
 export function AspectRatioField(props: {control: SelectControl}) {
   const frame = getFrameState();
   return (
