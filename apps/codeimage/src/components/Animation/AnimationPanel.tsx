@@ -70,7 +70,10 @@ export function AnimationPanel() {
             size={'sm'}
             theme={'secondary'}
             aria-label={t('animation.stop')}
-            onClick={() => animation.actions.edit()}
+            onClick={() => {
+              animation.actions.edit();
+              editor.activeEditorView()?.focus();
+            }}
           >
             <StopIcon />
           </IconButton>
