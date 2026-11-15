@@ -4,7 +4,7 @@ Add a handle to exported snippets and save reusable signatures.
 
 ## Sub-features
 
-Minimal/Pill/Card, icon/name/avatar/position; save/apply/update/rename/default/delete, limit three.
+Minimal/Pill/Card, icon/name/avatar (Initials/Profile/Upload)/position; save/apply/update/rename/set or remove default/delete; limit `VITE_SIGNATURE_LIMIT`, three by default.
 
 ## How to get to it (user POV)
 
@@ -16,7 +16,7 @@ Audit opens `[data-control-overlay="signature"]`, fills @handle or profile link,
 
 Source: `prototypes/editor-controls/controls/SignatureFields.tsx`, `controls/SavedSignatures.tsx`, `state/signatures/bridge.ts`.
 
-Run `signature-management` to create its own saved signature, assert the Pill canvas attribute, rename the saved record and delete it through the menu. It has no dependency on a previous case. Default signatures, avatar sources and the three-signature limit remain separate coverage.
+Run `signature-management` to create its own saved signature, assert the Pill canvas attribute, rename the saved record and delete it through the menu. It has no dependency on a previous case. Default signatures and avatar sources remain separate coverage. At the limit, menuitem Save as new is aria-disabled and a note reads "You can keep 3 signatures. Delete one to save another."; no audit case asserts it.
 
 ## Gotchas
 
