@@ -18,9 +18,25 @@ export function createUi(quiet = false) {
   const common = {output: process.stderr, withGuide: false};
   let progress: ReturnType<typeof spinner> | undefined;
   let phase = '';
+  let status = '';
   let downloading = 0;
+  const files = () => `${downloading} file${downloading === 1 ? '' : 's'}`;
   const text = (message: string) => {
     process.stderr.write(message.endsWith('\n') ? message : `${message}\n`);
+  };
+  const show = (message: string) => {
+    status = message;
+    progress?.message(message);
+  };
+  const warn = (message: string) => {
+    if (mode !== 'interactive') return text(`codeimage: ${message}`);
+    // A line written under a running spinner stays glued to its frame.
+    progress?.clear();
+    log.warn(message, common);
+    if (progress) {
+      progress = spinner(common);
+      progress.start(status);
+    }
   };
   const success = (message: string) =>
     mode === 'interactive'
@@ -52,7 +68,7 @@ export function createUi(quiet = false) {
     text,
     success,
     async run<T>(label: string, work: () => Promise<T>): Promise<T> {
-      phase = label;
+      phase = status = label;
       if (mode === 'interactive') {
         progress = spinner(common);
         progress.start(label);
@@ -68,19 +84,14 @@ export function createUi(quiet = false) {
     fontEvent(event: FontEvent) {
       if (event.type === 'download') {
         downloading++;
-        progress?.message(`Downloading ${event.label} (${downloading} files)`);
+        show(`Downloading ${event.label} (${files()})`);
       } else if (event.type === 'downloaded') {
         downloading--;
-        progress?.message(
-          downloading ? `Downloading fonts (${downloading} files)` : phase,
-        );
+        show(downloading ? `Downloading fonts (${files()})` : phase);
         if (mode === 'plain')
           text(`codeimage: downloaded ${event.label} (${event.bytes} B)`);
-      } else if (event.type === 'cache-unwritable') {
-        if (mode === 'interactive') log.warn(event.message, common);
-        else text(`codeimage: ${event.message}`);
-      } else if (mode !== 'quiet')
-        text(`codeimage: repairing cached font ${event.fontId}`);
+      } else if (event.type === 'cache-unwritable') warn(event.message);
+      else if (mode !== 'quiet') warn(`repairing cached font ${event.fontId}`);
     },
     rendered(result: {path: string; bytes: number; ms: number}) {
       success(
