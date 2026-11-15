@@ -280,10 +280,10 @@ function Drawing(props: {id: ContentHighlightId}) {
         <Tile class={styles.signedTile}>
           <Bars />
           <div class={`${styles.signatures} ${styles.explain}`}>
-            <span>@codeimage</span>
-            <span>@codeimage</span>
+            <span>@dev</span>
+            <span>@dev</span>
             <span>
-              <b>@</b> codeimage
+              <b>@</b> dev
             </span>
           </div>
         </Tile>
@@ -297,7 +297,9 @@ function Drawing(props: {id: ContentHighlightId}) {
                   when={tone === 0}
                   fallback={
                     <span class={styles.windowTab}>
-                      {tone === 1 ? 'index.tsx' : '› _'}
+                      <Show when={tone === 1} fallback={'› _'}>
+                        <Bar width="68%" />
+                      </Show>
                     </span>
                   }
                 >

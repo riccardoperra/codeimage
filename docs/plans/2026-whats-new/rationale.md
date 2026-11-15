@@ -165,3 +165,42 @@ first and CLI after Takumi gives eight cards filling four rows without gaps.
 Below 600px every card spans one column. Only headline cards rise, at a 45ms
 stagger; archive and accessory rows and dots stay still. Reduced motion fades
 without translation. Cards put the media above centered title and copy.
+
+## Round four verification
+
+The headless Chromium pass used the guest editor on port 4350 without MSW.
+The Showcase passed at 1440, 1024, 768 and 390px in both themes, including
+its top and Also new list. The six-card grid filled three rows. An eight-card
+DOM fixture filled four rows, with no registry changes. Both passed overflow
+checks at every integer width from 360 to 1440px. The single-column breakpoint
+is 600px.
+
+The browser pass checked all eleven Nudge steps, minimize and reload, keyboard
+minimize and stepping, the three eligible dots, archive order and 64×44
+thumbnails in both themes, and the existing control reveals. Export reveals
+opened the Export menu. All thirteen illustrations explained once on viewport
+entry, used only transform and opacity, and did not restart on reentry.
+Reduced motion used opacity alone. Still drawings and thumbnails had no
+animations. The gallery was captured at device scales 1 and 2.
+
+PNG downloads with a visible line-marks dot and with the dot overlays hidden
+were pixel-identical at 1779×1404. No console errors, uncaught page errors or
+failed HTTP responses remained in the final pass. The app typecheck, formatter
+check and all 269 tests in 37 files passed. Oxlint passed with 44 warnings in
+unchanged files.
+
+Review found three polish issues. The shorter sample handle `@dev` fits the
+signature illustration at tablet widths. An abstract tab bar replaces the
+filename in the window-styles drawing so a narrow card cannot clip its label.
+Light-theme cards use a faint text-colour tint to keep their rounded boundaries
+visible against the white sheet; their media panels stay dark.
+
+The evidence and rerunnable browser scripts are in the requested temporary
+`v2d` directory. Early runs exposed old dot expectations and verification
+selector assumptions, including the Settings alertdialog role and explicit
+colour mode. Those checks were corrected and rerun. Takumi fallback was
+confirmed in source and the existing test suite; a failing Takumi export was
+not forced in this browser pass. The classic route, Firefox, Safari, production
+authentication and API services were not exercised. New German and Spanish
+copy has no native-language review. Upcoming Animate and CLI functionality
+remains outside this verification.

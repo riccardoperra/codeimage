@@ -327,6 +327,9 @@ export const card = style([
     '@media': {'screen and (max-width: 600px)': {gridColumn: '1 / -1'}},
   },
 ]);
+globalStyle(`:root[data-cui-theme="light"] ${card}`, {
+  background: `color-mix(in srgb, ${c.baseText} 4%, ${c.panel.background})`,
+});
 globalStyle(`${card} > [data-picture]`, {flexShrink: 0});
 globalStyle(`${card}:first-child > [data-picture]`, {
   height: '168px',
