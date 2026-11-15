@@ -2,7 +2,6 @@ import type * as registry from './registry';
 import type * as solid from 'solid-js';
 import {createRoot} from 'solid-js';
 import {expect, it, vi} from 'vitest';
-import {holds} from './decide';
 import {createWhatsNew} from './whats-new.store';
 
 vi.mock('solid-js', () =>
@@ -50,10 +49,22 @@ it('shows one dot per place and gives the next export item its turn within the t
   }
 });
 
-it('shares the same containment rule between a place and its items', () => {
-  expect(holds('export', 'export:tabs')).toBe(true);
-  expect(holds('export:tabs', 'export:tabs')).toBe(true);
-  expect(holds('export:tabs', 'export:tabs-other')).toBe(false);
-  expect(holds('setting', 'setting:layout')).toBe(true);
-  expect(holds('command-menu', 'export:tabs')).toBe(false);
+it('draws a highlight only at its place or the place that contains it', async () => {
+  const app = createRoot(dispose => ({
+    store: createWhatsNew(
+      {get: async () => undefined, update: async () => {}, del: async () => {}},
+      () => Date.parse('2026-11-14'),
+    ),
+    dispose,
+  }));
+  try {
+    await new Promise(resolve => setTimeout(resolve, 0));
+    expect(app.store.dotAt('export:second')).toBe('command-menu');
+    expect(app.store.dotAt('export:tabs')).toBe('tabs');
+    expect(app.store.dotAt('export:tab')).toBeUndefined();
+    expect(app.store.dotAt('command-menu')).toBeUndefined();
+    expect(app.store.dotAt('setting:layout')).toBe('layouts');
+  } finally {
+    app.dispose();
+  }
 });
