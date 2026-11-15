@@ -320,6 +320,9 @@ importers:
       eslint-plugin-solid:
         specifier: 0.14.5
         version: 0.14.5(eslint@9.39.4(jiti@2.6.1))(typescript@6.0.3)
+      gifenc:
+        specifier: 1.0.3
+        version: 1.0.3
       husky:
         specifier: 9.1.7
         version: 9.1.7
@@ -7626,6 +7629,9 @@ packages:
   get-uri@6.0.5:
     resolution: {integrity: sha512-b1O07XYq8eRuVzBNgJLstU6FYc1tS6wnMtF1I1D9lE8LxZSOGZ7LhxN54yPP6mGw5f2CkXY2BQUL9Fx41qvcIg==}
     engines: {node: '>= 14'}
+
+  gifenc@1.0.3:
+    resolution: {integrity: sha512-xdr6AdrfGBcfzncONUOlXMBuc5wJDtOueE3c5rdG0oNgtINLD+f2iFZltrBRZYzACRbKr+mSVU/x98zv2u3jmw==}
 
   giget@3.3.1:
     resolution: {integrity: sha512-r+mvuDjrjMpsdw46Kmeydb8bdHm7wOKw8wNBtTndkjbPjgAp5oUJUxRE76wZFknxIPokfWvep2qSXK37aXE6zg==}
@@ -18696,6 +18702,8 @@ snapshots:
       debug: 4.4.3
     transitivePeerDependencies:
       - supports-color
+
+  gifenc@1.0.3: {}
 
   giget@3.3.1: {}
 
