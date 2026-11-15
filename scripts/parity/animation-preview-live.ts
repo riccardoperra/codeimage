@@ -47,10 +47,13 @@ export async function runPreviewParity(options: {
   await mkdir(options.out, {recursive: true});
   const browser = await chromium.launch({channel: 'chrome'});
   const app = await browser.newPage({viewport: {width: 1440, height: 900}});
-  const reference = await browser.newPage({
-    viewport: {width: 1440, height: 900},
-    deviceScaleFactor: scale,
+  // A real device scale: an emulated one moves edges and glyphs by
+  // sub-pixels that Takumi does not.
+  const referenceBrowser = await chromium.launch({
+    channel: 'chrome',
+    args: [`--force-device-scale-factor=${scale}`, '--window-size=2000,1200'],
   });
+  const reference = await referenceBrowser.newPage({viewport: null});
   let comparisons = 0;
   const results: {mode: string; ms: number; diff: number}[] = [];
   try {
@@ -164,12 +167,10 @@ export async function runPreviewParity(options: {
           };
         });
         const css = `${snapshot.css}\nhtml,body{margin:0!important;background:transparent!important} [data-animation-stage]{position:relative!important;zoom:1!important}`;
-        await reference.setViewportSize({
-          width: snapshot.width,
-          height: snapshot.height,
-        });
+        // Standards mode, as the app: in quirks mode a line of only the
+        // watermark's inline SVG has no strut, which moves the watermark.
         await reference.setContent(
-          `<style>${faces}${css}</style>${snapshot.html}`,
+          `<!doctype html><style>${faces}${css}</style>${snapshot.html}`,
         );
         await reference.evaluate(async time => {
           await document.fonts.ready;
@@ -231,5 +232,6 @@ export async function runPreviewParity(options: {
     );
   } finally {
     await browser.close();
+    await referenceBrowser.close();
   }
 }

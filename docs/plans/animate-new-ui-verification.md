@@ -19,6 +19,38 @@ All commits carry the requested co-author trailer. Each implementation slice
 was pushed to `feat/animate-new-ui`. No other branch was pushed, no PR was
 merged, and the PR body was left unchanged.
 
+## Review after merging main
+
+`origin/main` at `532da1e81e38b187704d9885c256bc915e635960` (the unified
+editor #711/#737 and Takumi #731) was merged in as `291e6d5f`. Four files
+conflicted:
+
+| File                                        | Resolution                                                                                   |
+| ------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| `apps/api/.../project.repository.ts`        | Both import lists: `parseAnimationSettings` and main's reordered `parseTabMarks`             |
+| `apps/codeimage/.../Frame/PreviewFrame.tsx` | This branch's `FrameView`/`PreviewFrame` split; main's copy-hotkey renderer moves into `PreviewFrame` |
+| `apps/codeimage/src/i18n/index.ts`          | `animationLocale` and main's `whatsNewLocale` in every locale                                |
+| `.../editor-controls/stage.tsx`             | `Stage` keeps `AnimatePanel` and `AnimateToggle` and gains main's `compact`                 |
+
+After the merge and the review fixes:
+
+| Check                                   | Result                                                                    |
+| --------------------------------------- | ------------------------------------------------------------------------- |
+| App Vitest                              | 275 passed, 42 files                                                      |
+| API unit Vitest (CI env)                | 77 passed, 15 files                                                       |
+| API update/GET against Docker Postgres  | 5 passed                                                                  |
+| `pnpm libs:build`, API `build:ts`       | Passed                                                                    |
+| `pnpm typecheck`, `pnpm lint`           | Passed; lint has warnings only, none in Animate files                     |
+| Chrome UI matrix                        | 66 passed: 11 lanes × 3 layouts × 2 sizes                                 |
+| Localization browser matrix             | 24 passed: en/it/de/es × 3 layouts × 2 sizes                              |
+| Locale keys                             | 514 keys and placeholders match in it, en, de, es                         |
+| Default timelines vs `main`             | 20 byte-identical                                                         |
+| Static export vs `main`                 | DOM and Chrome pixels identical, 5 window styles × all tabs/active tab    |
+| Chrome/Takumi preview parity            | Target 1× and 2×, free 2×: 39/39. Free 1×: 35/39, see [below](#free-size-parity) |
+
+Two lanes needed main's What's new nudge (#725) hidden: it settles over Dock's
+phone bar and took the click meant for the Animate toggle.
+
 ## Results
 
 | Check                                        | Result                                                      |
@@ -32,7 +64,7 @@ merged, and the PR body was left unchanged.
 | Chrome UI matrix                             | 66 passed: 11 lanes × 3 layouts × 2 sizes                   |
 | Localization browser matrix                  | 24 passed: en/it/de/es × 3 layouts × 2 sizes                |
 | Locale keys/placeholders and hard-coded text | 481 matching keys; negative controls passed                 |
-| Target-size Chrome/Takumi comparison         | 39/39 within 0.5%; worst 0.175%                             |
+| Target-size Chrome/Takumi comparison         | 39/39 within 0.5%; worst 0.175% (first harness)            |
 | oxfmt                                        | Passed on changed files                                     |
 | oxlint                                       | No errors; existing layout reactivity warnings remain       |
 
@@ -92,20 +124,67 @@ its source, SSR entry and branch remain untouched:
 fnm exec --using=v24.14.0 node scripts/parity/animation-preview.ts --preview --url http://localhost:4377/ --render-root /path/to/packages/render
 ```
 
-## Remaining rendering follow-up
+## Free-size parity
 
-The additional small free-size comparison is **not green** at the strict 0.5%
-threshold: 2/39 frames pass at 1×, with a worst difference of 1.579%. This is
-separate from the passing target-size fixture. The report retains this result
-rather than relaxing the threshold. Investigate the free-size Chrome/Takumi
-rendering gap before claiming parity for every export size.
+The first run of this report found the free-size comparison at 1× **not
+green**: 2/39 frames within 0.5%, worst 1.579%, while target size passed
+39/39. The review after the merge of `main` (`532da1e8`) traced it. It is not
+a regression of this branch: two harness artefacts plus one Takumi limit that
+predates it.
 
-Reproduce with the same command plus `--free-size --scale 1`. Results are in
-[free-size-parity.json](media/animate/free-size-parity.json); a failing sample
-has [Chrome](media/animate/free-size-chrome.png),
+| Harness                         | Free 1×          | Free 2×          | Target 1×        | Target 2×        |
+| ------------------------------- | ---------------- | ---------------- | ---------------- | ---------------- |
+| Before the fix                  | 12/39, 1.514%    | 0/39, 1.139%     | 39/39, 0.050%    | 39/39, 0.148%    |
+| Before the fix, no step timings | 10/39, 0.999%    | 0/39, 1.246%     | 39/39, 0.046%    | 39/39, 0.158%    |
+| Doctype only                    | 35/39, 0.943%    | 14/39, 0.802%    | 39/39, 0.008%    | 39/39, 0.122%    |
+| Doctype and real device scale   | **35/39, 1.146%** | **39/39, 0.071%** | **39/39, 0.008%** | **39/39, 0.003%** |
+| Same, no step timings           | 39/39, 0.472%    | 39/39, 0.337%    | 39/39, 0.008%    | 39/39, 0.002%    |
+
+1. **Quirks mode (harness).** The reference page was written with
+   `setContent` and no doctype, so Chrome drew it in quirks mode. There a line
+   that holds only an inline `<svg>` gets no strut: the watermark box
+   (`terminal.css.ts` `watermark`, absolute at `bottom: -6px`, holding a
+   125 px wide SVG) is 24.297 px tall instead of 28.797 px, and the logo sits
+   4.5 px lower than in the app. Takumi lays it out as standards mode does.
+   That is 540 to 620 changed pixels on every hold at 1×: 0.5 to 0.6% of a
+   410×267 free-size frame, but 0.04% of a 1600×900 target, which is the only
+   reason target size passed.
+2. **Emulated device scale (harness).** The 2× reference used Playwright's
+   `deviceScaleFactor`, which moves edges and glyphs by sub-pixels. A Chrome
+   launched with `--force-device-scale-factor` and `viewport: null` takes
+   free 2× from 14/39 to 39/39 (holds about 0.001%).
+3. **Fractional transform edges (Takumi, pre-existing).** The four frames
+   still over the bar at free 1× are mid-transition (2109 ms in every header
+   mode, 2217 ms in Current tab). In free size the frame box animates its size
+   and position: at 2109 ms it is `translate(0.479px, 0.585px)` and
+   409.016×265.578 px. Chrome antialiases those edges (edge alphas 106, 132,
+   123, 149); Takumi rounds them (127, 128, 0, 0). A lone `<div>` with the same
+   transform reproduces it with no app code. One full edge row is 0.37% of a
+   410×267 image, so a few edges pass 0.5%; at 2×, or at a target size where
+   the frame does not resize, the same edges stay under it. The no-step-timing
+   row passes only because its samples fall elsewhere in the motion: sampled
+   every 25 ms it scores 48/58, worst 0.988% at 2150 ms, the same edge pattern.
+
+Why it is not this branch:
+
+- The static export frame, snapshotted the same way on `main` and on this
+  branch, gives the same diffs (quirks 1×: 492, 589, 499 px; standards 1×: 54,
+  57, 42 px). The export DOM and its Chrome pixels are identical to `main` for
+  macOS, Windows, Card, Editor and Shell, with all tabs and with only the
+  active one.
+- `scripts/parity/animation-defaults.ts --base 532da1e8` passes: the 20
+  default timelines are byte-identical to `main`.
+- `parseInt` of the scene size truncates nothing: `planTimeline` rounds the
+  scene to whole pixels.
+
+`scripts/parity/animation-preview-live.ts` now writes a doctype and renders
+the reference in a Chrome with a real device scale. Free size at 1× stays a
+known Takumi limit, not a gate. Reproduce with the preview command above plus
+`--free-size --scale 1` (or `--scale 2`, with or without `--free-size`). Results:
+[free-size-parity.json](media/animate/free-size-parity.json), and the worst
+frame's [Chrome](media/animate/free-size-chrome.png),
 [Takumi](media/animate/free-size-takumi.png) and
-[diff](media/animate/free-size-diff.png) images. Passing target results are in
-[target-parity.json](media/animate/target-parity.json).
+[diff](media/animate/free-size-diff.png) images.
 
 The CLI's independent SSR export integration remains owned by #726, as the
 plan specifies. This verification does not claim that its unre-based renderer

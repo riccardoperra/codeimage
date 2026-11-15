@@ -354,4 +354,4 @@ A4 adds an "Export animation…" entry to the Export menu (`prototypes/editor-co
 - Give easing's segmented presets an explicit native Escape callback while preserving existing segmented controls' handling. Title-field Escape reaches the island.
 - Keep compact Dock targets at 40 px by showing the export action's icon. Allow strip grid children to shrink on phones.
 - Keep valid steps when their hold is missing/invalid, applying the documented field-wise default.
-- The branch lacks the CLI renderer/SSR package. A live-markup parity lane reads an existing renderer and fonts without changing its checkout. Target-size parity passes; the extra small free-size comparison remains an explicit follow-up in the verification note.
+- The branch lacks the CLI renderer/SSR package. A live-markup parity lane reads an existing renderer and fonts without changing its checkout. Target-size parity passes. The free-size gap was two harness artefacts (quirks mode, emulated device scale) and a pre-existing Takumi edge limit at 1×; see [Free-size parity](animate-new-ui-verification.md#free-size-parity).
