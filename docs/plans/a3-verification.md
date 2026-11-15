@@ -279,3 +279,71 @@ Chrome from Playwright 1.57, against Vite with the mock API, driven by a scratch
 | Read-only sync | Pass. A timing change sends no PUT on a project the user does not own and one PUT on their own project, with no save error. With the fix reverted, the read-only project sent one PUT. |
 
 A transition scene with line numbers on draws the gutter, 1 to 3, with the new lines fading in. The screenshots in `media/` were not replaced, since the stage and the panel did not change.
+
+## Fix round after the verdict
+
+An independent verifier blocked `1e6c5d12` on one blocker and three defects. Each one has a lane in `scripts/parity/live-a3.ts`. The lanes landed in `c866e637` before the fixes, and all four fail on the code of `1e6c5d12`.
+
+```text
+FAIL  a hold in free size paints the scene frame on the plain workspace
+AssertionError [ERR_ASSERTION]: the editor layer paints nothing
++ [
++   'Frame_overlay__hny9s4l'
++ ]
+FAIL  Move later twice in a hold popover moves the same step twice
+AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+FAIL  releasing a scrub keeps the time of the last drag
+AssertionError [ERR_ASSERTION]: the drag left the playhead at 1278.1810816334475 ms and the release at 1317.5728581460676 ms
+FAIL  a key typed on the preview of a read-only project edits nothing
+AssertionError [ERR_ASSERTION]: the focus lands on the code
+```
+
+### The editor frame painted behind the preview
+
+With three tabs in free size, the editor frame is 566x289 and the scene frame of the a.ts hold is 488x244. `AnimationPreview` hid the editor layer with `visibility: hidden`. The frame overlay sets its own `visibility` from a variable whose value is `visible`, so the overlay kept painting the frame's background around the smaller scene frame. The checkerboard of `FrameHandler` also stayed at the editor's size, since it fills the content box that the editor layer sizes.
+
+`c601059b` hides the editor layer with `opacity: 0` and `inert`. No child can undo an ancestor's opacity, and `inert` keeps the hidden code out of the focus order and the accessibility tree. The layer keeps its layout, because its measured size sizes the export frame. While the stage shows, a `:has()` rule hides the `FrameHandler` checkerboard, and the scene frame draws the same squares behind its own overlay. The workspace shows around the scene frame, as it will around the export, and a hidden or translucent frame still shows the squares inside the export's bounds.
+
+The lane counts the elements of the editor layer that `checkVisibility` reports as painted, and it compares every pixel within 24 px around the editor frame, outside the scene frame, with the workspace color. It also checks that the scene frame is centered where the editor frame was. Run it with `--shot <path>` to save what it compares.
+
+| Before | After |
+|---|---|
+| ![The a.ts hold with the editor frame and its checkerboard around the scene frame](media/a3-fix-ghost-before.png) | ![The a.ts hold on the plain workspace](media/a3-fix-ghost-after.png) |
+
+A capture of the canvas in six states compared the code before and after the fix, with the same steps and settings.
+
+| State | Pixels that differ |
+|---|---|
+| Editing, frame shown | 0 |
+| Editing, frame hidden | 0 |
+| Preview of the a.ts hold, frame shown | 31809, the ghost removed |
+| Preview, frame hidden | 41872, the checkerboard now matches the scene frame |
+| Preview, frame at 50% opacity | 109245, the same |
+| Preview, X landscape target | 21, at the four rounded corners of the frame |
+
+The 21 pixels of the target are the antialiased corners of the frame. Before the fix the editor frame showed through them, and now the workspace does. Nothing else in the target preview changed.
+
+### Move later followed the position
+
+The steps were listed with `<Index>`, so each row was bound to a position. After **Move later**, the open popover showed the step that took the old position, and a second click moved that step back. `dac5b311` lists the steps with `<For>` over their tab ids. The row and its popover follow the step, and a hold change keeps the popover open, since the id does not change. The lane starts from c, a, b, clicks **Move later** twice and **Move earlier** once on c, and gets a, c, b, then a, b, c, then a, c, b. `d71e9bbb` adds a hold change to the lane, which then checks that the popover stays open. With `<For>` over the step objects instead of the ids, that check fails.
+
+### The playhead jumped on release
+
+The time label grew with the digits of the playhead, from "0 s" to "1.28 s", which narrowed the track. The release then read the pointer against another width. `e1fa1cf2` stacks an invisible copy of the longest time up to the end under the label. With tabular digits, the label keeps one width for a given duration. For a 4.2 s animation the label is 85 px at 0 s, 1.23 s, 4.19 s, and 4.2 s, and for 31.8 s it is 102 px. The track width varies by 1/64 px between labels, about 0.2 ms of time. The lane presses at 0 s, drags once to 40% of the track, and checks that the release keeps the time of the drag within 1 ms. It failed by 39 ms before the fix.
+
+### Focus after a key on a read-only preview
+
+A read-only editor is not editable, so CodeMirror leaves its content out of the focus order, and `view.focus()` did nothing. `659b9eb2` gives the read-only content `tabindex="0"`. In a project the user does not own, a key on the preview and **Stop** now return the focus to the code, as they do in an owned one. The read-only lane checks both. Esc and Enter on the preview take the same path as a key.
+
+### Gates
+
+| Gate | Result |
+|---|---|
+| `pnpm lint` | 0 errors, no warning in a changed file |
+| `pnpm typecheck` | passes |
+| App tests | 134 passed in 22 files |
+| API unit tests | 63 passed in 13 files, with the CI environment |
+| `pnpm why shiki --filter=@codeimage/app` | prints nothing |
+| `vite build` of the app | passes |
+| `scripts/parity/live-a3.ts` | 15 of 15 lanes pass. On a cold Vite the first lane timed out, because Vite optimized its dependencies and reloaded the page, and it passed on the next run. |
+| Static PNG export | 0 px different from `feat/animation-core`, for one tab at 593x468 and for three tabs at 890x468 |
