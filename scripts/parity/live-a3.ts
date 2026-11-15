@@ -293,6 +293,11 @@ const lanes: Record<string, (page: Page) => Promise<void>> = {
     assert.deepEqual(await stepOrder(page), ['a', 'b', 'c']);
     await dialog.getByRole('button', {name: 'Move earlier'}).click();
     assert.deepEqual(await stepOrder(page), ['a', 'c', 'b']);
+    await dialog.locator('input').click();
+    await page.keyboard.press('ArrowUp');
+    const {steps} = (await read(page)).settings;
+    assert.equal(steps.find(step => step.editorId === 'c')!.holdMs, 900);
+    assert.ok(await dialog.isVisible(), 'the popover stays open');
   },
 
   async 'releasing a scrub keeps the time of the last drag'(page) {
