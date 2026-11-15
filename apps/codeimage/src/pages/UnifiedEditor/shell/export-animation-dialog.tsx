@@ -160,11 +160,18 @@ export function createAnimationExporter() {
     if (needsMatte() && !validMatte()) return;
     // Read again after the secrets review, including any redaction it made.
     const frameRate = fps();
+    const outputFormat = format();
     const output = size() === '1080p' ? {width: 1920, height: 1080} : undefined;
     const outputScale = scale();
     const background = needsMatte() ? solidBackground() : defaultBackground();
     void job.start(() =>
-      snapshot.capture(frameRate, output, outputScale, background, format()),
+      snapshot.capture(
+        frameRate,
+        output,
+        outputScale,
+        background,
+        outputFormat,
+      ),
     );
   };
   return {

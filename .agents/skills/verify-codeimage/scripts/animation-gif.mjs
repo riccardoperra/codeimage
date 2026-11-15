@@ -193,6 +193,21 @@ export function animationGifCases({
       true,
     );
   }
+  async function chooseRate(fps) {
+    await dialog()
+      .getByRole('button', {name: /Frame rate/})
+      .click();
+    await getPage()
+      .getByRole('option', {name: `${fps} fps`, exact: true})
+      .click();
+    await ready();
+    assert.match(
+      await dialog()
+        .getByRole('button', {name: /Frame rate/})
+        .innerText(),
+      new RegExp(`${fps} fps`),
+    );
+  }
   async function instrument() {
     await getPage().evaluate(() => {
       window.__gifDone = undefined;
@@ -322,6 +337,14 @@ export function animationGifCases({
         'MP4 remains default',
       );
       await selectGif();
+      const formatRow = await dialog()
+        .getByRole('radiogroup', {name: 'Format', exact: true})
+        .locator('..')
+        .boundingBox();
+      assert.ok(
+        formatRow && formatRow.height >= 36 && formatRow.height <= 40.1,
+        'format row keeps the relaxed 36–40 px density',
+      );
       assert.match(
         await dialog()
           .getByRole('button', {name: /Frame rate/})
@@ -337,7 +360,7 @@ export function animationGifCases({
     }
     await open();
     await ready();
-    await choose('Frame rate', 'End'); // 60 persists from MP4 into GIF.
+    await chooseRate(60); // 60 persists from MP4 into GIF.
     await selectGif();
     assert.match(
       await dialog().locator('[data-gif-fps-note]').innerText(),
@@ -347,13 +370,16 @@ export function animationGifCases({
     // Optional interleaved measurements reuse the visible format controls.
     // Output paths overwrite each rate's prior repeat to keep evidence small.
     for (let run = 1; run < Number(process.env.VERIFY_GIF_RUNS ?? 1); run++) {
-      await choose('Frame rate', 'Home');
-      results.push(await exportGif('gif-repeat-25'));
-      await choose('Frame rate', 'ArrowDown');
-      results.push(await exportGif('gif-repeat-50'));
+      await chooseRate(25);
+      const low = await exportGif('gif-repeat-25');
+      assert.equal(low.fps, 25);
+      results.push(low);
+      await chooseRate(50);
+      const high = await exportGif('gif-repeat-50');
+      assert.equal(high.fps, 50);
+      results.push(high);
     }
-    await choose('Frame rate', 'Home');
-    await choose('Frame rate', 'ArrowDown');
+    await chooseRate(50);
     assert.match(
       await dialog()
         .getByRole('button', {name: /Frame rate/})
@@ -362,6 +388,11 @@ export function animationGifCases({
     );
     assert.equal(await dialog().locator('[data-gif-fps-note]').count(), 0);
     await close();
+    // Layout reloads retain the document but close the Animate island.
+    if (!(await page.locator('[data-animate-panel]').isVisible())) {
+      await page.locator('[data-animate-toggle]').click();
+      await page.locator('[data-animate-panel]').waitFor();
+    }
     // Ten seconds with four seconds of motion exceeds the GIF recommendation.
     const segments = page.locator('[data-animation-segment]');
     for (let i = 0; i < 5; i++) {
