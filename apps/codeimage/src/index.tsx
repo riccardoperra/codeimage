@@ -104,6 +104,26 @@ export function Bootstrap() {
       component: lazyWithNoLauncher(() => import("./prototypes/theme-card")),
     },
     {
+      path: "prototypes/animate-timeline",
+      component: lazyWithNoLauncher(() => import("./prototypes/animate/routes/timeline")),
+    },
+    {
+      path: "prototypes/animate-edit-mode",
+      component: lazyWithNoLauncher(() => import("./prototypes/animate/routes/edit-mode")),
+    },
+    {
+      path: "prototypes/animate-easing",
+      component: lazyWithNoLauncher(() => import("./prototypes/animate/routes/easing")),
+    },
+    {
+      path: "prototypes/animate-header",
+      component: lazyWithNoLauncher(() => import("./prototypes/animate/routes/header")),
+    },
+    {
+      path: "prototypes/animate-duration",
+      component: lazyWithNoLauncher(() => import("./prototypes/animate/routes/duration")),
+    },
+    {
       path: ":snippetId",
       component: Editor,
     },

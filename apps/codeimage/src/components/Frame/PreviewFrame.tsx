@@ -75,6 +75,9 @@ export interface FrameViewProps {
   // Sizes the frame from its code, as the static export of one animation
   // step, instead of from the editor frame on screen.
   natural?: boolean;
+  // Overrides of the export settings for the tabs in the window header.
+  showTab?: boolean;
+  showOnlyActiveTab?: boolean;
 }
 
 // The frame as the export draws it, around any code view.
@@ -92,8 +95,10 @@ export function FrameView(props: VoidProps<FrameViewProps>) {
       type={terminal.type}
       activeTabId={props.activeTabId}
       readonlyTab={true}
-      showTab={true}
-      showOnlyActiveTab={exportCanvasStore.get.showOnlyActiveTab}
+      showTab={props.showTab ?? true}
+      showOnlyActiveTab={
+        props.showOnlyActiveTab ?? exportCanvasStore.get.showOnlyActiveTab
+      }
       shadow={terminal.shadow}
       background={terminal.background}
       accentVisible={terminal.accentVisible}

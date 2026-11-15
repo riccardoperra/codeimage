@@ -2,7 +2,11 @@ import type {CustomTheme} from '@codeimage/highlight';
 import type {EditorState} from '@codeimage/store/editor/model';
 import type {Language} from '@codemirror/language';
 import {measureCode, type MeasuredNode} from '@core/animation/measure';
-import type {AnimationSettings, NonEmpty} from '@core/animation/model';
+import type {
+  AnimationSettings,
+  Easing,
+  NonEmpty,
+} from '@core/animation/model';
 import {
   planTimeline,
   type StepLayout,
@@ -107,11 +111,25 @@ function stepLayout(host: HTMLElement): StepLayout {
 
 // The browser side of renderAnimationScenes: measures the code font and each
 // step's static frame in the page, then plans the same timeline.
+export type PlanSettings = Pick<
+  AnimationSettings,
+  'transitionMs' | 'easing' | 'fps'
+> & {
+  steps: readonly {
+    holdMs: number;
+    // The transition out of the step, in place of the settings' one.
+    transition?: {ms: number; easing: Easing};
+  }[];
+};
+
+export type PlanFrame = {showTab?: boolean; showOnlyActiveTab?: boolean};
+
 export async function planPreview(
   owner: Owner | null,
-  settings: AnimationSettings,
+  settings: PlanSettings,
   tabs: NonEmpty<PreviewTab>,
   style: CodeStyle,
+  frame: PlanFrame = {},
 ): Promise<PreviewPlan> {
   const languages = await Promise.all(
     tabs.map(tab => loadLanguage(tab.languageId, tab.tabName)),
@@ -159,6 +177,7 @@ export async function planPreview(
         () => (
           <FrameView
             natural
+            {...frame}
             activeTabId={tab.id}
             code={codeView(tab, languages[index])}
           />
@@ -174,6 +193,7 @@ export async function planPreview(
     lineNumberStart: tabs[index].lineNumberStart,
     layout: layouts[index],
     holdMs: settings.steps[index].holdMs,
+    transition: settings.steps[index].transition,
   });
   const [, ...rest] = tabs;
   return {
