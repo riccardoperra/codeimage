@@ -694,7 +694,7 @@ export async function audit({page, context, base, out, server}) {
     await page.getByRole('option', {name: /^Typescript$/i}).click();
     assert.match(await language.innerText(), /Typescript/i);
     await editor().fill('const value={answer:42}');
-    await page.getByRole('button', {name: 'Format', exact: true}).click();
+    await page.getByRole('button', {name: 'Format code', exact: true}).click();
     await page.waitForFunction(() =>
       document
         .querySelector('.cm-content[contenteditable="true"]')
