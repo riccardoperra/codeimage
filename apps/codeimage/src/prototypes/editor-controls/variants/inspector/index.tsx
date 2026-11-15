@@ -1,7 +1,15 @@
 import {WithNewDot} from '../../../../components/WhatsNew/NewDot';
 import {Button} from '@codeui/kit';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
-import {For, Show, createEffect, createSignal, on, onCleanup} from 'solid-js';
+import {
+  For,
+  Show,
+  createEffect,
+  createSignal,
+  on,
+  onCleanup,
+  onMount,
+} from 'solid-js';
 import type {ParentProps} from 'solid-js';
 import {useI18n} from '@codeimage/locale';
 import {getFrameState} from '@codeimage/store/editor/frame';
@@ -169,7 +177,9 @@ export default function Inspector(props: VariantProps) {
   // may grow. The page's header is above the root.
   const [rootHeight, setRootHeight] = createSignal(innerHeight);
   const tallSheet = () => Math.min(560, rootHeight() - 284);
-  const mobile = props.stage.compact;
+  const [mobile, setMobile] = createSignal(
+    matchMedia('(max-width: 768px)').matches,
+  );
   let panel: HTMLElement | undefined;
   let canvas: HTMLElement | undefined;
   let scroll: HTMLDivElement | undefined;
@@ -206,6 +216,12 @@ export default function Inspector(props: VariantProps) {
   let skipHandleClick = false;
   // An open section changes the island padding the theme section leaves room for.
   createEffect(on([openSection, mobile], () => queueMicrotask(measureFill)));
+  onMount(() => {
+    const media = matchMedia('(max-width: 768px)');
+    const update = () => setMobile(media.matches);
+    media.addEventListener('change', update);
+    onCleanup(() => media.removeEventListener('change', update));
+  });
   const toggleSection = (id: PanelId, open: boolean) =>
     setOpenSection(current => (open ? id : current === id ? null : current));
   const selectedTheme = () =>
@@ -279,7 +295,7 @@ export default function Inspector(props: VariantProps) {
           <div class={styles.frameActions}>
             <FrameActions frameRef={props.stage.exportRef()} />
             <Show
-              when={mobile()}
+              when={props.stage.compact()}
               fallback={
                 <WithNewDot highlight="command-menu">
                   <Button
