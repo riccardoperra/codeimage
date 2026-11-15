@@ -1,6 +1,6 @@
 # Edit code
 
-Edit real CodeMirror documents in the unified guest editor and classic saved-project editor.
+Edit real CodeMirror documents in the unified guest and saved-project editor.
 
 ## Sub-features
 
@@ -21,3 +21,5 @@ The `editor-options` journey changes language to Python without changing the doc
 ## Gotchas
 
 The baseline covers text replacement; the audit adds history on both routes. Language/formatter coverage requires explicitly exercising those controls. Do not count internal CodeMirror dispatch as user input.
+
+The `snippet-read-only` case verifies that another owner's code cannot be edited and editing shortcuts send no save. See [saved projects](projects.md) for the full snippet matrix.

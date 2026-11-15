@@ -21,3 +21,5 @@ Run `export-options` for actual 1x and 2x PNG dimensions, JPEG magic bytes and a
 ## Gotchas
 
 Clipboard is available for PNG/SVG and needs permission. Share requires navigator.share. Do not mock those browser APIs to claim native sharing. Redaction modifies documents. Animation core exists but no animation editor UI is wired at this HEAD; CLI and animation preview on other branches are excluded.
+
+`snippet-read-only` verifies a real PNG download and clipboard PNG from another owner's snippet in all three layouts at desktop and phone sizes. See [saved projects](projects.md).
