@@ -6,7 +6,18 @@ import {basename, dirname, join, resolve} from 'node:path';
 import {promisify} from 'node:util';
 import {createServer} from 'vite';
 import {PNG} from 'pngjs';
-import {diffPng, launchChrome, MAX_DIFF_PERCENT} from './lib';
+import {
+  diffPng,
+  launchChrome,
+  MAX_DIFF_PERCENT,
+  serveFixtureImages,
+} from './lib';
+
+declare global {
+  interface Window {
+    prepare(snapshot: unknown): Promise<{preset: string; image: string}>;
+  }
+}
 
 async function main() {
   const execute = promisify(execFile);
@@ -82,6 +93,11 @@ window.prepare = async snapshot => {
 };
 `;
   await writeFile(join(temporary, 'browser.tsx'), source);
+  // Served by Vite, not a route: Chrome blocks a routed page's loopback images.
+  await writeFile(
+    join(temporary, 'index.html'),
+    '<!doctype html><div id="root"></div><script type="module" src="./browser.tsx"></script>',
+  );
   const server = await createServer({
     root: app,
     configFile: join(app, 'vite.config.ts'),
@@ -89,6 +105,7 @@ window.prepare = async snapshot => {
     logLevel: 'error',
   });
   const browsers = await Promise.all([launchChrome(1), launchChrome(2)]);
+  const fixtures = await serveFixtureImages();
   try {
     await server.listen();
     await mkdir(out, {recursive: true});
@@ -99,7 +116,11 @@ window.prepare = async snapshot => {
     for (const input of inputs) {
       const snapshot = JSON.parse(await readFile(input, 'utf8'));
       if (snapshot.frame.signature?.avatar === 'profile') continue;
-      if (snapshot.frame.background?.startsWith('link:')) continue;
+      if (snapshot.frame.background?.startsWith('link:'))
+        snapshot.frame.background = snapshot.frame.background.replace(
+          /^link:http:\/\/127\.0\.0\.1:\d+/,
+          `link:${fixtures.url}`,
+        );
       for (const tab of snapshot.editor.editors)
         tab.tabName = basename(tab.tabName);
       const name = input.split('/').at(-1)!.replace('.json', '');
@@ -108,13 +129,7 @@ window.prepare = async snapshot => {
       });
       page.on('pageerror', error => console.error(error.message));
       try {
-        await page.route('**/__p10', route =>
-          route.fulfill({
-            contentType: 'text/html',
-            body: `<!doctype html><div id="root"></div><script type="module" src="/src/render/${temporary.split('/').at(-1)}/browser.tsx"></script>`,
-          }),
-        );
-        await page.goto(`${url}/__p10`);
+        await page.goto(`${url}/src/render/${basename(temporary)}/index.html`);
         await page.waitForFunction(
           () => typeof window.prepare === 'function',
           undefined,
@@ -172,6 +187,7 @@ window.prepare = async snapshot => {
     );
   } finally {
     await Promise.all(browsers.map(browser => browser.close()));
+    await fixtures.close();
     await server.close();
     await rm(temporary, {recursive: true, force: true});
     await rm(files, {recursive: true, force: true});

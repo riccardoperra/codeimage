@@ -1,4 +1,3 @@
-import {createServer} from 'node:http';
 import pixelmatch from 'pixelmatch';
 import {
   createAmbientBackground,
@@ -25,6 +24,7 @@ import {
   launchChrome,
   MAX_DIFF_PERCENT,
   PIXELMATCH_THRESHOLD,
+  serveFixtureImages,
 } from './lib';
 
 const {values: args} = parseArgs({
@@ -416,7 +416,9 @@ async function renderInChrome(
     );
     await page
       .locator('img')
-      .evaluateAll(images => Promise.all(images.map(image => image.decode())));
+      .evaluateAll((images: HTMLImageElement[]) =>
+        Promise.all(images.map(image => image.decode())),
+      );
     const mark = page.locator('[data-frame-signature] > div').first();
     const bounds = (await mark.count()) ? await mark.boundingBox() : null;
     const scale = markup.document.scale;
@@ -445,24 +447,8 @@ const slug = (name: string) => name.replace(/[^a-z0-9]+/gi, '-').toLowerCase();
 
 async function main() {
   await mkdir(args.out, {recursive: true});
-  const fixture = new PNG({width: 192, height: 192});
-  const fixtureBytes = (light: boolean) => {
-    for (let i = 0; i < fixture.data.length; i += 4) {
-      fixture.data[i] = light ? 245 : 20;
-      fixture.data[i + 1] = light ? 245 : 40;
-      fixture.data[i + 2] = light ? 245 : 60;
-      fixture.data[i + 3] = 255;
-    }
-    return PNG.sync.write(fixture);
-  };
-  const server = createServer((request, response) => {
-    response.setHeader('Content-Type', 'image/png');
-    response.end(fixtureBytes(request.url?.includes('light') ?? false));
-  });
-  await new Promise<void>(resolve => server.listen(0, '127.0.0.1', resolve));
-  const address = server.address();
-  assert.ok(address && typeof address !== 'string');
-  const fixtureUrl = `http://127.0.0.1:${address.port}`;
+  const fixtures = await serveFixtureImages();
+  const fixtureUrl = fixtures.url;
   const browsers = await Promise.all([launchChrome(1), launchChrome(SCALE)]);
   const originalFetch = globalThis.fetch;
   const rows: string[] = [];
@@ -534,9 +520,7 @@ async function main() {
   } finally {
     globalThis.fetch = originalFetch;
     await Promise.all(browsers.map(browser => browser.close()));
-    await new Promise<void>((resolve, reject) =>
-      server.close(error => (error ? reject(error) : resolve())),
-    );
+    await fixtures.close();
   }
 
   const table = [
