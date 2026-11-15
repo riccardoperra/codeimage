@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import {parseArgs} from 'node:util';
+import {PNG} from 'pngjs';
 import type {Page} from 'playwright';
 import {chromium} from 'playwright';
 
@@ -10,6 +11,8 @@ const {values: args} = parseArgs({
     url: {type: 'string', default: 'http://localhost:4200/'},
     worker: {type: 'string'},
     lane: {type: 'string', multiple: true},
+    // Where the free size lane saves what it sees around the scene frame.
+    shot: {type: 'string'},
   },
 });
 
@@ -31,6 +34,7 @@ type EditorStore = {
       edit(): void;
       seek(ms: number): void;
       setOpen(open: boolean): void;
+      moveStep(from: number, to: number): void;
     };
   };
   editor: {
@@ -184,7 +188,131 @@ async function openProject(
 const projectTabs = (prefix: string, count: number) =>
   TABS.slice(0, count).map(tab => ({...tab, id: `${prefix}-${tab.id}`}));
 
+const stepOrder = async (page: Page) =>
+  (await read(page)).settings.steps.map(step => step.editorId);
+
 const lanes: Record<string, (page: Page) => Promise<void>> = {
+  async 'a hold in free size paints the scene frame on the plain workspace'(
+    page,
+  ) {
+    await openPanel(page);
+    await focusStageAt(page, 300);
+    await page.waitForTimeout(300);
+    const boxes = await page.evaluate(() => {
+      const stage = document.querySelector<HTMLElement>(
+        '[data-animation-stage]',
+      )!;
+      const editorLayer = stage.parentElement!.firstElementChild!;
+      const painted = [editorLayer, ...editorLayer.querySelectorAll('*')]
+        .filter(element => {
+          const {width, height} = element.getBoundingClientRect();
+          return (
+            width > 0 &&
+            height > 0 &&
+            element.checkVisibility({
+              opacityProperty: true,
+              visibilityProperty: true,
+            })
+          );
+        })
+        .map(element => element.className || element.tagName);
+      const scene = [
+        ...stage.querySelectorAll<HTMLElement>('[data-animation-scene]'),
+      ].find(scene => scene.style.display !== 'none')!;
+      const [editor, frame] = [
+        editorLayer,
+        scene.querySelector('[data-animation-frame]')!,
+      ].map(element => {
+        const {x, y, width, height} = element.getBoundingClientRect();
+        return {x, y, width, height};
+      });
+      return {painted, editor, scene: frame};
+    });
+    assert.ok(
+      boxes.editor.width > boxes.scene.width,
+      `the editor frame (${boxes.editor.width} px) is wider than the scene frame (${boxes.scene.width} px)`,
+    );
+    const margin = 24;
+    const clip = {
+      x: Math.floor(boxes.editor.x - margin),
+      y: Math.floor(boxes.editor.y - margin),
+      width: Math.ceil(boxes.editor.width + 2 * margin),
+      height: Math.ceil(boxes.editor.height + 2 * margin),
+    };
+    const png = PNG.sync.read(await page.screenshot({clip, path: args.shot}));
+    const pixel = (x: number, y: number) => {
+      const at = (y * png.width + x) * 4;
+      return [...png.data.subarray(at, at + 3)];
+    };
+    const workspace = pixel(2, 2);
+    const scene = {
+      left: boxes.scene.x - clip.x - 1,
+      right: boxes.scene.x + boxes.scene.width - clip.x + 1,
+      top: boxes.scene.y - clip.y - 1,
+      bottom: boxes.scene.y + boxes.scene.height - clip.y + 1,
+    };
+    let painted = 0;
+    for (let y = 0; y < png.height; y++) {
+      for (let x = 0; x < png.width; x++) {
+        const inScene =
+          x >= scene.left &&
+          x < scene.right &&
+          y >= scene.top &&
+          y < scene.bottom;
+        if (inScene) continue;
+        const differs = pixel(x, y).some(
+          (channel, index) => Math.abs(channel - workspace[index]) > 2,
+        );
+        if (differs) painted++;
+      }
+    }
+    assert.deepEqual(boxes.painted, [], 'the editor layer paints nothing');
+    assert.equal(
+      painted,
+      0,
+      `${painted} px around the scene frame differ from the workspace`,
+    );
+    const centre = (box: {x: number; width: number}) => box.x + box.width / 2;
+    assert.ok(
+      Math.abs(centre(boxes.scene) - centre(boxes.editor)) <= 1,
+      'the scene frame is centered where the editor frame was',
+    );
+  },
+
+  async 'Move later twice in a hold popover moves the same step twice'(page) {
+    await openPanel(page);
+    await page.evaluate(() =>
+      window.editorStore.animation.actions.moveStep(2, 0),
+    );
+    assert.deepEqual(await stepOrder(page), ['c', 'a', 'b']);
+    await button(page, /^Hold c\.ts/).click();
+    const dialog = page.getByRole('dialog');
+    await dialog.getByRole('button', {name: 'Move later'}).click();
+    assert.deepEqual(await stepOrder(page), ['a', 'c', 'b']);
+    await dialog.getByRole('button', {name: 'Move later'}).click();
+    assert.deepEqual(await stepOrder(page), ['a', 'b', 'c']);
+    await dialog.getByRole('button', {name: 'Move earlier'}).click();
+    assert.deepEqual(await stepOrder(page), ['a', 'c', 'b']);
+  },
+
+  async 'releasing a scrub keeps the time of the last drag'(page) {
+    await openPanel(page);
+    const slider = page.getByRole('slider', {name: 'Playhead'});
+    const track = (await slider.boundingBox())!;
+    const y = track.y + track.height / 2;
+    await page.mouse.move(track.x, y);
+    await page.mouse.down();
+    await page.mouse.move(track.x + track.width * 0.4, y);
+    const dragged = (await read(page)).playhead;
+    await page.mouse.up();
+    const {playback} = await read(page);
+    assert.equal(playback.state, 'paused');
+    assert.ok(
+      Math.abs(playback.atMs! - dragged) < 1,
+      `the drag left the playhead at ${dragged} ms and the release at ${playback.atMs} ms`,
+    );
+  },
+
   async 'Esc closes the timing popover from a segmented control'(page) {
     await openPanel(page);
     await page.locator('button', {hasText: 'fps'}).click();
@@ -230,6 +358,13 @@ const lanes: Record<string, (page: Page) => Promise<void>> = {
     const after = await read(page);
     assert.deepEqual(after.playback, {state: 'editing'});
     assert.deepEqual(after.codes, before.codes);
+    assert.equal(
+      await page.evaluate(() =>
+        document.activeElement?.classList.contains('cm-content'),
+      ),
+      true,
+      'the focus lands on the code',
+    );
   },
 
   async 'closing the panel removes the preview from the page'(page) {
