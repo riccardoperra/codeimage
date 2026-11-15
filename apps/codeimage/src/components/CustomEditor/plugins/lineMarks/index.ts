@@ -1,4 +1,6 @@
 import './marks.css';
+import type {Owner} from 'solid-js';
+import {lineMarksNews} from './news';
 import type {Extension} from '@codemirror/state';
 import type {LineMarkLabels} from './controls';
 import {lineMarkControls} from './controls';
@@ -10,9 +12,11 @@ export function lineMarksExtension(
   interactive: boolean,
   initial: TabMarks,
   labels: LineMarkLabels,
+  owner?: Owner,
 ): Extension {
   return [
     lineMarksField.init(state => marksValue(state.doc, initial)),
+    ...(interactive && owner ? [lineMarksNews(owner)] : []),
     ...(interactive
       ? [lineMarksHistory, lineMarkControls(labels), lineMarkGutter(labels)]
       : []),

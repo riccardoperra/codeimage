@@ -1,13 +1,19 @@
 // Pure metadata with zero imports. Policy and presentation share these ids.
 
-export type Place = 'command-menu' | 'export' | 'control' | 'setting';
+export type Place =
+  | 'command-menu'
+  | 'export'
+  | 'control'
+  | 'setting'
+  | 'editor';
 
 export type Where =
   | 'command-menu'
   | 'export'
   | `export:${string}`
   | `control:${string}`
-  | `setting:${string}`;
+  | `setting:${string}`
+  | `editor:${string}`;
 
 export interface Highlight {
   /**
@@ -18,6 +24,7 @@ export interface Highlight {
   /** `null` means no location to point to: no dot and no "Show me". */
   readonly where: Where | null;
   readonly experimental?: true;
+  readonly accessory?: true;
   readonly learnMore?: `https://${string}`;
 }
 
@@ -38,35 +45,41 @@ export interface Release {
  */
 export const RELEASES = [
   {
-    id: '2026-11',
+    id: '2.0',
+    // Set this to the real release day before publishing.
     date: '2026-11-14',
-    major: false,
+    major: true,
     highlights: [
-      {
-        id: 'redact',
-        where: null,
-      },
-      {
-        id: 'tabs',
-        where: 'export:tabs',
-      },
-      {
-        id: 'command-menu',
-        where: 'command-menu',
-      },
-      {
-        id: 'layouts',
-        where: 'setting:layout',
-        experimental: true,
-      },
+      {id: 'animate', where: null},
+      {id: 'layouts', where: 'setting:layout', experimental: true},
+      {id: 'marks', where: 'editor:line-marks'},
+      {id: 'takumi', where: 'setting:rendering-engine', experimental: true},
+      {id: 'cli', where: null},
+      {id: 'signature', where: 'control:signature.saved'},
+      {id: 'window-styles', where: 'control:window.style'},
+      {id: 'redact', where: null},
+      {id: 'social', where: 'control:frame.aspectRatio', accessory: true},
+      {id: 'tabs', where: 'export:tabs', accessory: true},
+      {id: 'alt', where: 'export:alt', accessory: true},
+      {id: 'command-menu', where: 'command-menu', accessory: true},
       {
         id: 'theme-cards',
         where: 'setting:theme-cards',
         experimental: true,
+        accessory: true,
       },
     ],
   },
 ] as const satisfies readonly Release[];
+
+/**
+ * Prepared highlights for features that are not in the bundle yet. Nothing in
+ * UPCOMING is rendered or decided on. To ship an entry, move it into RELEASES.
+ * See docs/plans/2026-whats-new/rationale.md for the shipping checklist.
+ */
+export const UPCOMING = [] as const satisfies readonly Highlight[];
+
+export type ContentHighlightId = HighlightId | (typeof UPCOMING)[number]['id'];
 
 type ShippedRelease = (typeof RELEASES)[number];
 type ShippedHighlight = ShippedRelease['highlights'][number];

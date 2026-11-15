@@ -23,7 +23,9 @@ check(
   '6: secrets count is lazy',
 );
 check(
-  source('./model.tsx').includes('if (!getExportTarget(ratio))'),
+  source('./model.tsx').includes(
+    "if (getExportTarget(ratio)) getWhatsNew().seen('social');",
+  ) && source('./model.tsx').includes("else getUmami().track('aspect-ratio'"),
   '6: target changes skip ratio analytics',
 );
 check(
@@ -109,10 +111,20 @@ try {
       await page.goto(`${base}/`);
       await page.reload();
       await page.waitForSelector('[data-fit-scale] .cm-content');
-      const nudge = page.locator('[data-whats-new=nudge]');
-      await nudge.waitFor();
-      await nudge.getByRole('button', {name: "Dismiss what's new"}).click();
-      await nudge.waitFor({state: 'hidden'});
+      const announcement = page.locator('[data-whats-new]');
+      await announcement.waitFor();
+      const showcase = page.locator('[data-whats-new=showcase]');
+      if (await showcase.isVisible()) {
+        await page
+          .locator('[role=dialog], [role=alertdialog]')
+          .getByRole('button', {name: 'Close', exact: true})
+          .click();
+      } else {
+        await announcement
+          .getByRole('button', {name: "Dismiss what's new"})
+          .click();
+      }
+      await announcement.waitFor({state: 'hidden'});
       await page
         .getByRole('button', {name: /^close$/i})
         .first()

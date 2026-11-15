@@ -18,7 +18,13 @@ import {
   parseFacts,
   serializeFacts,
 } from './decide';
-import type {HighlightId, LocatedHighlightId, Place, Where} from './registry';
+import type {
+  HighlightId,
+  LocatedHighlightId,
+  Place,
+  ReleaseId,
+  Where,
+} from './registry';
 import {RELEASES} from './registry';
 
 export type Surface = 'nudge' | 'showcase' | 'coachmark' | 'library';
@@ -41,11 +47,12 @@ export interface WhatsNew {
   readonly current: Accessor<Announcement>;
   readonly headerEntry: Accessor<boolean>;
   readonly headerUnread: Accessor<boolean>;
-  /** Last explicit header/Nudge interaction; null on a fresh page load. */
+  /** Last explicit announcement/header interaction; null on a fresh page load. */
   readonly interaction: Accessor<'pointer' | 'keyboard' | null>;
   /** Reopens the newest release for this session without changing facts. */
   reopen(keyboard?: boolean): void;
   dismiss(keyboard?: boolean): void;
+  minimize(id: ReleaseId): void;
   dotAt(at: Where): LocatedHighlightId | undefined;
   isNew(id: HighlightId): boolean;
   opened(id: HighlightId, on: Surface): void;
@@ -53,6 +60,9 @@ export interface WhatsNew {
   /** True while the component that owns the highlight's place is mounted. */
   canShowMe(id: LocatedHighlightId): boolean;
   showMe(id: LocatedHighlightId, from: Surface): void;
+  /** An explicit reveal may open a coachmark on an invisible anchor, without changing dot priority. */
+  revealedAt(at: Where): LocatedHighlightId | undefined;
+  endReveal(id: LocatedHighlightId): void;
   /**
    * Binds once the caller is mounted and unbinds when it is disposed. A
    * placement or route that replaces another is created before the old one
@@ -60,7 +70,7 @@ export interface WhatsNew {
    */
   bindLocation(
     place: Place | Where,
-    reveal: (item: string | undefined) => void,
+    reveal: (item: string | undefined) => void | Promise<void>,
   ): void;
 }
 
@@ -71,7 +81,13 @@ interface Storage {
 }
 
 function track(
-  event: 'shown' | 'dismissed' | 'opened' | 'show-me' | 'reopened',
+  event:
+    | 'shown'
+    | 'dismissed'
+    | 'opened'
+    | 'show-me'
+    | 'reopened'
+    | 'minimized',
   data:
     | {surface: Surface; release: string}
     | {surface: Surface; highlight: HighlightId},
@@ -83,6 +99,8 @@ export function createWhatsNew(
   storage: Storage = idb,
   clock = Date.now,
 ): WhatsNew {
+  const [revealed, setRevealed] = createSignal<LocatedHighlightId>();
+  let revealRequest = 0;
   const [now, setNow] = createSignal(clock());
   const [facts, setFacts] = createSignal<Facts>(NO_FACTS);
   const [loaded, setLoaded] = createSignal(false);
@@ -91,7 +109,10 @@ export function createWhatsNew(
     'pointer' | 'keyboard' | null
   >(null);
   const [locations, setLocations] = createSignal<
-    ReadonlyMap<Place | Where, (item: string | undefined) => void>
+    ReadonlyMap<
+      Place | Where,
+      (item: string | undefined) => void | Promise<void>
+    >
   >(new Map());
   const decision = createMemo(() =>
     decide(loaded() ? RELEASES : [], facts(), now()),
@@ -100,7 +121,8 @@ export function createWhatsNew(
     () => decision().headerEntry && !announcement(),
   );
   const pending = createMemo(() => decision().announcement, null, {
-    equals: (a, b) => a?.release.id === b?.release.id,
+    equals: (a, b) =>
+      a?.release.id === b?.release.id && a?.surface === b?.surface,
   });
   const whereOf = (id: HighlightId) =>
     RELEASES.flatMap(release => release.highlights).find(
@@ -134,6 +156,11 @@ export function createWhatsNew(
         facts().dismissed.has(current.release.id)
       ) {
         setAnnouncement(null);
+      } else if (
+        current?.entry === 'automatic' &&
+        facts().minimized.has(current.release.id)
+      ) {
+        setAnnouncement({...current, surface: 'nudge'});
       }
     } catch {
       // No stored facts: the worst case is one repeated announcement.
@@ -203,19 +230,29 @@ export function createWhatsNew(
     dismiss(keyboard = false) {
       const current = announcement();
       if (!current) return;
-      setInteraction(
-        current.surface === 'nudge'
-          ? keyboard
-            ? 'keyboard'
-            : 'pointer'
-          : null,
-      );
-      record({seen: new Set(), dismissed: new Set([current.release.id])});
+      setInteraction(keyboard ? 'keyboard' : 'pointer');
+      record({...NO_FACTS, dismissed: new Set([current.release.id])});
       setAnnouncement(null);
       track('dismissed', {
         surface: current.surface,
         release: current.release.id,
       });
+    },
+    minimize(id) {
+      const current = announcement();
+      if (current?.release.id === id && current.surface === 'showcase')
+        setAnnouncement({...current, surface: 'nudge'});
+      if (facts().minimized.has(id)) return;
+      record({...NO_FACTS, minimized: new Set([id])});
+      track('minimized', {surface: 'showcase', release: id});
+    },
+    revealedAt: at => {
+      const id = revealed();
+      const where = id && whereOf(id);
+      return where && holds(at, where) ? id : undefined;
+    },
+    endReveal: id => {
+      if (revealed() === id) setRevealed(undefined);
     },
     dotAt: at =>
       RELEASES.flatMap(release => release.highlights)
@@ -228,13 +265,19 @@ export function createWhatsNew(
     isNew: id => decision().fresh.has(id),
     opened: (id, surface) => track('opened', {surface, highlight: id}),
     seen(id) {
-      record({seen: new Set([id]), dismissed: new Set()});
+      if (revealed() === id) setRevealed(undefined);
+      record({...NO_FACTS, seen: new Set([id])});
     },
     canShowMe: id => bound(id) !== undefined,
     showMe(id, surface) {
       track('show-me', {surface, highlight: id});
       const location = bound(id);
-      location?.reveal(location.item);
+      if (!location) return;
+      const request = ++revealRequest;
+      setRevealed(undefined);
+      Promise.resolve(location.reveal(location.item)).then(() => {
+        if (request === revealRequest) setRevealed(id);
+      });
     },
     bindLocation(where, reveal) {
       onMount(() => {

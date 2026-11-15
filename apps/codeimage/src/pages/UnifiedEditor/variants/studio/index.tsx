@@ -29,6 +29,7 @@ import {claimHeaderActions} from '../../shell/header-actions';
 import {ownCompositeKeys} from './controls';
 import {CloseIcon, CollapseIcon, SearchIcon} from './icons';
 import {PANELS} from './panels';
+import {PLACES} from './places';
 import type {Panel, PanelId} from './panels';
 import * as styles from './studio.css';
 
@@ -184,6 +185,17 @@ export default function Studio(props: VariantProps) {
     exit.onfinish = () => finishClose(id, returnFocus);
   };
 
+  onMount(() => {
+    onCleanup(
+      props.model.controls.register(id => {
+        const place = PLACES[id];
+        const panel = PANELS.find(panel => panel.id === place.panel);
+        if (panel) open(panel);
+        setStop('tall');
+        if (place.group === 'signature') controlOverlay.open('signature');
+      }),
+    );
+  });
   // Canvas clicks and the Frame row share the same signature editor.
   onCleanup(signatureEditor.register(() => controlOverlay.open('signature')));
 
