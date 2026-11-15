@@ -99,13 +99,16 @@ async function writeAtomically(path: string, data: string | Uint8Array) {
   }
 }
 
-function removePartialAndExit(code: number) {
+// process.exit waits for the running native render, so the handler re-raises
+// the signal with the default action instead.
+function removePartialAndStop(signal: NodeJS.Signals) {
   if (partial) rmSync(partial, {force: true});
-  process.exit(code);
+  process.removeAllListeners(signal);
+  process.kill(process.pid, signal);
 }
 
-process.on('SIGINT', () => removePartialAndExit(130));
-process.on('SIGTERM', () => removePartialAndExit(143));
+process.on('SIGINT', removePartialAndStop);
+process.on('SIGTERM', removePartialAndStop);
 
 process.stdout.on('error', error => {
   process.stderr.write(`codeimage: ${error.message}\n`);
