@@ -8,7 +8,7 @@ The route table in `apps/codeimage/src/index.tsx` selects the page.
 | ------------- | ------------------------------------------------------------------- |
 | `/`           | Unified editor for signed-out users. Dashboard for signed-in users. |
 | `/classic`    | Classic editor.                                                     |
-| `/:snippetId` | Classic editor for a saved snippet.                                 |
+| `/:snippetId` | Unified editor for a saved snippet.                                 |
 
 `/dashboard` redirects to `/`. `/login` keeps the existing sign-in flow.
 The unified editor and the classic editor use the same stores and local document.
@@ -30,11 +30,13 @@ Changing a preference leaves the URL unchanged.
 `index.tsx` exports the page from `harness.tsx`.
 `EditorHost.tsx` loads the editor stores and local document before the page mounts.
 The page creates one model and a new stage whenever the layout changes.
+`page-state.ts` maps the route id and sync adapter into `EditorPageState`: local, loading, owner, read-only, or unavailable.
+The shared sync provider reacts when the route id changes and redirects failed or missing snippets to `/404`.
 It mounts the header, command menu, settings dialog, and What's new host once.
 
 `registry.ts` maps layout ids to `variants/<layout>/index.tsx`.
 Each layout exports `meta` and a default component with `VariantProps`.
-The props contain `model`, `stage`, and `ThemePicker`.
+The props contain `model`, `stage`, `pageState`, and `ThemePicker`.
 
 The page root has class `unified-editor` and a `data-layout` attribute.
 Inspector also sets `data-inspector-side` on the page and layout roots.
@@ -67,6 +69,12 @@ Tokens without a colour use the base text colour.
 
 `stage.tsx` supplies the live `Canvas`, `ExportButton`, `exporter`, `ThemePreview`, format and randomize.
 Each layout renders `Canvas` once inside a container with a definite size.
+A snippet load uses the same frame placeholder as a lazy editor load.
+`ReadOnlyNotice` floats at the top of that container, outside the fitted frame.
+`EditingControls` hides and makes controls inert while loading, preserving the owner's layout.
+Read-only pages remove those controls and their containers so the canvas can take the space.
+Export waits for a snippet to load, so it cannot capture the previous document.
+Read-only commands contain only export and settings; editing shortcuts and destructive redaction are disabled.
 `FitFrame.tsx` scales the frame to the available space.
 `exportRef()` supplies the element that export captures.
 
@@ -195,3 +203,7 @@ The locale script changes language through Settings and checks visible text and 
 The parity script checks keys, placeholders, empty translations, and hard-coded UI text.
 Its negative controls prove that missing keys and hard-coded text fail.
 The review script checks secrets review, focus restoration, overlay geometry, row values, and shortcut help.
+
+Snippet verification lives in `.agents/skills/verify-codeimage/scripts/snippets.mjs`, registered as six `snippet-*` cases in the skill audit. Run them through `VERIFY_AUDIT=1 VERIFY_CASES=snippet-save,snippet-previews,snippet-read-only,snippet-clone,snippet-missing,snippet-navigation node .agents/skills/verify-codeimage/scripts/verify.mjs`. The helper owns Vite, the installed MSW worker, mock sign-in and disposable contexts. Case coverage is documented in the skill's `features/projects.md`.
+
+Known limitation: for a signed-out viewer with a saved local document, Clone restores that local document instead of keeping the viewed snippet. The shared sync adapter navigates to `/` without handing the clone to the next provider. Resolve this before removing the classic editor. Account Clone works.

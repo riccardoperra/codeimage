@@ -108,6 +108,7 @@ export function SheetExport(props: ExportControlProps) {
           title={t('editor.exportAs', {summary: exportSummary()})}
           aria-haspopup="dialog"
           data-export-image
+          disabled={!props.exporter.ready()}
           data-export-menu
           onClick={(event: MouseEvent) => {
             setInstant(event.detail === 0);

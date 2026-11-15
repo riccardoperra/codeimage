@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import assert from 'node:assert/strict';
+import {auditSnippets} from './snippets.mjs';
 import {writeFile, readFile} from 'node:fs/promises';
 import {resolve} from 'node:path';
 import {PNG} from 'pngjs';
@@ -24,32 +25,45 @@ export async function audit({page, context, base, out, server}) {
     page.screenshot({path: resolve(out, `${name}.png`), fullPage: true});
   // `layout` saves that layout as the preference first. Without it the
   // stored preference stands, which the persistence case relies on.
-  async function doctor(route = '/', expected = 'editor', layout) {
+  async function doctor(
+    route = '/',
+    expected = 'editor',
+    layout,
+    target = page,
+  ) {
     assert.equal(server.exitCode, null);
     assert.ok((await fetch(base)).ok);
-    await page.goto(base + route);
+    await target.goto(base + route);
     const changed =
       layout !== undefined &&
-      (await page.evaluate(layout => {
+      (await target.evaluate(layout => {
         const key = 'codeimage:editor-settings';
         const stored = JSON.parse(localStorage.getItem(key) ?? '{}');
         if ((stored.layout ?? 'inspector') === layout) return false;
         localStorage.setItem(key, JSON.stringify({...stored, layout}));
         return true;
       }, layout));
-    if (changed) await page.reload();
+    if (changed) await target.reload();
     if (expected === 'dashboard') {
-      await page
+      await target
         .getByRole('button', {name: 'New', exact: true})
         .first()
         .waitFor();
       return;
     }
-    await editor().waitFor();
-    const close = page.getByRole('button', {name: 'close', exact: true});
+    await target
+      .locator('.cm-content[contenteditable="true"]')
+      .first()
+      .waitFor();
+    const close = target.getByRole('button', {name: 'close', exact: true});
     if (await close.isVisible()) await close.click();
-    await page.evaluate(() => document.fonts.ready);
-    assert.ok(await editor().isVisible());
+    await target.evaluate(() => document.fonts.ready);
+    assert.ok(
+      await target
+        .locator('.cm-content[contenteditable="true"]')
+        .first()
+        .isVisible(),
+    );
   }
   async function feature(name, run) {
     if (requested.size && !requested.has(name)) return;
@@ -259,7 +273,7 @@ export async function audit({page, context, base, out, server}) {
     await page.locator('[data-export-menu]').click();
     const [zip] = await Promise.all([
       page.waitForEvent('download', {timeout: 60000}),
-      page.getByRole('menuitem', {name: /^Export one image per tab/}).click(),
+      page.locator('[data-export-action=tabs]').click(),
     ]);
     await zip.saveAs(resolve(out, 'tabs.zip'));
     const entries = Object.entries(
@@ -544,9 +558,7 @@ export async function audit({page, context, base, out, server}) {
         .click();
       await closeSettings();
       await page.locator('[data-export-menu]').click();
-      await page
-        .getByRole('menuitem', {name: 'Copy alt text', exact: true})
-        .click();
+      await page.locator('[data-export-action=alt]').click();
       assert.match(
         await page.evaluate(() => navigator.clipboard.readText()),
         /exportOptions/,
@@ -695,7 +707,7 @@ export async function audit({page, context, base, out, server}) {
     await page.getByRole('option', {name: /^Typescript$/i}).click();
     assert.match(await language.innerText(), /Typescript/i);
     await editor().fill('const value={answer:42}');
-    await page.getByRole('button', {name: 'Format', exact: true}).click();
+    await page.getByRole('button', {name: 'Format code', exact: true}).click();
     await page.waitForFunction(() =>
       document
         .querySelector('.cm-content[contenteditable="true"]')
@@ -742,6 +754,7 @@ export async function audit({page, context, base, out, server}) {
     await page.getByRole('button', {name: 'Presets', exact: true}).click();
     assert.equal(await item('Renamed preset').count(), 0);
   });
+  await auditSnippets({feature, doctor, context, base, out});
   await feature('projects', async () => {
     await page
       .getByRole('button', {name: 'Sign in with GitHub', exact: true})
@@ -794,6 +807,7 @@ export async function audit({page, context, base, out, server}) {
         r =>
           r.request().method() === 'GET' &&
           new URL(r.url()).pathname === `/api/v1/project/${project.id}`,
+        {timeout: 60000},
       ),
       page.reload(),
     ]);

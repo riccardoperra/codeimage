@@ -26,4 +26,6 @@ The case asserts live zoom 1, exact decoded PNG/screen pixel dimensions, a visib
 
 Clipboard is available for PNG/SVG and needs permission. Share requires navigator.share. Do not mock those browser APIs to claim native sharing. Redaction modifies documents. Animation core exists but no animation editor UI is wired at this HEAD; CLI and animation preview on other branches are excluded.
 
+`snippet-read-only` verifies a real PNG download and clipboard PNG from another owner's snippet in all three layouts at desktop and phone sizes. See [saved projects](projects.md).
+
 Move the pointer to Export before capturing: leaving a theme card cancels its preview. Align the screen capture to a device-pixel origin with layout offsets, not a transform that changes text rasterization. Freeze the measured frame size while removing the same editing controls export excludes; otherwise close-button spacing or rounded screenshot bounds produce false differences. Compare the rendered watermark SVG as well as the pixels, since a 2px logo offset can occupy less than 0.5% of an image.

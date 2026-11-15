@@ -99,7 +99,7 @@ export function useExportShortcuts(exporter: Accessor<Exporter>) {
   useHotkey(window, bindings, {capture: true});
 }
 
-export function bindEditorShortcuts() {
+export function bindEditorShortcuts(editable: Accessor<boolean>) {
   const editor = getRootEditorStore();
   const frame = getFrameState();
   const terminal = getTerminalState();
@@ -110,11 +110,11 @@ export function bindEditorShortcuts() {
       'input, textarea, [contenteditable=true], [role=dialog], [role=alertdialog]',
     );
   const whenIdle = (action: () => void) => () => {
-    if (!inField()) action();
+    if (editable() && !inField()) action();
   };
   useHotkey(document.body, {
     F: event => {
-      if (!inField()) {
+      if (editable() && !inField()) {
         event.preventDefault();
         editor.actions.setFocused(true);
       }
