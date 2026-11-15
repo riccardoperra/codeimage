@@ -42,7 +42,12 @@ async function load(page: Page) {
 }
 // Page evaluation uses the real store, including its context and browser clock.
 type Store = ReturnType<typeof getEditorStore>;
-declare const window: Window & {editorStore: Store; measuredFrames: number};
+declare const window: Window & {
+  editorStore: Store;
+  measuredFrames: number;
+  saves: number;
+  writes: number;
+};
 async function seed(page: Page) {
   await page.evaluate(tabs => {
     const {editor, animation} = window.editorStore;
@@ -333,7 +338,87 @@ async function hotkeys(page: Page) {
     'FPBDHW',
   );
 }
+
+async function resize(page: Page) {
+  await page.waitForTimeout(300);
+  await page.evaluate(() => {
+    window.saves = 0;
+    window.writes = 0;
+    window.editorStore.animation.stateToPersist$.subscribe(
+      () => window.saves++,
+    );
+    const put = IDBObjectStore.prototype.put;
+    IDBObjectStore.prototype.put = function (...args) {
+      window.writes++;
+      return put.apply(this, args);
+    };
+  });
+  const track = page.locator('[data-animation-track]');
+  const first = page.locator('[data-animation-segment]').first();
+  const initial = await first.boundingBox();
+  const next = page.locator('[data-animation-segment]').nth(1);
+  const nextInitial = (await next.boundingBox())!;
+  const axis = Number(await track.getAttribute('data-axis-ms'));
+  const usable = (await track.boundingBox())!.width - 12;
+  const handle = first.locator('[data-segment-resize]');
+  const box = (await handle.boundingBox())!;
+  await page.mouse.move(box.x + 4, box.y + 12);
+  await page.mouse.down();
+  await page.mouse.move(box.x + 4 + (usable * 400) / axis, box.y + 12, {
+    steps: 5,
+  });
+  assert.equal(Number(await track.getAttribute('data-axis-ms')), axis);
+  assert.equal(await first.getAttribute('aria-valuenow'), '1200');
+  const current = (await first.boundingBox())!;
+  assert.ok(
+    Math.abs(current.width - initial!.width - (usable * 400) / axis) < 1,
+  );
+  assert.ok(
+    Math.abs(
+      (await next.boundingBox())!.x - nextInitial.x - (usable * 400) / axis,
+    ) < 1,
+  );
+  assert.equal(await page.evaluate(() => window.saves), 0);
+  await page.mouse.up();
+  await page.waitForTimeout(300);
+  assert.equal(await page.evaluate(() => window.saves), 1);
+  assert.equal(await page.evaluate(() => window.writes), 1);
+  assert.equal(Number(await track.getAttribute('data-axis-ms')), axis + 400);
+  // A second drag uses 10 ms snapping with Alt.
+  const secondBox = (await handle.boundingBox())!;
+  const total = axis + 400;
+  await page.keyboard.down('Alt');
+  await page.mouse.move(secondBox.x + 4, secondBox.y + 12);
+  await page.mouse.down();
+  await page.mouse.move(
+    secondBox.x + 4 + (usable * 30) / total,
+    secondBox.y + 12,
+  );
+  await page.mouse.up();
+  await page.keyboard.up('Alt');
+  assert.equal(await first.getAttribute('aria-valuenow'), '1230');
+}
+async function nudge(page: Page) {
+  const segment = page.locator('[data-animation-segment]').nth(1);
+  await segment.focus();
+  await page.keyboard.press('ArrowRight');
+  assert.equal(await segment.getAttribute('aria-valuenow'), '800');
+  await page.keyboard.press('Alt+ArrowLeft');
+  assert.equal(await segment.getAttribute('aria-valuenow'), '790');
+  assert.ok(
+    await segment.evaluate(element => element === document.activeElement),
+  );
+  const input = page.locator('#animationDuration-input');
+  await input.click();
+  await input.press('ControlOrMeta+A');
+  await input.pressSequentially('1350');
+  assert.equal(await segment.getAttribute('aria-valuenow'), '790');
+  await input.press('Enter');
+  assert.equal(await segment.getAttribute('aria-valuenow'), '1350');
+}
 const lanes = {
+  Resize: resize,
+  Nudge: nudge,
   Placement: placement,
   Playback: playback,
   Scrub: scrub,

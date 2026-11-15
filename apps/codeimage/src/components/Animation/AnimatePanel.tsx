@@ -4,6 +4,7 @@ import {Show} from 'solid-js';
 import type {AppLocaleEntries} from '../../i18n';
 import {TransportBar} from './TransportBar';
 import {StripTimeline} from './StripTimeline';
+import {SegmentDetails} from './SegmentDetails';
 import {HeaderField} from './HeaderField';
 import * as styles from './AnimatePanel.css';
 export function AnimatePanel() {
@@ -32,9 +33,7 @@ export function AnimatePanel() {
         <div class={styles.mobileHeader}>
           <HeaderField />
         </div>
-        <div class={styles.details}>
-          <p class={styles.hint}>{t('animation.selectHint')}</p>
-        </div>
+        <SegmentDetails />
       </section>
     </Show>
   );

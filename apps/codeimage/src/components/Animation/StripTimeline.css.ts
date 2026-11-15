@@ -2,6 +2,7 @@ import {themeVars} from '@codeimage/ui';
 import {createVar, style} from '@vanilla-extract/css';
 const c = themeVars.dynamicColors;
 export const fraction = createVar();
+export const gaps = createVar();
 export const position = createVar();
 export const ruler = style({
   height: 24,
@@ -53,8 +54,8 @@ export const segment = style({
   justifyContent: 'center',
   gap: 6,
   minWidth: 8,
-  width: fraction,
-  flexShrink: 1,
+  width: `calc(${fraction} * (100% - ${gaps}))`,
+  flexShrink: 0,
   padding: '0 8px',
   border: 0,
   borderRadius: themeVars.borderRadius.md,

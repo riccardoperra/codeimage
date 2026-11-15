@@ -1,12 +1,20 @@
 import {useI18n} from '@codeimage/locale';
 import {getEditorStore} from '@codeimage/store/editor';
-import type {AnimationSegment} from '@codeimage/store/editor/animationSettings';
+import {
+  DURATION_LIMITS,
+  type AnimationSegment,
+} from '@codeimage/store/editor/animationSettings';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
-import {createMemo, For} from 'solid-js';
+import {createMemo, createSignal, For} from 'solid-js';
 import type {AppLocaleEntries} from '../../i18n';
+import {createSegmentResize} from './createSegmentResize';
 import {formatDuration, formatSeconds} from './format';
 import * as styles from './StripTimeline.css';
-function Segment(props: {segment: AnimationSegment; total: number}) {
+function Segment(props: {
+  segment: AnimationSegment;
+  total: number;
+  resize: (event: PointerEvent, segment: AnimationSegment) => void;
+}) {
   const {animation, editor} = getEditorStore();
   const [t, {locale}] = useI18n<AppLocaleEntries>();
   const segment = () => props.segment;
@@ -30,9 +38,31 @@ function Segment(props: {segment: AnimationSegment; total: number}) {
     animation.playback().state !== 'editing' &&
     animation.playhead() >= segment().startMs &&
     animation.playhead() < segment().startMs + segment().durationMs;
+  const limits = () =>
+    segment().kind === 'hold'
+      ? DURATION_LIMITS.holdMs
+      : DURATION_LIMITS.transitionMs;
+  const keyDown = (event: KeyboardEvent) => {
+    if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
+    event.preventDefault();
+    event.stopPropagation();
+    const ms =
+      segment().durationMs +
+      (event.key === 'ArrowLeft' ? -1 : 1) * (event.altKey ? 10 : 100);
+    if (segment().kind === 'hold')
+      animation.actions.setHoldMs(segment().stepId, ms);
+    else animation.actions.setTransition(segment().stepId, {ms});
+  };
+  const resize = (event: PointerEvent) => props.resize(event, segment());
   return (
     <button
       type="button"
+      role="slider"
+      aria-valuemin={limits().min}
+      aria-valuemax={limits().max}
+      aria-valuenow={segment().durationMs}
+      aria-valuetext={formatDuration(segment().durationMs, locale())}
+      on:keydown={keyDown}
       class={styles.segment}
       data-animation-segment
       data-step-id={segment().stepId}
@@ -42,7 +72,7 @@ function Segment(props: {segment: AnimationSegment; total: number}) {
       aria-label={label()}
       title={`${label()} · ${formatDuration(segment().durationMs, locale())}`}
       style={assignInlineVars({
-        [styles.fraction]: `${(segment().durationMs / props.total) * 100}%`,
+        [styles.fraction]: String(segment().durationMs / props.total),
       })}
       onClick={select}
       onFocus={select}
@@ -52,6 +82,12 @@ function Segment(props: {segment: AnimationSegment; total: number}) {
           ? `${segment().index + 1} · ${name()}`
           : formatDuration(segment().durationMs, locale())}
       </span>
+      <span
+        class={styles.handle}
+        data-segment-resize
+        aria-hidden="true"
+        onPointerDown={resize}
+      />
     </button>
   );
 }
@@ -59,10 +95,38 @@ export function StripTimeline() {
   const {animation} = getEditorStore();
   const [t, {locale}] = useI18n<AppLocaleEntries>();
   let ruler!: HTMLDivElement;
+  let track!: HTMLDivElement;
+  const [frozen, setFrozen] = createSignal<number>();
+  const axis = () => frozen() ?? animation.durationMs();
+  const keys = createMemo(() =>
+    animation.segments().map(segment => `${segment.kind}:${segment.stepId}`),
+  );
+  const resize = createSegmentResize({
+    total: animation.durationMs,
+    width: () =>
+      track.clientWidth - Math.max(0, animation.segments().length - 1) * 3,
+    limits: segment =>
+      segment.kind === 'hold'
+        ? DURATION_LIMITS.holdMs
+        : DURATION_LIMITS.transitionMs,
+    begin: total => {
+      animation.actions.setResizing(true);
+      setFrozen(total);
+    },
+    end: () => {
+      setFrozen(undefined);
+      animation.actions.setResizing(false);
+    },
+    update: (segment, ms, commit) => {
+      if (segment.kind === 'hold')
+        animation.actions.setHoldMs(segment.stepId, ms, {commit});
+      else animation.actions.setTransition(segment.stepId, {ms}, {commit});
+    },
+  });
   const ticks = createMemo(() => {
-    const step = animation.durationMs() > 4500 ? 1000 : 500;
+    const step = axis() > 4500 ? 1000 : 500;
     return Array.from(
-      {length: Math.floor(animation.durationMs() / step) + 1},
+      {length: Math.floor(axis() / step) + 1},
       (_, i) => i * step,
     );
   });
@@ -127,7 +191,7 @@ export function StripTimeline() {
             <span
               class={styles.tick}
               style={assignInlineVars({
-                [styles.position]: `${(ms / animation.durationMs()) * 100}%`,
+                [styles.position]: `${(ms / axis()) * 100}%`,
               })}
             >
               {formatSeconds(ms, locale())}
@@ -137,14 +201,28 @@ export function StripTimeline() {
         <span
           class={styles.playhead}
           style={assignInlineVars({
-            [styles.position]: `${(animation.playhead() / animation.durationMs()) * 100}%`,
+            [styles.position]: `${(animation.playhead() / axis()) * 100}%`,
           })}
         />
       </div>
-      <div class={styles.track}>
-        <For each={animation.segments()}>
-          {segment => (
-            <Segment segment={segment} total={animation.durationMs()} />
+      <div
+        class={styles.track}
+        ref={track}
+        data-animation-track
+        data-axis-ms={axis()}
+        style={assignInlineVars({
+          [styles.gaps]: `${Math.max(0, keys().length - 1) * 3}px`,
+        })}
+      >
+        <For each={keys()}>
+          {key => (
+            <Segment
+              segment={animation
+                .segments()
+                .find(segment => `${segment.kind}:${segment.stepId}` === key)!}
+              total={axis()}
+              resize={resize}
+            />
           )}
         </For>
       </div>

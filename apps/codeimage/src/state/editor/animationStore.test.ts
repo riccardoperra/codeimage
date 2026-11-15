@@ -1,10 +1,11 @@
+import type * as Solid from 'solid-js';
 import assert from 'node:assert/strict';
 import {test, vi} from 'vitest';
 import {createRoot, createSignal} from 'solid-js';
 import type {EditorState} from './model';
 import {createAnimationStore} from './animation';
 vi.mock('solid-js', () =>
-  vi.importActual<typeof import('solid-js')>('solid-js/dist/solid.js'),
+  vi.importActual<typeof Solid>('solid-js/dist/solid.js'),
 );
 
 const tab = (id: string): EditorState => ({
