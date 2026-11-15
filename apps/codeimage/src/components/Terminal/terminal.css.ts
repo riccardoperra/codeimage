@@ -58,6 +58,7 @@ export const wrapper = style([
         boxShadow: `0 0 0 1px ${windowVars.ink14}, inset 0 1px 0 ${windowVars.ink08}, ${terminalVars.boxShadow}`,
       },
       '&[data-custom-border=glass]': {
+        vars: {'--codeimage-line-border': '1.5px'},
         boxShadow: `${glassBorderVar}, ${terminalVars.boxShadow}`,
       },
     },
@@ -65,20 +66,20 @@ export const wrapper = style([
 ]);
 
 export const content = style({
+  vars: {'--codeimage-content-inset': themeVars.spacing['4']},
   position: 'relative',
   overflow: 'auto',
   fontSize: themeVars.fontSize.base,
   paddingBottom: themeVars.spacing['4'],
   paddingTop: themeVars.spacing['5'],
-  paddingInlineStart: themeVars.spacing['4'],
-  paddingInlineEnd: themeVars.spacing['4'],
+  paddingInlineStart: 'var(--codeimage-content-inset)',
+  paddingInlineEnd: 'var(--codeimage-content-inset)',
 
   selectors: {
     [`[data-lite=true] &`]: {
+      vars: {'--codeimage-content-inset': themeVars.spacing['2']},
       paddingBottom: themeVars.spacing['2'],
       paddingTop: themeVars.spacing['3'],
-      paddingInlineStart: themeVars.spacing['2'],
-      paddingInlineEnd: themeVars.spacing['2'],
     },
     [`[data-accent-header=false][data-header-visible=true][data-lite=true] &`]:
       {

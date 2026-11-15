@@ -80,6 +80,7 @@ const tab: EditorState = {
   tab: {tabName: 'second.ts'},
   languageId: 'typescript',
   lineNumberStart: 1,
+  marks: {lines: [], focusedLines: []},
 };
 
 for (const [width, height, resolution] of [

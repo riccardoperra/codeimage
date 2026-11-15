@@ -1,5 +1,7 @@
 import {
+  parseTabMarks,
   readFrameExportProperties,
+  readTerminalSurface,
   writeFrameSignature,
 } from './project.model.js';
 import type * as repository from './project.repository.js';
@@ -12,7 +14,6 @@ import type {
 } from '@codeimage/prisma-models';
 import {type Db, type OwnerScope, orNull} from '../../shared/db.js';
 import {asUserId, type UserId} from '../../shared/principal.js';
-import {readTerminalSurface} from './project.model.js';
 import type {
   Project,
   ProjectChanges,
@@ -133,10 +134,10 @@ export async function updateProject(
             NOT: {id: {in: changes.editorTabs.map(tab => tab.id)}},
           },
           upsert: changes.editorTabs.map(
-            ({id, code, tabName, languageId, lineNumberStart}) => ({
+            ({id, code, tabName, languageId, lineNumberStart, marks}) => ({
               where: {id},
-              create: {code, tabName, languageId, lineNumberStart},
-              update: {code, tabName, languageId, lineNumberStart},
+              create: {code, tabName, languageId, lineNumberStart, marks},
+              update: {code, tabName, languageId, lineNumberStart, marks},
             }),
           ),
         },
@@ -285,6 +286,7 @@ function toProject(
       languageId: tab.languageId,
       tabName: tab.tabName,
       lineNumberStart: tab.lineNumberStart,
+      marks: parseTabMarks(tab.marks),
     })),
   };
 }

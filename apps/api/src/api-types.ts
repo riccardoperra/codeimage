@@ -24,3 +24,5 @@ export type DeleteSignatureApi = SignatureApi['remove'];
 export type GetSignatureByIdApi = SignatureApi['get'];
 export type UpdateSignatureApi = SignatureApi['update'];
 export type GetAllSignatureApi = SignatureApi['list'];
+
+export type {TabMarks} from './modules/project/project.contract.js';

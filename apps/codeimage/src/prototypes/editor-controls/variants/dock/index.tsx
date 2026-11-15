@@ -2,6 +2,7 @@ import {NewDot} from '../../../../components/WhatsNew/NewDot';
 import {commandAnchor} from '../../../../components/WhatsNew/whats-new.css';
 import {Button, IconButton} from '@codeui/kit';
 import {Popover} from '@kobalte/core/popover';
+import {assignInlineVars} from '@vanilla-extract/dynamic';
 import type {JSX} from 'solid-js';
 import {createSignal, For, onCleanup, onMount, Show} from 'solid-js';
 import {Dynamic} from 'solid-js/web';
@@ -24,14 +25,13 @@ import {
   isKeyboardClick,
 } from './context';
 import {fieldId, SegmentedChoice, SelectChoice} from '../../controls/fields';
-import './dock.css';
 import type {PanelId} from './fields';
 import {createFields, PLACES} from './fields';
 import {CodeIcon, PaddingIcon, SearchIcon, SlidersIcon} from './icons';
 import {PANELS, showMoreGroup} from './panels';
 import {signatureEditor} from '@codeimage/store/frame/signatureEditor';
 import {Sheet} from './Sheet';
-import {tokens} from './tokens.css';
+import * as styles from './dock.css';
 
 export const meta: VariantMeta = {
   name: 'Dock',
@@ -62,7 +62,7 @@ interface DockItemHost {
   /** The phone bar's buttons open the sheet. */
   onToggle: (panel: PanelId, event: MouseEvent) => void;
   onOpenChange: (panel: PanelId, open: boolean) => void;
-  /** Where the popover mounts, inside the layout so that its tokens reach it. */
+  /** Where the popover mounts: inside the layout, out of its flow. */
   mount: () => HTMLElement | undefined;
   /** The box a popover of this panel hangs above. */
   anchor: (panel: PanelId, trigger?: HTMLElement) => DOMRect | undefined;
@@ -81,12 +81,12 @@ function DockItem(props: DockItemProps & {host: DockItemHost}) {
   // keeps one width whatever is applied. A dock that grew would wrap its row
   // on a narrow window and move the frame.
   const ItemText = () => (
-    <span class="dock-item-text">
-      <span>{text()}</span>
+    <span class={styles.itemText}>
+      <span class={styles.itemCell}>{text()}</span>
       <Show when={!props.host.compact()}>
         <For each={props.values}>
           {value => (
-            <span class="dock-item-sizer" aria-hidden="true">
+            <span class={styles.itemSizer} aria-hidden="true">
               {value}
             </span>
           )}
@@ -95,7 +95,7 @@ function DockItem(props: DockItemProps & {host: DockItemHost}) {
     </span>
   );
   const button = {
-    class: 'dock-item',
+    class: styles.item,
     theme: 'secondary',
     variant: 'ghost',
     size: 'sm',
@@ -144,7 +144,7 @@ function DockItem(props: DockItemProps & {host: DockItemHost}) {
         </Popover.Trigger>
         <Popover.Portal mount={props.host.mount()}>
           <Popover.Content
-            class={`dock-popover ${sidebarTheme}`}
+            class={`${styles.popover} ${sidebarTheme}`}
             aria-label={PANELS[props.panel].title}
             data-panel={props.panel}
             data-instant={instant() ? '' : undefined}
@@ -181,7 +181,7 @@ function BarSettings() {
   claimSettingsEntry();
   return (
     <IconButton
-      class="dock-item"
+      class={styles.item}
       theme={'secondary'}
       variant={'ghost'}
       size={'sm'}
@@ -253,7 +253,7 @@ export default function Dock(props: VariantProps) {
       requestAnimationFrame(() =>
         document
           .querySelector<HTMLElement>(
-            '.dock-more [data-control="signature.handle"] input',
+            `.${styles.more} [data-control="signature.handle"] input`,
           )
           ?.focus({preventScroll: true}),
       );
@@ -309,23 +309,25 @@ export default function Dock(props: VariantProps) {
   return (
     <DockContext.Provider value={dock}>
       <div
-        class={`dock-root ${tokens}`}
+        class={styles.root}
         data-compact={compact() ? '' : undefined}
-        style={{'--dock-safe': `${dockHeight() + MARGIN * 2}px`}}
+        style={assignInlineVars({
+          [styles.safe]: `${dockHeight() + MARGIN * 2}px`,
+        })}
       >
-        {/* Popovers mount here: inside the root for its tokens, out of its layout. */}
-        <div class="dock-overlays" ref={setOverlays} />
+        {/* Popovers mount here: inside the root, out of its layout. */}
+        <div class={styles.overlays} ref={setOverlays} />
 
-        <div class="dock-body">
+        <div class={styles.body}>
           {/*
             The dock comes before the canvas in the document, and CSS floats
             it over the canvas's bottom edge. The code editor keeps the Tab
             key, so controls after it could not be reached from the keyboard.
           */}
-          <div class="dock-row" ref={row}>
+          <div class={styles.row} ref={row}>
             <div
               ref={bar}
-              class="dock-bar dock-float"
+              class={`${styles.bar} ${styles.float}`}
               role="toolbar"
               aria-label="Editor controls"
             >
@@ -347,7 +349,7 @@ export default function Dock(props: VariantProps) {
                 label={label('frame.background', 'Background')}
                 icon={
                   <span
-                    class="dock-fill"
+                    class={styles.fill}
                     data-hidden={background()?.visible() ? undefined : ''}
                     style={{background: background()?.value()}}
                   />
@@ -377,13 +379,15 @@ export default function Dock(props: VariantProps) {
                 <Show when={fields.choice('frame.padding')}>
                   {control => (
                     <div
-                      class="dock-field dock-field-padding"
+                      class={`${styles.field} ${styles.fieldPadding}`}
                       role="group"
                       aria-label={control().label()}
                       title={control().label()}
                     >
                       <PaddingIcon />
-                      <div class="dock-segmented">
+                      <div
+                        class={`${styles.segmented} ${styles.paddingChoice}`}
+                      >
                         <SegmentedChoice
                           control={control()}
                           id={fieldId('dock', control().id)}
@@ -395,7 +399,7 @@ export default function Dock(props: VariantProps) {
                 <Show when={fields.choice('editor.language')}>
                   {control => (
                     <div
-                      class="dock-field dock-field-language"
+                      class={`${styles.field} ${styles.fieldLanguage}`}
                       title={control().label()}
                     >
                       {/* Clears the bar, so the list starts where the popovers do. */}
@@ -416,7 +420,7 @@ export default function Dock(props: VariantProps) {
                 quiet
                 icon={
                   <span
-                    class="dock-font-icon"
+                    class={styles.fontIcon}
                     style={{
                       'font-family': `"${fields.fontName()}", monospace`,
                     }}
@@ -434,7 +438,7 @@ export default function Dock(props: VariantProps) {
               <Show when={!compact()}>
                 <span class={commandAnchor}>
                   <Button
-                    class="dock-item"
+                    class={styles.item}
                     theme={'secondary'}
                     variant={'ghost'}
                     size={'sm'}
@@ -444,21 +448,21 @@ export default function Dock(props: VariantProps) {
                     aria-expanded={commandMenu.isOpen()}
                     onClick={commandMenu.open}
                   >
-                    <kbd class="dock-kbd">{commandMenu.shortcut}</kbd>
+                    <kbd class={styles.kbd}>{commandMenu.shortcut}</kbd>
                   </Button>
                   <NewDot highlight="command-menu" />
                 </span>
                 <BarSettings />
               </Show>
               <Show when={props.stage.compact()}>
-                <div class="dock-bar-export" onClick={close}>
+                <div class={styles.barExport} onClick={close}>
                   <props.stage.ExportButton />
                 </div>
               </Show>
             </div>
 
             <Show when={!compact()}>
-              <div class="dock-frame-actions dock-float">
+              <div class={`${styles.frameActions} ${styles.float}`}>
                 <FrameActions frameRef={props.stage.exportRef()} />
               </div>
             </Show>
@@ -468,12 +472,12 @@ export default function Dock(props: VariantProps) {
             <Sheet bar={() => bar} trigger={() => sheetTrigger} />
           </Show>
 
-          <main class="dock-stage dock-island">
-            <div class="dock-canvas">
+          <main class={`${styles.stage} ${styles.island}`}>
+            <div class={styles.canvas}>
               <props.stage.Canvas />
             </div>
             <Show when={!compact()}>
-              <div class="dock-footer">
+              <div class={styles.footer}>
                 <Footer />
               </div>
             </Show>

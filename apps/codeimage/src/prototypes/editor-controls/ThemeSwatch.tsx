@@ -1,8 +1,8 @@
-import type {JSX} from 'solid-js';
+import {assignInlineVars} from '@vanilla-extract/dynamic';
 import {Match, Switch} from 'solid-js';
 import type {ThemeEntry} from './model';
 import {themeStyle, themeStyleEntry} from './theme-styles/style';
-import './theme-swatch.css';
+import * as styles from './theme-swatch.css';
 
 export const SWATCH_VARIANTS = ['syntax-orb', 'aa', 'window'] as const;
 
@@ -34,67 +34,100 @@ export function ThemeSwatch(props: ThemeSwatchProps) {
     return value === 'fill' || value >= size() * 1.6;
   };
 
-  const style = (): JSX.CSSProperties => ({
-    '--swatch-size': `${size()}px`,
-    '--swatch-width': width() === 'fill' ? '100%' : `${width()}px`,
-    '--swatch-frame': props.theme.colors.background,
-    '--swatch-window': props.theme.colors.window,
-    '--swatch-text': props.theme.colors.text,
-    '--swatch-base': syntax().base,
-    '--swatch-keyword': syntax().keyword,
-    '--swatch-string': syntax().string,
-    '--swatch-function': syntax().function,
-    '--swatch-number': syntax().number,
-    '--swatch-type': syntax().type,
-    '--swatch-property': syntax().property,
-    '--swatch-comment': syntax().comment,
-  });
+  const vars = () => {
+    const v = styles.swatchVars;
+    return assignInlineVars({
+      [v.size]: `${size()}px`,
+      [v.width]: width() === 'fill' ? '100%' : `${width()}px`,
+      [v.frame]: props.theme.colors.background,
+      [v.window]: props.theme.colors.window,
+      [v.text]: props.theme.colors.text,
+      [v.base]: syntax().base,
+      [v.keyword]: syntax().keyword,
+      [v.string]: syntax().string,
+      [v.function]: syntax().function,
+      [v.number]: syntax().number,
+      [v.type]: syntax().type,
+      [v.property]: syntax().property,
+      [v.comment]: syntax().comment,
+    });
+  };
+
+  const line = (options: {indent?: boolean; long?: boolean} = {}) =>
+    styles.line({...options, wide: wide()});
+  const bar = () => styles.bar({wide: wide()});
 
   return (
     <span
-      class="proto-theme-swatch"
+      class={styles.swatch({variant: variant(), wide: wide()})}
       data-variant={variant()}
-      data-wide={wide() ? '' : undefined}
       aria-hidden="true"
-      style={style()}
+      style={vars()}
     >
       <Switch>
         <Match when={variant() === 'syntax-orb'}>
-          <span class="proto-theme-swatch-blob" data-token="keyword" />
-          <span class="proto-theme-swatch-blob" data-token="string" />
-          <span class="proto-theme-swatch-blob" data-token="function" />
+          <span class={styles.blob({token: 'keyword'})} />
+          <span class={styles.blob({token: 'string'})} />
+          <span class={styles.blob({token: 'function'})} />
         </Match>
         <Match when={variant() === 'aa'}>
-          <span class="proto-theme-swatch-aa">
+          <span class={styles.aa}>
             <span style={{color: syntax().keyword}}>A</span>
             <span style={{color: syntax().string}}>a</span>
           </span>
         </Match>
         <Match when={variant() === 'window'}>
-          <span class="proto-theme-swatch-editor">
-            <span class="proto-theme-swatch-header">
-              <span />
-              <span />
-              <span />
+          <span class={styles.editor({wide: wide()})}>
+            <span class={styles.header({wide: wide()})}>
+              <span class={styles.dot} />
+              <span class={styles.dot} />
+              <span class={styles.dot} />
             </span>
-            <span class="proto-theme-swatch-line">
-              <span style={{background: syntax().keyword, width: '24%'}} />
-              <span style={{background: syntax().function, width: '38%'}} />
+            <span class={line()}>
+              <span
+                class={bar()}
+                style={{background: syntax().keyword, width: '24%'}}
+              />
+              <span
+                class={bar()}
+                style={{background: syntax().function, width: '38%'}}
+              />
             </span>
-            <span class="proto-theme-swatch-line" data-indent>
-              <span style={{background: syntax().property, width: '28%'}} />
-              <span style={{background: syntax().string, width: '34%'}} />
+            <span class={line({indent: true})}>
+              <span
+                class={bar()}
+                style={{background: syntax().property, width: '28%'}}
+              />
+              <span
+                class={bar()}
+                style={{background: syntax().string, width: '34%'}}
+              />
             </span>
-            <span class="proto-theme-swatch-line" data-indent data-long>
-              <span style={{background: syntax().function, width: '30%'}} />
-              <span style={{background: syntax().number, width: '12%'}} />
+            <span class={line({indent: true, long: true})}>
+              <span
+                class={bar()}
+                style={{background: syntax().function, width: '30%'}}
+              />
+              <span
+                class={bar()}
+                style={{background: syntax().number, width: '12%'}}
+              />
             </span>
-            <span class="proto-theme-swatch-line" data-long>
-              <span style={{background: syntax().comment, width: '56%'}} />
+            <span class={line({long: true})}>
+              <span
+                class={bar()}
+                style={{background: syntax().comment, width: '56%'}}
+              />
             </span>
-            <span class="proto-theme-swatch-line" data-long>
-              <span style={{background: syntax().type, width: '18%'}} />
-              <span style={{background: syntax().base, width: '10%'}} />
+            <span class={line({long: true})}>
+              <span
+                class={bar()}
+                style={{background: syntax().type, width: '18%'}}
+              />
+              <span
+                class={bar()}
+                style={{background: syntax().base, width: '10%'}}
+              />
             </span>
           </span>
         </Match>

@@ -150,6 +150,7 @@ export const colors = EditorView.theme(
     '&': {
       color: tokens.gray120,
       background: tokens.gray10,
+      '--codeimage-line-accent': palette.keyword,
     },
     '&.cm-editor.cm-focused': {
       outline: 'none',

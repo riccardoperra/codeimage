@@ -49,6 +49,7 @@ export function toProjectResponse(view: ProjectView): ProjectGetByIdResponse {
       code: editor.code,
       tabName: editor.tabName,
       lineNumberStart: editor.lineNumberStart,
+      marks: editor.marks,
     })),
     isOwner: view.isOwner,
   };

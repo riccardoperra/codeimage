@@ -1,0 +1,19 @@
+
+> codeimage@1.10.0 typecheck /Users/riccardoperra/.t3/worktrees/codeimage/t3-3ebc7362-749891be7d5422a9
+> pnpm --filter='@codeimage/*' --recursive --parallel typecheck
+
+Scope: 10 of 12 workspace projects
+apps/api typecheck$ tsc --noEmit --skipLibCheck --project tsconfig.json
+packages/atomic-state typecheck$ tsc --noEmit --skipLibCheck --project tsconfig.json
+packages/config typecheck$ tsc --noEmit --skipLibCheck --project tsconfig.dts.json
+packages/highlight typecheck$ tsc --noEmit --skipLibCheck --project tsconfig.json
+packages/locale typecheck$ tsc --noEmit --skipLibCheck --project tsconfig.json
+packages/ui typecheck$ tsc --noEmit --skipLibCheck --project tsconfig.json
+apps/codeimage typecheck$ tsc --noEmit
+packages/locale typecheck: Done
+packages/config typecheck: Done
+packages/highlight typecheck: Done
+apps/api typecheck: Done
+packages/ui typecheck: Done
+packages/atomic-state typecheck: Done
+apps/codeimage typecheck: Done

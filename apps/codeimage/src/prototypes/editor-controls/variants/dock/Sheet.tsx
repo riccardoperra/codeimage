@@ -3,6 +3,7 @@ import {createEffect, createMemo, createSignal, on, Show} from 'solid-js';
 import {Dynamic} from 'solid-js/web';
 import {sidebarTheme} from '../../../../components/PropertyEditor/EditorSidebar.css';
 import {closeOnEscape, useDock} from './context';
+import * as styles from './dock.css';
 import type {PanelId} from './fields';
 import {PANELS} from './panels';
 
@@ -120,7 +121,7 @@ export function Sheet(props: SheetProps) {
       }}
       modal={false}
     >
-      <div class="dock-sheet-slot" ref={setSlot} />
+      <div class={styles.sheetSlot} ref={setSlot} />
       {/*
         Kobalte starts its focus handling when the content is created, so the
         content has to be created on open. The portal does that, and it
@@ -133,7 +134,7 @@ export function Sheet(props: SheetProps) {
               ref={(element: HTMLDivElement) => {
                 content = element;
               }}
-              class={`dock-sheet ${sidebarTheme}`}
+              class={`${styles.sheet} ${sidebarTheme}`}
               aria-label={PANELS[shown() ?? 'more'].title}
               data-panel={shown()}
               onOpenAutoFocus={event => event.preventDefault()}
@@ -155,7 +156,7 @@ export function Sheet(props: SheetProps) {
             >
               <button
                 type="button"
-                class="dock-grabber"
+                class={styles.grabber}
                 aria-label="Close"
                 onPointerDown={onGrab}
                 onPointerMove={onDrag}

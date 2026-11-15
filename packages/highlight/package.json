@@ -82,6 +82,14 @@
       "types": "./dist/lib/themes/vsCodeDark/index.d.ts",
       "import": "./dist/lib/themes/vsCodeDark/index.js"
     },
+    "./vsCodeDark2026": {
+      "types": "./dist/lib/themes/vsCodeDark2026/index.d.ts",
+      "import": "./dist/lib/themes/vsCodeDark2026/index.js"
+    },
+    "./vsCodeLight2026": {
+      "types": "./dist/lib/themes/vsCodeLight2026/index.d.ts",
+      "import": "./dist/lib/themes/vsCodeLight2026/index.js"
+    },
     "./githubDark": {
       "types": "./dist/lib/themes/githubDark/index.d.ts",
       "import": "./dist/lib/themes/githubDark/index.js"
@@ -180,6 +188,12 @@
       "vsCodeDark": [
         "./dist/lib/themes/vsCodeDark/index.d.ts"
       ],
+      "vsCodeDark2026": [
+        "./dist/lib/themes/vsCodeDark2026/index.d.ts"
+      ],
+      "vsCodeLight2026": [
+        "./dist/lib/themes/vsCodeLight2026/index.d.ts"
+      ],
       "githubDark": [
         "./dist/lib/themes/githubDark/index.d.ts"
       ],
@@ -220,6 +234,7 @@
   },
   "scripts": {
     "dev": "vite serve ./dev --host",
+    "test": "tsx --test test/*.test.ts",
     "build": "tsdown",
     "build:dev": "vite build ./dev",
     "pre-commit": "lint-staged --relative",

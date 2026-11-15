@@ -1,10 +1,13 @@
 import type {Static} from '@sinclair/typebox';
+import {Value} from '@sinclair/typebox/value';
 import {
   ExportTargetSchema,
   type FrameSignatureSchema,
   SignaturePlatformSchema,
   SignaturePositionSchema,
   SignatureStyleSchema,
+  TabMarksSchema,
+  type TabMarks,
 } from './project.contract.js';
 import {defineErrors} from '../../shared/errors.js';
 import {
@@ -64,6 +67,7 @@ export interface SnippetEditorTab {
   readonly languageId: string;
   readonly tabName: string;
   readonly lineNumberStart: number;
+  readonly marks: TabMarks;
 }
 
 export interface ProjectHeader {
@@ -186,6 +190,7 @@ export function draftFromCreateBody(body: ProjectCreateBody): ProjectDraft {
       code: editor.code,
       tabName: editor.tabName,
       lineNumberStart: editor.lineNumberStart,
+      marks: parseTabMarks(editor.marks),
     })),
   };
 }
@@ -195,7 +200,10 @@ export function changesFromUpdateBody(body: ProjectUpdateBody): ProjectChanges {
     frame: body.frame,
     terminal: {...body.terminal, surface: body.terminal.surface ?? undefined},
     editorOptions: body.editorOptions,
-    editorTabs: body.editors,
+    editorTabs: body.editors.map(editor => ({
+      ...editor,
+      marks: parseTabMarks(editor.marks),
+    })),
   };
 }
 
@@ -212,11 +220,12 @@ export function draftFromClone(
     terminal,
     editorOptions,
     editorTabs: source.editorTabs.map(
-      ({languageId, code, tabName, lineNumberStart}) => ({
+      ({languageId, code, tabName, lineNumberStart, marks}) => ({
         languageId,
         code,
         tabName,
         lineNumberStart,
+        marks,
       }),
     ),
   };
@@ -291,6 +300,12 @@ export function readFrameExportProperties(
       )?.const ?? null,
     signature: readFrameSignature(frame),
   };
+}
+
+export function parseTabMarks(value: unknown): TabMarks {
+  return Value.Check(TabMarksSchema, value)
+    ? value
+    : {lines: [], focusedLines: []};
 }
 
 export function readTerminalSurface(
