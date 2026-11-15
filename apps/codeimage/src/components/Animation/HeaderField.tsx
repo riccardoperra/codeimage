@@ -21,7 +21,10 @@ export function HeaderField() {
     if (title().trim() !== animation.settings().header.title)
       animation.actions.setHeader({title: title()});
   };
-  const keyDown = (event: KeyboardEvent) => {
+  // Keeps typed keys from the app's body hotkeys. Only around the text field:
+  // stopping a key here also stops Solid's delegated handlers, which the
+  // Select's keyboard navigation uses.
+  const titleKeyDown = (event: KeyboardEvent) => {
     if (event.key === 'Escape') return;
     event.stopPropagation();
     if (event.key === 'Enter' && event.target instanceof HTMLInputElement) {
@@ -30,7 +33,7 @@ export function HeaderField() {
     }
   };
   return (
-    <div class={styles.header} on:keydown={keyDown}>
+    <div class={styles.header}>
       <Select<AnimationHeader['mode']>
         size="xs"
         options={modes}
@@ -43,7 +46,11 @@ export function HeaderField() {
         disallowEmptySelection
       />
       <Show when={animation.settings().header.mode === 'title'}>
-        <div class={styles.title} onFocusOut={commitTitle}>
+        <div
+          class={styles.title}
+          onFocusOut={commitTitle}
+          on:keydown={titleKeyDown}
+        >
           <TextField
             size="xs"
             value={title()}

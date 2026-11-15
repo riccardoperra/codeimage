@@ -368,9 +368,11 @@ async function persistence(page: Page) {
   );
 }
 async function hotkeys(page: Page) {
-  await page
-    .locator('[data-animate-panel] button[aria-label=Header]:visible')
-    .click();
+  const header = page.locator(
+    '[data-animate-panel] button[aria-label=Header]:visible',
+  );
+  await header.focus();
+  await page.keyboard.press('ArrowDown');
   await page.getByRole('option', {name: 'Title only', exact: true}).click();
   const title = page.getByRole('textbox', {name: 'Title', exact: true});
   const before = await page.evaluate(() => [
