@@ -370,6 +370,16 @@ const lanes: Record<string, (page: Page) => Promise<void>> = {
       true,
       'the focus lands on the code',
     );
+    await play(page);
+    await stageShown(page);
+    await button(page, 'Stop and edit the code').click();
+    assert.equal(
+      await page.evaluate(() =>
+        document.activeElement?.classList.contains('cm-content'),
+      ),
+      true,
+      'Stop returns the focus to the code',
+    );
   },
 
   async 'closing the panel removes the preview from the page'(page) {
