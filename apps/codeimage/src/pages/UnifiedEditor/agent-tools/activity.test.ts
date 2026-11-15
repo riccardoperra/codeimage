@@ -5,6 +5,7 @@ import type {AgentTool, ToolResult} from './tools';
 
 const words: SummaryWords = {
   lines: count => `${count} lines`,
+  tabs: count => `${count} tabs`,
   toggle: on => (on ? 'on' : 'off'),
   delivery: delivery => delivery.replace('_', ' '),
 };
@@ -45,6 +46,21 @@ describe('summarize', () => {
     ).toBe('main · Python · 1 lines');
   });
 
+  it('sums up the editor state the bar gave the model', () => {
+    expect(
+      summarize(
+        'get_editor_state',
+        {
+          tab: {name: 'index.tsx', language: 'typescript'},
+          tabs: ['index.tsx', 'a.ts', 'b.ts'],
+          theme: 'Dracula',
+          settings: {frame_padding: '64'},
+        },
+        words,
+      ),
+    ).toBe('3 tabs · index.tsx · Dracula');
+  });
+
   it('names the theme', () => {
     expect(summarize('apply_theme', {theme: 'Dracula'}, words)).toBe('Dracula');
   });
@@ -54,21 +70,23 @@ describe('summarize', () => {
     expect(summarize('select_tab', {index: 0}, words)).toBe('#1');
   });
 
+  it('names the tab a read_tab call reads', () => {
+    expect(summarize('read_tab', {name: 'main.py'}, words)).toBe('main.py');
+  });
+
   it('lists the first settings with their values and counts the rest', () => {
     expect(
       summarize(
         'set_controls',
         {
-          values: {
-            'frame.padding': 64,
-            'window.shadow': 'Bottom',
-            'frame.visible': false,
-            'editor.lineNumberStart': 3,
-          },
+          frame_padding: 64,
+          window_shadow: 'bottom',
+          frame_visible: false,
+          editor_line_number_start: 3,
         },
         words,
       ),
-    ).toBe('padding 64, shadow Bottom, visible off, +1');
+    ).toBe('padding 64, shadow bottom, visible off, +1');
   });
 
   it('describes an export, delivered as a download unless told otherwise', () => {

@@ -11,7 +11,7 @@ import * as styles from './canvas-toolbar.css';
 /**
  * The actions on the image under the canvas: format the code, copy the image
  * with the export settings and, with the Local AI experiment, ask for a
- * change, which turns the toolbar into the prompt bar.
+ * change, which opens the prompt bar over the toolbar.
  */
 export function CanvasToolbar(props: {stage: Stage}) {
   const [t] = useI18n<AppLocaleEntries>();
@@ -21,8 +21,14 @@ export function CanvasToolbar(props: {stage: Stage}) {
   const exporter = () => props.stage.exporter;
 
   return (
-    <Show when={!localAi.isOpen()} fallback={<PromptBar />}>
-      <div class={styles.toolbar} role="group" aria-label={t('editor.actions')}>
+    <div class={styles.anchor}>
+      {/* Hidden, not removed, under the bar: its box keeps the canvas in place. */}
+      <div
+        class={styles.toolbar}
+        role="group"
+        aria-label={t('editor.actions')}
+        data-covered={localAi.isOpen() ? '' : undefined}
+      >
         <Button
           size={'sm'}
           theme={'secondary'}
@@ -47,6 +53,9 @@ export function CanvasToolbar(props: {stage: Stage}) {
         <props.stage.AnimateToggle />
         <AskAiButton />
       </div>
-    </Show>
+      <Show when={localAi.isOpen()}>
+        <PromptBar />
+      </Show>
+    </div>
   );
 }

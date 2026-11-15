@@ -20,7 +20,10 @@ class Failure {
   constructor(readonly init: object) {}
 }
 
-function fakeChrome(turns: readonly (readonly unknown[])[]) {
+function fakeChrome(
+  turns: readonly (readonly unknown[])[],
+  {rejectTools = false} = {},
+) {
   const prompts: unknown[] = [];
   const appended: unknown[] = [];
   const created: object[] = [];
@@ -42,7 +45,8 @@ function fakeChrome(turns: readonly (readonly unknown[])[]) {
   });
   const api: LanguageModelApi = {
     availability: vi.fn(async (options?: object) => {
-      if (options && 'tools' in options) throw new TypeError('tools');
+      if (rejectTools && options && 'tools' in options)
+        throw new TypeError('tools');
       return 'available' as const;
     }),
     create: async options => {
@@ -73,10 +77,42 @@ const TOOLS = [
 
 describe('createChromeProvider', () => {
   it('asks again without tools when availability() rejects them', async () => {
+    const fake = fakeChrome([], {rejectTools: true});
+    const provider = createChromeProvider(fake.api, {});
+    expect(await provider.availability(TOOLS)).toBe('available');
+    expect(fake.api.availability).toHaveBeenCalledTimes(2);
+  });
+
+  it('asks availability() with the tools and types that create() gets', async () => {
     const fake = fakeChrome([]);
     const provider = createChromeProvider(fake.api, {});
-    expect(await provider.availability()).toBe('available');
-    expect(fake.api.availability).toHaveBeenCalledTimes(2);
+    const tools = [
+      ...TOOLS,
+      {
+        name: 'read_tab',
+        description: 'Reads a tab.',
+        inputSchema: {type: 'object', properties: {name: {type: 'string'}}},
+      },
+    ];
+    await provider.availability(tools);
+    await provider.open({
+      system: '',
+      tools,
+      signal: new AbortController().signal,
+    });
+    const [asked] = vi.mocked(fake.api.availability).mock.calls[0] as [
+      Record<string, unknown>,
+    ];
+    const created = fake.created[0] as Record<string, unknown>;
+    expect(asked).toEqual({
+      tools: created.tools,
+      expectedInputs: created.expectedInputs,
+      expectedOutputs: created.expectedOutputs,
+    });
+    expect((asked.tools as {name: string}[]).map(tool => tool.name)).toEqual([
+      'apply_theme',
+      'read_tab',
+    ]);
   });
 
   it('declares the tools and tool turns when it opens a session', async () => {
@@ -106,7 +142,12 @@ describe('createChromeProvider', () => {
     const history = [
       {
         call: {id: 'state-0', name: 'get_editor_state', args: {}},
-        result: {callId: 'state-0', ok: true, output: {tabs: ['index.ts']}},
+        result: {
+          callId: 'state-0',
+          name: 'get_editor_state',
+          ok: true,
+          output: {tabs: ['index.ts']},
+        },
       },
     ];
     const open = () =>
@@ -188,7 +229,14 @@ describe('createChromeProvider', () => {
     expect(
       await collect(session, {
         kind: 'tool-results',
-        results: [{callId: 'x1', ok: true, output: {theme: 'Dracula'}}],
+        results: [
+          {
+            callId: 'x1',
+            name: 'apply_theme',
+            ok: true,
+            output: {theme: 'Dracula'},
+          },
+        ],
       }),
     ).toEqual([
       {type: 'text-delta', text: 'Done.'},
@@ -197,20 +245,23 @@ describe('createChromeProvider', () => {
     expect(fake.prompts[0]).toBe('use Dracula');
   });
 
-  it('sends results back in Chrome wrappers, named after their call', async () => {
+  it('reads a call without an id as an empty id', async () => {
     const fake = fakeChrome([
-      [
-        {
-          type: 'tool-call',
-          value: {callId: 'a', name: 'apply_theme', arguments: {}},
-        },
-        {
-          type: 'tool-call',
-          value: {callId: 'b', name: 'export_image', arguments: {}},
-        },
-      ],
-      [],
+      [{type: 'tool-call', value: {name: 'apply_theme', arguments: {}}}],
     ]);
+    const session = await createChromeProvider(fake.api, {}).open({
+      system: '',
+      tools: TOOLS,
+      signal: new AbortController().signal,
+    });
+    expect(await collect(session, {kind: 'text', text: 'go'})).toContainEqual({
+      type: 'tool-call',
+      call: {id: '', name: 'apply_theme', args: {}},
+    });
+  });
+
+  it('sends results back in Chrome wrappers with their ids as given', async () => {
+    const fake = fakeChrome([[], []]);
     const session = await createChromeProvider(fake.api, {
       LanguageModelToolSuccess: Success,
       LanguageModelToolError: Failure,
@@ -219,8 +270,13 @@ describe('createChromeProvider', () => {
     await collect(session, {
       kind: 'tool-results',
       results: [
-        {callId: 'a', ok: true, output: {theme: 'Dracula'}},
-        {callId: 'b', ok: false, output: 'Another export is running.'},
+        {callId: '', name: 'apply_theme', ok: true, output: {theme: 'Dracula'}},
+        {
+          callId: '',
+          name: 'export_image',
+          ok: false,
+          output: 'Another export is running.',
+        },
       ],
     });
 
@@ -231,7 +287,7 @@ describe('createChromeProvider', () => {
           {
             type: 'tool-response',
             value: new Success({
-              callId: 'a',
+              callId: '',
               name: 'apply_theme',
               result: [{type: 'object', value: {theme: 'Dracula'}}],
             }),
@@ -239,7 +295,7 @@ describe('createChromeProvider', () => {
           {
             type: 'tool-response',
             value: new Failure({
-              callId: 'b',
+              callId: '',
               name: 'export_image',
               errorMessage: 'Another export is running.',
             }),

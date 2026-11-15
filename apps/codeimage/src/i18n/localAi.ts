@@ -8,6 +8,8 @@ export const localAi = {
       placeholder: 'Use Dracula, padding 64, export PNG 2x',
       send: 'Send',
       thinking: 'Thinking…',
+      showAll: 'Show all',
+      showLess: 'Show less',
       turnLimit:
         'Stopped after {{count}} turns without an answer. Try a smaller request.',
       cannotStart: {
@@ -78,6 +80,8 @@ export const localAi = {
       placeholder: 'Usa Dracula, padding 64, esporta PNG 2x',
       send: 'Invia',
       thinking: 'Ragionamento…',
+      showAll: 'Mostra tutto',
+      showLess: 'Mostra meno',
       turnLimit:
         'Interrotto dopo {{count}} turni senza risposta. Prova una richiesta più piccola.',
       cannotStart: {
@@ -155,6 +159,8 @@ export const localAi = {
       placeholder: 'Nutze Dracula, Abstand 64, exportiere PNG 2x',
       send: 'Senden',
       thinking: 'Denkt nach…',
+      showAll: 'Alles anzeigen',
+      showLess: 'Weniger anzeigen',
       turnLimit:
         'Nach {{count}} Runden ohne Antwort abgebrochen. Versuche eine kleinere Anfrage.',
       cannotStart: {
@@ -231,6 +237,8 @@ export const localAi = {
       placeholder: 'Usa Dracula, espaciado 64, exporta PNG 2x',
       send: 'Enviar',
       thinking: 'Pensando…',
+      showAll: 'Mostrar todo',
+      showLess: 'Mostrar menos',
       turnLimit:
         'Detenido tras {{count}} turnos sin respuesta. Prueba con una petición más pequeña.',
       cannotStart: {

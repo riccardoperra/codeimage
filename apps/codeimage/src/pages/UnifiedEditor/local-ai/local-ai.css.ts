@@ -19,14 +19,18 @@ const enter = {
   },
 } as const;
 
-// As tall as the action bar, so the canvas keeps its size. The bar grows
-// upward from it, over the canvas, with the todo list above.
+// Over the action bar, which stays in the layout under it, so the canvas
+// keeps its size. The bar grows upward, with the todo list above.
 export const slot = style({
   vars: {[barHeight]: '48px'},
-  position: 'relative',
-  flex: '0 1 560px',
-  minWidth: 0,
+  position: 'absolute',
+  bottom: 0,
+  left: '50%',
+  translate: '-50% 0',
+  width: 'min(560px, calc(100vw - 32px))',
   height: barHeight,
+  // Above the canvas and the frame, which come earlier in every layout.
+  zIndex: 10,
   pointerEvents: 'auto',
 });
 
@@ -135,10 +139,21 @@ export const note = style({
 
 /** The model's last words, under its calls. */
 export const answer = style({
+  // The panel is a scrolling flex column: a clamped box, whose overflow is
+  // hidden, would otherwise shrink to nothing.
+  flexShrink: 0,
   margin: 0,
   padding: '6px 8px 2px',
   whiteSpace: 'pre-wrap',
   overflowWrap: 'anywhere',
+  selectors: {
+    '&[data-clamped]': {
+      display: '-webkit-box',
+      WebkitLineClamp: 3,
+      WebkitBoxOrient: 'vertical',
+      overflow: 'hidden',
+    },
+  },
 });
 
 export const panelAction = style({alignSelf: 'flex-start'});

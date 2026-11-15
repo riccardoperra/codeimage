@@ -1,7 +1,7 @@
 import {describe, expect, it, vi} from 'vitest';
 import type {AgentTool, ToolResult} from '../agent-tools/tools';
 import type {Run} from './agent';
-import {MAX_TURNS, runAgent} from './agent';
+import {asksForExport, MAX_TURNS, runAgent} from './agent';
 import type {
   Availability,
   ModelEvent,
@@ -67,10 +67,11 @@ async function run(
   provider: ModelProvider,
   tools: readonly AgentTool[],
   signal = new AbortController().signal,
+  brief?: () => Record<string, unknown>,
 ) {
   const states: Run[] = [];
   const last = await runAgent(
-    {provider, tools, request: 'use Dracula and export', signal},
+    {provider, tools, brief, request: 'use Dracula and export', signal},
     state => states.push(state),
   );
   return {last, states};
@@ -111,12 +112,16 @@ describe('runAgent', () => {
         results: [
           {
             callId: 'c1',
+            name: 'apply_theme',
             ok: true,
             output: {theme: {id: 'dracula', name: 'Dracula'}},
           },
         ],
       },
-      {kind: 'tool-results', results: [{callId: 'c2', ok: true, output: {}}]},
+      {
+        kind: 'tool-results',
+        results: [{callId: 'c2', name: 'export_image', ok: true, output: {}}],
+      },
     ]);
     expect(theme.execute).toHaveBeenCalledWith({theme: 'Dracula'});
     expect(last.phase).toEqual({kind: 'answered'});
@@ -135,31 +140,109 @@ describe('runAgent', () => {
     expect(fake.destroy).toHaveBeenCalledOnce();
   });
 
-  it('starts the session with the editor state, so the first turn can act', async () => {
-    const state = tool('get_editor_state', async () => ({
-      ok: true,
-      tabs: [{name: 'index.ts', active: true}],
-    }));
+  it('starts the session with the brief as the editor state, so the first turn can act', async () => {
+    const state = tool('get_editor_state');
     const theme = tool('apply_theme');
     const fake = fakeProvider([
       [call('c1', 'apply_theme', {theme: 'Dracula'}), done('tool-calls')],
       [done('stop')],
     ]);
+    const brief = {tabs: ['index.ts'], settings: {frame_padding: '64'}};
 
-    const {last} = await run(fake.provider, [state, theme]);
+    const {last} = await run(
+      fake.provider,
+      [state, theme],
+      new AbortController().signal,
+      () => brief,
+    );
 
     expect(fake.opened[0].history).toEqual([
       {
         call: {id: 'state-0', name: 'get_editor_state', args: {}},
         result: {
           callId: 'state-0',
+          name: 'get_editor_state',
           ok: true,
-          output: {tabs: [{name: 'index.ts', active: true}]},
+          output: brief,
         },
       },
     ]);
-    expect(state.execute).toHaveBeenCalledOnce();
-    expect(calls(last)).toEqual([['apply_theme', 'done']]);
+    expect(state.execute).not.toHaveBeenCalled();
+    expect(last.entries[0]).toMatchObject({
+      tool: 'get_editor_state',
+      readOnly: true,
+      status: 'done',
+      args: brief,
+    });
+    expect(calls(last)).toEqual([
+      ['get_editor_state', 'done'],
+      ['apply_theme', 'done'],
+    ]);
+  });
+
+  it('shows a brief that fails to read as a failed first row, and goes on', async () => {
+    const fake = fakeProvider([[done('stop')]]);
+    const {last} = await run(
+      fake.provider,
+      [],
+      new AbortController().signal,
+      () => {
+        throw new Error('no editor');
+      },
+    );
+    expect(last.entries).toMatchObject([
+      {tool: 'get_editor_state', status: 'failed', error: 'no editor'},
+    ]);
+    expect(fake.opened[0].history).toEqual([]);
+    expect(last.phase).toEqual({kind: 'answered'});
+  });
+
+  it('keeps each call its own row when the model reuses or omits call ids', async () => {
+    const code = tool('set_code', async () => ({
+      ok: false,
+      error: 'Unknown language "}".',
+    }));
+    const settings = tool('set_controls', async () => ({
+      ok: false,
+      error: 'Some settings were not applied.',
+    }));
+    const theme = tool('apply_theme');
+    const fake = fakeProvider([
+      [
+        call('call_0', 'set_code', {code: 'x', language: '}'}),
+        done('tool-calls'),
+      ],
+      [call('call_0', 'set_controls', {frame: {}}), done('tool-calls')],
+      [
+        call('', 'apply_theme', {theme: 'XCode Dark'}),
+        call('', 'apply_theme'),
+        done('tool-calls'),
+      ],
+      [done('stop')],
+    ]);
+
+    const {last} = await run(fake.provider, [code, settings, theme]);
+
+    expect(last.entries).toMatchObject([
+      {tool: 'set_code', status: 'failed', error: 'Unknown language "}".'},
+      {
+        tool: 'set_controls',
+        status: 'failed',
+        error: 'Some settings were not applied.',
+      },
+      {tool: 'apply_theme', status: 'done', args: {theme: 'XCode Dark'}},
+      {tool: 'apply_theme', status: 'done', args: {}},
+    ]);
+    expect(fake.inputs.slice(1)).toMatchObject([
+      {results: [{callId: 'call_0', name: 'set_code', ok: false}]},
+      {results: [{callId: 'call_0', name: 'set_controls', ok: false}]},
+      {
+        results: [
+          {callId: '', name: 'apply_theme', ok: true},
+          {callId: '', name: 'apply_theme', ok: true},
+        ],
+      },
+    ]);
   });
 
   it('returns a failing call to the model as an error and keeps going', async () => {
@@ -181,8 +264,18 @@ describe('runAgent', () => {
     expect(fake.inputs[1]).toEqual({
       kind: 'tool-results',
       results: [
-        {callId: 'c1', ok: false, output: 'Unknown theme "Nope".'},
-        {callId: 'c2', ok: false, output: 'Unknown tool "remove_all".'},
+        {
+          callId: 'c1',
+          name: 'apply_theme',
+          ok: false,
+          output: 'Unknown theme "Nope".',
+        },
+        {
+          callId: 'c2',
+          name: 'remove_all',
+          ok: false,
+          output: 'Unknown tool "remove_all".',
+        },
       ],
     });
     expect(last.entries).toMatchObject([
@@ -191,6 +284,53 @@ describe('runAgent', () => {
     ]);
     expect(last.phase).toEqual({kind: 'answered'});
     expect(last.text).toBe('There is no theme Nope.');
+  });
+
+  it('refuses an export the request did not ask for, and tells the model', async () => {
+    const exporter = tool('export_image');
+    const fake = fakeProvider([
+      [call('c1', 'export_image', {delivery: 'clipboard'}), done('tool-calls')],
+      [done('stop')],
+    ]);
+    const states: Run[] = [];
+    const last = await runAgent(
+      {
+        provider: fake.provider,
+        tools: [exporter],
+        request: 'use Dracula',
+        signal: new AbortController().signal,
+      },
+      state => states.push(state),
+    );
+
+    expect(exporter.execute).not.toHaveBeenCalled();
+    expect(fake.inputs[1]).toEqual({
+      kind: 'tool-results',
+      results: [
+        {
+          callId: 'c1',
+          name: 'export_image',
+          ok: false,
+          output: 'The request did not ask for an export.',
+        },
+      ],
+    });
+    expect(last.entries).toMatchObject([
+      {tool: 'export_image', status: 'failed'},
+    ]);
+  });
+
+  it.each([
+    ['export PNG 2x', true],
+    ['esporta in png', true],
+    ['scarica l’immagine', true],
+    ['save image please', true],
+    ['salva', true],
+    ['make it a JPG', true],
+    ['use Dracula, padding 64', false],
+    ['add a tab main.py', false],
+  ])('reads "%s" as asking for an export: %s', (request, expected) => {
+    expect(asksForExport(request)).toBe(expected);
   });
 
   it(`stops after ${MAX_TURNS} turns of calls`, async () => {

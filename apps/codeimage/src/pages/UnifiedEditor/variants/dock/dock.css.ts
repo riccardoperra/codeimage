@@ -7,7 +7,7 @@ import {
   style,
 } from '@vanilla-extract/css';
 import {segmentedHeight} from '../../controls/controls.css';
-import {barHeight} from '../../local-ai/local-ai.css';
+import {toolbar} from '../../controls/canvas-toolbar.css';
 
 /*
  * Controls are the kit's and keep the kit's own look, so the rules here are
@@ -320,17 +320,14 @@ export const frameActions = style({
 });
 
 // The canvas toolbar takes the dock's surface.
-globalStyle(`${frameActions} > *`, {background: 'transparent'});
+globalStyle(`${frameActions} ${toolbar}`, {background: 'transparent'});
 
 // The prompt bar grows over the canvas, so it carries the surface itself.
 globalStyle(`${frameActions}:has([data-local-ai])`, {
-  padding: 0,
   background: 'transparent',
   boxShadow: 'none',
 });
 globalStyle(`${frameActions} [data-local-ai]`, {
-  vars: {[barHeight]: '56px'},
-  flex: 'none',
   width: 'min(440px, calc(100vw - 32px))',
 });
 globalStyle(`${frameActions} [data-local-ai-bar]`, {

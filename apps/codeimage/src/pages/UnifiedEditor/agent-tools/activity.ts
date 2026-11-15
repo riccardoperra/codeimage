@@ -10,6 +10,8 @@ export type CallStatus =
 
 export type ToolCall = {
   readonly id: number;
+  /** The editor id of the tab whose code the call set, which a row can format. */
+  readonly tabId?: string;
   /** The tool name as the agent invoked it, such as `apply_theme`. */
   readonly tool: string;
   readonly summary: string;
@@ -21,6 +23,7 @@ export type ToolCall = {
 /** The words a summary needs, in the page's language. */
 export interface SummaryWords {
   readonly lines: (count: number) => string;
+  readonly tabs: (count: number) => string;
   readonly toggle: (on: boolean) => string;
   readonly delivery: (delivery: string) => string;
 }
@@ -42,9 +45,13 @@ export const activity = {
     );
     return id;
   },
-  settle(id: number, outcome: Exclude<CallStatus, {status: 'running'}>) {
+  settle(
+    id: number,
+    outcome: Exclude<CallStatus, {status: 'running'}>,
+    tabId?: string,
+  ) {
     setCalls(list =>
-      list.map(call => (call.id === id ? {...call, ...outcome} : call)),
+      list.map(call => (call.id === id ? {...call, ...outcome, tabId} : call)),
     );
   },
   /** Forgets every call: the next one starts a new batch. */
@@ -54,15 +61,27 @@ export const activity = {
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === 'object' && value !== null && !Array.isArray(value);
 
+/** The editor id of the tab a successful set_code, add_tab or duplicate_tab wrote. */
+export function writtenTabId(
+  tool: string,
+  result: unknown,
+): string | undefined {
+  if (tool !== 'set_code' && tool !== 'add_tab' && tool !== 'duplicate_tab')
+    return undefined;
+  if (!isRecord(result) || result.ok !== true || !isRecord(result.tab))
+    return undefined;
+  return typeof result.tab.id === 'string' ? result.tab.id : undefined;
+}
+
 const lines = (code: unknown, words: SummaryWords) =>
   typeof code === 'string' ? words.lines(code.split('\n').length) : undefined;
 
 const text = (value: unknown) =>
   typeof value === 'string' && value.trim() ? value.trim() : undefined;
 
-// "frame.lineNumberStart" reads as "line number start".
-const settingName = (id: string) =>
-  (id.split('.').pop() ?? id).replace(/([a-z])([A-Z])/g, '$1 $2').toLowerCase();
+// "editor_line_number_start" reads as "line number start".
+const settingName = (name: string) =>
+  name.split('_').slice(1).join(' ') || name;
 
 const MAX_SETTINGS = 3;
 
@@ -78,6 +97,15 @@ export function summarize(
   const args = isRecord(input) ? input : {};
   const parts: (string | undefined)[] = [];
   switch (tool) {
+    // The bar's seeded read, whose input is what the model received.
+    case 'get_editor_state':
+      if (!Array.isArray(args.tabs)) break;
+      parts.push(
+        words.tabs(args.tabs.length),
+        isRecord(args.tab) ? text(args.tab.name) : undefined,
+        text(args.theme),
+      );
+      break;
     case 'set_code':
       parts.push(text(args.language), lines(args.code, words));
       break;
@@ -85,17 +113,21 @@ export function summarize(
       parts.push(text(args.name), text(args.language), lines(args.code, words));
       break;
     case 'select_tab':
+    case 'read_tab':
+    case 'duplicate_tab':
       parts.push(
         text(args.name) ??
           (typeof args.index === 'number' ? `#${args.index + 1}` : undefined),
       );
       break;
+    case 'set_animate_mode':
+      if (typeof args.open === 'boolean') parts.push(words.toggle(args.open));
+      break;
     case 'apply_theme':
       parts.push(text(args.theme));
       break;
     case 'set_controls': {
-      if (!isRecord(args.values)) break;
-      const entries = Object.entries(args.values);
+      const entries = Object.entries(args);
       const shown = entries.slice(0, MAX_SETTINGS).map(([id, value]) => {
         const shownValue =
           typeof value === 'boolean'
@@ -146,6 +178,7 @@ export function withActivity(
           result.ok
             ? {status: 'done'}
             : {status: 'failed', error: result.error},
+          writtenTabId(tool.name, result),
         );
         return result;
       } catch (error) {

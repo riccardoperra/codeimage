@@ -8,9 +8,12 @@ const TOOLS = [
   'list_themes',
   'set_code',
   'add_tab',
+  'duplicate_tab',
   'select_tab',
+  'read_tab',
   'apply_theme',
   'set_controls',
+  'set_animate_mode',
   'export_image',
 ];
 
@@ -51,6 +54,28 @@ export async function verifyAgentTools({fresh, out}) {
         [...TOOLS].sort(),
         'WebMCP received every tool',
       );
+      assert.deepEqual(
+        await page.evaluate(() =>
+          [...window.__webmcpTools.values()]
+            .filter(tool => tool.annotations?.untrustedContentHint)
+            .map(tool => tool.name)
+            .sort(),
+        ),
+        ['get_editor_state', 'read_tab'],
+        'the tools that return code mark it as untrusted',
+      );
+      assert.ok(
+        await page.evaluate(() =>
+          [...window.__webmcpTools.values()].every(
+            tool =>
+              !JSON.stringify(tool.inputSchema).includes('"values"') &&
+              Object.keys(tool.inputSchema.properties ?? {}).every(
+                name => !name.includes('.'),
+              ),
+          ),
+        ),
+        'no tool takes dotted or wrapped argument names',
+      );
       const call = (name, input) =>
         page.evaluate(
           ([name, input]) =>
@@ -69,7 +94,13 @@ export async function verifyAgentTools({fresh, out}) {
         code: 'const agent = 42;',
         language: 'Python',
       });
-      assert.deepEqual(coded, {ok: true, language: 'python'});
+      assert.equal(coded.ok, true);
+      assert.equal(coded.language, 'python');
+      assert.equal(
+        typeof coded.tab.id,
+        'string',
+        'set_code names the tab it wrote by editor id',
+      );
       assert.equal(await editor().innerText(), 'const agent = 42;');
       assert.match(
         await page.locator('#inspector-editor-language-trigger').innerText(),
@@ -107,10 +138,10 @@ export async function verifyAgentTools({fresh, out}) {
       assert.ok(badTheme.suggestions.includes('Dracula'));
       assert.equal((await state()).theme.id, 'dracula');
 
-      const control = (snapshot, id) =>
-        snapshot.controls.find(control => control.id === id);
+      const control = (snapshot, name) =>
+        snapshot.settings.find(setting => setting.name === name);
       const before = await state();
-      const padding = control(before, 'frame.padding');
+      const padding = control(before, 'frame_padding');
       const target = padding.options.find(
         option => option.value !== padding.value,
       ).value;
@@ -120,25 +151,25 @@ export async function verifyAgentTools({fresh, out}) {
           .first()
           .evaluate(element => getComputedStyle(element).paddingLeft);
       const paddingBefore = await framePadding();
-      assert.deepEqual(
-        await call('set_controls', {values: {'frame.padding': target}}),
-        {ok: true, applied: {'frame.padding': target}},
-      );
-      assert.equal(control(await state(), 'frame.padding').value, target);
+      assert.deepEqual(await call('set_controls', {frame_padding: target}), {
+        ok: true,
+        applied: {frame_padding: target},
+      });
+      assert.equal(control(await state(), 'frame_padding').value, target);
       assert.notEqual(
         await framePadding(),
         paddingBefore,
         'the live frame shows the new padding',
       );
 
-      const opacity = control(await state(), 'frame.opacity').value;
+      const opacity = control(await state(), 'frame_opacity').value;
       const outOfRange = await call('set_controls', {
-        values: {'frame.opacity': 150},
+        frame_opacity: 150,
       });
       assert.equal(outOfRange.ok, false);
       assert.deepEqual(outOfRange.applied, {});
-      assert.match(outOfRange.errors['frame.opacity'], /from 0 to 100/);
-      assert.equal(control(await state(), 'frame.opacity').value, opacity);
+      assert.match(outOfRange.errors['frame_opacity'], /from 0 to 100/);
+      assert.equal(control(await state(), 'frame_opacity').value, opacity);
 
       const exported = async (scale, name) => {
         const [download, result] = await Promise.all([
@@ -196,15 +227,24 @@ export async function verifyAgentTools({fresh, out}) {
         (await state()).tabs.map(tab => [tab.index, tab.active]),
         [[0, true]],
       );
+      const added = await call('add_tab', {
+        code: 'print("tab")',
+        language: 'Python',
+        name: 'main.py',
+      });
+      assert.equal(typeof added.tab.id, 'string');
+      assert.notEqual(added.tab.id, coded.tab.id);
       assert.deepEqual(
-        await call('add_tab', {
-          code: 'print("tab")',
-          language: 'Python',
-          name: 'main.py',
-        }),
+        {...added, tab: {...added.tab, id: undefined}},
         {
           ok: true,
-          tab: {index: 1, name: 'main.py', language: 'python', active: true},
+          tab: {
+            id: undefined,
+            index: 1,
+            name: 'main.py',
+            language: 'python',
+            active: true,
+          },
         },
       );
       await showsCode('print("tab")', 'the editor shows the added tab');
@@ -224,6 +264,52 @@ export async function verifyAgentTools({fresh, out}) {
       assert.equal(missingTab.ok, false);
       assert.match(missingTab.error, /1 "main\.py" \(active\)/);
 
+      assert.equal((await call('select_tab', {index: 0})).ok, true);
+      assert.deepEqual(
+        await call('read_tab', {name: 'main.py'}),
+        {
+          ok: true,
+          tab: {index: 1, name: 'main.py', language: 'python', active: false},
+          code: 'print("tab")',
+        },
+        "read_tab reads another tab's code",
+      );
+      await showsCode('const agent = 42;', 'read_tab leaves the active tab');
+      assert.deepEqual(
+        (await state()).tabs.map(tab => tab.active),
+        [true, false],
+        'the active tab stays the same',
+      );
+      assert.deepEqual(
+        await call('read_tab', {}),
+        {
+          ok: true,
+          tab: (await state()).tabs[0],
+          code: 'const agent = 42;',
+        },
+        'read_tab without arguments reads the active tab',
+      );
+      const missingRead = await call('read_tab', {name: 'nope.rs'});
+      assert.equal(missingRead.ok, false);
+      assert.match(missingRead.error, /No tab named "nope\.rs"/);
+      assert.equal((await call('select_tab', {name: 'main.py'})).ok, true);
+      const copied = await call('duplicate_tab', {});
+      assert.deepEqual(
+        {...copied, tab: {...copied.tab, id: undefined}},
+        {
+          ok: true,
+          tab: {
+            id: undefined,
+            index: 2,
+            name: 'main copy.py',
+            language: 'python',
+            active: true,
+          },
+        },
+        'duplicate_tab copies the active tab and selects the copy',
+      );
+      await showsCode('print("tab")', 'the copy carries the code');
+
       let tabCount = (await state()).tabs.length;
       while (tabCount < 6) {
         assert.equal((await call('add_tab', {})).ok, true);
@@ -233,6 +319,17 @@ export async function verifyAgentTools({fresh, out}) {
       assert.equal(full.ok, false);
       assert.match(full.error, /6 tabs/);
       assert.equal((await state()).tabs.length, 6);
+
+      assert.deepEqual(await call('set_animate_mode', {open: true}), {
+        ok: true,
+        open: true,
+      });
+      assert.equal((await state()).animate, true, 'the state reads Animate on');
+      assert.deepEqual(await call('set_animate_mode', {open: false}), {
+        ok: true,
+        open: false,
+      });
+      assert.equal((await state()).animate, false);
 
       const activity = await verifyActivity({page, call, out, padding: target});
 
@@ -287,7 +384,7 @@ async function verifyActivity({page, call, out, padding}) {
     language: 'TypeScript',
   });
   await call('apply_theme', {theme: 'Dracula'});
-  await call('set_controls', {values: {'frame.padding': padding}});
+  await call('set_controls', {frame_padding: padding});
   const failed = await call('apply_theme', {theme: 'Dracul Night'});
   await call('list_themes', {});
 
@@ -393,7 +490,7 @@ async function verifyActivity({page, call, out, padding}) {
   await page.setViewportSize({width: 1440, height: 1000});
 
   await page.goto(`${new URL(page.url()).origin}/?whatsNew=nudge`);
-  await page.waitForFunction(() => window.__webmcpTools?.size === 8);
+  await page.waitForFunction(() => window.__webmcpTools?.size === 11);
   const nudge = page.locator('[data-whats-new="nudge"]');
   await nudge.waitFor();
   await page.waitForTimeout(600);

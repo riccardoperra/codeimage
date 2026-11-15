@@ -12,6 +12,7 @@ import {
   resolveOption,
   resolveTab,
   resolveTheme,
+  settingName,
   unavailableReason,
 } from './values';
 
@@ -87,6 +88,15 @@ const themes = [
 
 const anyCss = () => true;
 const noCss = () => false;
+
+describe('settingName', () => {
+  it('names a setting without dots or capitals', () => {
+    expect(settingName('frame.padding')).toBe('frame_padding');
+    expect(settingName('editor.lineNumberStart')).toBe(
+      'editor_line_number_start',
+    );
+  });
+});
 
 describe('resolveOption', () => {
   it('finds an option by key or by label ignoring case', () => {

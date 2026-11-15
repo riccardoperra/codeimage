@@ -11,6 +11,8 @@ const LOOP_REQUEST = 'keep looking at the themes';
 // What the fake model answers, by request. Each turn is the chunks
 // promptStreaming() yields: text, then tool calls. Text comes as the text so
 // far, as Chrome may send it.
+// Gemma reuses "call_0" every turn and may send an empty callId, so the
+// script does both.
 const SCRIPTS = {
   [REQUEST]: [
     [
@@ -19,7 +21,7 @@ const SCRIPTS = {
       {
         type: 'tool-call',
         value: {
-          callId: 'call-1',
+          callId: 'call_0',
           name: 'add_tab',
           arguments: {name: 'test.tsx', language: 'typescript', code: CODE},
         },
@@ -27,23 +29,33 @@ const SCRIPTS = {
       {
         type: 'tool-call',
         value: {
-          callId: 'call-2',
+          callId: '',
           name: 'apply_theme',
           arguments: {theme: 'Dracula'},
         },
       },
+    ],
+    [
       {
         type: 'tool-call',
         value: {
-          callId: 'call-3',
-          name: 'set_controls',
-          arguments: {values: {'frame.padding': 32}},
+          callId: 'call_0',
+          name: 'read_tab',
+          arguments: {name: 'nope.ts'},
         },
       },
       {
         type: 'tool-call',
         value: {
-          callId: 'call-4',
+          callId: 'call_1',
+          name: 'set_controls',
+          arguments: {frame_padding: 32},
+        },
+      },
+      {
+        type: 'tool-call',
+        value: {
+          callId: '',
           name: 'export_image',
           arguments: {format: 'png', scale: 2},
         },
@@ -67,7 +79,7 @@ const SCRIPTS = {
   [LOOP_REQUEST]: Array.from({length: 10}, (_, index) => [
     {
       type: 'tool-call',
-      value: {callId: `loop-${index}`, name: 'list_themes', arguments: {}},
+      value: {callId: '', name: 'list_themes', arguments: {}},
     },
   ]),
 };
@@ -91,6 +103,7 @@ function installLanguageModel({mode, scripts}) {
     clones: 0,
     appended: [],
     prompts: [],
+    asked: [],
   };
   window.__localAi = record;
   const started = Date.now();
@@ -146,8 +159,9 @@ function installLanguageModel({mode, scripts}) {
   }
 
   globalThis.LanguageModel = {
-    availability: async () => {
+    availability: async options => {
       record.checks++;
+      if (options?.tools) record.asked.push(plain(options));
       if (mode === 'background' && Date.now() - started > 8000)
         state = 'available';
       return record.forced ?? state;
@@ -177,8 +191,10 @@ function installLanguageModel({mode, scripts}) {
           plain({
             initialPrompts: options.initialPrompts,
             tools: options.tools.map(tool => tool.name),
+            toolSpecs: options.tools,
             expectedInputs: options.expectedInputs,
             expectedOutputs: options.expectedOutputs,
+            availability: record.asked.at(-1),
           }),
         );
       return session();
@@ -498,7 +514,11 @@ function verifyDownload({fresh, out}) {
         true,
         'the field takes the focus',
       );
-      assert.equal(await ask.count(), 0, "the bar takes the toolbar's place");
+      assert.equal(
+        await ask.isVisible(),
+        false,
+        'the bar covers the toolbar, which keeps its place hidden',
+      );
       await field(page).pressSequentially('one');
       await page.keyboard.press('Shift+Enter');
       await field(page).pressSequentially('two');
@@ -553,24 +573,44 @@ function verifyDownload({fresh, out}) {
           `${tool} shows running, then done`,
         );
       }
+      const listed = await rows(page).evaluateAll(items =>
+        items.map(item => [
+          item.dataset.tool,
+          item.dataset.status,
+          item.querySelector('[data-tool-name]').textContent,
+          item.querySelector('[data-summary]')?.textContent,
+          item.hasAttribute('data-read-only'),
+        ]),
+      );
+      const [seedRow] = listed;
       assert.deepEqual(
-        await rows(page).evaluateAll(items =>
-          items.map(item => [
-            item.dataset.tool,
-            item.dataset.status,
-            item.querySelector('[data-tool-name]').textContent,
-            item.querySelector('[data-summary]')?.textContent,
-          ]),
-        ),
+        seedRow.slice(0, 3).concat(seedRow[4]),
+        ['get_editor_state', 'done', 'get_editor_state', true],
+        'the first row is the editor state the model received, drawn read-only',
+      );
+      assert.match(
+        seedRow[3],
+        /^1 tab · .+ · .+$/,
+        'the seed row sums up the tabs, the active tab and the theme',
+      );
+      assert.match(await rows(page).first().innerText(), /Read the editor/);
+      assert.deepEqual(
+        listed.slice(1).map(row => row.slice(0, 4)),
         [
           ['add_tab', 'done', 'add_tab', 'test.tsx · typescript · 2 lines'],
           ['apply_theme', 'done', 'apply_theme', 'Dracula'],
+          ['read_tab', 'failed', 'read_tab', 'nope.ts'],
           ['set_controls', 'done', 'set_controls', 'padding 32'],
           ['export_image', 'done', 'export_image', 'PNG · 2x · download'],
         ],
-        'each call has its title, tool name and arguments',
+        'each call keeps its own row, status and arguments though call ids repeat',
       );
-      assert.match(await rows(page).first().innerText(), /Add a tab/);
+      assert.match(
+        await rows(page).nth(3).innerText(),
+        /No tab named "nope\.ts"/,
+        'the failed read shows its own error',
+      );
+      assert.match(await rows(page).nth(1).innerText(), /Add a tab/);
       assert.equal(
         await run(page).locator('[data-local-ai-note]').innerText(),
         'I will add the tab, then style and export it.',
@@ -590,10 +630,25 @@ function verifyDownload({fresh, out}) {
       const sent = await page.evaluate(() => window.__localAi);
       assert.equal(sent.bases.length, 1);
       const base = sent.bases[0];
-      assert.deepEqual(base.initialPrompts.length, 1);
       assert.equal(base.initialPrompts[0].role, 'system');
+      assert.equal(
+        base.initialPrompts.length,
+        1,
+        'the system prompt alone: no worked examples for the model to copy',
+      );
+      assert.deepEqual(
+        base.availability,
+        {
+          tools: base.toolSpecs,
+          expectedInputs: base.expectedInputs,
+          expectedOutputs: base.expectedOutputs,
+        },
+        'availability() asks with the options create() gets',
+      );
       assert.ok(
-        !/[{}]/.test(base.initialPrompts[0].content),
+        !/index\.tsx|Fleet Dark|frame_padding": /.test(
+          base.initialPrompts[0].content,
+        ),
         'no editor state in the system prompt',
       );
       assert.deepEqual(
@@ -601,14 +656,17 @@ function verifyDownload({fresh, out}) {
         [
           'add_tab',
           'apply_theme',
+          'duplicate_tab',
           'export_image',
           'get_editor_state',
           'list_themes',
+          'read_tab',
           'select_tab',
+          'set_animate_mode',
           'set_code',
           'set_controls',
         ],
-        'the eight agent tools',
+        'the eleven agent tools',
       );
       assert.deepEqual(
         base.expectedOutputs.map(output => output.type),
@@ -627,24 +685,36 @@ function verifyDownload({fresh, out}) {
       const state = seed[1].content[0].value.result[0].value;
       assert.ok(Array.isArray(state.tabs), 'the seed is the real editor state');
       assert.ok(
+        Object.keys(state.settings).length > 10 &&
+          Object.keys(state.settings).every(name => !name.includes('.')),
+        'the seed names every setting without dots',
+      );
+      assert.ok(state.themes.includes('Dracula'), 'the seed lists theme names');
+      assert.ok(
         !JSON.stringify(state.tabs).includes('test.tsx'),
         'read before the request ran',
       );
       assert.equal(sent.prompts[0], REQUEST);
-      const responses = sent.prompts[1][0].content.map(part => part.value);
       assert.deepEqual(
-        responses.map(response => [
-          response.kind,
-          response.callId,
-          response.name,
-        ]),
+        [sent.prompts[1], sent.prompts[2]].map(prompt =>
+          prompt[0].content.map(({value}) => [
+            value.kind,
+            value.callId,
+            value.name,
+          ]),
+        ),
         [
-          ['success', 'call-1', 'add_tab'],
-          ['success', 'call-2', 'apply_theme'],
-          ['success', 'call-3', 'set_controls'],
-          ['success', 'call-4', 'export_image'],
+          [
+            ['success', 'call_0', 'add_tab'],
+            ['success', '', 'apply_theme'],
+          ],
+          [
+            ['error', 'call_0', 'read_tab'],
+            ['success', 'call_1', 'set_controls'],
+            ['success', '', 'export_image'],
+          ],
         ],
-        'the results go back with the callIds',
+        'the results go back with the callIds as the model sent them',
       );
 
       assert.equal(await editor().innerText(), CODE, 'the new tab is active');
@@ -669,10 +739,13 @@ function verifyDownload({fresh, out}) {
         await rows(page).evaluateAll(items =>
           items.map(item => [item.dataset.tool, item.dataset.status]),
         ),
-        [['apply_theme', 'failed']],
+        [
+          ['get_editor_state', 'done'],
+          ['apply_theme', 'failed'],
+        ],
         'a new request starts a new list',
       );
-      assert.match(await rows(page).first().innerText(), /Nope/);
+      assert.match(await rows(page).nth(1).innerText(), /Nope/);
       const error = await page.evaluate(
         () => window.__localAi.prompts.at(-1)[0].content[0].value,
       );
@@ -693,7 +766,11 @@ function verifyDownload({fresh, out}) {
       await bar(page)
         .locator('[data-local-ai-run="turn-limit"]')
         .waitFor({timeout: 20000});
-      assert.equal(await rows(page).count(), 6, 'six turns of calls');
+      assert.equal(
+        await rows(page).count(),
+        7,
+        'the editor state, then six turns of calls',
+      );
       assert.match(await run(page).innerText(), /Stopped after 6 turns/);
       await page.screenshot({path: resolve(out, 'local-ai-turn-limit.png')});
 
@@ -724,11 +801,27 @@ function verifyDownload({fresh, out}) {
         'true',
       );
 
+      const fullStateChars = await page.evaluate(async () => {
+        let group;
+        const event = new Event('devtoolstooldiscovery');
+        event.respondWith = value => (group = value);
+        window.dispatchEvent(event);
+        const read = group.tools.find(tool => tool.name === 'get_editor_state');
+        const {ok: _, ...output} = await read.execute({});
+        return JSON.stringify(output).length;
+      });
+      const seedChars = JSON.stringify(state).length;
+      assert.ok(
+        seedChars * 3 < fullStateChars,
+        `the seed (${seedChars}) is a fraction of get_editor_state (${fullStateChars})`,
+      );
       return {
         png: [png.width, png.height],
         frame,
         systemPromptChars: base.initialPrompts[0].content.length,
-        seedChars: JSON.stringify(state).length,
+        initialPromptsChars: JSON.stringify(base.initialPrompts).length,
+        seedChars,
+        fullStateChars,
       };
     },
   );

@@ -23,10 +23,18 @@ export interface ModelToolCall {
 }
 
 export interface ModelToolResult {
+  /** The model's own id for the call, sent back as is, even when empty. */
   readonly callId: string;
+  readonly name: string;
   readonly ok: boolean;
   /** What the tool returned, or the error message when `ok` is false. */
   readonly output: unknown;
+}
+
+/** A call and the result that answered it. */
+export interface ToolStep {
+  readonly call: ModelToolCall;
+  readonly result: ModelToolResult;
 }
 
 export type TurnInput =
@@ -47,15 +55,13 @@ export interface ModelSession {
 }
 
 export interface ModelProvider {
-  availability(): Promise<Availability>;
+  /** Whether a session with these tools can run, asked as `open()` asks. */
+  availability(tools: readonly ToolSpec[]): Promise<Availability>;
   open(input: {
     readonly system: string;
     readonly tools: readonly ToolSpec[];
     /** Calls the session starts with, as if the model had made them. */
-    readonly history?: readonly {
-      readonly call: ModelToolCall;
-      readonly result: ModelToolResult;
-    }[];
+    readonly history?: readonly ToolStep[];
     readonly signal: AbortSignal;
   }): Promise<ModelSession>;
 }

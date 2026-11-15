@@ -9,6 +9,17 @@ export type Parsed<T> =
 
 const normalize = (text: string) => text.trim().toLowerCase();
 
+/**
+ * The name an agent uses for a setting: "editor.lineNumberStart" is
+ * "editor_line_number_start". Small models split dotted keys into nested
+ * objects, so agents never see the dots.
+ */
+export const settingName = (id: ControlId) =>
+  id
+    .replace('.', '_')
+    .replace(/([a-z])([A-Z])/g, '$1_$2')
+    .toLowerCase();
+
 /** The option whose key, or whose label ignoring case, is the raw value. */
 export function resolveOption(
   options: readonly ChoiceOption[],
@@ -34,7 +45,7 @@ export function describeOptions(options: readonly ChoiceOption[], limit = 12) {
 
 /** What `get_editor_state` reports for a control. */
 export function describeControl(control: AgentControl) {
-  const base = {id: control.id, label: control.label()};
+  const base = {name: settingName(control.id), label: control.label()};
   switch (control.kind) {
     case 'segmented':
     case 'select':
@@ -74,13 +85,14 @@ export function describeControl(control: AgentControl) {
  * the sidebar does not show, such as opacity while the frame is hidden.
  */
 export function unavailableReason(control: AgentControl): string | undefined {
+  const name = settingName(control.id);
   if (!control.visible())
-    return `"${control.id}" is hidden in the current state (for example frame.opacity while frame.visible is false).`;
+    return `"${name}" is hidden in the current state (for example frame_opacity while frame_visible is false).`;
   if (
     (control.kind === 'select' || control.kind === 'segmented') &&
     control.disabled()
   )
-    return `"${control.id}" has a single option and cannot change now.`;
+    return `"${name}" has a single option and cannot change now.`;
   return undefined;
 }
 
@@ -100,6 +112,7 @@ export function parseControlValue(
   raw: unknown,
   isCssBackground: (value: string) => boolean,
 ): Parsed<ControlWrite> {
+  const name = settingName(control.id);
   const write = <T extends ControlWrite['value']>(
     value: T,
     set: (value: T) => void,
@@ -108,7 +121,7 @@ export function parseControlValue(
     case 'toggle':
       return typeof raw === 'boolean'
         ? write(raw, control.set)
-        : {ok: false, error: `"${control.id}" takes true or false.`};
+        : {ok: false, error: `"${name}" takes true or false.`};
     case 'segmented':
     case 'select': {
       const option = resolveOption(control.options(), raw);
@@ -116,17 +129,17 @@ export function parseControlValue(
         ? write(option.key, control.set)
         : {
             ok: false,
-            error: `"${control.id}" takes one of: ${describeOptions(control.options())}.`,
+            error: `"${name}" takes one of: ${describeOptions(control.options())}.`,
           };
     }
     case 'range':
     case 'number':
       if (typeof raw !== 'number' || !Number.isFinite(raw))
-        return {ok: false, error: `"${control.id}" takes a number.`};
+        return {ok: false, error: `"${name}" takes a number.`};
       if (raw < control.min || raw > control.max)
         return {
           ok: false,
-          error: `"${control.id}" takes a number from ${control.min} to ${control.max}; got ${raw}.`,
+          error: `"${name}" takes a number from ${control.min} to ${control.max}; got ${raw}.`,
         };
       return write(raw, control.set);
     case 'background': {
@@ -137,7 +150,7 @@ export function parseControlValue(
         ? write(value, control.set)
         : {
             ok: false,
-            error: `"${control.id}" takes a CSS color or gradient, such as ${control.colors.slice(0, 3).join(', ')}.`,
+            error: `"${name}" takes a CSS color or gradient, such as ${control.colors.slice(0, 3).join(', ')}.`,
           };
     }
   }
@@ -150,6 +163,17 @@ const LIVE_OPTIONS: ReadonlySet<ControlId> = new Set([
   'editor.theme',
   'editor.formatter',
 ]);
+
+// The labels a user may say, when they differ from the values. Every session
+// reads the schema, so a long list such as the languages keeps to its enum.
+function optionLabels(label: string, options: readonly ChoiceOption[]) {
+  const named = options.filter(
+    option => normalize(option.label) !== normalize(option.key),
+  );
+  return named.length === 0 || options.length > 8
+    ? label
+    : `${label}: ${options.map(option => option.label).join(', ')}, in the order of the values.`;
+}
 
 /** The JSON Schema of a control's value in `set_controls`. */
 export function controlSchema(control: AgentControl): Record<string, unknown> {
@@ -167,10 +191,7 @@ export function controlSchema(control: AgentControl): Record<string, unknown> {
         : {
             type: 'string',
             enum: control.options().map(option => option.key),
-            description: `${label}. ${control
-              .options()
-              .map(option => `${option.key} = ${option.label}`)
-              .join(', ')}.`,
+            description: optionLabels(label, control.options()),
           };
     case 'range':
     case 'number':
@@ -183,7 +204,7 @@ export function controlSchema(control: AgentControl): Record<string, unknown> {
     case 'background':
       return {
         type: 'string',
-        description: `${label}. Any CSS color or gradient. Preset colors: ${control.colors.join(', ')}. Preset gradients: ${control.gradients.join('; ')}.`,
+        description: `${label}: any CSS color or gradient, such as ${control.colors[0]}.`,
       };
   }
 }

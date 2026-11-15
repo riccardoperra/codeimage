@@ -84,7 +84,7 @@ export const list = style({
 
 export const row = style({
   display: 'grid',
-  gridTemplateColumns: '16px minmax(0, 1fr)',
+  gridTemplateColumns: '16px minmax(0, 1fr) auto',
   columnGap: '10px',
   alignItems: 'start',
   padding: '6px',
@@ -167,4 +167,16 @@ export const summary = style({...oneLine, color: c.descriptionTextColor});
 export const error = style({
   ...oneLine,
   color: c.button.danger.backgroundColor,
+});
+
+/** The row's Format action, for code an agent set. The kit draws its focus ring. */
+export const formatButton = style({alignSelf: 'center'});
+
+export const formatted = style({
+  display: 'inline-flex',
+  alignItems: 'center',
+  alignSelf: 'center',
+  gap: '4px',
+  color: c.descriptionTextColor,
+  fontSize: '12px',
 });

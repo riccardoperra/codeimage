@@ -8,7 +8,7 @@ interface ModelContext {
       title?: string;
       description: string;
       inputSchema?: object;
-      annotations?: {readOnlyHint?: boolean};
+      annotations?: {readOnlyHint?: boolean; untrustedContentHint?: boolean};
       execute: (input: unknown) => Promise<unknown>;
     },
     options?: {signal?: AbortSignal},

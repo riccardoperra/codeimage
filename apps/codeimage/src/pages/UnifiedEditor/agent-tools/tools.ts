@@ -1,4 +1,4 @@
-import {getRootEditorStore} from '@codeimage/store/editor';
+import {getEditorStore, getRootEditorStore} from '@codeimage/store/editor';
 import {getActiveEditorStore} from '@codeimage/store/editor/activeEditor';
 import {MAX_EDITOR_TABS} from '@codeimage/store/editor/model';
 import type {Accessor} from 'solid-js';
@@ -23,6 +23,7 @@ import {
   resolveOption,
   resolveTab,
   resolveTheme,
+  settingName,
   unavailableReason,
 } from './values';
 
@@ -36,7 +37,11 @@ export interface AgentTool {
   readonly title: string;
   readonly description: string;
   readonly inputSchema: Record<string, unknown>;
-  readonly annotations?: {readonly readOnlyHint?: boolean};
+  readonly annotations?: {
+    readonly readOnlyHint?: boolean;
+    /** The result carries text the user did not write, such as code. */
+    readonly untrustedContentHint?: boolean;
+  };
   readonly execute: (input: unknown) => Promise<ToolResult>;
 }
 
@@ -88,6 +93,15 @@ function tool(
       }
     },
   };
+}
+
+/** "index.tsx" becomes "index copy.tsx"; an untitled tab stays untitled. */
+export function copyName(name: string): string {
+  if (!name) return '';
+  const dot = name.lastIndexOf('.');
+  return dot > 0
+    ? `${name.slice(0, dot)} copy${name.slice(dot)}`
+    : `${name} copy`;
 }
 
 const isCssBackground = (value: string) =>
@@ -148,6 +162,32 @@ function createEditorReader(listed: ListedModel) {
 }
 
 /**
+ * A short read of the editor for a small model, whose context is a few
+ * thousand tokens: the tabs, the theme, each setting's value by name and the
+ * theme names. get_editor_state has the rest.
+ */
+export function createEditorBrief(
+  context: Pick<AgentToolsContext, 'model' | 'listed'>,
+): () => Record<string, unknown> {
+  const {model, listed} = context;
+  const {usable, tabs} = createEditorReader(listed);
+  return () => {
+    const all = tabs();
+    const active = all.find(tab => tab.active);
+    return {
+      tab: active ? {name: active.name, language: active.language} : null,
+      tabs: all.map(tab => tab.name),
+      theme: shownTheme(model)?.name ?? null,
+      settings: Object.fromEntries(
+        usable().map(control => [settingName(control.id), control.value()]),
+      ),
+      animate: getEditorStore().animation.open(),
+      themes: model.themes().map(theme => theme.name),
+    };
+  };
+}
+
+/**
  * Every editor action an agent can take, built from the controls model, the
  * themes and the exporter that the editor UI uses.
  */
@@ -158,16 +198,19 @@ export function createAgentTools(context: AgentToolsContext): AgentTool[] {
   const active = getActiveEditorStore();
   const editors = getRootEditorStore();
   const activeTab = () => tabs().find(tab => tab.active);
+  // The tab a call wrote, with the editor id that outlives renames and moves.
+  const writtenTab = () => ({id: editors.state.activeEditorId, ...activeTab()});
   // The option key of a language id or name, checked before anything changes.
   const languageKey = (raw: unknown): Parsed<string | undefined> => {
     const control = language();
     if (raw === undefined || !control) return {ok: true, value: undefined};
-    const option = resolveOption(control.options(), raw);
+    const options = control.options();
+    const option = resolveOption(options, raw);
     return option
       ? {ok: true, value: option.key}
       : {
           ok: false,
-          error: `Unknown language "${String(raw)}". Valid ids include: ${describeOptions(control.options())}.`,
+          error: `Unknown language "${String(raw)}". Valid ids include: ${describeOptions(options)}.`,
         };
   };
 
@@ -176,9 +219,9 @@ export function createAgentTools(context: AgentToolsContext): AgentTool[] {
       name: 'get_editor_state',
       title: 'Read the CodeImage editor',
       description:
-        'Read the CodeImage editor: the code of the active tab, its language, the tabs as {index, name, language, active}, the theme, every setting the agent can change with its current value and valid values, the export settings, how many likely secrets the code shows, and whether the editor can be changed. Call it first, and again to check a change.',
+        "Read the editor's settings, tabs, theme and export settings, and the active tab's code. Use it to check a change or to find a setting's valid values; use read_tab for one tab's code. No arguments. Example: {}. Returns {editable, code, language, tabs, theme, settings: [{name, value, options or min and max}], export, secrets}. Also for: current settings, state.",
       inputSchema: {type: 'object', properties: {}},
-      annotations: {readOnlyHint: true},
+      annotations: {readOnlyHint: true, untrustedContentHint: true},
       execute: async () => {
         const choice = savedExportChoice();
         const theme = shownTheme(model);
@@ -190,12 +233,13 @@ export function createAgentTools(context: AgentToolsContext): AgentTool[] {
           language: language()?.value() ?? null,
           tabs: tabs(),
           theme: theme ? {id: theme.id, name: theme.name} : null,
-          controls: usable().map(describeControl),
+          settings: usable().map(describeControl),
           export: {
             format: choice.extension,
             scale: choice.pixelRatio,
             quality: choice.quality,
           },
+          animate: getEditorStore().animation.open(),
           secrets: exporter.secrets(),
         };
       },
@@ -204,7 +248,7 @@ export function createAgentTools(context: AgentToolsContext): AgentTool[] {
       name: 'list_themes',
       title: 'List CodeImage themes',
       description:
-        'List the themes that apply_theme accepts, as {id, name, dark}. A theme sets the code colors, the window and the frame background.',
+        'List the themes apply_theme accepts. Use it only when the provided state lacks a theme name. No arguments. Example: {}. Returns {themes: [{id, name, dark}]}. Also for: themes, available themes.',
       inputSchema: {type: 'object', properties: {}},
       annotations: {readOnlyHint: true},
       execute: async () => ({
@@ -215,16 +259,18 @@ export function createAgentTools(context: AgentToolsContext): AgentTool[] {
     tool({
       name: 'set_code',
       title: 'Set the code',
-      description:
-        'Replace the code of the active tab, and optionally set its language. The language is a language id or name, ignoring case, such as "typescript" or "Python". An unknown language returns an error with valid ids and changes nothing.',
+      description: `Replace the active tab's code, and optionally its language. Use add_tab instead to put code in a new tab. Example: {"code":"print(1)","language":"python"}. Returns {tab: {id, index, name, language, active}, language}; an unknown language changes nothing and lists valid ids. Also for: replace code, paste code.`,
       inputSchema: {
         type: 'object',
         properties: {
-          code: {type: 'string', description: 'The full code to show.'},
+          code: {
+            type: 'string',
+            description: 'The full new code, exactly as the user wrote it.',
+          },
           language: {
             type: 'string',
             description:
-              'Language id or name. get_editor_state lists them under the editor.language control.',
+              'Language id or name, ignoring case, such as "python". Omitted, it stays.',
           },
         },
         required: ['code'],
@@ -237,19 +283,34 @@ export function createAgentTools(context: AgentToolsContext): AgentTool[] {
         if (!key.ok) return fail(key.error);
         if (key.value !== undefined) language()?.set(key.value);
         active.setCode(input.code);
-        return {ok: true, language: language()?.value() ?? null};
+        return {
+          ok: true,
+          tab: writtenTab(),
+          language: language()?.value() ?? null,
+        };
       },
     }),
     tool({
       name: 'add_tab',
       title: 'Add a tab',
-      description: `Add a tab after the others and make it the active one, optionally with its code, language (as in set_code) and name, such as "main.py". A snippet holds at most ${MAX_EDITOR_TABS} tabs. Invalid input changes nothing.`,
+      description: `Create a tab after the others and make it the active one. Use set_code instead to replace the code of the active tab. Every argument is optional; at most ${MAX_EDITOR_TABS} tabs. Example: {"name":"main.py","code":"print(1)"}. Returns {tab: {id, index, name, language, active}}. Also for: new tab, new file.`,
       inputSchema: {
         type: 'object',
         properties: {
-          code: {type: 'string', description: 'The code of the new tab.'},
-          language: {type: 'string', description: 'Language id or name.'},
-          name: {type: 'string', description: 'The tab name.'},
+          code: {
+            type: 'string',
+            description: 'The code of the new tab. Empty by default.',
+          },
+          language: {
+            type: 'string',
+            description:
+              "Language id or name. By default the name's extension decides.",
+          },
+          name: {
+            type: 'string',
+            description:
+              'The tab name, such as "main.py". Untitled by default.',
+          },
         },
       },
       execute: async input => {
@@ -275,19 +336,85 @@ export function createAgentTools(context: AgentToolsContext): AgentTool[] {
             name.trim(),
             key.value === undefined,
           );
-        return {ok: true, tab: activeTab()};
+        return {ok: true, tab: writtenTab()};
+      },
+    }),
+    tool({
+      name: 'duplicate_tab',
+      title: 'Duplicate a tab',
+      description: `Copy a tab, with its code and language, into a new tab after the others and make it active. Use it for any duplicate or copy request; the code is copied for you. Omit name and index to copy the active tab. At most ${MAX_EDITOR_TABS} tabs. Example: {}. Returns {tab: {id, index, name, language, active}}. Also for: duplicate, copy, clone.`,
+      inputSchema: {
+        type: 'object',
+        properties: {
+          name: {
+            type: 'string',
+            description: 'The tab to copy, by name ignoring case.',
+          },
+          index: {
+            type: 'integer',
+            minimum: 0,
+            description: 'The tab to copy, by 0-based position.',
+          },
+          newName: {
+            type: 'string',
+            description:
+              'The copy\'s name. By default "index copy.tsx" for "index.tsx".',
+          },
+        },
+      },
+      execute: async input => {
+        if (!pageState().editable) return NOT_EDITABLE;
+        const {newName} = input;
+        if (
+          newName !== undefined &&
+          (typeof newName !== 'string' || !newName.trim())
+        )
+          return fail('"newName" must be a non-empty string.');
+        const current = activeTab();
+        const found =
+          input.name === undefined && input.index === undefined && current
+            ? {ok: true as const, value: current}
+            : resolveTab(tabs(), input);
+        if (!found.ok) return fail(found.error, {tabs: tabs()});
+        if (!editors.computed.canAddEditor())
+          return fail(
+            `The snippet already has ${MAX_EDITOR_TABS} tabs, the most it can hold.`,
+            {tabs: tabs()},
+          );
+        const {id: _, ...source} = editors.state.editors[found.value.index];
+        editors.actions.addEditor(
+          {
+            ...source,
+            tab: {
+              ...source.tab,
+              tabName:
+                typeof newName === 'string'
+                  ? newName.trim()
+                  : copyName(source.tab.tabName ?? ''),
+            },
+          },
+          true,
+        );
+        return {ok: true, tab: writtenTab()};
       },
     }),
     tool({
       name: 'select_tab',
       title: 'Select a tab',
       description:
-        'Make a tab the active one, by its 0-based index or by its name ignoring case, as get_editor_state lists them. set_code and the language act on the active tab. An unknown tab returns an error with the tabs.',
+        'Switch the visible tab, so that set_code acts on it. Use read_tab instead to only read a tab. Pass name or index. Example: {"name":"main.py"}. Returns {tab: {index, name, language, active}}; an unknown tab lists the tabs. Also for: switch, open, go to tab.',
       inputSchema: {
         type: 'object',
         properties: {
-          index: {type: 'integer', minimum: 0, description: '0-based index.'},
-          name: {type: 'string', description: 'The tab name.'},
+          index: {
+            type: 'integer',
+            minimum: 0,
+            description: "The tab's 0-based position.",
+          },
+          name: {
+            type: 'string',
+            description: 'The tab name, ignoring case.',
+          },
         },
       },
       execute: async input => {
@@ -300,14 +427,51 @@ export function createAgentTools(context: AgentToolsContext): AgentTool[] {
       },
     }),
     tool({
-      name: 'apply_theme',
-      title: 'Apply a theme',
-      description:
-        'Apply a theme by id or name, ignoring case, as clicking its card does: it sets the code colors, the window and the frame background. list_themes lists them. An unknown theme returns an error with close matches.',
+      name: 'read_tab',
+      title: 'Read a tab',
+      description: `Read a tab's code, name and language without switching tabs. Omit name and index to read the active tab; pass name or index for another one. Example: {} or {"name":"index.tsx"}. Returns {tab: {index, name, language, active}, code}; an unknown tab lists the tabs. Also for: read, show, view code.`,
       inputSchema: {
         type: 'object',
         properties: {
-          theme: {type: 'string', description: 'Theme id or name.'},
+          index: {
+            type: 'integer',
+            minimum: 0,
+            description: "The tab's 0-based position.",
+          },
+          name: {
+            type: 'string',
+            description: 'The tab name, ignoring case.',
+          },
+        },
+      },
+      annotations: {readOnlyHint: true, untrustedContentHint: true},
+      execute: async input => {
+        const current = activeTab();
+        const found =
+          input.name === undefined && input.index === undefined && current
+            ? {ok: true as const, value: current}
+            : resolveTab(tabs(), input);
+        if (!found.ok) return fail(found.error, {tabs: tabs()});
+        return {
+          ok: true,
+          tab: found.value,
+          code: editors.state.editors[found.value.index].code,
+        };
+      },
+    }),
+    tool({
+      name: 'apply_theme',
+      title: 'Apply a theme',
+      description:
+        'Apply a theme: the code colors, the window and the frame background, as clicking its card does. Use it for any theme request. Example: {"theme":"Night Owl"}. Returns {theme: {id, name}}; an unknown theme lists close names. Also for: theme, color scheme, style, palette.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          theme: {
+            type: 'string',
+            description:
+              'Theme id or name, ignoring case, such as "XCode Dark".',
+          },
         },
         required: ['theme'],
       },
@@ -328,44 +492,46 @@ export function createAgentTools(context: AgentToolsContext): AgentTool[] {
       name: 'set_controls',
       title: 'Change editor settings',
       description:
-        'Change frame, window, signature, editor and font settings at once. "values" maps a setting id to its new value, in order, so {"frame.visible": true, "frame.opacity": 80} works. Choices take an option value or label, numbers must lie within their bounds, toggles take true or false. get_editor_state lists the settings with their valid values. Valid entries apply even when others fail; the result lists both.',
+        'Change frame, window, signature, editor and font settings. Use apply_theme for themes and set_code for code. Each argument is a setting name with its new value; settings left out stay as they are. Example: {"frame_padding":"64","window_header":false}. Returns {applied}; invalid settings come back in errors while the valid ones still apply. Also for: padding, margin, radius, corners, shadow, background, font, line numbers.',
       inputSchema: {
         type: 'object',
-        properties: {
-          values: {
-            type: 'object',
-            properties: Object.fromEntries(
-              allControls.map(control => [control.id, controlSchema(control)]),
-            ),
-            additionalProperties: false,
-          },
-        },
-        required: ['values'],
+        properties: Object.fromEntries(
+          allControls.map(control => [
+            settingName(control.id),
+            controlSchema(control),
+          ]),
+        ),
+        additionalProperties: false,
       },
       execute: async input => {
         if (!pageState().editable) return NOT_EDITABLE;
-        if (!isRecord(input.values))
-          return fail('"values" must map setting ids to values.');
+        const entries = Object.entries(input);
+        if (entries.length === 0)
+          return fail(
+            'Pass at least one setting, such as {"frame_padding": "64"}. get_editor_state lists them.',
+          );
         const applied: Record<string, unknown> = {};
         const errors: Record<string, string> = {};
-        for (const [id, raw] of Object.entries(input.values)) {
-          const control = allControls.find(control => control.id === id);
+        for (const [name, raw] of entries) {
+          const control = allControls.find(
+            control => settingName(control.id) === name,
+          );
           if (!control) {
-            errors[id] = 'Unknown setting id. get_editor_state lists them.';
+            errors[name] = 'Unknown setting. get_editor_state lists them.';
             continue;
           }
           const reason = unavailableReason(control);
           if (reason) {
-            errors[id] = reason;
+            errors[name] = reason;
             continue;
           }
           const parsed = parseControlValue(control, raw, isCssBackground);
           if (!parsed.ok) {
-            errors[id] = parsed.error;
+            errors[name] = parsed.error;
             continue;
           }
           parsed.value.commit();
-          applied[id] = parsed.value.value;
+          applied[name] = parsed.value.value;
         }
         return Object.keys(errors).length
           ? fail('Some settings were not applied.', {applied, errors})
@@ -373,20 +539,59 @@ export function createAgentTools(context: AgentToolsContext): AgentTool[] {
       },
     }),
     tool({
-      name: 'export_image',
-      title: 'Export the image',
-      description: `Export the code image and wait for the result. "delivery" is download (default), clipboard (always PNG) or new_tab. Unset fields use the export settings from get_editor_state. scale is one of ${EXPORT_SCALES.join(', ')}; quality (JPEG only) is ${JPEG_QUALITY.min} to ${JPEG_QUALITY.max}. When the code shows likely secrets, nothing is exported and a review dialog opens for the user: the result says so.`,
+      name: 'set_animate_mode',
+      title: 'Turn Animate mode on or off',
+      description:
+        'Show or hide the Animate panel, to build a code animation, as the toolbar\'s Animate button does. Setting the current state again changes nothing. Example: {"open":true}. Returns {open}. Also for: animate, animation, record, recording, video.',
       inputSchema: {
         type: 'object',
         properties: {
-          format: {type: 'string', enum: [...FORMATS]},
-          scale: {type: 'number', enum: [...EXPORT_SCALES]},
+          open: {
+            type: 'boolean',
+            description: 'true shows the Animate panel, false hides it.',
+          },
+        },
+        required: ['open'],
+      },
+      execute: async input => {
+        if (!pageState().editable) return NOT_EDITABLE;
+        if (typeof input.open !== 'boolean')
+          return fail('"open" must be true or false.');
+        const {animation} = getEditorStore();
+        animation.actions.setOpen(input.open);
+        return {ok: true, open: animation.open()};
+      },
+    }),
+    tool({
+      name: 'export_image',
+      title: 'Export the image',
+      description:
+        'Export the code image, only when the user asks for it. Every argument is optional; unset ones use the saved export settings. Example: {"format":"png","scale":2}. Returns {status, format, scale, delivery}; when the code shows likely secrets nothing is exported and the user sees a review dialog. Also for: export, save, download, screenshot, image, png.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          format: {
+            type: 'string',
+            enum: [...FORMATS],
+            description: 'The image format.',
+          },
+          scale: {
+            type: 'number',
+            enum: [...EXPORT_SCALES],
+            description: 'The pixel ratio.',
+          },
           quality: {
             type: 'number',
             minimum: JPEG_QUALITY.min,
             maximum: JPEG_QUALITY.max,
+            description: 'JPEG quality.',
           },
-          delivery: {type: 'string', enum: [...DELIVERIES]},
+          delivery: {
+            type: 'string',
+            enum: [...DELIVERIES],
+            description:
+              'download (the default), clipboard (PNG only) or new_tab.',
+          },
         },
       },
       execute: async input => {

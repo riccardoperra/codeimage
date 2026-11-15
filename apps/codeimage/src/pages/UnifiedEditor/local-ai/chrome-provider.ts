@@ -8,6 +8,7 @@ import type {
   ModelSession,
   ModelToolResult,
   ToolSpec,
+  ToolStep,
   TurnInput,
 } from './model';
 
@@ -27,13 +28,6 @@ const INPUTS = [
   {type: 'tool-response'},
 ];
 const OUTPUTS = [{type: 'text', languages: ['en']}, {type: 'tool-call'}];
-
-// availability() takes create()'s options, and the real tools come later.
-const TOOL_PROBE = {
-  name: 'get_editor_state',
-  description: 'Reads the editor.',
-  inputSchema: {type: 'object', properties: {}},
-};
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === 'object' && value !== null;
@@ -65,11 +59,14 @@ export async function* answerEvents(
   let text = '';
   let calls = false;
   for await (const chunk of stream) {
-    log('model output chunk', chunk);
     const part =
       typeof chunk === 'string' ? {type: 'text', value: chunk} : chunk;
-    if (!isRecord(part)) continue;
+    if (!isRecord(part)) {
+      log('ignored an output chunk', chunk);
+      continue;
+    }
     if (part.type === 'text' && typeof part.value === 'string') {
+      log('model text', part.value);
       const delta =
         text && part.value.startsWith(text)
           ? part.value.slice(text.length)
@@ -78,14 +75,22 @@ export async function* answerEvents(
       if (delta) yield {type: 'text-delta', text: delta};
     } else if (part.type === 'tool-call' && isRecord(part.value)) {
       calls = true;
-      yield {
-        type: 'tool-call',
-        call: {
-          id: String(part.value.callId),
-          name: String(part.value.name),
-          args: part.value.arguments ?? {},
-        },
+      const call = {
+        id: String(part.value.callId ?? ''),
+        name: String(part.value.name),
+        args: part.value.arguments ?? {},
       };
+      // Chrome's LanguageModelToolCall keeps its fields on getters, which the
+      // console shows as an opaque object.
+      log(
+        'model called',
+        JSON.stringify({
+          callId: call.id,
+          name: call.name,
+          arguments: call.args,
+        }),
+      );
+      yield {type: 'tool-call', call};
     } else {
       log('ignored an output part', part);
     }
@@ -135,6 +140,13 @@ const declare = ({name, description, inputSchema}: ToolSpec) => ({
   inputSchema: plainSchema(inputSchema) as object,
 });
 
+/** What availability() and create() both take, as the explainer asks. */
+const coreOptions = (tools: readonly ToolSpec[]) => ({
+  tools: tools.map(declare),
+  expectedInputs: INPUTS,
+  expectedOutputs: OUTPUTS,
+});
+
 const describeError = (error: unknown) =>
   error instanceof Error ? `${error.name}: ${error.message}` : String(error);
 
@@ -149,20 +161,39 @@ export function createChromeProvider(
     return Class ? new Class(value) : value;
   }
 
-  const toolResponse = (result: ModelToolResult, name: string) => ({
+  const toolResponse = ({callId, name, ok, output}: ModelToolResult) => ({
     type: 'tool-response',
-    value: result.ok
+    value: ok
       ? wrap('LanguageModelToolSuccess', {
-          callId: result.callId,
+          callId,
           name,
-          result: [{type: 'object', value: result.output}],
+          result: [{type: 'object', value: output}],
         })
       : wrap('LanguageModelToolError', {
-          callId: result.callId,
+          callId,
           name,
-          errorMessage: errorMessage(result.output),
+          errorMessage: errorMessage(output),
         }),
   });
+
+  // A turn of calls, then the turn of their results, as the model makes them.
+  const stepTurns = (steps: readonly ToolStep[]) => [
+    {
+      role: 'assistant' as const,
+      content: steps.map(({call}) => ({
+        type: 'tool-call',
+        value: wrap('LanguageModelToolCall', {
+          callId: call.id,
+          name: call.name,
+          arguments: call.args,
+        }),
+      })),
+    },
+    {
+      role: 'user' as const,
+      content: steps.map(({result}) => toolResponse(result)),
+    },
+  ];
 
   // One session per system prompt and tools, which each request clones, so
   // that Chrome reads the instructions and tools once.
@@ -182,9 +213,7 @@ export function createChromeProvider(
       );
     const options = {
       initialPrompts: [{role: 'system' as const, content: system}],
-      tools: tools.map(declare),
-      expectedInputs: INPUTS,
-      expectedOutputs: OUTPUTS,
+      ...coreOptions(tools),
     };
     log('create() the base session with tools', options);
     const session = chrome.create(options).catch((error: unknown) => {
@@ -204,35 +233,16 @@ export function createChromeProvider(
     return session;
   }
 
-  function session(chrome: Session): ModelSession & {
-    readonly names: Map<string, string>;
-  } {
-    // A response names its tool, which only the call knew.
-    const names = new Map<string, string>();
+  function session(chrome: Session): ModelSession {
     return {
-      names,
       async *stream(input: TurnInput, signal: AbortSignal) {
+        if (input.kind === 'text') log('prompt', input.text);
+        else log('tool results sent back', JSON.stringify(input.results));
         const prompt =
           input.kind === 'text'
             ? input.text
-            : [
-                {
-                  role: 'user',
-                  content: input.results.map(result =>
-                    toolResponse(result, names.get(result.callId) ?? ''),
-                  ),
-                },
-              ];
-        log(
-          input.kind === 'text' ? 'prompt' : 'tool results sent back',
-          prompt,
-        );
-        const answer = chunks(chrome.promptStreaming(prompt, {signal}));
-        for await (const event of answerEvents(answer)) {
-          if (event.type === 'tool-call')
-            names.set(event.call.id, event.call.name);
-          yield event;
-        }
+            : [{role: 'user', content: input.results.map(toolResponse)}];
+        yield* answerEvents(chunks(chrome.promptStreaming(prompt, {signal})));
       },
       destroy: () => {
         log('destroy() the clone');
@@ -242,16 +252,16 @@ export function createChromeProvider(
   }
 
   return {
-    async availability(): Promise<Availability> {
+    async availability(tools): Promise<Availability> {
       if (!api) return 'unavailable';
-      const options = {expectedInputs: INPUTS, expectedOutputs: OUTPUTS};
+      const {tools: _, ...withoutTools} = coreOptions(tools);
       try {
-        return await api.availability({...options, tools: [TOOL_PROBE]});
+        return await api.availability(coreOptions(tools));
       } catch (error) {
         log('availability() rejected tools, asking without them', error);
       }
       try {
-        return await api.availability(options);
+        return await api.availability(withoutTools);
       } catch (error) {
         log('availability() threw', error);
         return 'unavailable';
@@ -264,30 +274,14 @@ export function createChromeProvider(
       const chrome = await base.clone({signal});
       const opened = session(chrome);
       if (history.length > 0) {
-        const turns = history.flatMap(({call, result}) => [
-          {
-            role: 'assistant',
-            content: [
-              {
-                type: 'tool-call',
-                value: wrap('LanguageModelToolCall', {
-                  callId: call.id,
-                  name: call.name,
-                  arguments: call.args,
-                }),
-              },
-            ],
-          },
-          {role: 'user', content: [toolResponse(result, call.name)]},
-        ]);
-        log('append() the history', turns);
+        const turns = stepTurns(history);
+        log('append() the history', JSON.stringify(history));
         try {
           await chrome.append(turns, {signal});
         } catch (error) {
           opened.destroy();
           throw error;
         }
-        for (const {call} of history) opened.names.set(call.id, call.name);
       }
       log('session open');
       return opened;

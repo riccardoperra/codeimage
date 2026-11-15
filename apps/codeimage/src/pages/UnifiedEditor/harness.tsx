@@ -8,7 +8,7 @@ import {createEffect, createMemo, For, on, Show} from 'solid-js';
 import {Dynamic} from 'solid-js/web';
 import {AgentTools} from './agent-tools/AgentTools';
 import {ToolActivity} from './agent-tools/ToolActivity';
-import {createAgentTools} from './agent-tools/tools';
+import {createAgentTools, createEditorBrief} from './agent-tools/tools';
 import {CommandMenu} from './command-menu/CommandMenu';
 import {createListedModel} from './command-menu/listed-model';
 import {EditorHost} from './EditorHost';
@@ -105,6 +105,7 @@ function Editor() {
               exporter: stage.exporter,
               pageState,
             });
+            const brief = createEditorBrief({model, listed});
             const BoundThemePicker = (slot: ThemePickerSlotProps) => (
               <ThemePicker
                 {...slot}
@@ -133,6 +134,7 @@ function Editor() {
                 <AgentTools tools={tools} />
                 <LocalAi
                   tools={tools}
+                  brief={brief}
                   compact={stage.compact}
                   pageState={pageState}
                 />

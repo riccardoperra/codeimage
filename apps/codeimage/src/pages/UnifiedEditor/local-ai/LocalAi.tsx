@@ -85,6 +85,7 @@ export const localAi = {
  */
 export function LocalAi(props: {
   tools: readonly AgentTool[];
+  brief: () => Record<string, unknown>;
   compact: Accessor<boolean>;
   pageState: Accessor<EditorPageState>;
 }) {
@@ -102,6 +103,7 @@ export function LocalAi(props: {
           provider: chromeProvider,
           // Not through withActivity: the bar lists these calls itself.
           tools: props.tools,
+          brief: props.brief,
           request: request.trim(),
           signal: controller.signal,
         },
@@ -167,9 +169,51 @@ function EntryRow(props: {entry: Entry}) {
             return now.status === 'failed' ? now.error : undefined;
           })()}
           readOnly={entry().readOnly}
+          tabId={entry().tabId}
         />
       )}
     </Show>
+  );
+}
+
+/** The model's answer as plain text, three lines until the user asks for all. */
+function Answer(props: {text: string}) {
+  const [t] = useI18n<AppLocaleEntries>();
+  const [expanded, setExpanded] = createSignal(false);
+  const [clipped, setClipped] = createSignal(false);
+  let paragraph!: HTMLParagraphElement;
+  createEffect(() => {
+    void props.text;
+    if (expanded()) return;
+    // Glyphs can overhang the clamped box by a few pixels; a hidden line is
+    // a whole line height.
+    const line = parseFloat(getComputedStyle(paragraph).lineHeight) || 16;
+    setClipped(paragraph.scrollHeight - paragraph.clientHeight > line / 2);
+  });
+  return (
+    <>
+      <p
+        ref={paragraph}
+        class={styles.answer}
+        data-local-ai-answer
+        data-clamped={expanded() ? undefined : ''}
+      >
+        {props.text}
+      </p>
+      <Show when={clipped()}>
+        <Button
+          class={styles.panelAction}
+          size="xs"
+          theme="secondary"
+          variant="ghost"
+          aria-expanded={expanded()}
+          data-local-ai-show-all
+          onClick={() => setExpanded(open => !open)}
+        >
+          {expanded() ? t('localAi.showLess') : t('localAi.showAll')}
+        </Button>
+      </Show>
+    </>
   );
 }
 
@@ -244,9 +288,7 @@ export function PromptBar() {
                 </p>
               </Show>
               <Show when={current().text}>
-                <p class={styles.answer} data-local-ai-answer>
-                  {current().text}
-                </p>
+                {text => <Answer text={text()} />}
               </Show>
               <Switch>
                 <Match when={phase()?.kind === 'turn-limit'}>

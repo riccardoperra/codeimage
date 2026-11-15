@@ -15,6 +15,7 @@ import type {AppLocaleEntries} from '../../../i18n';
 import {agentActivity} from '../../../i18n/agentActivity';
 import type {SummaryWords, ToolCall, ToolSource} from './activity';
 import {activity} from './activity';
+import {FormatTabButton} from './FormatTabButton';
 import * as styles from './tool-activity.css';
 
 const HIDE_AFTER_MS = 10000;
@@ -37,6 +38,10 @@ export function useSummaryWords(): SummaryWords {
       count === 1
         ? t('agentActivity.line')
         : t('agentActivity.lines', {count: String(count)}),
+    tabs: count =>
+      count === 1
+        ? t('agentActivity.tab')
+        : t('agentActivity.tabs', {count: String(count)}),
     toggle: value => t(value ? 'agentActivity.on' : 'agentActivity.off'),
     delivery: delivery =>
       delivery === 'download'
@@ -59,6 +64,8 @@ export function ToolRow(props: {
   status: ToolCall['status'];
   error?: string;
   readOnly?: boolean;
+  /** The tab whose code the call set, which the row offers to format. */
+  tabId?: string;
 }) {
   const [t] = useI18n<AppLocaleEntries>();
   return (
@@ -110,6 +117,9 @@ export function ToolRow(props: {
           )}
         </Show>
       </span>
+      <Show when={props.status === 'done' && props.tabId}>
+        {tabId => <FormatTabButton tabId={tabId()} />}
+      </Show>
     </li>
   );
 }
@@ -267,6 +277,7 @@ export function ToolActivity() {
                       status={entry().status}
                       error={failure(entry())}
                       readOnly={entry().readOnly}
+                      tabId={entry().tabId}
                     />
                   )}
                 </Show>
