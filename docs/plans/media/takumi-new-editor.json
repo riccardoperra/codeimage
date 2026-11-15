@@ -711,7 +711,7 @@
     "A revised 2x probe omitted its ratio argument and produced NaN. Its results were discarded.",
     "Native display scale now matches export scale, avoiding resampled Retina screenshots as the native 1x reference."
   ],
-  "main": "1ffe0c9d",
+  "main": "6f7092b3",
   "uiAfterLineMarksFailure": {
     "error": "Failed to fetch dynamically imported module: /src/prototypes/editor-controls/index.tsx",
     "fallbacks": [],
@@ -854,5 +854,57 @@
     },
     "uiProbeServerHmr": false,
     "probeAdjustment": "First attempt used the removed nested aspect-ratio buttons. Final probe selects Square as a listbox option."
+  },
+  "latestMainAlignment": {
+    "mainHead": "6f7092b3",
+    "appTests": 251,
+    "typecheckExit": 0,
+    "lintExit": 0,
+    "buildExit": 0,
+    "localeKeys": 473,
+    "ui": {
+      "rows": [
+        {
+          "reloads": 1,
+          "picker": "square",
+          "summary": "1080 \u00d7 1080",
+          "layout": "inspector",
+          "persisted": true,
+          "width": 1080,
+          "height": 1080,
+          "restored": true
+        },
+        {
+          "reloads": 1,
+          "picker": "square",
+          "summary": "1080 \u00d7 1080",
+          "layout": "dock",
+          "persisted": true,
+          "width": 1080,
+          "height": 1080,
+          "restored": true
+        },
+        {
+          "reloads": 1,
+          "picker": "square",
+          "summary": "1080 \u00d7 1080",
+          "layout": "studio",
+          "persisted": true,
+          "width": 1080,
+          "height": 1080,
+          "restored": true
+        }
+      ],
+      "tabs": [
+        "01-index.tsx.png",
+        "02-second.ts.png"
+      ],
+      "tabRenders": 2,
+      "errors": [],
+      "fallbacks": [],
+      "wasm": 3
+    },
+    "uiProbeServerHmr": false,
+    "initialDevProbe": "Stopped after optimizer generation change caused a vanilla-extract file-scope error; fresh session passed."
   }
 }

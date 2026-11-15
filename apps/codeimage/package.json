@@ -19,11 +19,8 @@
     "test": "vitest run"
   },
   "devDependencies": {
-    "@mdx-js/mdx": "catalog:next",
-    "@mdx-js/rollup": "catalog:next",
     "@mswjs/data": "^0.16.2",
     "@types/downloadjs": "^1.4.6",
-    "@types/mdx": "2.0.13",
     "@vanilla-extract/vite-plugin": "^5.2.1",
     "cross-env": "^10.1.0",
     "happy-dom": "20.8.8",
@@ -32,8 +29,6 @@
     "oxfmt": "catalog:next",
     "oxlint": "catalog:next",
     "prettier": "^3.8.1",
-    "rehype-raw": "catalog:next",
-    "rehype-slug": "catalog:next",
     "rimraf": "catalog:next",
     "sass": "catalog:next",
     "tsx": "catalog:next",
@@ -112,7 +107,6 @@
     "solid-codemirror": "catalog:next",
     "solid-headless": "^0.13.1",
     "solid-js": "catalog:next",
-    "solid-mdx": "^0.0.7",
     "solid-use": "^0.9.1",
     "statebuilder": "^0.8.1",
     "tinykeys": "^3.0.0",

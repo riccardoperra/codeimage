@@ -1,3 +1,6 @@
+import {commandMenu} from '../command-menu/state';
+import {NewDot} from '../../../components/WhatsNew/NewDot';
+import {getWhatsNew} from '../../../state/whats-new';
 import type {AppLocaleEntries} from '../../../i18n';
 import {useI18n} from '@codeimage/locale';
 import {Dialog, IconButton, TextField} from '@codeui/kit';
@@ -6,10 +9,10 @@ import {Dialog as KDialog} from '@kobalte/core/dialog';
 import {
   createEffect,
   createMemo,
-  createSignal,
   For,
   onCleanup,
   Show,
+  untrack,
 } from 'solid-js';
 import type {EditorControlsModel} from '../model';
 import {CloseIcon, SearchIcon} from './icons';
@@ -19,6 +22,7 @@ import {settings} from './settings-state';
 import * as styles from './settings.css';
 
 function Row(props: {row: SettingRow}) {
+  const [t] = useI18n<AppLocaleEntries>();
   const titleId = () => `setting-${props.row.id}-title`;
   const descriptionId = () => `setting-${props.row.id}-description`;
   return (
@@ -30,10 +34,21 @@ function Row(props: {row: SettingRow}) {
       data-setting={props.row.id}
       data-wide={props.row.wide ? '' : undefined}
       data-small={props.row.small ? '' : undefined}
+      data-picture={props.row.picture ? '' : undefined}
     >
+      <Show when={props.row.picture}>
+        {picture => <div class={styles.rowPicture}>{picture()()}</div>}
+      </Show>
       <div class={styles.rowText}>
         <span id={titleId()} class={styles.rowTitle}>
           {props.row.title}
+          <Show when={props.row.experimental}>
+            <span class={styles.tag}>{t('editor.experimental')}</span>
+          </Show>
+          <NewDot at={`setting:${props.row.id}`} />
+          <Show when={props.row.fresh && getWhatsNew().isNew(props.row.fresh)}>
+            <span class={styles.tag}>{t('common.new')}</span>
+          </Show>
         </span>
         <span id={descriptionId()} class={styles.rowDescription}>
           {props.row.description()}
@@ -59,7 +74,10 @@ function Group(props: SettingGroup) {
 function Panel(props: {sections: readonly SettingSection[]}) {
   const [t] = useI18n<AppLocaleEntries>();
   const modality = useModality();
-  const [query, setQuery] = createSignal('');
+  const query = settings.query;
+  const setQuery = settings.setQuery;
+  // Each opening starts without a search, as when the query was the panel's.
+  onCleanup(() => setQuery(''));
   let shell!: HTMLDivElement;
   let search: HTMLInputElement | undefined;
 
@@ -71,6 +89,19 @@ function Panel(props: {sections: readonly SettingSection[]}) {
     query().trim().toLowerCase().split(/\s+/).filter(Boolean),
   );
   const searching = () => terms().length > 0;
+  // Once per visit to a section, not per row drawn: a search or a language
+  // switch draws the rows again.
+  createEffect(() => {
+    const section = current();
+    if (searching()) return;
+    untrack(() =>
+      section.groups().forEach(group =>
+        group.rows.forEach(row => {
+          if (row.fresh) getWhatsNew().opened(row.fresh, 'library');
+        }),
+      ),
+    );
+  });
   const matches = (row: SettingRow) => {
     const text = `${row.title} ${row.description()}`.toLowerCase();
     return terms().every(term => text.includes(term));
@@ -267,9 +298,16 @@ function Panel(props: {sections: readonly SettingSection[]}) {
  * title, a line that explains it, and its control.
  */
 export function SettingsDialog(props: {model: EditorControlsModel}) {
-  // Made here and not in the panel, which goes away as the dialog closes:
-  // the changelog that a row opens has to outlive it.
   const sections = createSettingSections(props.model);
+  getWhatsNew().bindLocation('setting', row => {
+    const section = sections.find(section =>
+      section.groups().some(group => group.rows.some(item => item.id === row)),
+    );
+    if (!section) return;
+    commandMenu.close();
+    settings.setQuery('');
+    settings.open(section.id);
+  });
   return (
     <Dialog
       size={'xl'}

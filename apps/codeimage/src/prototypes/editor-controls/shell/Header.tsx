@@ -76,7 +76,7 @@ export function Header(props: {stage: Stage}) {
           </IconButton>
         </Show>
         {/* As today, a phone gets Export from the layout, beside the canvas. */}
-        <Show when={modality === 'full'}>
+        <Show when={!props.stage.compact()}>
           <ShareButton showLabel={false} />
           <props.stage.ExportButton />
         </Show>

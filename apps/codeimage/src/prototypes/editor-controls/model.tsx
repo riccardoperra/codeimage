@@ -21,14 +21,12 @@ import type {
   SignatureStyle,
 } from '@codeimage/store/frame/model';
 import {getThemeStore} from '@codeimage/store/theme/theme.store';
-import {VersionStore} from '@codeimage/store/version/version.store';
 import {appEnvironment} from '@core/configuration';
 import {shadowsLabel} from '@core/configuration/shadow';
 import {AVAILABLE_TERMINAL_THEMES} from '@core/configuration/terminal-themes';
 import {getUmami} from '@core/constants/umami';
 import {createMemo, createSelector} from 'solid-js';
 import type {Accessor, Component} from 'solid-js';
-import {provideState} from 'statebuilder';
 import {
   createAmbientBackground,
   createWindowPalette,
@@ -293,7 +291,6 @@ export function createEditorControlsModel(): EditorControlsModel {
   const editor = getRootEditorStore();
   const activeEditor = getActiveEditorStore();
   const themeStore = getThemeStore();
-  const versionStore = provideState(VersionStore);
   const shadows = createMemo(shadowsLabel);
   const session = createPreviewSession();
   const isActiveTheme = createSelector(
@@ -638,7 +635,6 @@ export function createEditorControlsModel(): EditorControlsModel {
           value: () => terminal.state.borderType ?? 'none',
           set: border => terminal.setBorder(border === 'none' ? null : border),
           track: border => {
-            versionStore.see('borderType', false);
             getUmami().track('change-border', {border});
           },
         }),

@@ -83,3 +83,7 @@ The merge preserves both the Takumi experiments control and localized section na
 ## UI review corrections through 60f84ab6
 
 The deleted localized clipboard button stays deleted: FrameActions now uses the shared exporter, whose clipboard payload retains the renderer. 214 app tests, typecheck, lint and production build pass. Locale parity passes for 450 keys/placeholders in four locales. The initial UI probe waited for a removed nested picker button; the final probe selects Square directly as a listbox option. It passes all three layouts, one durable reload each, exact Square PNGs, Restore defaults and two actual WASM renders in the ZIP, without page errors or fallback. Test-server HMR is disabled. Earlier image matrices were not rerun.
+
+## Main alignment after the UI merge
+
+PR #711 and subsequent UI work are merged into main; #731 now targets main. The branch includes `6f7092b3`. The settings merge retains locale-aware memoized sections, the literal rendering-engine row id and the persisted renderer control. Frozen install, 251 app tests, typecheck, lint and production build pass. Locale parity passes 473 keys/placeholders in four locales. The first dev session encountered a vanilla-extract file-scope error after an optimizer generation change and was stopped. A fresh session passes all three layouts, durable reloads, exact Square downloads, reset and two actual WASM renders in the ZIP, with no errors or fallback; test-server HMR is disabled. Earlier image matrices were not rerun. No PR merge was performed by this task.
