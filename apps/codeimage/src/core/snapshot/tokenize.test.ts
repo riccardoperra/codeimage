@@ -38,6 +38,14 @@ test('an unknown language preserves plain text, Unicode, and trailing lines', as
   assert.ok(lines.flat().every(span => span.classes === ''));
 });
 
+test('a blank line has no spans, with or without a parser', async () => {
+  for (const languageId of ['plain-text', 'typescript']) {
+    const lines = await tokenize('alpha\n\nbeta\n', languageId, draculaTheme);
+    assert.deepEqual(lines[1], [], languageId);
+    assert.deepEqual(lines[3], [], languageId);
+  }
+});
+
 test('a tab name picks the parser the canvas editor uses', async () => {
   const sfc =
     '<template>\n  <p>{{ count }}</p>\n</template>\n<script setup>\nconst count = 1;\n</script>';

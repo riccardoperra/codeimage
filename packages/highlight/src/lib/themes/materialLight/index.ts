@@ -9,6 +9,7 @@ export const materialLightTheme = createTheme({
     label: 'Material Light',
     previewBackground: 'linear-gradient(135deg, #54D2EF 0%, #2AA6DA 100%)',
     terminal: {
+      accent: '#7c4dff',
       main: '#ffffff',
       text: '#90a4ae',
       tabs: {

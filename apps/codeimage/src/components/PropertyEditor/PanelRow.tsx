@@ -1,14 +1,12 @@
-import type {FeatureName} from '@codeimage/store/version/version.store';
 import {Box, Text} from '@codeimage/ui';
 import type {FlowComponent, JSXElement} from 'solid-js';
 import {Show} from 'solid-js';
-import {FeatureBadge} from '../FeatureBadge/FeatureBadge';
 import * as styles from './EditorSidebar.css';
 import {panelRowContent} from './EditorSidebar.css';
 
 interface PanelRowProps {
   label?: JSXElement;
-  feature?: FeatureName;
+  labelAccessory?: JSXElement;
   for: string;
 }
 
@@ -24,21 +22,31 @@ export const PanelRow: FlowComponent<PanelRowProps> = props => {
   return (
     <div class={styles.panelRow}>
       <Show when={props.label}>
-        <Text
-          as="label"
-          for={props.for}
-          size={'xs'}
-          class={styles.titleWrapper}
+        {/* Testing the value would build the accessory a second time. */}
+        <Show
+          when={'labelAccessory' in props}
+          fallback={
+            <Text
+              as="label"
+              for={props.for}
+              size={'xs'}
+              class={styles.titleWrapper}
+            >
+              <Box as={'span'} position={'relative'}>
+                {props.label}
+              </Box>
+            </Text>
+          }
         >
-          <Box as={'span'} position={'relative'}>
-            {props.label}
-            <Show when={props.feature}>
-              {feature => (
-                <FeatureBadge untilSeenTimes={3} featureName={feature()} />
-              )}
-            </Show>
-          </Box>
-        </Text>
+          <span class={styles.titleWrapper}>
+            <Text as="label" for={props.for} size={'xs'}>
+              <Box as={'span'} position={'relative'}>
+                {props.label}
+              </Box>
+            </Text>
+            {props.labelAccessory}
+          </span>
+        </Show>
       </Show>
       {props.children}
     </div>

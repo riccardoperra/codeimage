@@ -10,6 +10,7 @@ export const coldarkColdTheme = createTheme({
     previewBackground:
       'linear-gradient(140deg, rgb(165, 142, 251), rgb(233, 191, 248))',
     terminal: {
+      accent: '#a04900',
       main: '#fae7ff',
       text: '#111b27',
       tabs: {

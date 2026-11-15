@@ -3,6 +3,9 @@ import {Value} from '@sinclair/typebox/value';
 import {
   ExportTargetSchema,
   type FrameSignatureSchema,
+  SignaturePlatformSchema,
+  SignaturePositionSchema,
+  SignatureStyleSchema,
   TabMarksSchema,
   type TabMarks,
 } from './project.contract.js';
@@ -45,6 +48,7 @@ export interface SnippetTerminal {
   readonly opacity: number;
   readonly alternativeTheme: boolean;
   readonly borderType: string | null;
+  readonly surface: 'solid' | 'wash';
 }
 
 export interface SnippetEditorOptions {
@@ -104,7 +108,10 @@ export interface ProjectDraft {
 
 export interface ProjectChanges {
   readonly frame: WithoutIds<SnippetFrame>;
-  readonly terminal: WithoutIds<SnippetTerminal>;
+  // Absent when the client predates the field, so the stored value stays.
+  readonly terminal: Omit<WithoutIds<SnippetTerminal>, 'surface'> & {
+    readonly surface?: SnippetTerminal['surface'];
+  };
   readonly editorOptions: WithoutIds<SnippetEditorOptions>;
   readonly editorTabs: readonly Omit<SnippetEditorTab, 'projectId'>[];
 }
@@ -167,6 +174,7 @@ export function draftFromCreateBody(body: ProjectCreateBody): ProjectDraft {
         SnippetTerminalCreateRequestSchema.properties.alternativeTheme.default,
       shadow: body.terminal.shadow ?? null,
       borderType: body.terminal.borderType ?? null,
+      surface: readTerminalSurface(body.terminal.surface),
     },
     editorOptions: {
       fontWeight: body.editorOptions.fontWeight,
@@ -190,7 +198,7 @@ export function draftFromCreateBody(body: ProjectCreateBody): ProjectDraft {
 export function changesFromUpdateBody(body: ProjectUpdateBody): ProjectChanges {
   return {
     frame: body.frame,
-    terminal: body.terminal,
+    terminal: {...body.terminal, surface: body.terminal.surface ?? undefined},
     editorOptions: body.editorOptions,
     editorTabs: body.editors.map(editor => ({
       ...editor,
@@ -227,21 +235,64 @@ export function viewFor(project: Project, viewer: Principal): ProjectView {
   return {...project, isOwner: isOwnedBy(viewer, project.ownerId)};
 }
 
-export function readFrameSignature(frame: {
+type FrameSignature = Static<typeof FrameSignatureSchema>;
+
+export interface FrameSignatureColumns {
   signatureHandle?: string | null;
   signaturePosition?: string | null;
-}): Static<typeof FrameSignatureSchema> | null {
-  const {signatureHandle: handle, signaturePosition: position} = frame;
-  return handle && (position === 'bottom-left' || position === 'bottom-right')
-    ? {handle, position}
-    : null;
+  signatureStyle?: string | null;
+  signaturePlatform?: string | null;
+  signatureName?: string | null;
+  signatureAvatar?: string | null;
+  signatureProfile?: string | null;
+  /** The saved signature the copy came from; not a foreign key, so deleting it keeps the copy. */
+  signatureId?: string | null;
 }
 
-export function readFrameExportProperties(frame: {
-  exportTarget?: string | null;
-  signatureHandle?: string | null;
-  signaturePosition?: string | null;
-}) {
+const literalOf = <T extends string>(
+  schema: {anyOf: readonly {const: T}[]},
+  value: string | null | undefined,
+): T | undefined => schema.anyOf.find(item => item.const === value)?.const;
+
+export function readFrameSignature(
+  frame: FrameSignatureColumns,
+): FrameSignature | null {
+  const handle = frame.signatureHandle;
+  const position = literalOf(SignaturePositionSchema, frame.signaturePosition);
+  if (!handle || !position) return null;
+  return {
+    handle,
+    position,
+    style: literalOf(SignatureStyleSchema, frame.signatureStyle) ?? 'minimal',
+    platform:
+      literalOf(SignaturePlatformSchema, frame.signaturePlatform) ?? null,
+    name: frame.signatureName ?? null,
+    avatar: frame.signatureAvatar ?? null,
+    profile: frame.signatureProfile ?? null,
+    savedId: frame.signatureId ?? null,
+  };
+}
+
+/** The columns to write; `undefined` leaves a stored signature as it is. */
+export function writeFrameSignature(
+  signature: FrameSignature | null | undefined,
+): FrameSignatureColumns {
+  if (signature === undefined) return {};
+  return {
+    signatureHandle: signature?.handle ?? null,
+    signaturePosition: signature?.position ?? null,
+    signatureStyle: signature?.style ?? null,
+    signaturePlatform: signature?.platform ?? null,
+    signatureName: signature?.name ?? null,
+    signatureAvatar: signature?.avatar ?? null,
+    signatureProfile: signature?.profile ?? null,
+    signatureId: signature?.savedId ?? null,
+  };
+}
+
+export function readFrameExportProperties(
+  frame: {exportTarget?: string | null} & FrameSignatureColumns,
+) {
   return {
     exportTarget:
       ExportTargetSchema.anyOf.find(
@@ -255,4 +306,10 @@ export function parseTabMarks(value: unknown): TabMarks {
   return Value.Check(TabMarksSchema, value)
     ? value
     : {lines: [], focusedLines: []};
+}
+
+export function readTerminalSurface(
+  value: string | null | undefined,
+): SnippetTerminal['surface'] {
+  return value === 'wash' ? 'wash' : 'solid';
 }

@@ -9,6 +9,7 @@ export const materialPalenightTheme = createTheme({
     label: 'Material Palenight',
     previewBackground: 'linear-gradient(135deg, #54D2EF 0%, #2AA6DA 100%)',
     terminal: {
+      accent: '#c792ea',
       main: '#24293B',
       text: palette.gray,
     },

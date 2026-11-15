@@ -61,8 +61,9 @@ export interface TerminalState {
   showGlassReflection: boolean;
   opacity: number;
   alternativeTheme: boolean;
+  surface: 'solid' | 'wash';
   // eslint-disable-next-line @typescript-eslint/ban-types
-  borderType: ('glass' | (string & {})) | null;
+  borderType: ('glass' | 'hairline' | (string & {})) | null;
 }
 
 export type PersistedTerminalState = Pick<
@@ -78,7 +79,7 @@ export type PersistedTerminalState = Pick<
   | 'opacity'
   | 'alternativeTheme'
   | 'borderType'
->;
+> & {readonly surface?: TerminalState['surface'] | null};
 
 export interface ProjectEditorPersistedState {
   $snippetId: string | null;

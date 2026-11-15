@@ -1,5 +1,6 @@
 import {getExportTarget} from '@codeimage/config';
 import {createMemo} from 'solid-js';
+import {parseSignature} from '@codeimage/store/frame/model';
 import type {
   FrameState,
   PersistedFrameState,
@@ -105,7 +106,7 @@ const frameState = defineStore(() => getInitialFrameState())
         store.set(state => ({
           ...state,
           ...presetData,
-          signature: presetData.signature ?? null,
+          signature: parseSignature(presetData.signature),
           aspectRatio: presetData.aspectRatio ?? null,
           exportTarget: presetData.exportTarget ?? null,
         }));
@@ -114,7 +115,7 @@ const frameState = defineStore(() => getInitialFrameState())
         return {
           ...state,
           ..._,
-          signature: _.signature ?? null,
+          signature: parseSignature(_.signature),
           aspectRatio: _.aspectRatio ?? null,
           exportTarget: _.exportTarget ?? null,
         };

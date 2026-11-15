@@ -1,0 +1,35 @@
+    case ExportExtension.png:
+      return `image/png`;
+    case ExportExtension.svg:
+      return `image/svg+xml`;
+  }
+}
+
+export async function exportImage(
+  data: ExportImagePayload,
+): Promise<Blob | string> {
+  const {
+    options: {extension, mode, pixelRatio, quality},
+    ref,
+  } = data;
+
+  const [supported, canShare, share] = useWebshare();
+
+  if (!ref) {
+    throw new Error('Reference is not defined.');
+  }
+
+  const resolvedFileName = `codeimage-snippet_${new Date().getUTCDate()}`;
+  const mimeType = resolveMimeType(extension);
+  const fileNameWithExtension = `${resolvedFileName}.${extension}`;
+  const previewNode = ref.firstChild as HTMLElement;
+
+  const toImageOptions: HtmlExportOptions = {
+    type: mimeType,
+    filter: (node: Node | undefined) => {
+      const isNotExcluded = () => {
+        const el = node as Element | null;
+        if (!el) return true;
+        const attr = el?.getAttribute?.('data-export-exclude');
+        return !attr || attr === 'false';
+      };

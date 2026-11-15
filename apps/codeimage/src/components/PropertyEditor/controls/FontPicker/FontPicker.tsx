@@ -1,10 +1,9 @@
 import {EditorConfigStore} from '@codeimage/store/editor/config.store';
-import {VersionStore} from '@codeimage/store/version/version.store';
 import {FlexField, VStack} from '@codeimage/ui';
 import {icons, Listbox} from '@codeui/kit';
 import {DynamicSizedContainer} from '@ui/DynamicSizedContainer/DynamicSizedContainer';
 import {SegmentedField} from '@ui/SegmentedField/SegmentedField';
-import {createSignal, Match, onMount, Switch} from 'solid-js';
+import {createSignal, Match, Switch} from 'solid-js';
 import {provideState} from 'statebuilder';
 import {SidebarPopover} from '../../SidebarPopover/SidebarPopover';
 import {SidebarPopoverTitle} from '../../SidebarPopover/SidebarPopoverTitle';
@@ -26,15 +25,6 @@ export function FontPicker(props: FontPickerProps) {
   const [open, setOpen] = createSignal(false);
   const [mode, setMode] = createSignal<FontPickerModality>('default');
   const configState = provideState(EditorConfigStore);
-  const versionState = provideState(VersionStore);
-
-  onMount(() =>
-    versionState.seeOnOpeningEvent({
-      featureName: 'fontPicker',
-      open,
-      log: true,
-    }),
-  );
 
   const webListboxItems = () =>
     configState.get.fonts

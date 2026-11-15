@@ -10,6 +10,7 @@ export const nightOwlTheme = createTheme({
     previewBackground:
       'linear-gradient(140deg, rgb(9, 171, 241), rgb(5, 105, 148), rgb(4, 84, 118), rgb(6, 119, 167))',
     terminal: {
+      accent: '#c792ea',
       main: '#041c31',
       text: '#D0D8E5',
       tabs: {

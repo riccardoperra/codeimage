@@ -9,13 +9,15 @@ export function withIndexedDbPlugin<T>(idbKey: string, fallbackValue: T) {
       return {
         idb: {
           get(): Promise<T> {
-            return idb
-              .get<T>(idbKey)
+            // idb-keyval throws at once where IndexedDB does not exist, as in
+            // the Node renderer, so start from a promise to catch it.
+            return Promise.resolve()
+              .then(() => idb.get<T>(idbKey))
               .then(data => data ?? fallbackValue)
               .catch(() => fallbackValue);
           },
           set(data: T) {
-            return idb.set(idbKey, data);
+            return Promise.resolve().then(() => idb.set(idbKey, data));
           },
           update(updaterFn: (data: T) => T) {
             return idb.update(idbKey, data => updaterFn(data));

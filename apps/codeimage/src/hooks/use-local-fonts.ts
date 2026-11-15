@@ -7,6 +7,7 @@ import {FontMetrics} from '@core/modules/localFontAccessApi/fontMetrics';
 export interface LoadedFont {
   family: string;
   faces: string[];
+  sources: FontData[];
   monospaced: boolean;
 }
 
@@ -28,10 +29,12 @@ export async function useLocalFonts(): Promise<LoadedFont[]> {
         fontData = {
           family: localFont.family,
           faces: [],
+          sources: [],
           monospaced,
         };
         fonts[localFont.family] = fontData;
       }
+      fontData.sources.push(localFont);
       const face = determineFontFaceName(localFont.style);
       if (face && !fontData.faces.includes(face)) {
         fontData.faces.push(face);
