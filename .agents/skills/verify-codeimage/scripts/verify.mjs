@@ -17,6 +17,14 @@ const out = resolve(
   process.env.ARTIFACT_DIR ?? `/tmp/codeimage-verification-${Date.now()}`,
 );
 const port = Number(process.env.VERIFY_PORT ?? 4437);
+const debugPort = Number(process.env.VERIFY_DEBUG_PORT ?? port + 10000);
+assert.ok(
+  Number.isInteger(debugPort) &&
+    debugPort > 0 &&
+    debugPort < 65536 &&
+    debugPort !== port,
+  'VERIFY_DEBUG_PORT must be a distinct valid port',
+);
 assert.ok(
   !process.env.VERIFY_CASES || process.env.VERIFY_AUDIT === '1',
   'VERIFY_CASES requires VERIFY_AUDIT=1',
@@ -24,11 +32,13 @@ assert.ok(
 await mkdir(out, {recursive: true});
 console.log(`Evidence: ${out}`);
 // Fail before launching if another instance owns this port.
-await new Promise((ok, fail) => {
-  const probe = createServer();
-  probe.once('error', fail);
-  probe.listen(port, '127.0.0.1', () => probe.close(ok));
-});
+for (const checkPort of [port, debugPort]) {
+  await new Promise((ok, fail) => {
+    const probe = createServer();
+    probe.once('error', fail);
+    probe.listen(checkPort, '127.0.0.1', () => probe.close(ok));
+  });
+}
 const scratch = await mkdtemp('/tmp/codeimage-verify-public-');
 try {
   await cp(resolve(root, 'apps/codeimage/public'), scratch, {recursive: true});
@@ -67,7 +77,7 @@ const server = spawn(
 );
 server.stdout.on('data', b => log.push(String(b)));
 server.stderr.on('data', b => log.push(String(b)));
-let browser, context;
+let browser, context, profile;
 const errors = [];
 const actions = [];
 const base = `http://127.0.0.1:${port}`;
@@ -87,9 +97,13 @@ try {
     await new Promise(r => setTimeout(r, 500));
   }
   assert.ok(ready, 'Vite HTTP readiness');
-  browser = await chromium.launch({
+  profile = await mkdtemp(`/tmp/codeimage-chrome-${port}-`);
+  const owner = await chromium.launchPersistentContext(profile, {
     channel: process.env.VERIFY_BROWSER_CHANNEL || undefined,
+    args: [`--remote-debugging-port=${debugPort}`],
   });
+  browser = owner.browser();
+  assert.ok(browser, 'Owned Chrome browser is available');
   context = await createMockContext(browser, base, {
     viewport: {width: 1440, height: 1000},
     locale: 'en-US',
@@ -123,6 +137,8 @@ try {
         editorVisible: await editor.isVisible(),
         browserVersion: browser.version(),
         browserChannel: process.env.VERIFY_BROWSER_CHANNEL || 'chromium',
+        profile,
+        debugPort,
         msw: log.some(s => s.includes('Mocking enabled')),
         version: log.find(s => s.includes('CodeImage version')),
       },
@@ -197,6 +213,7 @@ try {
       .stop({path: resolve(out, 'trace.zip')})
       .catch(() => {});
   if (browser) await browser.close();
+  if (profile) await rm(profile, {recursive: true, force: true});
   if (server.exitCode === null) {
     server.kill('SIGTERM');
     await new Promise(r => {
