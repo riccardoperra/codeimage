@@ -385,6 +385,18 @@ try {
         new URL(page.url()).pathname === `/${cloneId}`,
         `${tag}: navigating between snippet ids loads the right ownership`,
       );
+      if (layout === 'dock') {
+        await page.locator('button[data-panel=themes]').click();
+        await page.locator('[data-theme-option]:visible').first().waitFor();
+        await navigate(page, `/${id}`);
+        await ready(page, 'read-only');
+        check(
+          (await page.locator('[data-theme-option]:visible').count()) === 0,
+          `${tag}: navigation closes the previous snippet's Dock picker`,
+        );
+        await navigate(page, `/${cloneId}`);
+        await ready(page);
+      }
       await navigate(page, '/missing-snippet-verification');
       await page.waitForURL('**/404');
       await page.getByText('404', {exact: true}).waitFor();

@@ -3,7 +3,14 @@ import {signatureEditor} from '@codeimage/store/frame/signatureEditor';
 import {Button, IconButton} from '@codeui/kit';
 import {Popover} from '@kobalte/core/popover';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
-import {createSignal, For, onCleanup, onMount, Show} from 'solid-js';
+import {
+  createEffect,
+  createSignal,
+  For,
+  onCleanup,
+  onMount,
+  Show,
+} from 'solid-js';
 import type {JSX} from 'solid-js';
 import {Dynamic} from 'solid-js/web';
 import {sidebarTheme} from '../../../../components/PropertyEditor/EditorSidebar.css';
@@ -221,6 +228,9 @@ export default function Dock(props: VariantProps) {
   let sheetTrigger: HTMLElement | undefined;
 
   const close = () => setPanel(undefined);
+  createEffect(() => {
+    if (!props.pageState().editable) close();
+  });
 
   const dock: DockApi = {
     model: props.model,
