@@ -3,6 +3,7 @@ import {dispatchRandomTheme} from '@codeimage/store/effects/onThemeChange';
 import {HStack} from '@codeimage/ui';
 import {Button} from '@codeui/kit';
 import {createAsyncAction} from '@core/hooks/async-action';
+import {AnimateButton} from '../Animation/AnimateButton';
 import {ColorSwatchIcon} from '../Icons/ColorSwatch';
 import {SparklesIcon} from '../Icons/SparklesIcon';
 import {CopyToClipboardButton} from './CopyToClipboardButton';
@@ -23,6 +24,7 @@ export function FrameToolbar(props: FrameToolbarProps) {
   return (
     <div class={styles.frameToolbar}>
       <HStack spacing={2}>
+        <AnimateButton showLabel={true} />
         <ExportSettingsButton />
         <CopyToClipboardButton canvasRef={props.frameRef} />
         <Button

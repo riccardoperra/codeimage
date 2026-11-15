@@ -1,3 +1,4 @@
+import {createAnimationStore} from '@codeimage/store/editor/animation';
 import {createEditorsStore} from '@codeimage/store/editor/editor';
 import {getFrameState} from '@codeimage/store/editor/frame';
 import {createTerminalState} from '@codeimage/store/editor/terminal';
@@ -11,6 +12,7 @@ export function createEditorStore() {
   const registry = getThemeStore();
   const frame = getFrameState();
   const editor = createEditorsStore();
+  const animation = createAnimationStore(editor);
 
   const [resource] = registry.getThemeResource('fleetDark');
 
@@ -33,6 +35,7 @@ export function createEditorStore() {
     terminal,
     frame,
     editor,
+    animation,
     initialized,
   };
 }

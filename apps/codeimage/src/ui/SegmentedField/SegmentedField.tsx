@@ -27,6 +27,13 @@ interface SegmentedFieldProps<T> {
   autoWidth?: boolean;
 }
 
+// The tab list under SegmentedControl cancels Escape, and a popover or dialog
+// ignores a cancelled Escape. Stopping the key at the item keeps it from the
+// list, so the overlay around the field closes.
+const leaveEscapeToOverlay = (event: KeyboardEvent) => {
+  if (event.key === 'Escape') event.stopPropagation();
+};
+
 /**
  * TODO: port SegmentedControl with items support
  * @deprecated This is just a wrapper for @codeui/kit SegmentedControl
@@ -53,7 +60,10 @@ export function SegmentedField<T>(props: SegmentedFieldProps<T>): JSX.Element {
     >
       <For each={props.items}>
         {(item, index) => (
-          <SegmentedControlItem value={index().toString()}>
+          <SegmentedControlItem
+            value={index().toString()}
+            onKeyDown={leaveEscapeToOverlay}
+          >
             {item.label}
           </SegmentedControlItem>
         )}

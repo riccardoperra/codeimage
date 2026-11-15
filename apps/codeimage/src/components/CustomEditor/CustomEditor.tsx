@@ -167,6 +167,11 @@ export default function CustomEditor(props: VoidProps<CustomEditorProps>) {
   };
 
   createEditorReadonly(editorView, () => props.readOnly);
+  // Code that is not editable is not focusable either, and leaving the
+  // animation preview returns the focus to it.
+  createExtension(() =>
+    props.readOnly ? EditorView.contentAttributes.of({tabindex: '0'}) : [],
+  );
   createExtension(EditorView.lineWrapping);
   createExtension(() =>
     EditorView.contentAttributes.of({
