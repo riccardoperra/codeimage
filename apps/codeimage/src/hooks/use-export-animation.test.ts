@@ -103,6 +103,7 @@ describe('animation job and worker protocol', () => {
     f.event({kind: 'failed', cause: 'Cannot load WASM: 404'});
     expect(f.changed).toHaveBeenLastCalledWith({
       kind: 'failed',
+      reason: 'export',
       cause: 'Cannot load WASM: 404',
     });
     expect(f.worker.terminate).toHaveBeenCalledOnce();
@@ -110,14 +111,67 @@ describe('animation job and worker protocol', () => {
   it('reports uncaught worker errors and message decoding failures', async () => {
     const f = fixture();
     await f.controller.check(config);
-    f.worker.onerror?.({message: 'Worker crashed'} as ErrorEvent);
+    f.worker.onerror?.(Object.assign(new Event('error'), {message: 'Worker crashed'}) as ErrorEvent);
     expect(f.controller.state()).toEqual({
       kind: 'failed',
+      reason: 'workerLoad',
       cause: 'Worker crashed',
     });
     await f.controller.check(config);
     f.worker.onmessageerror?.({} as MessageEvent<unknown>);
     expect(f.controller.state()).toMatchObject({kind: 'failed'});
+  });
+  it('reports a message-less worker load failure and can retry', async () => {
+    const f = fixture();
+    await f.controller.check(config);
+    f.worker.onerror?.(new Event('error') as ErrorEvent);
+    expect(f.controller.state()).toEqual({
+      kind: 'failed',
+      reason: 'workerLoad',
+      cause: 'Animation worker could not load',
+    });
+    await f.controller.check(config);
+    expect(f.controller.state()).toEqual({
+      kind: 'ready',
+      support: {kind: 'supported'},
+    });
+  });
+  it('reports a synchronous worker construction failure', async () => {
+    const controller = createAnimationExport(
+      vi.fn(),
+      () => {
+        throw new Error('Worker blocked');
+      },
+      async () => ({kind: 'supported'}),
+    );
+    await controller.check(config);
+    expect(controller.state()).toEqual({
+      kind: 'failed',
+      reason: 'workerLoad',
+      cause: 'Worker blocked',
+    });
+  });
+  it('does not post a prepared job after a worker fails', async () => {
+    const f = fixture();
+    await f.controller.check(config);
+    let finish!: (job: AnimationExport) => void;
+    const preparing = f.controller.start(
+      () =>
+        new Promise(resolve => {
+          finish = resolve;
+        }),
+    );
+    f.worker.onerror?.(new Event('error') as ErrorEvent);
+    finish(job);
+    await preparing;
+    expect(f.controller.state()).toMatchObject({
+      kind: 'failed',
+      reason: 'workerLoad',
+    });
+    expect(f.worker.postMessage).not.toHaveBeenCalledWith({
+      kind: 'export',
+      job,
+    });
   });
   it('disables export with the support reason without creating a worker', async () => {
     const f = fixture(false);

@@ -18,7 +18,11 @@ export type AnimationJob =
   | {kind: 'preparing'}
   | {kind: 'encoding'; done: number; total: number}
   | {kind: 'done'; blob: Blob; size: number; durationMs: number}
-  | {kind: 'failed'; cause: string}
+  | {
+      kind: 'failed';
+      reason: 'workerLoad' | 'workerMessage' | 'export';
+      cause: string;
+    }
   | {kind: 'cancelled'};
 
 export interface AnimationWorker {
@@ -44,16 +48,25 @@ export function createAnimationExport(
     changed(value);
   };
   const release = () => {
-    worker?.terminate();
+    if (worker) {
+      worker.onmessage = null;
+      worker.onerror = null;
+      worker.onmessageerror = null;
+      worker.terminate();
+    }
     worker = undefined;
   };
-  const fail = (cause: string) => {
+  const fail = (
+    cause: string,
+    reason: 'workerLoad' | 'workerMessage' | 'export' = 'export',
+  ) => {
+    ++generation;
     release();
-    set({kind: 'failed', cause});
+    set({kind: 'failed', reason, cause});
   };
   const connect = () => {
     release();
-    const current = ++generation;
+    const current = generation;
     const next = makeWorker();
     worker = next;
     next.onmessage = ({data}) => {
@@ -87,10 +100,16 @@ export function createAnimationExport(
       }
     };
     next.onerror = event => {
-      if (current === generation) fail(event.message);
+      if (current !== generation) return;
+      event.preventDefault();
+      fail(
+        event.message?.trim() || 'Animation worker could not load',
+        'workerLoad',
+      );
     };
     next.onmessageerror = () => {
-      if (current === generation) fail('Invalid animation worker message');
+      if (current === generation)
+        fail('Invalid animation worker message', 'workerMessage');
     };
     return next;
   };
@@ -106,8 +125,13 @@ export function createAnimationExport(
         const support = await check(config);
         if (current !== generation) return;
         set({kind: 'ready', support});
-        if (support.kind === 'supported')
-          connect().postMessage({kind: 'warm', config});
+        if (support.kind === 'supported') {
+          try {
+            connect().postMessage({kind: 'warm', config});
+          } catch (error) {
+            fail(errorMessage(error), 'workerLoad');
+          }
+        }
       } catch (error) {
         if (current === generation) fail(errorMessage(error));
       }
