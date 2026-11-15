@@ -193,13 +193,13 @@ try {
         `${tag}: dashboard creation opens a unified snippet`,
       );
 
-      await command(page, 'Padding: 64');
+      await command(page, 'Padding: 32');
       await command(page, 'Theme: Dracula');
       await page.waitForTimeout(4200);
       check(
         saves.some(
           body =>
-            body.frame.padding === 64 &&
+            body.frame.padding === 32 &&
             body.editorOptions.themeId === 'dracula',
         ),
         `${tag}: owner changes save to the account`,
@@ -209,7 +209,7 @@ try {
       check(
         await page.evaluate(
           () =>
-            window.__frame.store.padding === 64 &&
+            window.__frame.store.padding === 32 &&
             window.__editor.state.options.themeId === 'dracula',
         ),
         `${tag}: padding and theme survive reload`,
