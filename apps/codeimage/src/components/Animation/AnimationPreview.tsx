@@ -11,6 +11,7 @@ import {
   createEffect,
   createMemo,
   createResource,
+  createSignal,
   For,
   getOwner,
   on,
@@ -47,6 +48,8 @@ export function AnimationPreview(props: ParentProps) {
   const owner = getOwner();
   const [t] = useI18n<AppLocaleEntries>();
   const previewing = () => animation.playback().state !== 'editing';
+  // Part of the plan's key, so a plan that failed is made again.
+  const [failures, setFailures] = createSignal(0);
 
   // Reads the tabs only while previewing, so typing plans nothing. Equal
   // inputs keep the last plan, and closing the panel drops it.
@@ -81,6 +84,7 @@ export function AnimationPreview(props: ParentProps) {
       showLineNumbers: style.showLineNumbers(),
     };
     const key = JSON.stringify({
+      failures: failures(),
       settings,
       tabs: [first, ...rest],
       style: {...codeStyle, theme: codeStyle.theme.id},
@@ -109,6 +113,7 @@ export function AnimationPreview(props: ParentProps) {
         console.error(plan.error);
         toast.error(t('animation.previewFailed'));
         animation.actions.edit();
+        setFailures(count => count + 1);
       },
     ),
   );
