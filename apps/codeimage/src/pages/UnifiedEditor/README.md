@@ -22,7 +22,7 @@ There is no migration from the previous storage key.
 Settings and the command menu change these choices.
 The Experiments section offers the layouts and theme cards.
 Appearance contains the colour mode and Inspector panel side.
-The `v` and `t` URL parameters have no effect.
+The `t` URL parameter has no effect.
 Changing a preference leaves the URL unchanged.
 
 ## Page and layouts
@@ -65,7 +65,7 @@ Previews do not save or send analytics.
 `syntax.ts` reads token colours from CodeMirror extensions with `highlightingFor()` and the theme's style modules.
 Tokens without a colour use the base text colour.
 
-`stage.tsx` supplies the live `Canvas`, `ExportButton`, `exporter`, `ThemePreview`, and frame actions.
+`stage.tsx` supplies the live `Canvas`, `ExportButton`, `exporter`, `ThemePreview`, format and randomize.
 Each layout renders `Canvas` once inside a container with a definite size.
 `FitFrame.tsx` scales the frame to the available space.
 `exportRef()` supplies the element that export captures.
@@ -77,8 +77,11 @@ Each layout renders `Canvas` once inside a container with a definite size.
 `ControlOverlay.tsx` opens pickers without changing the frame's rectangle or zoom.
 `WindowStyleTiles.tsx` renders window previews.
 `ShortcutHelp.tsx` uses the definitions in `controls/shortcuts.ts`.
+`CanvasToolbar.tsx` is the one island under the canvas in every layout: Format code, Copy image, and the shortcut help where the layout has no other place for it.
+Randomize has no button. It stays in the command menu and its shortcut.
 
 `shell/Header.tsx` contains the logo, account controls, Share, and Export.
+In Inspector on a wide window it also has the command menu's Search button, left of the settings button.
 The settings trigger moves into Dock or Studio when that layout has room for it.
 `claimSettingsEntry()` keeps exactly one trigger visible.
 
@@ -118,9 +121,16 @@ The highlighted command previews its value.
 Enter applies it, and closing the menu ends the preview.
 Layouts use `CommandMenuButton` for their own trigger.
 
-`shell/ExportControl.tsx` contains the Export button and its menu.
+`shell/export-formats.ts` lists the formats in display order, with their icon, description and abilities, and defines `ExportChoice`, a format, scale and JPEG quality for one export.
+`shell/export-actions.tsx` lists every export action with its icon, title, one-line description, visibility and disabled state. Every Export surface renders its rows from it.
 `shell/export.tsx` shares the image actions with the command menu and keyboard shortcuts.
-Every image action passes through `createExporter.request` for the secrets review.
+An image action takes an optional `ExportChoice`; without one it uses the saved export settings.
+Every image action passes through `createExporter.request` for the secrets review, which keeps the choice it was asked with.
+`shell/ExportControl.tsx` binds the shortcuts, owns the secrets review and renders the Export variant.
+
+In development, a picker at the top of the page switches between three Export prototypes, kept in `shell/export-variants/`.
+The `v` URL parameter or the keys 1 to 3 choose one. Production always shows the first.
+Panel keeps the split button and opens a panel for one export. Toolbar moves Export into the canvas toolbar. Sheet opens a dialog with a preview.
 Export settings use `getExportCanvasStore()`.
 The per-tab export renders a separate preview frame for each tab.
 
