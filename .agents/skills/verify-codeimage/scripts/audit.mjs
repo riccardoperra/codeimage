@@ -1571,6 +1571,20 @@ export async function audit({page, context, base, out, server}) {
               target * 2 - 1,
             'short segments lose their labels',
           );
+        const labels = await page
+          .locator('[data-animation-tick]')
+          .evaluateAll(ticks =>
+            ticks.map(tick => {
+              const box = tick.getBoundingClientRect();
+              return {left: box.left, right: box.right};
+            }),
+          );
+        assert.ok(
+          labels.every(
+            (box, index) => index === 0 || box.left >= labels[index - 1].right,
+          ),
+          `${target} steps: ruler labels stay apart`,
+        );
         await shot(`animate-desktop-${name}-${target}-steps`);
         const indices = [
           ...new Set([
