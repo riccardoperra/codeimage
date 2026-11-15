@@ -6,6 +6,7 @@ import {join} from 'node:path';
 import {parseArgs} from 'node:util';
 import {PNG} from 'pngjs';
 import {renderSnapshot} from '../../packages/render/dist/index.mjs';
+import {serveFixtureImages} from './lib';
 import {matrix} from './takumi-cells';
 
 const {values: args} = parseArgs({
@@ -14,19 +15,36 @@ const {values: args} = parseArgs({
 
 async function main() {
   await mkdir(args.out, {recursive: true});
+  const fixtures = await serveFixtureImages();
+  const originalFetch = globalThis.fetch;
   const manifest = [];
-  for (const cell of await matrix()) {
-    const rendered = await renderSnapshot(cell.document);
-    assert.ok(
-      rendered instanceof Uint8Array,
-      `${cell.name}: expected PNG bytes`,
-    );
-    const bytes = Buffer.from(rendered);
-    const {width, height} = PNG.sync.read(bytes);
-    const sha256 = createHash('sha256').update(bytes).digest('hex');
-    await writeFile(join(args.out, `${manifest.length}.png`), bytes);
-    manifest.push({cell: cell.name, sha256, width, height});
-    console.log(`${cell.name}: ${width}x${height} ${sha256}`);
+  try {
+    for (const cell of await matrix(fixtures.url)) {
+      globalThis.fetch = (input, init) => {
+        if (
+          String(input).startsWith('https://avatars.githubusercontent.com/')
+        ) {
+          if (cell.avatar === 'offline')
+            return Promise.reject(new TypeError('offline fixture'));
+          return originalFetch(`${fixtures.url}/avatar.png`, init);
+        }
+        return originalFetch(input, init);
+      };
+      const rendered = await renderSnapshot(cell.document);
+      assert.ok(
+        rendered instanceof Uint8Array,
+        `${cell.name}: expected PNG bytes`,
+      );
+      const bytes = Buffer.from(rendered);
+      const {width, height} = PNG.sync.read(bytes);
+      const sha256 = createHash('sha256').update(bytes).digest('hex');
+      await writeFile(join(args.out, `${manifest.length}.png`), bytes);
+      manifest.push({cell: cell.name, sha256, width, height});
+      console.log(`${cell.name}: ${width}x${height} ${sha256}`);
+    }
+  } finally {
+    globalThis.fetch = originalFetch;
+    await fixtures.close();
   }
   await writeFile(
     join(args.out, 'manifest.json'),

@@ -31,7 +31,7 @@ import {DotHorizontalIcon} from '../../Icons/DotVertical';
 import {PanelDivider} from '../../PropertyEditor/PanelDivider';
 import {ThemeBoxSkeleton} from '../../ThemeSwitcher/ThemeBoxSkeleton';
 import type {ThemeSwitcherVariant} from '../../ThemeSwitcher/ThemeSwitcher.css';
-import {toCliConfig} from '../cliConfig';
+import {CopyCliConfigMenuItem} from '../CopyCliConfigMenuItem';
 import {EmptyPresetFallback} from '../EmptyPresetFallback/EmptyPresetFallback';
 import {PresetPreview} from '../PresetPreview/PresetPreview';
 import {PresetUpdateDialog} from '../PresetUpdateDialog';
@@ -146,20 +146,6 @@ export const PresetSwitcher: ParentComponent<
                 });
               }
 
-              async function copyCliConfig() {
-                try {
-                  await navigator.clipboard.writeText(toCliConfig(theme.data));
-                } catch {
-                  toast.error(t('cliConfig.copyError'), {
-                    position: 'bottom-center',
-                  });
-                  return;
-                }
-                toast.success(t('cliConfig.copied'), {
-                  position: 'bottom-center',
-                });
-              }
-
               return (
                 <Suspense fallback={<ThemeBoxSkeleton />}>
                   <div>
@@ -237,9 +223,7 @@ export const PresetSwitcher: ParentComponent<
                                 >
                                   {t('presets.share.label')}
                                 </DropdownMenuItem>
-                                <DropdownMenuItem onClick={copyCliConfig}>
-                                  {t('cliConfig.copy')}
-                                </DropdownMenuItem>
+                                <CopyCliConfigMenuItem data={theme.data} />
                                 <DropdownMenuItem
                                   onClick={() => {
                                     openDialog(ConfirmDialog, {

@@ -12,7 +12,7 @@ import * as styles from './MacOsTerminal.css';
 export const exportExclude = _exportExclude;
 
 export interface MacOsTerminalProps extends BaseTerminalProps {
-  headerType: 'default' | 'outline' | 'gray';
+  headerType?: 'default' | 'outline' | 'gray';
 }
 
 export const MacOsTerminal: ParentComponent<MacOsTerminalProps> = props => {
@@ -23,11 +23,13 @@ export const MacOsTerminal: ParentComponent<MacOsTerminalProps> = props => {
       <Show when={props.showHeader}>
         <div
           class={baseStyles.header}
+          data-watermark-header
           data-lite={props.lite}
           data-accent-visible={showTab()}
         >
           <div
             class={styles.headerIconRow}
+            data-watermark-obstacle
             data-lite={props.lite}
             data-header-type={props.headerType ?? 'default'}
           >
@@ -64,7 +66,7 @@ export const MacOsTerminal: ParentComponent<MacOsTerminalProps> = props => {
         </div>
       </Show>
       <Show when={props.children}>
-        <div class={baseStyles.content}>
+        <div class={baseStyles.content} data-watermark-content>
           <Box position={'relative'}>
             <div>{props.children}</div>
           </Box>

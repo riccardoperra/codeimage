@@ -215,11 +215,21 @@ describe('snapshot', () => {
         radius: 0,
         visible: true,
         opacity: 50,
-        signature: {handle: '@me', position: 'bottom-right' as const},
+        signature: {
+          handle: '@me',
+          position: 'bottom-center' as const,
+          style: 'card' as const,
+          platform: 'github' as const,
+          name: 'Me',
+          avatar: 'profile' as const,
+          profile: null,
+          savedId: null,
+        },
       },
       terminal: {
         showHeader: true,
-        type: 'windows',
+        type: 'card',
+        surface: 'wash' as const,
         accentVisible: false,
         shadow: null,
         background: '#111111',
@@ -277,5 +287,43 @@ describe('snapshot', () => {
     ],
   ])('names --preset and the field on invalid preset %s', (text, message) => {
     expect(() => parsePreset(text)).toThrow(message);
+  });
+});
+
+describe('font commands', () => {
+  it('dispatches management commands without render input', () => {
+    expect(
+      parseArgs(['fonts', 'install', 'fira-code', '--offline']),
+    ).toMatchObject({kind: 'fonts-install', ids: ['fira-code'], offline: true});
+    expect(parseArgs(['fonts', 'list', '--json'])).toMatchObject({
+      kind: 'fonts-list',
+      json: true,
+    });
+    expect(parseArgs(['fonts', 'clean', '-y'])).toMatchObject({
+      kind: 'fonts-clean',
+      yes: true,
+    });
+    expect(renderArgs(['./fonts']).files).toEqual(['./fonts']);
+    expect(parseArgs([], false)).toMatchObject({output: '-'});
+  });
+  it('rejects conflicting and unknown options', () => {
+    for (const args of [
+      ['fonts', 'install', 'fira-code', '--all'],
+      ['fonts', 'clean', '--all'],
+      ['fonts', 'list', 'extra'],
+      ['fonts', 'list', '--unknown'],
+      ['--font=fira-code', '--font-file=font.ttf'],
+      ['--font-file='],
+      ['--font=unknown'],
+    ])
+      expect(() => parseArgs(args)).toThrow(UsageError);
+  });
+  it('sets the canonical font id while preserving snapshot serialization', () => {
+    const args = renderArgs(['--font=monaspace-neon', '--offline', '--quiet']);
+    expect(args.values).toMatchObject({
+      font: 'monaspace-neon',
+      offline: true,
+      quiet: true,
+    });
   });
 });

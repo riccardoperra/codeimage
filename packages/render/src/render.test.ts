@@ -1,12 +1,12 @@
-import {readFile} from 'node:fs/promises';
 import type {MeasuredNode} from '@takumi-rs/core';
 import {Renderer} from '@takumi-rs/core';
-import type {PNG} from 'pngjs';
-import {describe, expect, it} from 'vitest';
+import {PNG} from 'pngjs';
+import {describe, expect, it, vi} from 'vitest';
 import type {SnapshotInput} from './document';
 import type {SnapshotMarkup} from './render';
-import {renderSnapshot, snapshotMarkup} from './render';
+import {createRenderer, renderSnapshot, snapshotMarkup} from './render';
 import {sampleDocument} from './sample';
+import {positionWatermark} from './watermarkGeometry';
 import {countPixels, decode, plainDocument} from './test-utils';
 
 const png = async (input: SnapshotInput) => decode(await renderSnapshot(input));
@@ -31,7 +31,7 @@ async function textRuns(markup: SnapshotMarkup) {
   for (const font of markup.fonts) {
     await renderer.registerFont({
       name: font.family,
-      data: await readFile(font.path),
+      data: font.data,
       weight: font.weight,
       unicodeRange: font.unicodeRange,
     });
@@ -108,6 +108,234 @@ describe('renderSnapshot', {timeout: 30_000}, () => {
     }
   });
 
+  it.each(['card', 'editor', 'shell'])(
+    'renders the shared %s window during SSR',
+    async type => {
+      const {html} = await snapshotMarkup({
+        ...sampleDocument,
+        terminal: {
+          ...sampleDocument.terminal,
+          type,
+          surface: 'wash',
+          borderType: 'hairline',
+        },
+      });
+      expect(html).toContain(`data-window-style="${type}"`);
+      expect(html).toContain('data-surface="wash"');
+      expect(html).toContain('data-custom-border="hairline"');
+      expect(html).toContain(sampleDocument.editor.editors[0].tabName);
+    },
+  );
+  it('renders a card signature offline with initials and no image I/O in the view', async () => {
+    const fetch = vi
+      .spyOn(globalThis, 'fetch')
+      .mockRejectedValue(new TypeError('offline'));
+    try {
+      const document = {
+        ...sampleDocument,
+        frame: {
+          ...sampleDocument.frame,
+          signature: {
+            handle: 'octocat',
+            name: 'The Octocat',
+            style: 'card',
+            platform: 'github',
+            avatar: 'profile',
+            position: 'bottom-center',
+          },
+        },
+      };
+      const markup = await snapshotMarkup(document);
+      expect(markup.html).toContain('data-signature-style="card"');
+      expect(markup.html).toContain('>TO</div>');
+      expect(markup.images).toEqual([]);
+      expect(fetch).toHaveBeenCalledTimes(1);
+      expect(decode(await renderSnapshot(document)).width).toBeGreaterThan(0);
+    } finally {
+      fetch.mockRestore();
+    }
+  });
+  it('preloads a fixture avatar and samples the background tone before SSR', async () => {
+    const fixture = new PNG({width: 24, height: 24});
+    fixture.data.fill(255);
+    const bytes = PNG.sync.write(fixture);
+    const fetch = vi
+      .spyOn(globalThis, 'fetch')
+      .mockImplementation(
+        async () =>
+          new Response(bytes, {headers: {'content-type': 'image/png'}}),
+      );
+    try {
+      const document = {
+        ...sampleDocument,
+        frame: {
+          ...sampleDocument.frame,
+          background: 'link:https://fixture.test/light.png',
+          signature: {
+            handle: 'octocat',
+            style: 'card',
+            platform: 'github',
+            avatar: 'profile',
+          },
+        },
+      };
+      const markup = await snapshotMarkup(document);
+      expect(markup.images).toHaveLength(2);
+      expect(markup.html).toContain('data-signature-tone="light"');
+      expect(markup.html).toContain(
+        'src="https://avatars.githubusercontent.com/octocat?s=192"',
+      );
+      expect(
+        markup.images.every(image =>
+          Buffer.from(new Uint8Array(image.data)).equals(bytes),
+        ),
+      ).toBe(true);
+      expect(fetch).toHaveBeenCalledTimes(2);
+    } finally {
+      fetch.mockRestore();
+    }
+  });
+  it('bundles the exact Latin and Latin-ext signature faces', async () => {
+    const markup = await snapshotMarkup({
+      ...sampleDocument,
+      frame: {
+        ...sampleDocument.frame,
+        signature: {
+          handle: 'zoe',
+          style: 'card',
+          name: 'Zoë Łukasz',
+          platform: 'github',
+        },
+      },
+    });
+    const faces = markup.fonts.filter(
+      font => font.family === 'CodeImage Signature',
+    );
+    expect(faces.map(font => font.file)).toEqual([
+      'inter-latin-wght-normal.woff2',
+      'inter-latin-ext-wght-normal.woff2',
+    ]);
+    expect(faces.every(font => font.unicodeRange?.length)).toBe(true);
+  });
+  it('returns buffers for signature-only glyphs added after target sizing', async () => {
+    const markup = await snapshotMarkup({
+      ...sampleDocument,
+      frame: {
+        ...sampleDocument.frame,
+        exportTarget: 'x-landscape',
+        signature: {handle: '안녕', style: 'minimal'},
+      },
+    });
+    expect(
+      markup.fonts.some(font => font.family === 'CodeImage Signature'),
+    ).toBe(true);
+    expect(markup.fonts.some(font => font.family === 'Noto Sans KR')).toBe(
+      true,
+    );
+  });
+  it('never fetches avatars or remote backgrounds offline', async () => {
+    const fetch = vi
+      .spyOn(globalThis, 'fetch')
+      .mockRejectedValue(new Error('network forbidden'));
+    try {
+      const renderer = createRenderer({offline: true});
+      await renderer.render({
+        ...sampleDocument,
+        frame: {
+          ...sampleDocument.frame,
+          signature: {
+            handle: 'me',
+            style: 'card',
+            avatar: 'profile',
+            platform: 'github',
+          },
+        },
+      });
+      await expect(
+        renderer.render({
+          ...sampleDocument,
+          frame: {
+            ...sampleDocument.frame,
+            background: 'link:https://example.com/image.png',
+          },
+        }),
+      ).rejects.toThrow('--offline');
+      await expect(
+        renderer.render({
+          ...sampleDocument,
+          frame: {
+            ...sampleDocument.frame,
+            background: 'url(https://example.com/image.png)',
+          },
+        }),
+      ).rejects.toThrow('--offline');
+      expect(fetch).not.toHaveBeenCalled();
+    } finally {
+      fetch.mockRestore();
+    }
+  });
+  it('renders terminal and shell aliases identically', async () => {
+    const render = (type: string) =>
+      renderSnapshot({
+        ...sampleDocument,
+        terminal: {...sampleDocument.terminal, type, surface: 'wash'},
+      });
+    expect(await render('terminal')).toEqual(await render('shell'));
+  });
+  it('falls back to initials for corrupt avatar bytes', async () => {
+    const fetch = vi.spyOn(globalThis, 'fetch').mockImplementation(
+      async () =>
+        new Response('invalid image', {
+          headers: {'content-type': 'image/png'},
+        }),
+    );
+    try {
+      const markup = await snapshotMarkup({
+        ...sampleDocument,
+        frame: {
+          ...sampleDocument.frame,
+          signature: {
+            handle: 'octocat',
+            style: 'card',
+            platform: 'github',
+            avatar: 'profile',
+          },
+        },
+      });
+      expect(markup.images).toEqual([]);
+      expect(markup.html).toContain('>O</div>');
+    } finally {
+      fetch.mockRestore();
+    }
+  });
+  it.each([
+    {style: 'minimal', avatar: 'profile'},
+    {style: 'pill', avatar: 'profile'},
+    {style: 'card', avatar: 'asset:uploaded'},
+  ])('does no profile I/O for $style with $avatar', async signature => {
+    const fetch = vi
+      .spyOn(globalThis, 'fetch')
+      .mockRejectedValue(new TypeError('offline'));
+    try {
+      const markup = await snapshotMarkup({
+        ...sampleDocument,
+        frame: {
+          ...sampleDocument.frame,
+          signature: {handle: 'octocat', platform: 'github', ...signature},
+        },
+      });
+      expect(markup.images).toEqual([]);
+      expect(fetch).not.toHaveBeenCalled();
+    } finally {
+      fetch.mockRestore();
+    }
+  });
+  it('defaults an omitted surface to the same pixels as solid', async () => {
+    const {surface, ...terminal} = sampleDocument.terminal;
+    expect(await renderSnapshot({...sampleDocument, terminal})).toEqual(
+      await renderSnapshot(sampleDocument),
+    );
+  });
   it('scales the frame by whole multiples', async () => {
     const [one, two, three] = await Promise.all(
       [1, 2, 3].map(scale => png({...sampleDocument, scale})),
@@ -340,5 +568,60 @@ describe('renderSnapshot', {timeout: 30_000}, () => {
         frame: {...sampleDocument.frame, background: 'asset:123'},
       }),
     ).rejects.toThrow('asset:123');
+  });
+});
+
+it('bounds measurement-only raster drift on real SSR string tokens', async () => {
+  const markup = await snapshotMarkup(
+    withEditor({
+      code: 'const message = "A real shaped string with internal whitespace";',
+    }),
+  );
+  const renderer = new Renderer();
+  for (const font of markup.fonts)
+    await renderer.registerFont({
+      name: font.family,
+      data: font.data,
+      weight: font.weight,
+      unicodeRange: font.unicodeRange,
+    });
+  const options = {
+    css: markup.css,
+    images: markup.images,
+    fontFamilies: markup.fontFamilies,
+    width: markup.size.width,
+    height: markup.size.height,
+    devicePixelRatio: 1,
+  };
+  const originalTree = await renderer.measure(markup.html, options);
+  const original = await renderer.render(markup.html, {
+    ...options,
+    format: 'raw',
+  });
+  await positionWatermark({
+    html: markup.html,
+    painted: true,
+    inset: 24,
+    measure: async html => {
+      const measured = await renderer.measure(html, options);
+      expect(measured.width).toBe(originalTree.width);
+      expect(measured.height).toBe(originalTree.height);
+      const instrumented = await renderer.render(html, {
+        ...options,
+        format: 'raw',
+      });
+      expect(instrumented.length).toBe(original.length);
+      let changed = 0;
+      for (let i = 0; i < original.length; i += 4) {
+        if (
+          original
+            .subarray(i, i + 4)
+            .some((value, channel) => value !== instrumented[i + channel])
+        )
+          changed++;
+      }
+      expect(changed / (original.length / 4)).toBeLessThan(0.01);
+      return measured;
+    },
   });
 });

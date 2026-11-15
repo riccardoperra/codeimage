@@ -38,4 +38,4 @@ The output contains numbered PNGs, a manifest with cell names, SHA-256 hashes an
 node_modules/.bin/tsx scripts/parity/compare-takumi-cross-os.ts
 ```
 
-The comparator reports byte-identical counts and the maximum pixelmatch difference against Linux. Pixelmatch includes antialiasing differences and uses threshold 0. Any changed pixel or dimension fails. The comparison artifact contains `table.md`, `results.json`, and diff PNGs for changed cells. Chrome parity keeps its separate tolerances and Linux job.
+The comparator reports byte-identical counts and the maximum percentage of differing pixels against Linux. PASS means byte-identical PNGs. WARN allows at most 0.01% differing pixels with a maximum RGBA channel delta of 2/255. Any larger difference or dimension change fails. The comparison artifact contains `table.md`, `results.json`, and diff PNGs for changed cells. Chrome parity keeps its separate tolerances and Linux job. Both scripts render the full shared matrix, including P10 signatures, local avatar and background fixtures, and marks cells.

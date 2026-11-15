@@ -1,4 +1,4 @@
-import {isChromium, isFirefox} from '@solid-primitives/platform';
+import {isBlink, isFirefox} from '@solid-primitives/platform';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import * as process from 'process';
@@ -272,9 +272,9 @@ export async function nodeToDataURL(
   const foreignObject = document.createElementNS(xmlns, 'foreignObject');
   // Chromium and Firefox lay out SVG images at DPR 1, where text can measure
   // wider than on a high-DPR page and wrap inside the widths copied from it.
-  // In WebKit the same scale enlarges the output instead.
-  const layoutScale =
-    isChromium || isFirefox ? window.devicePixelRatio || 1 : 1;
+  // In WebKit the same scale enlarges the output instead. The engine comes from
+  // the user agent: headless Chromium has no `window.chrome`.
+  const layoutScale = isBlink || isFirefox ? window.devicePixelRatio || 1 : 1;
   node.style.zoom = `${(Number(node.style.zoom) || 1) * layoutScale}`;
 
   svg.setAttribute('width', `${width}`);

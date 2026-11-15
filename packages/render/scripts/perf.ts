@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import {readFile, writeFile} from 'node:fs/promises';
+import {writeFile} from 'node:fs/promises';
 import {cpus, loadavg} from 'node:os';
 import {parseArgs} from 'node:util';
 import {Renderer} from '@takumi-rs/core';
@@ -96,7 +96,7 @@ const renderer = new Renderer();
 for (const font of markup.fonts) {
   await renderer.registerFont({
     name: font.family,
-    data: await readFile(font.path),
+    data: font.data,
     weight: font.weight,
     unicodeRange: font.unicodeRange,
   });

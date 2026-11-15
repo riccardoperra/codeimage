@@ -11,9 +11,11 @@ export const sampleDocument: SnapshotDocument = {
     radius: 8,
     visible: true,
     opacity: 100,
+    signature: null,
   },
   terminal: {
     type: 'macOs',
+    surface: 'solid',
     showHeader: true,
     accentVisible: true,
     shadow: '0 20px 40px rgba(0,0,0,.3)',

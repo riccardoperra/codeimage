@@ -1,18 +1,18 @@
 import {afterEach, describe, expect, it, vi} from 'vitest';
 import {nodeToDataURL} from '../src/lib/util';
 
-const platform = vi.hoisted(() => ({isChromium: true, isFirefox: false}));
+const platform = vi.hoisted(() => ({isBlink: true, isFirefox: false}));
 vi.mock('@solid-primitives/platform', () => platform);
 
 describe('SVG layout', () => {
   afterEach(() => {
     vi.unstubAllGlobals();
-    platform.isChromium = true;
+    platform.isBlink = true;
     platform.isFirefox = false;
   });
 
   it('keeps native SVG coordinates in WebKit', async () => {
-    platform.isChromium = false;
+    platform.isBlink = false;
     vi.stubGlobal('devicePixelRatio', 2);
     const node = document.createElement('div');
     node.style.zoom = '1.25';
@@ -28,7 +28,7 @@ describe('SVG layout', () => {
   });
 
   it('lays out Firefox content at the display pixel ratio', async () => {
-    platform.isChromium = false;
+    platform.isBlink = false;
     platform.isFirefox = true;
     vi.stubGlobal('devicePixelRatio', 2);
     const node = document.createElement('div');
