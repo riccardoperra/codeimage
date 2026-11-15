@@ -190,8 +190,6 @@ export function animationSnapshot() {
         }
       }
       for (const root of roots) await prepareWatermarks(root);
-      captureStyle.remove();
-      const collecting = collectRasterizeResources(host, font);
       const scenes: AnimationExport['scenes'] = [];
       for (const [index, scene] of timeline.scenes.entries()) {
         await yieldToEditor();
@@ -201,9 +199,12 @@ export function animationSnapshot() {
           css: frameCss[index],
         });
       }
+      // Watermark observers need these layout rules until every scene is captured.
+      captureStyle.remove();
+      const {resources} = await collectRasterizeResources(host, font);
       return {
         scenes,
-        resources: (await collecting).resources,
+        resources,
         config,
         pixelRatio,
         contentSize,

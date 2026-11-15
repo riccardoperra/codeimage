@@ -760,7 +760,9 @@ export async function audit({page, context, base, out, server}) {
     for (let step = 1; step <= 3; step++) {
       if (step > 1)
         await strip.getByRole('button', {name: 'Add tab', exact: true}).click();
-      await editor().fill(`const step = ${step};\nconsole.log(step);`);
+      await editor().fill(
+        `const step = ${step};\nconst message = "Animation ${step}";\nconsole.log(message, step);`,
+      );
     }
     await page.locator('[data-animate-toggle]').click();
     await page.locator('[data-animate-panel]').waitFor();
@@ -777,7 +779,35 @@ export async function audit({page, context, base, out, server}) {
     assert.equal(await start.isEnabled(), true, await dialog.innerText());
     const downloading = page.waitForEvent('download', {timeout: 120000});
     downloading.catch(() => undefined);
-    await start.click();
+    await page.evaluate(() => {
+      const send = Worker.prototype.postMessage;
+      window.__restoreAnimationCapture = () =>
+        (Worker.prototype.postMessage = send);
+      Worker.prototype.postMessage = function (message, ...options) {
+        if (message?.kind === 'export')
+          window.__animationWatermarks = message.job.scenes.map(
+            scene =>
+              new DOMParser()
+                .parseFromString(scene.html, 'text/html')
+                .querySelector('[data-watermark-home]')?.dataset
+                .watermarkPlacement,
+          );
+        return send.call(this, message, ...options);
+      };
+    });
+    try {
+      await start.click();
+      await page.waitForFunction(() => window.__animationWatermarks);
+      const slots = await page.evaluate(() => window.__animationWatermarks);
+      assert.ok(slots[0], 'first scene contains its watermark placement');
+      assert.deepEqual(
+        slots,
+        slots.map(() => slots[0]),
+        'equal-sized steps keep the watermark in the same place during transitions',
+      );
+    } finally {
+      await page.evaluate(() => window.__restoreAnimationCapture());
+    }
     await page.waitForFunction(
       () =>
         document.querySelector('[data-animation-export] [role="alert"]') ||
