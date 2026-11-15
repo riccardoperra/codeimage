@@ -192,6 +192,10 @@ export async function audit({page, context, base, out, server}) {
     const {verifyExportScreen} = await import('./frame-regressions.mjs');
     return verifyExportScreen({fresh, out});
   });
+  await feature('agent-tools', async () => {
+    const {verifyAgentTools} = await import('./agent-tools.mjs');
+    return verifyAgentTools({fresh, out});
+  });
   await feature('editor', async () => {
     for (const route of ['/', '/classic']) {
       await doctor(route);
