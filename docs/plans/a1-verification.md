@@ -12,6 +12,8 @@ A third audit blocked `6a492e45` on a frame that drifts off center while it grow
 
 A fourth audit blocked `0ebb11ac` on a window that leaves the padding of a target frame while its scale changes, and on a layout check that passes a shifted layer. [Fix round 3](#fix-round-3) lists the rebase onto `b7004dad` and the fixes. The tables below hold the numbers of fix round 3. The 40 cases that `0ebb11ac` ran kept every number.
 
+On 2026-11-15 A1 split in two. The core moved to #734 on `main`, and this PR keeps the Node part on P3. [Split from the core](#split-from-the-core) lists what the move onto the final P5 line marks changed.
+
 ## Unit
 
 `pnpm --filter=@codeimage/app test` passes 111 tests in 18 files. The animation tests are 40 of them.
@@ -332,3 +334,15 @@ The verifier's script measures the same three inputs at every 60 fps frame. It n
 `rename` and `edge-target` show no line numbers, so a gutter shift moves nothing there. Each fail names the first character out of place, such as `code "f" at 88.0,138.2 has no match`.
 
 **Checks.** `pnpm lint` reports 0 errors, and `pnpm typecheck` passes after `prisma generate` and the API build. `pnpm --filter=@codeimage/app test` passes 111 tests in 18 files, and `pnpm --filter=@codeimage/render test` passes 48 in 4 files. `pnpm why shiki --filter=@codeimage/app` prints nothing. `animation-endpoints.ts`, `animation-frames.ts`, and `animation-perf.ts` typecheck by hand, with the two expected TS1470 errors in the first. All 43 endpoint cases pass. The per-run slack on long lines stays a known limit.
+
+## Split from the core
+
+The core went to #734, branched from `main` at `4fbf6e37`, so the animation UI can ship with the new editor before the CLI. It holds 29 commits. 26 are A1 commits replayed without the SSR entry, the parity scripts, and this file. The others are A2's `fps` fix for `planTimeline`, a note in the plan, and one new fix. This branch is P3 at `75c84c22`, then those commits, then the Node part as four commits. The Node part is the final state of each file. Its early commits call core functions that the core no longer exports, so a replay of them one by one would not typecheck.
+
+**Line marks.** P5 changed how the static export draws a mark after A1's last base. The band now covers the line number too and reaches into the window inset on both sides. The diff sign and the highlight bar sit in the inset, or on the line number when the gutter shows. Diff code is no longer indented by two columns. On P3 the animation still drew the earlier style, and 5 of the 6 mark cases failed, with start and end at up to 1.114% and the code 2 cells right of the hold. `fix(app): draw animated line marks like the static export` drops the indent and draws each band again on its line number. `AnimatedCodeView` takes `showLineNumbers` and sets `data-line-marks` and `data-line-numbers` like `StaticCodeView`, so `marks.css` draws the inset and the sign the same way.
+
+**The endpoint script.** P3 now loads the CodeMirror CSS before the app stylesheet, so `marks.css` keeps the gutter and the scroller from clipping a band. The script still used the old order, and its `reference` check drifted from `renderSnapshot` by up to 0.027%. A marked line draws its band with pseudo-elements, and Takumi then wraps its text in an anonymous box, so the line-start marker is no longer the line's first child. The script now takes the leftmost empty node of the line.
+
+**Results.** All 43 cases pass with the numbers of the tables above, `reference` is 0.000% in every case, and the frame center stays within 0.703 px. Every mark case is 0.000% at both ends. A one-off case with added, removed, and highlight marks, focus, and no line numbers also scores 0.000% at both ends, and its start frame shows each sign and band. `--shift code:2` and `--shift gutter:2` still fail `marks`.
+
+**Checks.** `pnpm lint` reports 0 errors, and `pnpm typecheck` passes after `prisma generate` and the API build. `pnpm --filter=@codeimage/app test` passes 121 tests in 20 files, and `pnpm --filter=@codeimage/render test` passes 48 in 4 files. `pnpm why shiki --filter=@codeimage/app` prints nothing. `animation-endpoints.ts` typechecks by hand with only the expected TS1470 errors.
