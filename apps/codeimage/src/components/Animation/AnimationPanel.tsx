@@ -206,9 +206,11 @@ export function AnimationPanel() {
                 >
                   {formatSeconds(step().holdMs)}
                 </PopoverTrigger>
+                {/* A click in the popover bubbles to the step through its portal. */}
                 <PopoverContent
                   title={tabName(step().editorId)}
                   class={styles.popover}
+                  onClick={(event: MouseEvent) => event.stopPropagation()}
                 >
                   <PanelRow
                     for={`animationHold-${index}-input`}
