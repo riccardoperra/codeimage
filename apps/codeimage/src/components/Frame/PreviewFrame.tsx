@@ -46,6 +46,7 @@ function PreviewPortal(props: ParentProps) {
 }
 
 export function PreviewFrame(props: VoidProps<PreviewFrameProps>) {
+  const config = provideState(EditorConfigStore);
   let ref!: HTMLDivElement;
   const frame = getFrameState().store;
   const target = () => getFrameState().exportTarget();
@@ -83,7 +84,7 @@ export function PreviewFrame(props: VoidProps<PreviewFrameProps>) {
       'Control+C': () => {
         if (filterHotKey()) return;
         if (!ref) return;
-        dispatchCopyToClipboard({ref});
+        dispatchCopyToClipboard({ref, renderer: config.get.renderer});
       },
     });
   });
