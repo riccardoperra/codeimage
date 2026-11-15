@@ -1,5 +1,6 @@
 import {themeVars} from '@codeimage/ui';
 import {createVar, style} from '@vanilla-extract/css';
+import {TIMELINE_GAP} from './timelineGeometry';
 const c = themeVars.dynamicColors;
 export const root = style({minWidth: 0, overflowX: 'auto', padding: '2px 4px'});
 export const axis = style({width: '100%'});
@@ -50,7 +51,7 @@ export const playhead = style({
 export const track = style({
   minWidth: 0,
   display: 'flex',
-  gap: 3,
+  gap: TIMELINE_GAP,
   height: 36,
   overflow: 'hidden',
   '@media': {'(max-width: 768px)': {height: 40}},

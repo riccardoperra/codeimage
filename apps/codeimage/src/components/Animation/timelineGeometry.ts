@@ -1,6 +1,6 @@
 import type {AnimationSegment} from '@codeimage/store/editor/animationSettings';
 
-const GAP = 3;
+export const TIMELINE_GAP = 3;
 const clamp = (value: number, min: number, max: number) =>
   Math.max(min, Math.min(max, value));
 
@@ -14,7 +14,7 @@ export function timelineGeometry(
     (total, segment) => total + segment.durationMs,
     0,
   );
-  const gaps = Math.max(0, segments.length - 1) * GAP;
+  const gaps = Math.max(0, segments.length - 1) * TIMELINE_GAP;
   const width = Math.max(
     viewportWidth,
     segments.length * (minimum + 20) + gaps,
@@ -26,7 +26,7 @@ export function timelineGeometry(
   const entries = segments.map(segment => {
     const width = minimum + segment.durationMs * scale;
     const entry = {segment, x, width};
-    x += width + GAP;
+    x += width + TIMELINE_GAP;
     return entry;
   });
   const timeToX = (ms: number) => {
@@ -34,7 +34,7 @@ export function timelineGeometry(
     const entry = entries.find(
       ({segment}) => time < segment.startMs + segment.durationMs,
     );
-    if (!entry) return Math.max(0, x - GAP);
+    if (!entry) return Math.max(0, x - TIMELINE_GAP);
     return (
       entry.x +
       ((time - entry.segment.startMs) / entry.segment.durationMs) * entry.width
@@ -50,7 +50,7 @@ export function timelineGeometry(
   };
   return {
     entries,
-    width: Math.max(0, x - GAP),
+    width: Math.max(0, x - TIMELINE_GAP),
     scale,
     timeToX,
     xToTime,

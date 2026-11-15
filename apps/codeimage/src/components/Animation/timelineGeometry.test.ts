@@ -64,14 +64,19 @@ test('resizing uses the same frozen geometry and keeps zero holds selectable', (
   const initial = segments(40);
   const before = timelineGeometry(initial, 1000);
   const durationMs = before.resizedDuration(initial[0].durationMs, 120);
+  const shift = durationMs - initial[0].durationMs;
   const resized = initial.map((segment, index) =>
-    index === 0 ? {...segment, durationMs} : segment,
+    index === 0
+      ? {...segment, durationMs}
+      : {...segment, startMs: segment.startMs + shift},
   );
   const during = timelineGeometry(resized, 1000, 8, before.scale);
   assert.ok(
     Math.abs(during.entries[0].width - before.entries[0].width - 120) < 1e-8,
   );
   assert.equal(during.entries[2].width, 8);
+  assert.equal(during.timeToX(resized[1].startMs), during.entries[1].x);
+  assert.equal(during.xToTime(during.entries[1].x), resized[1].startMs);
 });
 
 test('empty and all zero timelines have finite coordinates', () => {
