@@ -8,6 +8,7 @@ import {resolve} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {chromium} from 'playwright';
 import {PNG} from 'pngjs';
+import {dismissNews} from './news.mjs';
 const root = fileURLToPath(new URL('../../../..', import.meta.url));
 process.chdir(root);
 const require = createRequire(import.meta.url);
@@ -117,6 +118,7 @@ try {
   await editor.waitFor();
   const close = page.getByRole('button', {name: 'close', exact: true});
   if (await close.isVisible()) await close.click();
+  await dismissNews(page);
   await page.evaluate(() => document.fonts.ready);
   await writeFile(
     resolve(out, 'doctor.json'),
