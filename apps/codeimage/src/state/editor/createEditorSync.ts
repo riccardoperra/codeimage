@@ -10,7 +10,7 @@ import { appEnvironment } from "@core/configuration";
 import { createContextProvider } from "@solid-primitives/context";
 import { useNavigate } from "@solidjs/router";
 
-import { catchError, debounceTime, EMPTY, filter, from, map, merge, switchMap, tap } from "rxjs";
+import { debounceTime, filter, map, merge } from "rxjs";
 import type { ParentProps, Resource } from "solid-js";
 import {
   createEffect,
@@ -25,6 +25,7 @@ import {
 import { unwrap } from "solid-js/store";
 import { API } from "../../data-access/api";
 import { useIdb } from "../../hooks/use-indexed-db";
+import { remoteSaves } from "./remoteSync";
 
 type ProjectResponse = Awaited<ReturnType<typeof API.project.loadSnippet>>;
 
@@ -155,37 +156,22 @@ function createEditorSyncAdapter(props: ParentProps<{ snippetId: string }>) {
   }
 
   function initRemoteDbSync() {
-    const subscription = onChange$
-      .pipe(
-        debounceTime(150),
-        filter(() => authState.loggedIn()),
-        tap(() => setRemoteSync(true)),
-        debounceTime(3000),
-        tap(() => setRemoteSync(false)),
-        switchMap(([frame, terminal, { editors, options }, animation]) => {
-          const workspace = activeWorkspace();
-          if (!workspace) return EMPTY;
-          const dataToSave: ApiTypes.UpdateProjectApi["request"]["body"] = {
-            frame,
-            terminal,
-            editors,
-            editorOptions: options,
-            animation,
-          };
-          return from(
-            API.project.updateSnippet({
-              body: dataToSave,
-              params: { id: workspace.id },
-            }),
-          ).pipe(
-            catchError(() => {
-              toast.error("An error occurred while saving");
-              return EMPTY;
-            }),
-          );
-        }),
-      )
-      .subscribe();
+    const subscription = remoteSaves(
+      onChange$,
+      {
+        id: () => activeWorkspace()?.id,
+        loggedIn: authState.loggedIn,
+        readOnly,
+      },
+      (id, [frame, terminal, { editors, options }, animation]) =>
+        API.project
+          .updateSnippet({
+            body: { frame, terminal, editors, editorOptions: options, animation },
+            params: { id },
+          })
+          .catch(() => toast.error("An error occurred while saving")),
+      setRemoteSync,
+    ).subscribe();
 
     return onCleanup(() => {
       const workspace = untrack(activeWorkspace);
