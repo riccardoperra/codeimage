@@ -1,4 +1,5 @@
 import {getExportCanvasStore} from '@codeimage/store/canvas';
+import {getEditorStore} from '@codeimage/store/editor';
 import {getActiveEditorStore} from '@codeimage/store/editor/activeEditor';
 import {getEditorSyncAdapter} from '@codeimage/store/editor/createEditorSync';
 import {getFrameState} from '@codeimage/store/editor/frame';
@@ -7,6 +8,9 @@ import {adaptiveFullScreenHeight, Box, HStack, PortalHost} from '@codeimage/ui';
 import {Button} from '@codeui/kit';
 import {useModality} from '@core/hooks/isMobile';
 import {createSignal, lazy, onMount, Show, Suspense} from 'solid-js';
+import {AnimationPanel} from '../../components/Animation/AnimationPanel';
+import {AnimationPreview} from '../../components/Animation/AnimationPreview';
+import {AnimateButton} from '../../components/Animation/AnimateButton';
 import {BottomBar} from '../../components/BottomBar/BottomBar';
 import {Footer} from '../../components/Footer/Footer';
 import {FrameHandler} from '../../components/Frame/FrameHandler';
@@ -40,6 +44,7 @@ export function App() {
   const [portalHostRef, setPortalHostRef] = createSignal<HTMLElement>();
   const modality = useModality();
   const frameStore = getFrameState();
+  const {animation} = getEditorStore();
   const exportCanvasStore = getExportCanvasStore();
   const {readOnly, clone} = getEditorSyncAdapter()!;
   onMount(() => exportCanvasStore.initCanvas(frameRef));
@@ -86,6 +91,7 @@ export function App() {
             <Show when={modality === 'mobile'}>
               <Box class={styles.mobileActionToolbar}>
                 <HStack spacing={'2'} justifyContent={'flexEnd'}>
+                  <AnimateButton showLabel={false} />
                   <ExportSettingsButton />
                   <ShareButton showLabel={false} />
                   <Button
@@ -108,7 +114,9 @@ export function App() {
 
             <FrameHandler onScaleChange={frameStore.setScale}>
               <Suspense fallback={<FrameSkeleton />}>
-                <ManagedFrame />
+                <AnimationPreview>
+                  <ManagedFrame />
+                </AnimationPreview>
               </Suspense>
             </FrameHandler>
 
@@ -116,6 +124,9 @@ export function App() {
 
             <Show when={modality === 'full'} keyed={false}>
               <FrameToolbar frameRef={frameRef()} />
+            </Show>
+            <Show when={animation.open()}>
+              <AnimationPanel />
             </Show>
             <Footer />
           </SuspenseEditorItem>

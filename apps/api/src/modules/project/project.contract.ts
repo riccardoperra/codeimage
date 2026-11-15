@@ -73,6 +73,32 @@ export const TabMarksSchema = Type.Object({
 
 export type TabMarks = Static<typeof TabMarksSchema>;
 
+// Steps name tabs by id. Takumi samples whole milliseconds, so durations are
+// integers.
+export const AnimationSettingsSchema = Type.Object({
+  steps: Type.Array(
+    Type.Object({
+      editorId: Type.String(),
+      holdMs: Type.Integer({minimum: 0}),
+    }),
+    {minItems: 1},
+  ),
+  transitionMs: Type.Integer({minimum: 1}),
+  easing: Type.Union([
+    Type.Literal('smooth'),
+    Type.Literal('snappy'),
+    Type.Literal('linear'),
+  ]),
+  fps: Type.Union([
+    Type.Literal(24),
+    Type.Literal(30),
+    Type.Literal(50),
+    Type.Literal(60),
+  ]),
+});
+
+export type AnimationSettings = Static<typeof AnimationSettingsSchema>;
+
 export const BaseProjectResponseSchema = Type.Object(
   {
     id: Type.String({format: 'uuid'}),
@@ -229,6 +255,7 @@ export const ProjectCreateResponseSchema = Type.Object(
     frame: SnippetFrameCreateResponseSchema,
     terminal: SnippetTerminalCreateRequestSchema,
     editorTabs: SnippetEditorTabsCreateRequestSchema,
+    animation: Type.Optional(Nullable(AnimationSettingsSchema)),
   },
   {title: 'ProjectCreateResponse'},
 );
@@ -295,6 +322,7 @@ export const ProjectUpdateRequestSchema = Type.Object(
     frame: SnippetFrameUpdateRequestSchema,
     terminal: SnippetTerminalUpdateRequestSchema,
     editors: SnippetEditorTabsUpdateRequestSchema,
+    animation: Type.Optional(AnimationSettingsSchema),
   },
   {title: 'ProjectUpdateRequest'},
 );
@@ -310,6 +338,7 @@ export const ProjectUpdateResponseSchema = Type.Object(
     frame: SnippetFrameUpdateRequestSchema,
     terminal: SnippetTerminalUpdateRequestSchema,
     editorTabs: SnippetEditorTabsUpdateRequestSchema,
+    animation: Type.Optional(Nullable(AnimationSettingsSchema)),
   },
   {title: 'ProjectUpdateResponse'},
 );
@@ -321,6 +350,7 @@ export const ProjectGetByIdResponseSchema = Type.Intersect([
     editorOptions: BaseSnippetEditorOptionsSchema,
     frame: BaseSnippetFrameSchema,
     terminal: BaseSnippetTerminalSchema,
+    animation: Type.Optional(Nullable(AnimationSettingsSchema)),
     isOwner: Type.Boolean(),
   }),
 ]);

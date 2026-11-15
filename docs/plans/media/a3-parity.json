@@ -1,0 +1,227 @@
+[
+  {
+    "case": "rename",
+    "at": "0%",
+    "ms": 500,
+    "chrome": "1338x668",
+    "takumi": "1338x668",
+    "diff": "0.000%",
+    "ok": true
+  },
+  {
+    "case": "rename",
+    "at": "25%",
+    "ms": 725,
+    "chrome": "1338x668",
+    "takumi": "1338x668",
+    "diff": "0.000%",
+    "ok": true
+  },
+  {
+    "case": "rename",
+    "at": "50%",
+    "ms": 950,
+    "chrome": "1338x668",
+    "takumi": "1338x668",
+    "diff": "0.000%",
+    "ok": true
+  },
+  {
+    "case": "rename",
+    "at": "75%",
+    "ms": 1175,
+    "chrome": "1338x668",
+    "takumi": "1338x668",
+    "diff": "0.000%",
+    "ok": true
+  },
+  {
+    "case": "rename",
+    "at": "100%",
+    "ms": 1400,
+    "chrome": "1338x668",
+    "takumi": "1338x668",
+    "diff": "0.000%",
+    "ok": true
+  },
+  {
+    "case": "grow",
+    "at": "0%",
+    "ms": 500,
+    "chrome": "1032x1430",
+    "takumi": "1032x1430",
+    "diff": "0.000%",
+    "ok": true
+  },
+  {
+    "case": "grow",
+    "at": "25%",
+    "ms": 725,
+    "chrome": "1032x1430",
+    "takumi": "1032x1430",
+    "diff": "0.014%",
+    "ok": true
+  },
+  {
+    "case": "grow",
+    "at": "50%",
+    "ms": 950,
+    "chrome": "1032x1430",
+    "takumi": "1032x1430",
+    "diff": "0.000%",
+    "ok": true
+  },
+  {
+    "case": "grow",
+    "at": "75%",
+    "ms": 1175,
+    "chrome": "1032x1430",
+    "takumi": "1032x1430",
+    "diff": "0.031%",
+    "ok": true
+  },
+  {
+    "case": "grow",
+    "at": "100%",
+    "ms": 1400,
+    "chrome": "1032x1430",
+    "takumi": "1032x1430",
+    "diff": "0.005%",
+    "ok": true
+  },
+  {
+    "case": "target-scale",
+    "at": "0%",
+    "ms": 500,
+    "chrome": "1600x900",
+    "takumi": "1600x900",
+    "diff": "0.102%",
+    "ok": true
+  },
+  {
+    "case": "target-scale",
+    "at": "25%",
+    "ms": 725,
+    "chrome": "1600x900",
+    "takumi": "1600x900",
+    "diff": "0.044%",
+    "ok": true
+  },
+  {
+    "case": "target-scale",
+    "at": "50%",
+    "ms": 950,
+    "chrome": "1600x900",
+    "takumi": "1600x900",
+    "diff": "0.053%",
+    "ok": true
+  },
+  {
+    "case": "target-scale",
+    "at": "75%",
+    "ms": 1175,
+    "chrome": "1600x900",
+    "takumi": "1600x900",
+    "diff": "0.189%",
+    "ok": true
+  },
+  {
+    "case": "target-scale",
+    "at": "100%",
+    "ms": 1400,
+    "chrome": "1600x900",
+    "takumi": "1600x900",
+    "diff": "0.592%",
+    "ok": false
+  },
+  {
+    "case": "gutter",
+    "at": "0%",
+    "ms": 500,
+    "chrome": "1080x936",
+    "takumi": "1080x936",
+    "diff": "0.003%",
+    "ok": true
+  },
+  {
+    "case": "gutter",
+    "at": "25%",
+    "ms": 725,
+    "chrome": "1080x936",
+    "takumi": "1080x936",
+    "diff": "0.148%",
+    "ok": true
+  },
+  {
+    "case": "gutter",
+    "at": "50%",
+    "ms": 950,
+    "chrome": "1080x936",
+    "takumi": "1080x936",
+    "diff": "0.002%",
+    "ok": true
+  },
+  {
+    "case": "gutter",
+    "at": "75%",
+    "ms": 1175,
+    "chrome": "1080x936",
+    "takumi": "1080x936",
+    "diff": "0.094%",
+    "ok": true
+  },
+  {
+    "case": "gutter",
+    "at": "100%",
+    "ms": 1400,
+    "chrome": "1080x936",
+    "takumi": "1080x936",
+    "diff": "0.003%",
+    "ok": true
+  },
+  {
+    "case": "marks-focus",
+    "at": "0%",
+    "ms": 500,
+    "chrome": "1444x712",
+    "takumi": "1444x712",
+    "diff": "0.000%",
+    "ok": true
+  },
+  {
+    "case": "marks-focus",
+    "at": "25%",
+    "ms": 725,
+    "chrome": "1444x712",
+    "takumi": "1444x712",
+    "diff": "0.054%",
+    "ok": true
+  },
+  {
+    "case": "marks-focus",
+    "at": "50%",
+    "ms": 950,
+    "chrome": "1444x712",
+    "takumi": "1444x712",
+    "diff": "0.000%",
+    "ok": true
+  },
+  {
+    "case": "marks-focus",
+    "at": "75%",
+    "ms": 1175,
+    "chrome": "1444x712",
+    "takumi": "1444x712",
+    "diff": "0.047%",
+    "ok": true
+  },
+  {
+    "case": "marks-focus",
+    "at": "100%",
+    "ms": 1400,
+    "chrome": "1444x712",
+    "takumi": "1444x712",
+    "diff": "0.000%",
+    "ok": true
+  }
+]

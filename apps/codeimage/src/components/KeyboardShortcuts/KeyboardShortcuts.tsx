@@ -48,6 +48,8 @@ export function KeyboardShortcuts(): JSXElement {
     {label: t('shortcut.copyLink'), key: ['Ctrl', 'Shift', 'C']},
     {label: t('shortcut.copySnippet'), key: ['Ctrl', 'C']},
     {label: t('shortcut.openShortcuts'), key: ['?']},
+    {label: t('animation.shortcut.togglePlayback'), key: ['Space']},
+    {label: t('animation.shortcut.backToEditor'), key: ['Esc']},
     ...markCommands.map(command => ({
       label: t(`lineMarks.shortcut.${command.id}`),
       key: shortcutKeys(command.key),

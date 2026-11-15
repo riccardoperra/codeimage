@@ -12,17 +12,7 @@ import {appEnvironment} from '@core/configuration';
 import {createContextProvider} from '@solid-primitives/context';
 import {useNavigate} from '@solidjs/router';
 
-import {
-  catchError,
-  debounceTime,
-  EMPTY,
-  filter,
-  from,
-  map,
-  merge,
-  switchMap,
-  tap,
-} from 'rxjs';
+import {debounceTime, filter, map, merge} from 'rxjs';
 import type {ParentProps, Resource} from 'solid-js';
 import {
   createEffect,
@@ -37,6 +27,7 @@ import {
 import {unwrap} from 'solid-js/store';
 import {API} from '../../data-access/api';
 import {useIdb} from '../../hooks/use-indexed-db';
+import {remoteSaves} from './remoteSync';
 
 type ProjectResponse = Awaited<ReturnType<typeof API.project.loadSnippet>>;
 
@@ -52,6 +43,7 @@ function createEditorSyncAdapter(props: ParentProps<{snippetId: string}>) {
   const terminalStore = getTerminalState();
   const editorStore = getRootEditorStore();
   const store = getEditorStore();
+  const animationStore = store.animation;
   const idb = useIdb();
   const navigate = useNavigate();
 
@@ -83,6 +75,7 @@ function createEditorSyncAdapter(props: ParentProps<{snippetId: string}>) {
         .then(idbState => {
           if (idbState && !idbState.$snippetId) {
             editorStore.actions.setFromPersistedState(idbState.editor);
+            animationStore.actions.setFromPersistedState(idbState.animation);
             frameStore.setFromPersistedState(idbState.frame);
             terminalStore.setFromPersistedState(idbState.terminal);
             return;
@@ -110,6 +103,7 @@ function createEditorSyncAdapter(props: ParentProps<{snippetId: string}>) {
     frameStore.stateToPersist$,
     terminalStore.stateToPersist$,
     editorStore.stateToPersist$,
+    animationStore.stateToPersist$,
   ).pipe(
     filter(() => isReadyToSync()),
     map(
@@ -118,6 +112,7 @@ function createEditorSyncAdapter(props: ParentProps<{snippetId: string}>) {
           frameStore.stateToPersist(),
           terminalStore.stateToPersist(),
           editorStore.stateToPersist(),
+          animationStore.stateToPersist(),
         ] as const,
     ),
   );
@@ -138,6 +133,7 @@ function createEditorSyncAdapter(props: ParentProps<{snippetId: string}>) {
             frame: frameStore.stateToPersist(),
             terminal: terminalStore.stateToPersist(),
             editor: editorStore.stateToPersist(),
+            animation: animationStore.stateToPersist(),
           });
           idb.set('document', state);
         });
@@ -149,6 +145,7 @@ function createEditorSyncAdapter(props: ParentProps<{snippetId: string}>) {
   function updateStateFromRemote(data: ApiTypes.GetProjectByIdApi['response']) {
     setActiveWorkspace(data);
     editorStore.actions.setFromWorkspace(data);
+    animationStore.actions.setFromPersistedState(data.animation);
     terminalStore.setState(state => ({
       ...state,
       ...data.terminal,
@@ -178,36 +175,28 @@ function createEditorSyncAdapter(props: ParentProps<{snippetId: string}>) {
   }
 
   function initRemoteDbSync() {
-    const subscription = onChange$
-      .pipe(
-        debounceTime(150),
-        filter(() => authState.loggedIn()),
-        tap(() => setRemoteSync(true)),
-        debounceTime(3000),
-        tap(() => setRemoteSync(false)),
-        switchMap(([frame, terminal, {editors, options}]) => {
-          const workspace = activeWorkspace();
-          if (!workspace) return EMPTY;
-          const dataToSave: ApiTypes.UpdateProjectApi['request']['body'] = {
-            frame,
-            terminal,
-            editors,
-            editorOptions: options,
-          };
-          return from(
-            API.project.updateSnippet({
-              body: dataToSave,
-              params: {id: workspace.id},
-            }),
-          ).pipe(
-            catchError(() => {
-              toast.error('An error occurred while saving');
-              return EMPTY;
-            }),
-          );
-        }),
-      )
-      .subscribe();
+    const subscription = remoteSaves(
+      onChange$,
+      {
+        id: () => activeWorkspace()?.id,
+        loggedIn: authState.loggedIn,
+        readOnly,
+      },
+      (id, [frame, terminal, {editors, options}, animation]) =>
+        API.project
+          .updateSnippet({
+            body: {
+              frame,
+              terminal,
+              editors,
+              editorOptions: options,
+              animation,
+            },
+            params: {id},
+          })
+          .catch(() => toast.error('An error occurred while saving')),
+      setRemoteSync,
+    ).subscribe();
 
     return onCleanup(() => {
       const workspace = untrack(activeWorkspace);
@@ -220,6 +209,7 @@ function createEditorSyncAdapter(props: ParentProps<{snippetId: string}>) {
               terminal: terminalStore.stateToPersist(),
               editors: editorStore.stateToPersist().editors,
               editorOptions: editorStore.stateToPersist().options,
+              animation: animationStore.stateToPersist(),
             },
             params: {id: workspace.id},
           })
