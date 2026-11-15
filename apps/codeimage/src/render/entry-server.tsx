@@ -1,10 +1,11 @@
+import type {ProjectEditorPersistedState} from '../state/editor/model';
+import type {PersistedFrameState} from '../state/frame/model';
 import '../assets/styles/app.scss';
 import '../theme/global.css';
 import {getExportTarget} from '@codeimage/config';
 import type {CommentTokens} from '@codemirror/commands';
 import {EditorState} from '@codemirror/state';
 import type {
-  RenderSnapshot,
   ComposedFrame,
   FrameHost,
   FrameMarkup,
@@ -90,6 +91,12 @@ function frameSizeCss(size?: FrameSize): string {
     .map(([variable, value]) => `${cssVar(variable)}:${value}!important`)
     .join(';')}}`;
 }
+
+type RenderSnapshot = Omit<ProjectEditorPersistedState, 'frame'> & {
+  width?: number;
+  frame: Omit<PersistedFrameState, 'exportTarget' | 'aspectRatio'> &
+    Partial<Pick<PersistedFrameState, 'exportTarget' | 'aspectRatio'>>;
+};
 
 export async function composeFrame(
   snapshot: RenderSnapshot,

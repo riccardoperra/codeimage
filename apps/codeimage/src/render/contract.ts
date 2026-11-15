@@ -1,11 +1,3 @@
-import type {ProjectEditorPersistedState} from '../state/editor/model';
-import type {PersistedFrameState} from '../state/frame/model';
-
-export type RenderSnapshot = Omit<ProjectEditorPersistedState, 'frame'> & {
-  width?: number;
-  frame: Omit<PersistedFrameState, 'exportTarget' | 'aspectRatio'> &
-    Partial<Pick<PersistedFrameState, 'exportTarget' | 'aspectRatio'>>;
-};
 export interface ImageBytes {
   readonly src: string;
   readonly data: ArrayBuffer;
@@ -33,23 +25,13 @@ export interface ComposedFrame extends FrameMarkup {
   browserCss: string[];
 }
 
-export interface RenderEntry {
+export interface RenderEntry<Snapshot, Annotation> {
   SUPPORTED_FONT_IDS: string[];
   SUPPORTED_THEME_IDS: string[];
-  composeFrame(
-    snapshot: RenderSnapshot,
-    host: FrameHost,
-  ): Promise<ComposedFrame>;
+  composeFrame(snapshot: Snapshot, host: FrameHost): Promise<ComposedFrame>;
   annotateCode(
     code: string,
     languageId: string,
     tabName: string,
-  ): Promise<{
-    code: string;
-    marks: NonNullable<
-      ProjectEditorPersistedState['editor']['editors'][number]['marks']
-    >;
-    count: number;
-    sourceLines: number[];
-  }>;
+  ): Promise<Annotation>;
 }

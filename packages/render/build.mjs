@@ -1,3 +1,4 @@
+import {SIGNATURE_FONT} from '../../apps/codeimage/src/core/configuration/signature-fonts.ts';
 import {existsSync} from 'node:fs';
 import {copyFile, mkdir, readFile, rm, writeFile} from 'node:fs/promises';
 import {createRequire} from 'node:module';
@@ -137,7 +138,7 @@ async function buildFonts(supportedFontIds) {
     throw new Error(`No font files for app fonts: ${missing.join(', ')}`);
   }
   await mkdir(join(fontsDir, 'licenses'), {recursive: true});
-  const manifest = {fonts: {}, fallbacks: []};
+  const manifest = {fonts: {}, fallbacks: [], faces: []};
   for (const [id, sources] of Object.entries(FONT_SOURCES)) {
     manifest.fonts[id] = await copyFonts(id, sources);
   }
@@ -145,6 +146,16 @@ async function buildFonts(supportedFontIds) {
     const name = family.toLowerCase().replaceAll(' ', '-');
     manifest.fallbacks.push({family, files: await copyFonts(name, sources)});
   }
+  manifest.faces.push({
+    family: SIGNATURE_FONT.family,
+    files: await copyFonts(
+      'signature',
+      SIGNATURE_FONT.faces.map(face => ({
+        ...appFont(face.path.slice('/assets/fonts/'.length)),
+        unicodeRange: parseUnicodeRange(face.unicodeRange),
+      })),
+    ),
+  });
   await writeFile(join(fontsDir, 'manifest.json'), JSON.stringify(manifest));
 }
 

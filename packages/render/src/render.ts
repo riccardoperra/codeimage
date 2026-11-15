@@ -35,6 +35,7 @@ interface FontFile {
 }
 
 interface FontManifest {
+  faces: {family: string; files: FontFile[]}[];
   // The files of each app font and of the UI font.
   fonts: Record<string, FontFile[]>;
   // Families for glyphs the app fonts lack, in the order Takumi tries them.
@@ -66,7 +67,9 @@ const dist = new URL('../dist/', import.meta.url);
 
 async function loadRuntime() {
   const [entry, stylesheet, manifest] = await Promise.all([
-    import(new URL('ssr/entry-server.js', dist).href) as Promise<RenderEntry>,
+    import(new URL('ssr/entry-server.js', dist).href) as Promise<
+      RenderEntry<ProjectSnapshot, AnnotatedCode>
+    >,
     readFile(new URL('ssr/assets/style.css', dist), 'utf8'),
     readFile(new URL('fonts/manifest.json', dist), 'utf8').then(
       text => JSON.parse(text) as FontManifest,
@@ -103,6 +106,10 @@ async function loadRuntime() {
   }
   const uiFonts = fontsFor(UI_FONT.id, UI_FONT.family);
   await register(uiFonts);
+  const signatureFonts = manifest.faces.flatMap(({family, files}) =>
+    faces(family, files),
+  );
+  await register(signatureFonts);
   const appFonts = new Map<string, Promise<void>>();
   const registerAppFont = (fontId: string, family: string) => {
     let pending = appFonts.get(fontId);
@@ -117,6 +124,7 @@ async function loadRuntime() {
     stylesheet,
     renderer,
     uiFonts,
+    signatureFonts,
     fontsFor,
     registerAppFont,
     fontFamilies: manifest.fallbacks.map(({family}) => family),
@@ -161,6 +169,7 @@ export async function snapshotMarkup(
     stylesheet,
     renderer,
     uiFonts,
+    signatureFonts,
     fontsFor,
     registerAppFont,
     fontFamilies,
@@ -198,7 +207,11 @@ export async function snapshotMarkup(
     css: [...frame.css, stylesheet].map(normalizeGradients),
     naturalCss: [...frame.browserCss, stylesheet].map(normalizeGradients),
     size: frame.size,
-    fonts: [...uiFonts, ...fontsFor(fontId, frame.fontFamily)],
+    fonts: [
+      ...uiFonts,
+      ...signatureFonts,
+      ...fontsFor(fontId, frame.fontFamily),
+    ],
     fontFamilies,
     images: frame.images,
   };

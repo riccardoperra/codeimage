@@ -195,6 +195,28 @@ describe('renderSnapshot', {timeout: 30_000}, () => {
       fetch.mockRestore();
     }
   });
+  it('bundles the exact Latin and Latin-ext signature faces', async () => {
+    const markup = await snapshotMarkup({
+      ...sampleDocument,
+      frame: {
+        ...sampleDocument.frame,
+        signature: {
+          handle: 'zoe',
+          style: 'card',
+          name: 'Zoë Łukasz',
+          platform: 'github',
+        },
+      },
+    });
+    const faces = markup.fonts.filter(
+      font => font.family === 'CodeImage Signature',
+    );
+    expect(faces.map(font => font.path.split('/').at(-1))).toEqual([
+      'inter-latin-wght-normal.woff2',
+      'inter-latin-ext-wght-normal.woff2',
+    ]);
+    expect(faces.every(font => font.unicodeRange?.length)).toBe(true);
+  });
   it('defaults an omitted surface to the same pixels as solid', async () => {
     const {surface, ...terminal} = sampleDocument.terminal;
     expect(await renderSnapshot({...sampleDocument, terminal})).toEqual(
