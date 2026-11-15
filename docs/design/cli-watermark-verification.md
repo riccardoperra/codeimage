@@ -51,3 +51,7 @@ The live UI audit was repeated after the review fixes using the unmodified verif
 The browser now also needs the pure watermark build output before dev or typecheck. The normal `libs:build` sequence supplies it. The isolated subpath is built first, before SSR, and contains no Node imports.
 
 The committed measurements were collected on macOS arm64 with Node 26.5.0 and Takumi 2.19.0. Ink boxes in the TSV use left, top, right, bottom coordinates. Edge deltas use left, right, top, bottom after anchor normalization.
+
+## Merge verification
+
+The complete CI renderer command initially failed because `font-manifest.test.mjs` used `node:test` while Vitest collected it. The test now registers with Vitest. No assertions were removed. `pnpm --filter=@codeimage/render test` passes all 120 tests across seven files, including the manifest generator test. This correction changes test registration only; the renderer and CLI runtime sources are unchanged from `d6ef863e`.
