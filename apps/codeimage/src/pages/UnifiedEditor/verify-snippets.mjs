@@ -46,6 +46,19 @@ async function command(page, label) {
   await menu.getByRole('option', {name: label, exact: true}).click();
   await menu.waitFor({state: 'hidden'});
 }
+async function copiedImage(page) {
+  for (let attempt = 0; attempt < 100; attempt++) {
+    const copied = await page.evaluate(async () =>
+      (await navigator.clipboard.read()).some(item =>
+        item.types.includes('image/png'),
+      ),
+    );
+    if (copied) return true;
+    await page.waitForTimeout(100);
+  }
+  return false;
+}
+
 async function navigate(page, path) {
   await page.evaluate(path => {
     const link = document.createElement('a');
@@ -346,15 +359,12 @@ try {
         (await download).suggestedFilename().endsWith('.png'),
         `${tag}: read-only Export downloads an image`,
       );
+      await page.evaluate(() =>
+        navigator.clipboard.writeText('codeimage clipboard verification'),
+      );
       await command(page, 'Copy to clipboard');
-      await page.waitForFunction(
-        () => !document.querySelector('[data-export-image]').disabled,
-      );
-      const clipboardTypes = await page.evaluate(async () =>
-        (await navigator.clipboard.read()).flatMap(item => item.types),
-      );
       check(
-        clipboardTypes.includes('image/png'),
+        await copiedImage(page),
         `${tag}: read-only command Copy writes an image to the clipboard`,
       );
       const cloned = page.waitForURL(url => url.pathname !== `/${id}`);
