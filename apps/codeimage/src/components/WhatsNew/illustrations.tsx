@@ -10,7 +10,7 @@ import {
   onMount,
   Show,
 } from 'solid-js';
-import type {HighlightId} from '../../state/whats-new';
+import type {ContentHighlightId} from '../../state/whats-new/registry';
 import * as styles from './illustrations.css';
 
 /** Play explains once on viewport entry. Still and thumb draw the final state. */
@@ -140,12 +140,25 @@ function Code(props: {x: number; y: number; small?: boolean}) {
   );
 }
 
-function Thumb(props: {id: HighlightId}) {
+function Thumb(props: {id: ContentHighlightId}) {
   const box = (
     <rect class={styles.window} x="4" y="5" width="56" height="34" rx="6" />
   );
   return (
     <Switch>
+      <Match when={props.id === 'animate'}>
+        {box}
+        <path class={styles.keywordStroke} d="M10 13h20m-14 8h28" />
+        <rect class={styles.wash} x="8" y="28" width="48" height="7" rx="3" />
+        <path class={styles.accentStroke} d="M36 26v12" />
+        <path class={styles.inkStroke} d="m47 10 6 4-6 4z" />
+      </Match>
+      <Match when={props.id === 'cli'}>
+        {box}
+        <path class={styles.edge} d="M5 14h54" />
+        <path class={styles.greenStroke} d="m11 22 4 4-4 4" />
+        <path class={styles.keywordStroke} d="M21 26h31m-31 7h17" />
+      </Match>
       <Match when={props.id === 'marks'}>
         <>
           {box}
@@ -372,7 +385,7 @@ function Thumb(props: {id: HighlightId}) {
 }
 
 function Picture(
-  props: IllustrationProps & {id: HighlightId; children: JSX.Element},
+  props: IllustrationProps & {id: ContentHighlightId; children: JSX.Element},
 ) {
   const thumb = () => props.mode === 'thumb';
   return (
@@ -813,10 +826,69 @@ function ThemeIllustration(props: IllustrationProps) {
   );
 }
 
+function AnimateIllustration(props: IllustrationProps) {
+  return (
+    <Picture {...props} id="animate">
+      <Window x={20} y={4} w={240} h={84}>
+        <text class={styles.label} x="58" y="18">
+          greeting.ts
+        </text>
+        <text class={styles.code} x="34" y="44">
+          <tspan class={styles.keyword}>const </tspan>
+          <tspan class={styles.ink}>hello = </tspan>
+          <tspan class={styles.string}>'world';</tspan>
+        </text>
+        <g class={styles.split}>
+          <text class={styles.code} x="34" y="68">
+            <tspan class={styles.functionColor}>render</tspan>
+            <tspan class={styles.ink}>(hello);</tspan>
+          </text>
+        </g>
+      </Window>
+      <path class={styles.accentStroke} d="m24 100 8 5-8 5z" />
+      <rect class={styles.glass} x="44" y="96" width="212" height="18" rx="6" />
+      <rect class={styles.wash} x="48" y="100" width="64" height="10" rx="3" />
+      <rect
+        class={styles.wash}
+        x="150"
+        y="100"
+        width="100"
+        height="10"
+        rx="3"
+      />
+      <path class={styles.edge} d="M118 100h26" />
+      <path
+        class={`${styles.accentStroke} ${styles.playhead}`}
+        d="M174 93v24"
+      />
+    </Picture>
+  );
+}
+function CliIllustration(props: IllustrationProps) {
+  return (
+    <Picture {...props} id="cli">
+      <Window x={12} y={14} w={256} h={92} terminal>
+        <text class={styles.code} x="26" y="59">
+          <tspan class={styles.string}>$ </tspan>
+          <tspan class={styles.ink}>codeimage hello.ts -o hello.png</tspan>
+        </text>
+        <g class={styles.move}>
+          <text class={styles.code} x="26" y="83">
+            <tspan class={styles.string}>✓ </tspan>
+            <tspan class={styles.ink}>hello.png</tspan>
+          </text>
+        </g>
+      </Window>
+    </Picture>
+  );
+}
+
 export const illustrations: Record<
-  HighlightId,
+  ContentHighlightId,
   Component<IllustrationProps>
 > = {
+  animate: AnimateIllustration,
+  cli: CliIllustration,
   redact: RedactIllustration,
   tabs: TabsIllustration,
   social: SocialIllustration,

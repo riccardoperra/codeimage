@@ -1,7 +1,7 @@
 import type * as solid from 'solid-js';
 import {createMemo, createRoot, createSignal, onCleanup} from 'solid-js';
 import {describe, expect, expectTypeOf, it, vi} from 'vitest';
-import type {LocatedHighlightId} from './registry';
+import {RELEASES, UPCOMING, type LocatedHighlightId} from './registry';
 import {createWhatsNew, type WhatsNew} from './whats-new.store';
 
 // The suite renders snapshots with Solid's server build, where signals never
@@ -387,5 +387,30 @@ it('gives the optional engine its Settings pointer without consuming it on revea
   expect(app.store.dotAt('setting:rendering-engine')).toBeUndefined();
   expect(app.store.isNew('takumi')).toBe(false);
   dispose();
+  app.dispose();
+});
+
+it('keeps upcoming ids out of every dot and the release consumed by all announcement surfaces', async () => {
+  const app = createRoot(dispose => {
+    const store = createWhatsNew(database(), () => Date.parse('2026-11-15'));
+    return {store, announcement: store.announce(() => () => true), dispose};
+  });
+  await settle();
+  const places = RELEASES.flatMap(release => release.highlights).flatMap(
+    highlight => (highlight.where === null ? [] : [highlight.where]),
+  );
+  const dots = places.map(place => app.store.dotAt(place));
+  for (const {id} of UPCOMING) {
+    expect(dots).not.toContain(id);
+    expect(
+      app.announcement()?.release.highlights.map(highlight => highlight.id),
+    ).not.toContain(id);
+    // The Settings archive reads all RELEASES, rather than the pending release.
+    expect(
+      RELEASES.flatMap(release => release.highlights).map(
+        highlight => highlight.id,
+      ),
+    ).not.toContain(id);
+  }
   app.dispose();
 });

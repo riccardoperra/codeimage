@@ -35,7 +35,7 @@ onChange={value => { preferences.setLayout(value); whatsNew.seen('layouts'); }}
 - **Facts** are two grow-only sets, `seen` highlight ids and `dismissed` release ids. Merging is a union, so marking seen is idempotent and two tabs converge without locks (separate-before-serializing-shared-state, make-operations-idempotent).
 - **The store** (`apps/codeimage/src/state/whats-new/whats-new.store.ts`) is the thin shell. It owns the one IndexedDB key, the one Umami call site, and the map of location openers.
 - **Seen means located.** Only opening the coachmark or using the feature marks a highlight seen. Nudge steps, archive rows and "Show me" do not, so the dot is still on the control when the user arrives.
-- **The registry lists only features that are in the bundle.** Highlights for features that land later are added together in one final PR for the release, not by each feature PR.
+- **The registry lists only features that are in the bundle.** Prepared copy and illustrations for features that land later live under `UPCOMING`; only `RELEASES` supplies policy and rendered surfaces.
 
 Other folders import only `state/whats-new/index.ts`. The public interface is the registry and the store methods. Callers never see a fact, a storage key or an event name.
 
@@ -81,7 +81,7 @@ The development-only query `?whatsNew=nudge` or `?whatsNew=showcase` forces a re
 
 ## Remaining limits
 
-- News copy uses the app locale in English, Italian, German and Spanish. `i18n/whatsNew.ts` owns the words, keyed by persisted release and highlight ids. Its records require translations for every shipped id. The registry keeps no duplicate English copy. Dates use the active locale and UTC, so a date never moves to the previous day west of UTC. The command-menu illustration translates its explanatory labels through existing editor keys. Code samples, geometric pictures and the Aa mark stay unchanged.
+- News copy uses the app locale in English, Italian, German and Spanish. `i18n/whatsNew.ts` owns the words, keyed by persisted release and highlight ids. Its records and the illustration record require content for every shipped and upcoming id. The registry keeps no duplicate English copy. Dates use the active locale and UTC, so a date never moves to the previous day west of UTC. The command-menu illustration translates its explanatory labels through existing editor keys. Code samples, geometric pictures and the Aa mark stay unchanged.
 - Facts remain per device. Tabs merge facts on focus, with transactional union writes to one IndexedDB key.
 - IndexedDB writes are asynchronous. Browser checks wait for the dismissal write before reloading.
 - Floating announcements cover editor controls beneath them. They can be dismissed without changing the layout.
@@ -116,6 +116,15 @@ The second design is implemented as `editor:line-marks`. The plugin owns the bin
 
 Classic frame and window controls also record social-size, signature, and window-style use through their user change handlers. Loading a project does not record use.
 
-## Future highlights
+## Prepared highlights and how to ship them
 
-Code animations UI and the CLI are outside this release content. Code animations have core code but no mounted editor UI or command. The CLI can use `where: null` with a documentation link when it ships. Their release copy and, for animation UI, a new shared place remain future work. Takumi now ships with the `setting:rendering-engine` row and is included above.
+`UPCOMING` is a content staging list. Nothing in it is rendered or passed to `decide`, `dotAt`, the Showcase, the Nudge or the Settings archive. `HighlightId` remains the shipped identity type used for facts and telemetry; `ContentHighlightId` adds upcoming identities for complete locale and illustration records.
+
+The Animate entry describes code steps, pauses, transitions, easing and preview. The inspected `origin/feat/animate-new-ui` plan explicitly excludes web export (A4) and MP4 (A5); `origin/feat/a2-animation-cli` exports animated images. Do not announce video export until its implementation has landed and this copy is updated. The CLI entry describes source files or standard input, themes and presets, and terminal or CI use. No stable public CLI documentation URL was found in the repository, so it has no `learnMore` link.
+
+To ship a prepared highlight:
+
+1. Confirm its feature and the capabilities described by its copy are on `main` and in the bundle.
+2. Move its one entry from `UPCOMING` into the release’s `highlights`: **animate first of all**, **cli immediately after window-styles**. Both are headline highlights; leave `accessory` absent. The content types derive automatically from the two lists, so no locale or illustration changes are required.
+3. Keep `where: null` until a shared owner can bind its real place. Add a stable documentation link when one is published. A located feature also needs seen-on-use integration and a place check.
+4. Confirm unique ids, policy and content tests. Update the explicit editorial order test when moving the entry. Check the three surfaces and both themes, and set the release date to its actual publishing date.

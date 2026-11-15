@@ -1,10 +1,10 @@
-import type {HighlightId, ReleaseId} from '../state/whats-new/registry';
+import type {ContentHighlightId, ReleaseId} from '../state/whats-new/registry';
 
 type WhatsNewMessages = Record<
   Exclude<keyof typeof en, 'highlights' | 'releases'>,
   string
 > & {
-  highlights: Record<HighlightId, {title: string; body: string}>;
+  highlights: Record<ContentHighlightId, {title: string; body: string}>;
   releases: Record<ReleaseId, {title: string}>;
 };
 
@@ -30,6 +30,14 @@ const en = {
     },
   } satisfies Record<ReleaseId, {title: string}>,
   highlights: {
+    animate: {
+      title: 'Animate your code',
+      body: 'Turn code steps into an animation. Adjust pauses, transitions and easing, then preview the sequence.',
+    },
+    cli: {
+      title: 'CodeImage in your terminal',
+      body: 'Render source files or standard input with the same themes and presets as the web app, from your terminal or CI.',
+    },
     redact: {
       title: 'Hide secrets',
       body: 'Code that looks like an API key, token or password gets a warning. Redact replaces it with dots before you export.',
@@ -74,7 +82,7 @@ const en = {
       title: 'Theme card styles',
       body: 'Choose Window, Orb or Aa list for the theme picker in Settings, Experiments.',
     },
-  } satisfies Record<HighlightId, {title: string; body: string}>,
+  } satisfies Record<ContentHighlightId, {title: string; body: string}>,
 };
 
 const it = {
@@ -99,6 +107,14 @@ const it = {
     },
   },
   highlights: {
+    animate: {
+      title: 'Anima il tuo codice',
+      body: 'Trasforma i passaggi del codice in un’animazione. Regola pause, transizioni e andamento, poi guarda l’anteprima della sequenza.',
+    },
+    cli: {
+      title: 'CodeImage nel terminale',
+      body: 'Genera immagini da file sorgente o dall’ingresso standard con gli stessi temi e preset dell’app web, dal terminale o in CI.',
+    },
     redact: {
       title: 'Nascondi i segreti',
       body: "Il codice che sembra una chiave API, un token o una password riceve un avviso. L'oscuramento lo sostituisce con dei puntini prima dell'esportazione.",
@@ -168,6 +184,14 @@ const de = {
     },
   },
   highlights: {
+    animate: {
+      title: 'Animiere deinen Code',
+      body: 'Erstelle eine Animation aus Code-Schritten. Passe Pausen, Übergänge und Beschleunigungskurven an und sieh dir die Vorschau an.',
+    },
+    cli: {
+      title: 'CodeImage im Terminal',
+      body: 'Erzeuge Bilder aus Quelldateien oder der Standardeingabe mit denselben Themes und Vorlagen wie in der Web-App, im Terminal oder in CI.',
+    },
     redact: {
       title: 'Geheimnisse verbergen',
       body: 'Code, der wie ein API-Schlüssel, Token oder Passwort aussieht, erhält eine Warnung. Maskieren ersetzt ihn vor dem Export durch Punkte.',
@@ -237,6 +261,14 @@ const es = {
     },
   },
   highlights: {
+    animate: {
+      title: 'Anima tu código',
+      body: 'Crea una animación a partir de pasos de código. Ajusta las pausas, las transiciones y las curvas de aceleración y previsualiza la secuencia.',
+    },
+    cli: {
+      title: 'CodeImage en tu terminal',
+      body: 'Genera imágenes a partir de archivos de código o de la entrada estándar con los mismos temas y preajustes que la aplicación web, desde tu terminal o en CI.',
+    },
     redact: {
       title: 'Ocultar secretos',
       body: 'El código que parece una clave API, un token o una contraseña recibe un aviso. Ocultar lo sustituye por puntos antes de exportar.',

@@ -138,3 +138,8 @@ export const markLine = style([
   ),
   {transformOrigin: 'left center', transformBox: 'fill-box'},
 ]);
+
+export const playhead = play(
+  keyframes({from: {transform: 'translateX(-112px)'}, to: {transform: 'none'}}),
+  illustrationFor.redact,
+);
