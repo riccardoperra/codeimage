@@ -13,7 +13,11 @@ import {ToolbarSnippetName} from '../../../components/Toolbar/ToolbarSnippetName
 import {UserBadge} from '../localized/UserBadge';
 import type {Stage} from '../stage';
 import * as styles from './header.css';
-import {SettingsIcon} from './icons';
+import {SparkleIcon} from '../../../components/WhatsNew/SparkleIcon';
+import {fromKeyboard} from '../../../components/WhatsNew/motion';
+import * as newsStyles from '../../../components/WhatsNew/whats-new.css';
+import {getWhatsNew} from '../../../state/whats-new';
+import {ExperimentsIcon, SettingsIcon} from './icons';
 import {settings} from './settings-state';
 
 /**
@@ -26,6 +30,7 @@ export function Header(props: {stage: Stage}) {
   const [t] = useI18n<AppLocaleEntries>();
   // The production buttons pick their size once, at load, from this.
   const modality = useModality();
+  const news = getWhatsNew();
   const loggedIn = () => getAuth0State().loggedIn();
   const isRemote = () => !!getEditorSyncAdapter()?.snippetId();
 
@@ -60,6 +65,53 @@ export function Header(props: {stage: Stage}) {
       </Show>
 
       <div class={styles.actions}>
+        <Show when={news.headerEntry()}>
+          <IconButton
+            class={styles.extraButton}
+            size="sm"
+            theme="secondary"
+            variant="ghost"
+            aria-label={t('editor.whatsNew')}
+            title={t('editor.whatsNew')}
+            aria-controls={
+              news.current()?.surface === 'nudge'
+                ? 'whats-new-nudge'
+                : undefined
+            }
+            data-whats-new-trigger
+            onClick={event => {
+              const nudge = document.querySelector<HTMLElement>(
+                '[data-whats-new="nudge"]',
+              );
+              if (nudge) nudge.focus({preventScroll: true});
+              else news.reopen(fromKeyboard(event));
+            }}
+          >
+            <SparkleIcon />
+            <Show when={news.headerUnread()}>
+              <span
+                class={styles.headerDot}
+                aria-hidden="true"
+                data-whats-new-unread
+              >
+                <span class={newsStyles.unreadDot} />
+              </span>
+            </Show>
+          </IconButton>
+        </Show>
+        <IconButton
+          class={styles.extraButton}
+          size="sm"
+          theme="secondary"
+          variant="ghost"
+          aria-label={t('editor.experiments')}
+          title={t('editor.experiments')}
+          aria-haspopup="dialog"
+          data-experiments-trigger
+          onClick={() => settings.open('experiments')}
+        >
+          <ExperimentsIcon />
+        </IconButton>
         {/* Studio and Dock have a better home for it on a wide window. */}
         <Show when={!settings.inLayout()}>
           <IconButton

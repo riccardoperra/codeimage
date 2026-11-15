@@ -1,6 +1,6 @@
 import type {Accessor} from 'solid-js';
 import {createMemo, createSignal, onCleanup, Show} from 'solid-js';
-import {getWhatsNew, RELEASES} from '../../state/whats-new';
+import {getWhatsNew} from '../../state/whats-new';
 import {Nudge} from './Nudge';
 import {Showcase} from './Showcase';
 
@@ -54,18 +54,13 @@ export function WhatsNewHost(props: {quiet?: Accessor<boolean>}) {
   const forced = import.meta.env.DEV
     ? new URLSearchParams(location.search).get('whatsNew')
     : null;
-  const reviewing = forced === 'nudge' || forced === 'showcase';
-  const [review, setReview] = createSignal(
-    reviewing ? {surface: forced, release: RELEASES[0]} : null,
-  );
   // The store calls this inside its own effect, which tracks the result.
-  // oxlint-disable-next-line solid/reactivity
-  const announcement = news.announce(() => watchQuiet(props.quiet));
-  const current = () => (reviewing ? review() : announcement());
-  const dismiss = () => {
-    setReview(null);
-    news.dismiss();
-  };
+  const current = news.announce(
+    // oxlint-disable-next-line solid/reactivity
+    () => watchQuiet(props.quiet),
+    forced === 'nudge' || forced === 'showcase' ? forced : undefined,
+  );
+  const dismiss = () => news.dismiss();
 
   return (
     <Show when={current()}>
@@ -74,7 +69,11 @@ export function WhatsNewHost(props: {quiet?: Accessor<boolean>}) {
           when={entry().surface === 'nudge'}
           fallback={<Showcase release={entry().release} dismiss={dismiss} />}
         >
-          <Nudge release={entry().release} dismiss={dismiss} />
+          <Nudge
+            release={entry().release}
+            dismiss={dismiss}
+            entry={entry().entry}
+          />
         </Show>
       )}
     </Show>

@@ -81,3 +81,27 @@ export const actions = style({
   gap: themeVars.spacing['2'],
   marginLeft: 'auto',
 });
+
+// Mobile chrome is redesigned separately; keep the existing phone header.
+export const extraButton = style({
+  position: 'relative',
+  flexShrink: 0,
+  transition: 'transform 120ms cubic-bezier(0.23, 1, 0.32, 1)',
+  selectors: {'&:active': {transform: 'scale(.97)'}},
+  '@media': {
+    [phone]: {display: 'none'},
+    '(prefers-reduced-motion: reduce)': {
+      transition: 'none',
+      selectors: {'&:active': {transform: 'none'}},
+    },
+  },
+});
+
+export const headerDot = style({
+  position: 'absolute',
+  top: '3px',
+  right: '3px',
+  display: 'flex',
+  color: c.primary,
+  pointerEvents: 'none',
+});

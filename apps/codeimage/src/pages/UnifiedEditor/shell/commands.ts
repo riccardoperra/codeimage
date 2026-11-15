@@ -146,7 +146,10 @@ export function settingsCommands(extra: readonly Command[]): Command[] {
     ...SECTIONS.map((section): Command => ({
       id: `settings=${section.id}`,
       group: t('editor.settings'),
-      label: t('editor.settingSection', {value: t(section.name)}),
+      label:
+        section.id === 'experiments'
+          ? t('editor.openExperiments')
+          : t('editor.settingSection', {value: t(section.name)}),
       run: () => settings.open(section.id),
     })),
     ...LAYOUTS.map((entry): Command => ({

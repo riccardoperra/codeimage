@@ -8,10 +8,13 @@ import {
   createUniqueId,
   For,
   onCleanup,
+  onMount,
   Show,
+  untrack,
 } from 'solid-js';
 import {Dynamic} from 'solid-js/web';
-import {getWhatsNew, type RELEASES} from '../../state/whats-new';
+import {getWhatsNew, type RELEASES, type WhatsNew} from '../../state/whats-new';
+import {SparkleIcon} from './SparkleIcon';
 import {tabbableBeside} from './focus';
 import {illustrations} from './illustrations';
 import {duration, fromKeyboard} from './motion';
@@ -26,13 +29,19 @@ interface View {
 export function Nudge(props: {
   release: (typeof RELEASES)[number];
   dismiss: () => void;
+  entry: NonNullable<ReturnType<WhatsNew['current']>>['entry'];
 }) {
   const news = getWhatsNew();
   const [t] = useI18n<AppLocaleEntries>();
-  const [expanded, setExpanded] = createSignal(false);
+  const initialEntry = untrack(() => props.entry);
+  const fromHeader = () =>
+    props.entry === 'pointer' || props.entry === 'keyboard';
+  const [expanded, setExpanded] = createSignal(
+    initialEntry === 'pointer' || initialEntry === 'keyboard',
+  );
   const [view, setView] = createSignal<View>({step: 0});
   const [closing, setClosing] = createSignal(false);
-  const [instant, setInstant] = createSignal(false);
+  const [instant, setInstant] = createSignal(initialEntry === 'keyboard');
   const step = createMemo(() => view().step);
   const highlight = () => props.release.highlights[step()];
   const located = () => {
@@ -55,8 +64,14 @@ export function Nudge(props: {
   // Focus inside the card would fall to the page when it leaves.
   const restoreFocus = () => {
     if (card?.contains(document.activeElement))
-      tabbableBeside(card, 'before')?.focus({preventScroll: true});
+      (fromHeader()
+        ? document.querySelector<HTMLElement>('[data-whats-new-trigger]')
+        : tabbableBeside(card, 'before')
+      )?.focus({preventScroll: true});
   };
+  onMount(() => {
+    if (fromHeader()) primary?.focus({preventScroll: true});
+  });
   onCleanup(() => {
     clearTimeout(timer);
     restoreFocus();
@@ -91,7 +106,9 @@ export function Nudge(props: {
 
   return (
     <aside
+      id="whats-new-nudge"
       ref={card}
+      tabIndex={-1}
       on:keydown={event => {
         if (event.key !== 'Escape' || !expanded()) return;
         event.preventDefault();
@@ -109,7 +126,7 @@ export function Nudge(props: {
         when={expanded()}
         fallback={
           <div ref={bar} class={styles.collapsed}>
-            <span aria-hidden="true">✦</span>
+            <SparkleIcon />
             <div class={styles.summary}>
               <strong>
                 {t(count() === 1 ? 'whatsNew.newOne' : 'whatsNew.newMany', {

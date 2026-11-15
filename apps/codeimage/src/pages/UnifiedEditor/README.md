@@ -135,6 +135,15 @@ Each snippet keeps its own signature copy, so later edits to a saved signature l
 Shared controls render the dots and bind reveal actions.
 Layouts do not import What's new modules. The root oxlint override enforces that boundary.
 
+The shared header offers a permanent Experiments button that opens Settings on that section.
+Its What's new button remains available for `NEW_FOR_DAYS` (45 days) from the newest release's date,
+even after dismissal or after every highlight is seen. The entry is hidden while the Showcase is open.
+It focuses an existing Nudge or reopens the newest release expanded for this session, without resetting stored facts.
+Closing a reopened Nudge returns focus to its header trigger; reloading respects the stored dismissal.
+A still unread dot appears only with unseen highlights while the Nudge is absent, outside the three feature-dot slots.
+Both extra buttons hide at widths of 768px and below; the mobile header stays unchanged.
+After expiry, the Settings archive remains available.
+
 `components/WhatsNew/motion.ts` defines curves, durations, and stagger delays for announcements.
 The announcement styles and exit timers read those constants.
 Keyboard actions do not animate.
