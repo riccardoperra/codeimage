@@ -11,6 +11,13 @@ const dist = join(root, 'dist');
 const fontsDir = join(dist, 'fonts');
 
 await rm(dist, {recursive: true, force: true});
+await tsdown({
+  entry: ['src/watermark.ts'],
+  format: 'esm',
+  dts: true,
+  clean: false,
+  tsconfig: 'tsconfig.json',
+});
 await vite({
   root: appRoot,
   configFile: join(appRoot, 'vite.config.ts'),

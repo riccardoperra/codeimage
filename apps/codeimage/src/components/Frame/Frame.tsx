@@ -126,6 +126,7 @@ export const Frame: ParentComponent<FrameProps> = props => {
       <div
         ref={setRef}
         class={styles.container}
+        data-watermark-frame
         style={assignInlineVars({
           [styles.frameVars.width]: computedWidth(),
           [styles.frameVars.height]: computedHeight(),
@@ -141,6 +142,7 @@ export const Frame: ParentComponent<FrameProps> = props => {
         <div
           data-frame-content
           class={styles.overlay}
+          data-watermark-background
           style={assignInlineVars({
             [styles.frameVars.backgroundColor]: assetsStore.isAssetUrl(
               props.background,

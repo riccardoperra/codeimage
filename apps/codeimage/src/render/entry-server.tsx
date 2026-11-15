@@ -3,6 +3,8 @@ import type {PersistedFrameState} from '../state/frame/model';
 import '../assets/styles/app.scss';
 import '../theme/global.css';
 import {getExportTarget} from '@codeimage/config';
+import {canHostWatermarkFrame, WATERMARK} from '@codeimage/render/watermark';
+import {signatureScale} from '../components/Frame/signatureLayout';
 import type {CommentTokens} from '@codemirror/commands';
 import {EditorState} from '@codemirror/state';
 import type {
@@ -138,6 +140,30 @@ export async function composeFrame(
     host.offline,
   );
   const target = getExportTarget(frame.exportTarget);
+  const background = normalized.background ?? '';
+  const hasBackgroundImage =
+    !!media.backgroundImage || /gradient\(/i.test(background);
+  const colorSample = hasBackgroundImage
+    ? null
+    : await host.pixels(
+        {
+          html: `<html><body style="margin:0"><div style="position:absolute;left:0;top:0;width:1px;height:1px;background-color:${background.replaceAll('&', '&amp;').replaceAll('"', '&quot;')}"></div></body></html>`,
+          css: [],
+          images: [],
+          fontFamily: font.name,
+        },
+        1,
+      );
+  const watermarkFrame = {
+    painted: canHostWatermarkFrame({
+      visible: normalized.visible,
+      opacity: normalized.opacity,
+      backgroundColor: colorSample
+        ? `rgba(0, 0, 0, ${colorSample[3] / 255})`
+        : 'transparent',
+      hasImage: hasBackgroundImage,
+    }),
+  };
   const renderPass = (
     appearance: typeof normalized,
     placement?: FittedPlacement,
@@ -210,6 +236,10 @@ export async function composeFrame(
     return {
       ...markup,
       browserCss: markup.css,
+      watermarkFrame: {
+        ...watermarkFrame,
+        inset: WATERMARK.frameInset * signatureScale(target.resolution[0]),
+      },
       size: {width: target.resolution[0], height: target.resolution[1]},
     };
   }
@@ -226,6 +256,10 @@ export async function composeFrame(
     ...markup,
     css: [...markup.css, frameSizeCss(size)],
     browserCss: markup.css,
+    watermarkFrame: {
+      ...watermarkFrame,
+      inset: WATERMARK.frameInset * signatureScale(size.width),
+    },
     size: {width: Math.round(size.width), height: Math.round(size.height)},
   };
 }

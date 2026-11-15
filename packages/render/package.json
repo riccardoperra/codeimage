@@ -12,6 +12,10 @@
     ".": {
       "types": "./dist/index.d.mts",
       "import": "./dist/index.mjs"
+    },
+    "./watermark": {
+      "types": "./dist/watermark.d.mts",
+      "import": "./dist/watermark.mjs"
     }
   },
   "scripts": {
@@ -23,7 +27,8 @@
   },
   "dependencies": {
     "@takumi-rs/core": "2.19.0",
-    "zod": "^4.1.12"
+    "zod": "^4.1.12",
+    "parse5": "7.3.0"
   },
   "devDependencies": {
     "@fontsource-variable/cascadia-code": "5.3.0",

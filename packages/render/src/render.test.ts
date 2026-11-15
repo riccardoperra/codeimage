@@ -6,6 +6,7 @@ import type {SnapshotInput} from './document';
 import type {SnapshotMarkup} from './render';
 import {createRenderer, renderSnapshot, snapshotMarkup} from './render';
 import {sampleDocument} from './sample';
+import {positionWatermark} from './watermarkGeometry';
 import {countPixels, decode, plainDocument} from './test-utils';
 
 const png = async (input: SnapshotInput) => decode(await renderSnapshot(input));
@@ -567,5 +568,60 @@ describe('renderSnapshot', {timeout: 30_000}, () => {
         frame: {...sampleDocument.frame, background: 'asset:123'},
       }),
     ).rejects.toThrow('asset:123');
+  });
+});
+
+it('bounds measurement-only raster drift on real SSR string tokens', async () => {
+  const markup = await snapshotMarkup(
+    withEditor({
+      code: 'const message = "A real shaped string with internal whitespace";',
+    }),
+  );
+  const renderer = new Renderer();
+  for (const font of markup.fonts)
+    await renderer.registerFont({
+      name: font.family,
+      data: font.data,
+      weight: font.weight,
+      unicodeRange: font.unicodeRange,
+    });
+  const options = {
+    css: markup.css,
+    images: markup.images,
+    fontFamilies: markup.fontFamilies,
+    width: markup.size.width,
+    height: markup.size.height,
+    devicePixelRatio: 1,
+  };
+  const originalTree = await renderer.measure(markup.html, options);
+  const original = await renderer.render(markup.html, {
+    ...options,
+    format: 'raw',
+  });
+  await positionWatermark({
+    html: markup.html,
+    painted: true,
+    inset: 24,
+    measure: async html => {
+      const measured = await renderer.measure(html, options);
+      expect(measured.width).toBe(originalTree.width);
+      expect(measured.height).toBe(originalTree.height);
+      const instrumented = await renderer.render(html, {
+        ...options,
+        format: 'raw',
+      });
+      expect(instrumented.length).toBe(original.length);
+      let changed = 0;
+      for (let i = 0; i < original.length; i += 4) {
+        if (
+          original
+            .subarray(i, i + 4)
+            .some((value, channel) => value !== instrumented[i + channel])
+        )
+          changed++;
+      }
+      expect(changed / (original.length / 4)).toBeLessThan(0.01);
+      return measured;
+    },
   });
 });
