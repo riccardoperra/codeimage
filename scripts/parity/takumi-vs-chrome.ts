@@ -35,6 +35,7 @@ const {values: args} = parseArgs({
 });
 
 const SCALE = 2;
+const MAX_MARKS_DIFF_PERCENT = 0.01;
 const webMarksCss = readFile(
   new URL(
     '../../apps/codeimage/src/components/CustomEditor/plugins/lineMarks/marks.css',
@@ -59,8 +60,15 @@ const DEFAULT_CODE = [
 interface Cell {
   name: string;
   document: SnapshotInput;
-  maxDiffPercent?: number;
   avatar?: 'fixture' | 'offline';
+  checkMarks?: boolean;
+}
+
+interface Region {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
 }
 
 function snapshot(
@@ -257,7 +265,7 @@ async function matrix(fixtureUrl: string): Promise<Cell[]> {
     },
     {
       name: 'marks with line numbers',
-      maxDiffPercent: 0.01,
+      checkMarks: true,
       document: snapshot('vsCodeDarkTheme', {
         options: {showLineNumbers: true},
         editor: {
@@ -276,7 +284,7 @@ async function matrix(fixtureUrl: string): Promise<Cell[]> {
     },
     {
       name: 'marks without line numbers',
-      maxDiffPercent: 0.01,
+      checkMarks: true,
       document: snapshot('vsCodeDarkTheme', {
         editor: {
           marks: {
@@ -293,7 +301,7 @@ async function matrix(fixtureUrl: string): Promise<Cell[]> {
     },
     {
       name: 'marks light with line numbers',
-      maxDiffPercent: 0.01,
+      checkMarks: true,
       document: snapshot('githubLight', {
         options: {showLineNumbers: true},
         editor: {
@@ -372,9 +380,11 @@ async function renderInChrome(
   browser: Browser,
   markup: SnapshotMarkup,
   output: {width: number; height: number},
+  checkMarks: boolean,
 ): Promise<{
   bytes: Buffer;
-  crop: {x: number; y: number; width: number; height: number} | null;
+  crop: Region | null;
+  marksStrip: Region | null;
 }> {
   const page = await browser.newPage({viewport: null});
   try {
@@ -430,8 +440,58 @@ async function renderInChrome(
           height: Math.ceil((bounds.height + 16) * scale),
         }
       : null;
+    // Only the left-inset pseudo-elements draw signs and highlight bars. Exclude
+    // gutter digits and code text, whose rasterization varies across platforms.
+    const marksStrip = checkMarks
+      ? await page
+          .locator(
+            '[data-line-marks] .cm-lineNumbers :is(.cm-lineMark-added, .cm-lineMark-removed, .cm-lineMark-highlight), ' +
+              '[data-line-marks]:not([data-line-numbers="true"]) [data-mark]',
+          )
+          .evaluateAll(
+            (elements, {x, y, scale}) => {
+              if (!elements.length) throw new Error('No mark signs to compare');
+              const boxes = elements.map(el => {
+                const rect = el.getBoundingClientRect();
+                const before = getComputedStyle(el, '::before');
+                const width = parseFloat(before.width);
+                if (!(width > 0) || before.content === 'none') {
+                  throw new Error(
+                    'Mark inset must have a visible pseudo-element',
+                  );
+                }
+                return {
+                  left: rect.left - width,
+                  right: rect.left,
+                  top: rect.top,
+                  bottom: rect.bottom,
+                };
+              });
+              const left = Math.floor(
+                (Math.min(...boxes.map(b => b.left)) - x) * scale,
+              );
+              const top = Math.floor(
+                (Math.min(...boxes.map(b => b.top)) - y) * scale,
+              );
+              const right = Math.ceil(
+                (Math.max(...boxes.map(b => b.right)) - x) * scale,
+              );
+              const bottom = Math.ceil(
+                (Math.max(...boxes.map(b => b.bottom)) - y) * scale,
+              );
+              return {
+                x: left,
+                y: top,
+                width: right - left,
+                height: bottom - top,
+              };
+            },
+            {...clip, scale},
+          )
+      : null;
     return {
       crop,
+      marksStrip,
       bytes: await page.screenshot({
         clip,
         omitBackground: true,
@@ -444,6 +504,13 @@ async function renderInChrome(
 }
 
 const slug = (name: string) => name.replace(/[^a-z0-9]+/gi, '-').toLowerCase();
+
+function cropPng(bytes: Uint8Array, {x, y, width, height}: Region) {
+  const source = PNG.sync.read(Buffer.from(bytes));
+  const crop = new PNG({width, height});
+  PNG.bitblt(source, crop, x, y, width, height, 0, 0);
+  return PNG.sync.write(crop);
+}
 
 async function main() {
   await mkdir(args.out, {recursive: true});
@@ -469,13 +536,15 @@ async function main() {
       const markup = await snapshotMarkup(cell.document);
       const takumiBytes = (await renderSnapshot(cell.document)) as Uint8Array;
       const {width, height} = PNG.sync.read(Buffer.from(takumiBytes));
-      const {bytes: chromeBytes, crop} = await renderInChrome(
+      const {
+        bytes: chromeBytes,
+        crop,
+        marksStrip,
+      } = await renderInChrome(
         browsers[markup.document.scale === 1 ? 0 : 1],
         markup,
-        {
-          width,
-          height,
-        },
+        {width, height},
+        cell.checkMarks ?? false,
       );
       const base = join(args.out, slug(cell.name));
       await writeFile(`${base}.json`, JSON.stringify(cell.document, null, 2));
@@ -508,12 +577,31 @@ async function main() {
           100;
         await writeFile(`${base}-signature-diff.png`, PNG.sync.write(diff));
       }
+      let marksPercent: number | null = null;
+      if (marksStrip) {
+        await Promise.all([
+          writeFile(
+            `${base}-marks-chrome.png`,
+            cropPng(chromeBytes, marksStrip),
+          ),
+          writeFile(
+            `${base}-marks-takumi.png`,
+            cropPng(takumiBytes, marksStrip),
+          ),
+        ]);
+        marksPercent = await diffPng(
+          `${base}-marks-chrome.png`,
+          `${base}-marks-takumi.png`,
+          `${base}-marks-diff.png`,
+        );
+      }
       const pass =
-        percent <= (cell.maxDiffPercent ?? MAX_DIFF_PERCENT) &&
-        (cropPercent === null || cropPercent <= MAX_DIFF_PERCENT);
+        percent <= MAX_DIFF_PERCENT &&
+        (cropPercent === null || cropPercent <= MAX_DIFF_PERCENT) &&
+        (marksPercent === null || marksPercent <= MAX_MARKS_DIFF_PERCENT);
       if (!pass) failed++;
       rows.push(
-        `| ${cell.name} | ${width}x${height} | ${percent.toFixed(2)}% | ${cropPercent === null ? '-' : `${cropPercent.toFixed(2)}%`} | ${pass ? 'pass' : 'FAIL'} |`,
+        `| ${cell.name} | ${width}x${height} | ${percent.toFixed(2)}% | ${cropPercent === null ? '-' : `${cropPercent.toFixed(2)}%`} | ${marksPercent === null ? '-' : `${marksPercent.toFixed(3)}%`} | ${pass ? 'pass' : 'FAIL'} |`,
       );
       console.log(rows.at(-1));
     }
@@ -524,8 +612,8 @@ async function main() {
   }
 
   const table = [
-    '| Cell | Size | Diff | Signature crop | Result |',
-    '| --- | --- | --- | --- | --- |',
+    '| Cell | Size | Diff | Signature crop | Marks strip | Result |',
+    '| --- | --- | --- | --- | --- | --- |',
     ...rows,
   ].join('\n');
   await writeFile(join(args.out, 'table.md'), `${table}\n`);

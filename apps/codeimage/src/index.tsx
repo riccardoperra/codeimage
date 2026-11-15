@@ -63,8 +63,8 @@ const Editor = () => {
   );
 };
 
-// The editor in the layout the user chose. It lives with the prototypes for now.
-const UnifiedEditor = lazyWithNoLauncher(() => import("./prototypes/editor-controls"));
+// The editor in the layout the user chose.
+const UnifiedEditor = lazyWithNoLauncher(() => import("./pages/UnifiedEditor"));
 
 const NotFoundPage = lazyWithNoLauncher(() => import("./pages/NotFound/NotFoundPage"));
 
@@ -89,17 +89,9 @@ export function Bootstrap() {
       },
     },
     {
-      // Today's editor, kept for comparison.
+      // The classic editor.
       path: "classic",
       component: Editor,
-    },
-    {
-      path: "prototypes/editor-controls",
-      component: UnifiedEditor,
-    },
-    {
-      path: "prototypes/theme-card",
-      component: lazyWithNoLauncher(() => import("./prototypes/theme-card")),
     },
     {
       path: ":snippetId",

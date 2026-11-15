@@ -6,10 +6,9 @@ import type {JSXElement, ParentComponent} from 'solid-js';
 import {children, createMemo} from 'solid-js';
 import {Dynamic} from 'solid-js/web';
 import {omitProps} from 'solid-use/props';
-import {createTabTheme} from '../Tabs/createTabTheme';
 import {Watermark} from '../../Watermark/Watermark';
-
 import type {BaseTerminalProps} from '../TerminalHost';
+import {createTabTheme} from '../Tabs/createTabTheme';
 
 interface DynamicTerminalProps extends BaseTerminalProps {
   type: string;
@@ -32,7 +31,6 @@ export const DynamicTerminal: ParentComponent<DynamicTerminalProps> = (
       {resolvedChildren()}
 
       <Watermark enabled={props.showWatermark} darkMode={tabTheme().darkMode} />
-
     </Dynamic>
   );
 };

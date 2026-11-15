@@ -30,10 +30,18 @@ Animated capture requires an occupancy envelope for the complete animation and i
 
 ## Verification
 
+Run the focused browser journey with:
+
+```sh
+VERIFY_AUDIT=1 VERIFY_CASES=watermark node .agents/skills/verify-codeimage/scripts/verify.mjs
+```
+
+The journey drives window styles and code through the UI, records live/export geometry, and downloads images. Its mock backend boundary is the same as the rest of the verification skill. Policy tests in `packages/render/src/watermark.test.ts` cover unchanged positioning, blocked controls, signature collision, unavailable frame space and scaling.
+
 Generate the CLI parity documents with `pnpm exec tsx scripts/parity/watermark-cases.mjs`.
 After `pnpm libs:build`, compare their actual web downloads and CLI PNGs with
 `P10_WEB_OUT=/tmp/codeimage-cli-watermark/parity pnpm exec tsx scripts/parity/watermark-cli-vs-web.ts /tmp/codeimage-cli-watermark/cases/*.json`.
 The documents cover all seven window types, four padding values, hidden and transparent frames, header off, signatures, fonts, tabs and portrait output.
 CLI width is a minimum, so the width-minimum case verifies content expansion rather than forced wrapping.
 
-The runner asserts equal watermark slots from browser geometry and Takumi geometry. It records full-image pixel differences separately, including size drift between rasterizers. The initial live browser audit used the committed main verification procedure before the exact web change was ported onto the CLI stack.
+The runner asserts equal watermark slots from browser geometry and Takumi geometry. It records full-image pixel differences separately, including size drift between rasterizers.
