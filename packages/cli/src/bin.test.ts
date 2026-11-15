@@ -2,9 +2,12 @@ import {spawn} from 'node:child_process';
 import {mkdtemp, readdir, rm, readFile} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
 import {join, resolve} from 'node:path';
+import {fileURLToPath} from 'node:url';
 import {afterEach, beforeEach, describe, expect, it} from 'vitest';
 import {PNG} from 'pngjs';
 
+const root = fileURLToPath(new URL('../../../', import.meta.url));
+const projectPath = (path: string) => resolve(root, path);
 let dir: string;
 beforeEach(async () => {
   dir = await mkdtemp(join(tmpdir(), 'codeimage-cli-'));
@@ -19,12 +22,13 @@ function run(
       const child = spawn(
         process.execPath,
         [
-          resolve(
+          projectPath(
             `packages/cli/${options.packed ? 'publish/' : ''}dist/bin.js`,
           ),
           ...args,
         ],
         {
+          cwd: root,
           env: {
             ...process.env,
             CI: '1',
@@ -85,7 +89,7 @@ describe('CLI streams', {timeout: 30_000}, () => {
   });
   it('packs only the same allowlisted Inter/JB font files', async () => {
     const fonts = (
-      await readdir(resolve('packages/cli/publish/dist/fonts'))
+      await readdir(projectPath('packages/cli/publish/dist/fonts'))
     ).filter(file => /\.(ttf|woff2)$/.test(file));
     expect(fonts.length).toBe(9);
     expect(fonts.every(file => /^(Inter|inter-|jetbrains-)/.test(file))).toBe(
@@ -109,7 +113,7 @@ describe('CLI streams', {timeout: 30_000}, () => {
     }
   });
   it('renders a local font without touching the cache', async () => {
-    const path = resolve(
+    const path = projectPath(
       'apps/codeimage/public/assets/fonts/monaspace/MonaspaceNeonVarVF[wght,wdth,slnt].ttf',
     );
     const result = await run(['--offline', '--quiet', '--font-file', path]);
