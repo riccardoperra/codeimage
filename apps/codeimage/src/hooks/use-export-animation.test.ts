@@ -17,12 +17,14 @@ const job: AnimationExport = {
   contentSize: {width: 640, height: 480},
 };
 function fixture(supported = true) {
+  const target = new EventTarget();
   const worker: AnimationWorker = {
     postMessage: vi.fn(),
     terminate: vi.fn(),
     onmessage: null,
     onerror: null,
-    onmessageerror: null,
+    addEventListener: target.addEventListener.bind(target),
+    removeEventListener: target.removeEventListener.bind(target),
   };
   const changed = vi.fn<(state: AnimationJob) => void>();
   const makeWorker = vi.fn(() => worker);
@@ -31,7 +33,8 @@ function fixture(supported = true) {
   );
   const event = (data: AnimationEvent) =>
     worker.onmessage?.({data} as MessageEvent<AnimationEvent>);
-  return {controller, worker, changed, makeWorker, event};
+  const messageError = () => target.dispatchEvent(new Event('messageerror'));
+  return {controller, worker, changed, makeWorker, event, messageError};
 }
 describe('animation job and worker protocol', () => {
   it('warms, prepares, receives progress and completes with an MP4 blob', async () => {
@@ -126,7 +129,7 @@ describe('animation job and worker protocol', () => {
       cause: 'Worker crashed',
     });
     await f.controller.check(config);
-    f.worker.onmessageerror?.({} as MessageEvent<unknown>);
+    f.messageError();
     expect(f.controller.state()).toMatchObject({kind: 'failed'});
   });
   it('reports a message-less worker load failure and can retry', async () => {
@@ -180,6 +183,13 @@ describe('animation job and worker protocol', () => {
       kind: 'export',
       job,
     });
+  });
+  it('detaches message decoding failures when cancelled', async () => {
+    const f = fixture();
+    await f.controller.check(config);
+    f.controller.cancel();
+    f.messageError();
+    expect(f.controller.state()).toEqual({kind: 'cancelled'});
   });
   it('disables export with the support reason without creating a worker', async () => {
     const f = fixture(false);

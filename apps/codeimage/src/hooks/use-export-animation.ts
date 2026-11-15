@@ -31,7 +31,8 @@ export interface AnimationWorker {
   terminate(): void;
   onmessage: ((event: MessageEvent<AnimationEvent>) => void) | null;
   onerror: ((event: ErrorEvent) => void) | null;
-  onmessageerror: ((event: MessageEvent<unknown>) => void) | null;
+  addEventListener(type: 'messageerror', listener: () => void): void;
+  removeEventListener(type: 'messageerror', listener: () => void): void;
 }
 
 // One controller owns both the state and the worker's lifetime. A generation
@@ -44,6 +45,7 @@ export function createAnimationExport(
   let state: AnimationJob = {kind: 'idle'};
   let worker: AnimationWorker | undefined;
   let generation = 0;
+  let disconnectMessageError: (() => void) | undefined;
   const set = (value: AnimationJob) => {
     state = value;
     changed(value);
@@ -52,7 +54,8 @@ export function createAnimationExport(
     if (worker) {
       worker.onmessage = null;
       worker.onerror = null;
-      worker.onmessageerror = null;
+      disconnectMessageError?.();
+      disconnectMessageError = undefined;
       worker.terminate();
     }
     worker = undefined;
@@ -105,10 +108,14 @@ export function createAnimationExport(
         'workerLoad',
       );
     };
-    next.onmessageerror = () => {
+    const messageError = () => {
       if (current === generation)
         fail('Invalid animation worker message', 'workerMessage');
     };
+    // Chrome dispatches this event without exposing an onmessageerror property.
+    next.addEventListener('messageerror', messageError);
+    disconnectMessageError = () =>
+      next.removeEventListener('messageerror', messageError);
     return next;
   };
   return {
