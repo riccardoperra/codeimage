@@ -182,6 +182,7 @@ export async function planPreview(
       {
         transitionMs: settings.transitionMs,
         easing: settings.easing,
+        fps: settings.fps,
         lineNumbers: style.showLineNumbers,
         metrics,
         widths,

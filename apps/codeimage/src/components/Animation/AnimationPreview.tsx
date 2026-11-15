@@ -268,6 +268,7 @@ function AnimationStage(props: {plan: PreviewPlan; visible: boolean}) {
                       fontFamily={style.fontFamily()}
                       fontWeight={style.fontWeight()}
                       enableLigatures={style.enableLigatures()}
+                      showLineNumbers={style.showLineNumbers()}
                     />
                   )
                 }
