@@ -1153,6 +1153,9 @@ export async function audit({page, context, base, out, server}) {
         }
         await page.locator('[data-easing-trigger]').click();
         const easing = page.getByRole('dialog', {name: 'Easing', exact: true});
+        await easing.evaluate(el =>
+          Promise.all(el.getAnimations().map(animation => animation.finished)),
+        );
         for (const control of [
           easing.getByRole('tab', {name: 'Smooth', exact: true}),
           easing.getByRole('button', {name: 'Play transition', exact: true}),
