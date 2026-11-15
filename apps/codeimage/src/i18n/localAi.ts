@@ -20,6 +20,8 @@ export const localAi = {
       },
       failed: 'The model could not answer. {{message}}',
       steps: 'Steps',
+      newChat: 'New chat',
+      chatFull: 'This chat is full. Starting a new one.',
       experiment: 'Local AI',
       experimentHint:
         "Adds Ask AI under the canvas and in the command menu, on a computer: Chrome's on-device model makes the change with the editor's tools.",
@@ -92,6 +94,8 @@ export const localAi = {
       },
       failed: 'Il modello non ha risposto. {{message}}',
       steps: 'Passi',
+      newChat: 'Nuova chat',
+      chatFull: 'Questa chat è piena. Ne inizio una nuova.',
       experiment: 'AI locale',
       experimentHint:
         "Aggiunge Chiedi all'AI sotto il canvas e nel menu dei comandi, su computer: il modello on-device di Chrome fa la modifica con gli strumenti dell'editor.",
@@ -171,6 +175,8 @@ export const localAi = {
       },
       failed: 'Das Modell konnte nicht antworten. {{message}}',
       steps: 'Schritte',
+      newChat: 'Neuer Chat',
+      chatFull: 'Dieser Chat ist voll. Ein neuer beginnt.',
       experiment: 'Lokale KI',
       experimentHint:
         'Fügt KI fragen unter der Leinwand und im Befehlsmenü hinzu, auf dem Computer: Das On-Device-Modell von Chrome nimmt die Änderung mit den Werkzeugen des Editors vor.',
@@ -249,6 +255,8 @@ export const localAi = {
       },
       failed: 'El modelo no pudo responder. {{message}}',
       steps: 'Pasos',
+      newChat: 'Nuevo chat',
+      chatFull: 'Este chat está lleno. Empiezo uno nuevo.',
       experiment: 'IA local',
       experimentHint:
         'Añade Preguntar a la IA bajo el lienzo y en el menú de comandos, en un ordenador: el modelo en el dispositivo de Chrome hace el cambio con las herramientas del editor.',

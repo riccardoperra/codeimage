@@ -1,6 +1,6 @@
 import type {LanguageModelApi, Session} from './language-model';
 import {chromeLanguageModel, log} from './language-model';
-import {ModelStartError} from './model';
+import {ContextFullError, ModelStartError} from './model';
 import type {
   Availability,
   ModelEvent,
@@ -150,6 +150,20 @@ const coreOptions = (tools: readonly ToolSpec[]) => ({
 const describeError = (error: unknown) =>
   error instanceof Error ? `${error.name}: ${error.message}` : String(error);
 
+/**
+ * Past this share of the context window a conversation ends before its next
+ * request, which would otherwise push its oldest turns out unseen.
+ */
+export const FULL_AT = 0.85;
+
+function contextOf(session: Session) {
+  if (session.contextWindow)
+    return {used: session.contextUsage ?? 0, size: session.contextWindow};
+  if (session.inputQuota)
+    return {used: session.inputUsage ?? 0, size: session.inputQuota};
+  return undefined;
+}
+
 /** Chrome's on-device model through the Prompt API, with native tool calling. */
 export function createChromeProvider(
   api: LanguageModelApi | undefined,
@@ -195,8 +209,8 @@ export function createChromeProvider(
     },
   ];
 
-  // One session per system prompt and tools, which each request clones, so
-  // that Chrome reads the instructions and tools once.
+  // One session per system prompt and tools, which each conversation clones,
+  // so that Chrome reads the instructions and tools once.
   let base: {key: string; session: Promise<Session>} | undefined;
 
   function baseSession(
@@ -234,15 +248,41 @@ export function createChromeProvider(
   }
 
   function session(chrome: Session): ModelSession {
+    let requests = 0;
+    async function* turn(input: TurnInput, signal: AbortSignal) {
+      if (input.kind === 'text') {
+        const context = contextOf(chrome);
+        if (requests > 0 && context && context.used > context.size * FULL_AT) {
+          log('the context is full', context);
+          throw new ContextFullError();
+        }
+        requests++;
+        if (input.history?.length) {
+          log('append() the history', JSON.stringify(input.history));
+          await chrome.append(stepTurns(input.history), {signal});
+        }
+        log('prompt', input.text);
+      } else {
+        log('tool results sent back', JSON.stringify(input.results));
+      }
+      const prompt =
+        input.kind === 'text'
+          ? input.text
+          : [{role: 'user', content: input.results.map(toolResponse)}];
+      yield* answerEvents(chunks(chrome.promptStreaming(prompt, {signal})));
+    }
     return {
-      async *stream(input: TurnInput, signal: AbortSignal) {
-        if (input.kind === 'text') log('prompt', input.text);
-        else log('tool results sent back', JSON.stringify(input.results));
-        const prompt =
-          input.kind === 'text'
-            ? input.text
-            : [{role: 'user', content: input.results.map(toolResponse)}];
-        yield* answerEvents(chunks(chrome.promptStreaming(prompt, {signal})));
+      async *stream(input, signal) {
+        try {
+          yield* turn(input, signal);
+        } catch (error) {
+          if (error instanceof Error && error.name === 'QuotaExceededError')
+            throw new ContextFullError({cause: error});
+          throw error;
+        } finally {
+          const context = contextOf(chrome);
+          if (context) log('context', `${context.used}/${context.size}`);
+        }
       },
       destroy: () => {
         log('destroy() the clone');
@@ -267,24 +307,11 @@ export function createChromeProvider(
         return 'unavailable';
       }
     },
-    async open({system, tools, history = [], signal}) {
+    async open({system, tools, signal}) {
       if (!api) throw new Error('This browser has no on-device model.');
       const base = await baseSession(api, system, tools);
       log('clone() the base session');
-      const chrome = await base.clone({signal});
-      const opened = session(chrome);
-      if (history.length > 0) {
-        const turns = stepTurns(history);
-        log('append() the history', JSON.stringify(history));
-        try {
-          await chrome.append(turns, {signal});
-        } catch (error) {
-          opened.destroy();
-          throw error;
-        }
-      }
-      log('session open');
-      return opened;
+      return session(await base.clone({signal}));
     },
   };
 }

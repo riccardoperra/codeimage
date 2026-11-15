@@ -6,6 +6,7 @@ import {
   createSignal,
   Index,
   Match,
+  on,
   onCleanup,
   onMount,
   Show,
@@ -21,7 +22,7 @@ import {ArrowUpIcon, PromptIcon} from '../shell/icons';
 import {preferences} from '../shell/preferences';
 import {settings} from '../shell/settings-state';
 import type {Entry, Run} from './agent';
-import {MAX_TURNS, runAgent} from './agent';
+import {createChat, initialRun, MAX_TURNS} from './agent';
 import {chromeProvider} from './chrome-provider';
 import {languageModel, log} from './language-model';
 import * as styles from './local-ai.css';
@@ -31,18 +32,29 @@ interface Host {
   readonly compact: Accessor<boolean>;
   readonly editable: Accessor<boolean>;
   readonly send: (request: string) => void;
-  readonly stop: () => void;
+  /** Stops the running request and forgets the conversation. */
+  readonly end: () => void;
+}
+
+/** A request and its run, one block of the conversation. */
+interface Exchange {
+  readonly request: string;
+  readonly run: Run;
 }
 
 const [host, setHost] = createSignal<Host>();
 const [open, setOpen] = createSignal(false);
 const [draft, setDraft] = createSignal('');
-const [asked, setAsked] = createSignal('');
-const [run, setRun] = createSignal<Run>();
+const [exchanges, setExchanges] = createSignal<readonly Exchange[]>([]);
 
 const busy = () => {
-  const phase = run()?.phase.kind;
+  const phase = exchanges().at(-1)?.run.phase.kind;
   return phase === 'thinking' || phase === 'calling';
+};
+
+const endChat = () => {
+  host()?.end();
+  setExchanges([]);
 };
 
 const focusField = () =>
@@ -71,10 +83,9 @@ export const localAi = {
     setOpen(true);
     focusField();
   },
-  /** Closes the bar and forgets its run, stopping it. */
+  /** Closes the bar and ends its conversation, stopping a running request. */
   close: () => {
-    host()?.stop();
-    setRun(undefined);
+    endChat();
     setOpen(false);
   },
 };
@@ -90,37 +101,45 @@ export function LocalAi(props: {
   pageState: Accessor<EditorPageState>;
 }) {
   let controller: AbortController | undefined;
+  const chat = createChat({
+    provider: chromeProvider,
+    // Not through withActivity: the bar lists these calls itself.
+    tools: props.tools,
+    brief: props.brief,
+  });
+  const end = () => {
+    controller?.abort();
+    chat.end();
+  };
 
   setHost({
     compact: props.compact,
     editable: () => props.pageState().editable,
-    send: request => {
+    send: text => {
       controller?.abort();
       controller = new AbortController();
-      setAsked(request.trim());
-      void runAgent(
-        {
-          provider: chromeProvider,
-          // Not through withActivity: the bar lists these calls itself.
-          tools: props.tools,
-          brief: props.brief,
-          request: request.trim(),
-          signal: controller.signal,
-        },
-        next => {
-          log('run', next.phase.kind, next);
-          setRun(next);
-        },
-      );
+      const request = text.trim();
+      let exchange: Exchange = {request, run: initialRun};
+      setExchanges(list => [...list, exchange]);
+      void chat.send(request, controller.signal, next => {
+        log('run', next.phase.kind, next);
+        const old = exchange;
+        exchange = {request, run: next};
+        // By identity, so a run that a new chat cut short changes nothing.
+        setExchanges(list =>
+          list.map(item => (item === old ? exchange : item)),
+        );
+      });
     },
-    stop: () => controller?.abort(),
+    end,
   });
 
   createEffect(() => {
     if (!localAi.enabled()) localAi.close();
   });
   onCleanup(() => {
-    controller?.abort();
+    end();
+    setExchanges([]);
     setHost(undefined);
   });
   return null;
@@ -148,15 +167,25 @@ export function AskAiButton() {
 /** A call as the agent activity card draws it, or the model's own words. */
 function EntryRow(props: {entry: Entry}) {
   const words = useSummaryWords();
+  const [t] = useI18n<AppLocaleEntries>();
   const call = () => (props.entry.kind === 'call' ? props.entry : undefined);
   const note = () => (props.entry.kind === 'note' ? props.entry.text : '');
   return (
     <Show
       when={call()}
       fallback={
-        <li class={styles.note} data-local-ai-note>
-          {note()}
-        </li>
+        <Show
+          when={props.entry.kind === 'chat-full'}
+          fallback={
+            <li class={styles.note} data-local-ai-note>
+              {note()}
+            </li>
+          }
+        >
+          <li class={styles.notice} role="status" data-local-ai-chat-full>
+            {t('localAi.chatFull')}
+          </li>
+        </Show>
       }
     >
       {entry => (
@@ -217,16 +246,99 @@ function Answer(props: {text: string}) {
   );
 }
 
+/** One request of the conversation: its words, its calls and the answer. */
+function Block(props: {exchange: Exchange; earlier: boolean}) {
+  const [t] = useI18n<AppLocaleEntries>();
+  const phase = () => props.exchange.run.phase;
+  return (
+    <article
+      class={styles.block}
+      data-local-ai-run={phase().kind}
+      data-earlier={props.earlier ? '' : undefined}
+    >
+      <p class={styles.asked} title={props.exchange.request}>
+        {props.exchange.request}
+      </p>
+      <ol class={styles.list} aria-label={t('localAi.steps')}>
+        {/* By position, so a call that settles updates its row in place. */}
+        <Index each={props.exchange.run.entries}>
+          {entry => <EntryRow entry={entry()} />}
+        </Index>
+      </ol>
+      <Show when={phase().kind === 'thinking'}>
+        <p class={styles.thinking} data-local-ai-thinking>
+          <span class={spinner} />
+          {t('localAi.thinking')}
+        </p>
+      </Show>
+      <Show when={props.exchange.run.text}>
+        {text => <Answer text={text()} />}
+      </Show>
+      <Switch>
+        <Match when={phase().kind === 'turn-limit'}>
+          <p class={styles.outcome} role="status" data-failed>
+            {t('localAi.turnLimit', {count: String(MAX_TURNS)})}
+          </p>
+        </Match>
+        <Match when={phase().kind === 'unavailable'}>
+          <p class={styles.outcome} role="status" data-failed>
+            {t('localAi.notReady')}
+          </p>
+          <Button
+            class={styles.panelAction}
+            size="sm"
+            theme="secondary"
+            onClick={() => {
+              localAi.close();
+              settings.open('experiments');
+            }}
+          >
+            {t('editor.openExperiments')}
+          </Button>
+        </Match>
+        <Match
+          when={(() => {
+            const now = phase();
+            return now.kind === 'cannot-start' ? now.reason : undefined;
+          })()}
+        >
+          {reason => (
+            <p class={styles.outcome} role="status" data-failed>
+              {t(`localAi.cannotStart.${reason()}`)}
+            </p>
+          )}
+        </Match>
+        <Match
+          when={(() => {
+            const now = phase();
+            return now.kind === 'failed' ? now.message : undefined;
+          })()}
+        >
+          {message => (
+            <p class={styles.outcome} role="status" data-failed>
+              {t('localAi.failed', {message: message()})}
+            </p>
+          )}
+        </Match>
+      </Switch>
+    </article>
+  );
+}
+
 /**
  * The request field with Send and Close, in place of the action bar it
- * opened from, and the run's list above it.
+ * opened from, and the conversation above it.
  */
 export function PromptBar() {
   const [t] = useI18n<AppLocaleEntries>();
   let input!: HTMLTextAreaElement;
+  let panel: HTMLElement | undefined;
+  // Follows the latest block unless the user scrolled up to read.
+  let follow = true;
 
   const send = () => {
     if (busy() || !draft().trim()) return;
+    follow = true;
     host()?.send(draft());
     setDraft('');
   };
@@ -237,6 +349,16 @@ export function PromptBar() {
       document.querySelector<HTMLElement>('[data-ask-ai]')?.focus(),
     );
   };
+  const newChat = () => {
+    endChat();
+    input.focus();
+  };
+
+  createEffect(
+    on(exchanges, () => {
+      if (panel && follow) panel.scrollTop = panel.scrollHeight;
+    }),
+  );
 
   onMount(() => {
     input.focus({preventScroll: true});
@@ -260,87 +382,41 @@ export function PromptBar() {
     onCleanup(() => input.removeEventListener('keydown', keys));
   });
 
-  const phase = () => run()?.phase;
-
   return (
     <div class={styles.slot} data-local-ai>
       <div class={styles.stack}>
-        <Show when={run()}>
-          {current => (
-            <section
-              class={styles.panel}
-              aria-label={t('localAi.title')}
-              data-local-ai-run={current().phase.kind}
-            >
-              <p class={styles.asked} title={asked()}>
-                {asked()}
-              </p>
-              <ol class={styles.list} aria-label={t('localAi.steps')}>
-                {/* By position, so a call that settles updates its row in place. */}
-                <Index each={current().entries}>
-                  {entry => <EntryRow entry={entry()} />}
-                </Index>
-              </ol>
-              <Show when={phase()?.kind === 'thinking'}>
-                <p class={styles.thinking} data-local-ai-thinking>
-                  <span class={spinner} />
-                  {t('localAi.thinking')}
-                </p>
-              </Show>
-              <Show when={current().text}>
-                {text => <Answer text={text()} />}
-              </Show>
-              <Switch>
-                <Match when={phase()?.kind === 'turn-limit'}>
-                  <p class={styles.outcome} role="status" data-failed>
-                    {t('localAi.turnLimit', {count: String(MAX_TURNS)})}
-                  </p>
-                </Match>
-                <Match when={phase()?.kind === 'unavailable'}>
-                  <p class={styles.outcome} role="status" data-failed>
-                    {t('localAi.notReady')}
-                  </p>
-                  <Button
-                    class={styles.panelAction}
-                    size="sm"
-                    theme="secondary"
-                    onClick={() => {
-                      localAi.close();
-                      settings.open('experiments');
-                    }}
-                  >
-                    {t('editor.openExperiments')}
-                  </Button>
-                </Match>
-                <Match
-                  when={(() => {
-                    const now = phase();
-                    return now?.kind === 'cannot-start'
-                      ? now.reason
-                      : undefined;
-                  })()}
-                >
-                  {reason => (
-                    <p class={styles.outcome} role="status" data-failed>
-                      {t(`localAi.cannotStart.${reason()}`)}
-                    </p>
-                  )}
-                </Match>
-                <Match
-                  when={(() => {
-                    const now = phase();
-                    return now?.kind === 'failed' ? now.message : undefined;
-                  })()}
-                >
-                  {message => (
-                    <p class={styles.outcome} role="status" data-failed>
-                      {t('localAi.failed', {message: message()})}
-                    </p>
-                  )}
-                </Match>
-              </Switch>
-            </section>
-          )}
+        <Show when={exchanges().length > 0}>
+          <section
+            ref={panel}
+            class={styles.panel}
+            aria-label={t('localAi.title')}
+            data-local-ai-chat
+            onScroll={event => {
+              const {scrollHeight, scrollTop, clientHeight} =
+                event.currentTarget;
+              follow = scrollHeight - scrollTop - clientHeight < 24;
+            }}
+          >
+            <div class={styles.header}>
+              <Button
+                size="xs"
+                theme="secondary"
+                variant="ghost"
+                data-local-ai-new-chat
+                onClick={newChat}
+              >
+                {t('localAi.newChat')}
+              </Button>
+            </div>
+            <Index each={exchanges()}>
+              {(exchange, index) => (
+                <Block
+                  exchange={exchange()}
+                  earlier={index < exchanges().length - 1}
+                />
+              )}
+            </Index>
+          </section>
         </Show>
         <form
           class={styles.bar}

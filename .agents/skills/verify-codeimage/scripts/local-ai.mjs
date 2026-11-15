@@ -104,6 +104,12 @@ function installLanguageModel({mode, scripts}) {
     appended: [],
     prompts: [],
     asked: [],
+    // Each clone's appends and prompts in order, as [clone, kind, input].
+    log: [],
+    destroyed: [],
+    // What every session reports as its context, when set.
+    contextUsage: undefined,
+    contextWindow: undefined,
   };
   window.__localAi = record;
   const started = Date.now();
@@ -125,20 +131,30 @@ function installLanguageModel({mode, scripts}) {
   globalThis.LanguageModelToolError = wrapper('error');
   const plain = value => JSON.parse(JSON.stringify(value));
 
-  function session() {
+  // 0 for a base session, then 1, 2, … for each clone.
+  function session(clone = 0) {
     let script;
     let turn = 0;
     return {
-      destroy() {},
+      get contextUsage() {
+        return record.contextUsage;
+      },
+      get contextWindow() {
+        return record.contextWindow;
+      },
+      destroy() {
+        if (clone) record.destroyed.push(clone);
+      },
       async append(messages) {
         record.appended.push(plain(messages));
+        record.log.push([clone, 'append', plain(messages)]);
       },
       async clone() {
-        record.clones++;
-        return session();
+        return session(++record.clones);
       },
       promptStreaming(input) {
         record.prompts.push(plain(input));
+        record.log.push([clone, 'prompt', plain(input)]);
         if (typeof input === 'string') {
           script = scripts[input] ?? [['I cannot help with that.']];
           turn = 0;
@@ -249,7 +265,9 @@ function experimentOn() {
 
 const bar = page => page.locator('[data-local-ai]');
 const field = page => bar(page).getByRole('textbox', {name: 'Request'});
-const run = page => bar(page).locator('[data-local-ai-run]');
+const blocks = page => bar(page).locator('[data-local-ai-run]');
+// The latest request's block.
+const run = page => blocks(page).last();
 const rows = page => run(page).locator('li[data-tool]');
 
 // Every distinct state of the run, recorded in the page so that no state is
@@ -258,7 +276,9 @@ async function recordRuns(page) {
   await page.evaluate(() => {
     window.__runs = [];
     const take = () => {
-      const panel = document.querySelector('[data-local-ai-run]');
+      const panel = [...document.querySelectorAll('[data-local-ai-run]')].at(
+        -1,
+      );
       if (!panel) return;
       const snap = {
         phase: panel.dataset.localAiRun,
@@ -734,7 +754,25 @@ function verifyDownload({fresh, out}) {
       );
 
       await send(page, FAILING_REQUEST);
-      await bar(page).locator('[data-local-ai-run="answered"]').waitFor();
+      await run(page)
+        .and(page.locator('[data-local-ai-run="answered"]'))
+        .waitFor();
+      assert.equal(await blocks(page).count(), 2, 'one block per request');
+      assert.deepEqual(
+        await blocks(page).evaluateAll(items =>
+          items.map(item => item.hasAttribute('data-earlier')),
+        ),
+        [true, false],
+        'the earlier request steps back',
+      );
+      assert.equal(
+        await blocks(page)
+          .first()
+          .locator('[data-local-ai-answer]')
+          .innerText(),
+        'Added test.tsx with Dracula, padding 32, and exported a 2x PNG.',
+        'the first answer stays in the conversation',
+      );
       assert.deepEqual(
         await rows(page).evaluateAll(items =>
           items.map(item => [item.dataset.tool, item.dataset.status]),
@@ -743,7 +781,7 @@ function verifyDownload({fresh, out}) {
           ['get_editor_state', 'done'],
           ['apply_theme', 'failed'],
         ],
-        'a new request starts a new list',
+        'the second request reads the editor again in its own block',
       );
       assert.match(await rows(page).nth(1).innerText(), /Nope/);
       const error = await page.evaluate(
@@ -758,8 +796,38 @@ function verifyDownload({fresh, out}) {
       );
       const after = await page.evaluate(() => window.__localAi);
       assert.equal(after.bases.length, 1, 'one base session for two requests');
-      assert.equal(after.clones, 2, 'each request clones it');
-      await page.screenshot({path: resolve(out, 'local-ai-failed.png')});
+      assert.equal(after.clones, 1, 'two requests, one conversation');
+      assert.deepEqual(
+        after.log.map(([clone]) => clone),
+        after.log.map(() => 1),
+        'every append and prompt went to the one clone',
+      );
+      const requests = after.log.flatMap(([, kind, input], index) =>
+        kind === 'prompt' && typeof input === 'string'
+          ? [[input, after.log[index - 1]]]
+          : [],
+      );
+      assert.deepEqual(
+        requests.map(([input]) => input),
+        [REQUEST, FAILING_REQUEST],
+      );
+      const stateIds = requests.map(([, [, kind, turns]]) => {
+        assert.equal(kind, 'append', 'a state pair comes right before');
+        const [{value: called}] = turns[0].content;
+        const [{value: answered}] = turns[1].content;
+        assert.equal(called.name, 'get_editor_state');
+        assert.equal(answered.kind, 'success');
+        assert.equal(answered.callId, called.callId);
+        return called.callId;
+      });
+      assert.equal(new Set(stateIds).size, 2, `unique state ids: ${stateIds}`);
+      const secondState = requests[1][1][2][1].content[0].value.result[0].value;
+      assert.ok(
+        JSON.stringify(secondState.tabs).includes('test.tsx'),
+        'the second read sees the tab the first request added',
+      );
+      assert.deepEqual(after.destroyed, [], 'the conversation stays open');
+      await page.screenshot({path: resolve(out, 'local-ai-conversation.png')});
 
       await page.evaluate(() => (window.__localAi.chunkMs = 0));
       await send(page, LOOP_REQUEST);
@@ -774,9 +842,77 @@ function verifyDownload({fresh, out}) {
       assert.match(await run(page).innerText(), /Stopped after 6 turns/);
       await page.screenshot({path: resolve(out, 'local-ai-turn-limit.png')});
 
+      await bar(page).locator('[data-local-ai-new-chat]').click();
+      await bar(page)
+        .locator('[data-local-ai-chat]')
+        .waitFor({state: 'detached'});
+      assert.deepEqual(
+        await page.evaluate(() => window.__localAi.destroyed),
+        [1],
+        'New chat ends the conversation',
+      );
+      assert.ok(
+        await field(page).evaluate(
+          element => element === document.activeElement,
+        ),
+        'New chat leaves the focus in the field',
+      );
+      await send(page, FAILING_REQUEST);
+      await run(page)
+        .and(page.locator('[data-local-ai-run="answered"]'))
+        .waitFor();
+      assert.equal(await blocks(page).count(), 1, 'the new chat starts empty');
+      assert.equal(
+        await page.evaluate(() => window.__localAi.clones),
+        2,
+        'the next request clones a new conversation',
+      );
+
+      await page.evaluate(() =>
+        Object.assign(window.__localAi, {
+          contextUsage: 900,
+          contextWindow: 1000,
+        }),
+      );
+      await send(page, FAILING_REQUEST);
+      await run(page)
+        .and(page.locator('[data-local-ai-run="answered"]'))
+        .waitFor();
+      assert.equal(
+        await run(page).locator('[data-local-ai-chat-full]').innerText(),
+        'This chat is full. Starting a new one.',
+      );
+      assert.deepEqual(
+        await run(page)
+          .locator('li[data-tool]')
+          .evaluateAll(items => items.map(item => item.dataset.tool)),
+        ['get_editor_state', 'apply_theme'],
+        'the request runs whole in the new conversation',
+      );
+      const full = await page.evaluate(() => window.__localAi);
+      assert.equal(full.clones, 3, 'a full chat clones a new conversation');
+      assert.deepEqual(full.destroyed, [1, 2], 'and ends the full one');
+      assert.equal(
+        full.log.filter(([clone]) => clone === 2).length,
+        3,
+        'the full one got nothing past its first request',
+      );
+      await page.screenshot({path: resolve(out, 'local-ai-chat-full.png')});
+      await page.evaluate(() =>
+        Object.assign(window.__localAi, {
+          contextUsage: undefined,
+          contextWindow: undefined,
+        }),
+      );
+
       await field(page).focus();
       await page.keyboard.press('Escape');
       await bar(page).waitFor({state: 'detached'});
+      assert.deepEqual(
+        await page.evaluate(() => window.__localAi.destroyed),
+        [1, 2, 3],
+        'closing the bar ends the conversation',
+      );
       await page.waitForFunction(
         () => document.activeElement?.hasAttribute('data-ask-ai'),
         undefined,

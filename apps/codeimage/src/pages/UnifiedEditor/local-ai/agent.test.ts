@@ -1,7 +1,7 @@
 import {describe, expect, it, vi} from 'vitest';
 import type {AgentTool, ToolResult} from '../agent-tools/tools';
 import type {Run} from './agent';
-import {asksForExport, MAX_TURNS, runAgent} from './agent';
+import {asksForExport, createChat, MAX_TURNS} from './agent';
 import type {
   Availability,
   ModelEvent,
@@ -9,7 +9,7 @@ import type {
   ToolSpec,
   TurnInput,
 } from './model';
-import {ModelStartError} from './model';
+import {ContextFullError, ModelStartError} from './model';
 
 const tool = (
   name: string,
@@ -32,35 +32,46 @@ const done = (reason: 'stop' | 'tool-calls'): ModelEvent => ({
   reason,
 });
 
-/** A model that answers each turn with the next scripted list of events. */
+/**
+ * A model that answers each turn with the next scripted list of events, or
+ * throws the scripted error. Every session it opens shares one script.
+ */
 function fakeProvider(
-  turns: readonly (readonly ModelEvent[])[],
+  turns: readonly (readonly ModelEvent[] | Error)[],
   options: {availability?: Availability; onTurn?: () => void} = {},
 ) {
   const inputs: TurnInput[] = [];
   const opened: {
     system: string;
     tools: readonly ToolSpec[];
-    history: Parameters<ModelProvider['open']>[0]['history'];
+    inputs: TurnInput[];
+    destroy: ReturnType<typeof vi.fn>;
   }[] = [];
-  const destroy = vi.fn();
   const provider: ModelProvider = {
     availability: async () => options.availability ?? 'available',
-    open: async ({system, tools, history}) => {
-      opened.push({system, tools, history});
+    open: async ({system, tools}) => {
+      const session = {
+        system,
+        tools,
+        inputs: [] as TurnInput[],
+        destroy: vi.fn(),
+      };
+      opened.push(session);
       return {
         async *stream(input) {
           inputs.push(input);
+          session.inputs.push(input);
           options.onTurn?.();
           const events = turns[inputs.length - 1];
           if (!events) throw new Error('the model was asked one turn too many');
+          if (events instanceof Error) throw events;
           yield* events;
         },
-        destroy,
+        destroy: session.destroy,
       };
     },
   };
-  return {provider, inputs, opened, destroy};
+  return {provider, inputs, opened};
 }
 
 async function run(
@@ -70,19 +81,24 @@ async function run(
   brief?: () => Record<string, unknown>,
 ) {
   const states: Run[] = [];
-  const last = await runAgent(
-    {provider, tools, brief, request: 'use Dracula and export', signal},
-    state => states.push(state),
+  const chat = createChat({provider, tools, brief});
+  const last = await chat.send('use Dracula and export', signal, state =>
+    states.push(state),
   );
-  return {last, states};
+  return {last, states, chat};
 }
+
+const stateStep = (id: string, output: Record<string, unknown>) => ({
+  call: {id, name: 'get_editor_state', args: {}},
+  result: {callId: id, name: 'get_editor_state', ok: true, output},
+});
 
 const calls = (run: Run) =>
   run.entries.flatMap(entry =>
     entry.kind === 'call' ? [[entry.tool, entry.status]] : [],
   );
 
-describe('runAgent', () => {
+describe('a chat request', () => {
   it('runs each call, sends the results back and ends with the answer', async () => {
     const theme = tool('apply_theme', async () => ({
       ok: true,
@@ -106,7 +122,7 @@ describe('runAgent', () => {
       'export_image',
     ]);
     expect(fake.inputs).toEqual([
-      {kind: 'text', text: 'use Dracula and export'},
+      {kind: 'text', text: 'use Dracula and export', history: []},
       {
         kind: 'tool-results',
         results: [
@@ -137,10 +153,10 @@ describe('runAgent', () => {
         calls(state).some(([, status]) => status === 'running'),
       ),
     ).toBe(true);
-    expect(fake.destroy).toHaveBeenCalledOnce();
+    expect(fake.opened[0].destroy).not.toHaveBeenCalled();
   });
 
-  it('starts the session with the brief as the editor state, so the first turn can act', async () => {
+  it('starts the request with the brief as the editor state, so the first turn can act', async () => {
     const state = tool('get_editor_state');
     const theme = tool('apply_theme');
     const fake = fakeProvider([
@@ -156,17 +172,11 @@ describe('runAgent', () => {
       () => brief,
     );
 
-    expect(fake.opened[0].history).toEqual([
-      {
-        call: {id: 'state-0', name: 'get_editor_state', args: {}},
-        result: {
-          callId: 'state-0',
-          name: 'get_editor_state',
-          ok: true,
-          output: brief,
-        },
-      },
-    ]);
+    expect(fake.inputs[0]).toEqual({
+      kind: 'text',
+      text: 'use Dracula and export',
+      history: [stateStep('state-0', brief)],
+    });
     expect(state.execute).not.toHaveBeenCalled();
     expect(last.entries[0]).toMatchObject({
       tool: 'get_editor_state',
@@ -193,7 +203,7 @@ describe('runAgent', () => {
     expect(last.entries).toMatchObject([
       {tool: 'get_editor_state', status: 'failed', error: 'no editor'},
     ]);
-    expect(fake.opened[0].history).toEqual([]);
+    expect(fake.inputs[0]).toMatchObject({history: []});
     expect(last.phase).toEqual({kind: 'answered'});
   });
 
@@ -292,16 +302,10 @@ describe('runAgent', () => {
       [call('c1', 'export_image', {delivery: 'clipboard'}), done('tool-calls')],
       [done('stop')],
     ]);
-    const states: Run[] = [];
-    const last = await runAgent(
-      {
-        provider: fake.provider,
-        tools: [exporter],
-        request: 'use Dracula',
-        signal: new AbortController().signal,
-      },
-      state => states.push(state),
-    );
+    const last = await createChat({
+      provider: fake.provider,
+      tools: [exporter],
+    }).send('use Dracula', new AbortController().signal, () => {});
 
     expect(exporter.execute).not.toHaveBeenCalled();
     expect(fake.inputs[1]).toEqual({
@@ -362,7 +366,6 @@ describe('runAgent', () => {
       kind: 'failed',
       message: 'the model was asked one turn too many',
     });
-    expect(fake.destroy).toHaveBeenCalledOnce();
   });
 
   it('says the model could not start, with the reason', async () => {
@@ -394,6 +397,154 @@ describe('runAgent', () => {
     expect(theme.execute).toHaveBeenCalledOnce();
     expect(fake.inputs).toHaveLength(1);
     expect(last.phase).toEqual({kind: 'stopped'});
-    expect(fake.destroy).toHaveBeenCalledOnce();
+  });
+});
+
+describe('a chat', () => {
+  const answer = (words: string) => [text(words), done('stop')];
+  const send = (
+    chat: ReturnType<typeof createChat>,
+    request: string,
+    signal = new AbortController().signal,
+  ) => chat.send(request, signal, () => {});
+
+  it('sends each request to one session, after a fresh read of the editor', async () => {
+    const fake = fakeProvider([answer('Darker.'), answer('Lighter.')]);
+    let theme = 'Dracula';
+    const chat = createChat({
+      provider: fake.provider,
+      tools: [],
+      brief: () => ({theme}),
+    });
+
+    await send(chat, 'make it darker');
+    theme = 'Nord';
+    const second = await send(chat, 'now make it lighter');
+
+    expect(fake.opened).toHaveLength(1);
+    expect(fake.opened[0].inputs).toEqual([
+      {
+        kind: 'text',
+        text: 'make it darker',
+        history: [stateStep('state-0', {theme: 'Dracula'})],
+      },
+      {
+        kind: 'text',
+        text: 'now make it lighter',
+        history: [stateStep('state-1', {theme: 'Nord'})],
+      },
+    ]);
+    expect(second.text).toBe('Lighter.');
+    expect(second.entries).toMatchObject([
+      {tool: 'get_editor_state', args: {theme: 'Nord'}},
+    ]);
+    expect(fake.opened[0].destroy).not.toHaveBeenCalled();
+  });
+
+  it('ends the session on end(), and the next request opens a new one', async () => {
+    const fake = fakeProvider([answer('One.'), answer('Two.')]);
+    const chat = createChat({provider: fake.provider, tools: []});
+
+    await send(chat, 'one');
+    chat.end();
+    expect(fake.opened[0].destroy).toHaveBeenCalledOnce();
+    chat.end();
+    expect(fake.opened[0].destroy).toHaveBeenCalledOnce();
+
+    const second = await send(chat, 'two');
+    expect(fake.opened).toHaveLength(2);
+    expect(fake.opened[1].inputs).toMatchObject([{kind: 'text', text: 'two'}]);
+    expect(second.entries).toEqual([]);
+  });
+
+  it('keeps the session after a stopped request, for the next one', async () => {
+    const controller = new AbortController();
+    const fake = fakeProvider([
+      [call('c1', 'apply_theme'), done('tool-calls')],
+      answer('Done.'),
+    ]);
+    const theme = tool('apply_theme', async () => {
+      controller.abort();
+      return {ok: true};
+    });
+    const chat = createChat({provider: fake.provider, tools: [theme]});
+
+    const stopped = await send(chat, 'use Dracula', controller.signal);
+    const next = await send(chat, 'use Nord');
+
+    expect(stopped.phase).toEqual({kind: 'stopped'});
+    expect(next.phase).toEqual({kind: 'answered'});
+    expect(next.text).toBe('Done.');
+    expect(fake.opened).toHaveLength(1);
+    expect(fake.opened[0].inputs.map(input => input.kind)).toEqual([
+      'text',
+      'text',
+    ]);
+  });
+
+  it('starts a new conversation, and says so, when the old one is full', async () => {
+    const fake = fakeProvider([
+      answer('Darker.'),
+      new ContextFullError(),
+      answer('Lighter.'),
+    ]);
+    const chat = createChat({
+      provider: fake.provider,
+      tools: [],
+      brief: () => ({theme: 'Dracula'}),
+    });
+
+    await send(chat, 'make it darker');
+    const second = await send(chat, 'now make it lighter');
+
+    expect(fake.opened).toHaveLength(2);
+    expect(fake.opened[0].destroy).toHaveBeenCalledOnce();
+    expect(fake.opened[1].inputs).toEqual([
+      {
+        kind: 'text',
+        text: 'now make it lighter',
+        history: [stateStep('state-2', {theme: 'Dracula'})],
+      },
+    ]);
+    expect(second.entries).toMatchObject([
+      {kind: 'chat-full'},
+      {kind: 'call', tool: 'get_editor_state', id: 'state-2'},
+    ]);
+    expect(second.phase).toEqual({kind: 'answered'});
+    expect(second.text).toBe('Lighter.');
+  });
+
+  it('fails a request that does not fit a new conversation', async () => {
+    const fake = fakeProvider([new ContextFullError()]);
+    const chat = createChat({provider: fake.provider, tools: []});
+
+    const last = await send(chat, 'a very long request');
+
+    expect(fake.opened).toHaveLength(1);
+    expect(last.phase).toEqual({
+      kind: 'failed',
+      message: "The request does not fit in the model's context.",
+    });
+  });
+
+  it('does not run the calls again when the context fills after them', async () => {
+    const theme = tool('apply_theme');
+    const fake = fakeProvider([
+      answer('Hello.'),
+      [call('c1', 'apply_theme'), done('tool-calls')],
+      new ContextFullError(),
+      answer('Fresh.'),
+    ]);
+    const chat = createChat({provider: fake.provider, tools: [theme]});
+
+    await send(chat, 'hello');
+    const full = await send(chat, 'use Dracula');
+    const next = await send(chat, 'use Nord');
+
+    expect(theme.execute).toHaveBeenCalledOnce();
+    expect(full.phase).toMatchObject({kind: 'failed'});
+    expect(fake.opened).toHaveLength(2);
+    expect(fake.opened[0].destroy).toHaveBeenCalledOnce();
+    expect(next.text).toBe('Fresh.');
   });
 });

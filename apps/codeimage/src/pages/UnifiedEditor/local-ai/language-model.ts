@@ -23,6 +23,12 @@ export interface Session {
   append(input: unknown, options?: {signal?: AbortSignal}): Promise<void>;
   clone(options?: {signal?: AbortSignal}): Promise<Session>;
   destroy(): void;
+  /** Tokens in the session and its limit, in the explainer's current names. */
+  readonly contextUsage?: number;
+  readonly contextWindow?: number;
+  /** The same, in the names Chrome shipped first. */
+  readonly inputUsage?: number;
+  readonly inputQuota?: number;
 }
 
 interface Monitor {

@@ -5,9 +5,10 @@ import type {
   ModelSession,
   ModelToolCall,
   ModelToolResult,
+  ToolStep,
   TurnInput,
 } from './model';
-import {ModelStartError} from './model';
+import {ContextFullError, ModelStartError} from './model';
 
 /** Turns a request may take before the run stops waiting for an answer. */
 export const MAX_TURNS = 6;
@@ -15,7 +16,7 @@ export const MAX_TURNS = 6;
 export const SYSTEM_PROMPT = [
   'You edit a code screenshot in CodeImage by calling tools. Use only these tools.',
   "If the user's words don't match a tool exactly, use the tool closest in meaning and say which one you used in your answer. If none fits, say so in one sentence.",
-  'The editor state at the start of the conversation is current: the tabs, the theme, each setting by name with its value, and the theme names. Do not call get_editor_state just to look; call read_tab to see code.',
+  'Each request comes right after a get_editor_state answer with the current editor: the tabs, the theme, each setting by name with its value, and the theme names. The user may have changed the editor between requests, so trust the latest one. Do not call get_editor_state just to look; call read_tab to see code.',
   'Recipes, one call each where possible:',
   '- duplicate a tab: duplicate_tab {}',
   '- add a tab with code: add_tab {name, code}',
@@ -52,7 +53,7 @@ const step = (
   output: Record<string, unknown>,
 ) => ({call: {id, name, args}, result: {callId: id, name, ok: true, output}});
 
-/** The tool whose answer seeds each session, so the model starts informed. */
+/** The tool whose answer opens each request, so the model knows the editor. */
 const STATE_TOOL = 'get_editor_state';
 
 export type CallStatus =
@@ -62,6 +63,8 @@ export type CallStatus =
 
 /** What the run shows in its list, in order. */
 export type Entry =
+  /** The conversation ran out of context, so this request starts a new one. */
+  | {readonly kind: 'chat-full'}
   /** Text the model wrote before calling tools. */
   | {readonly kind: 'note'; readonly text: string}
   | ({
@@ -95,6 +98,7 @@ export interface Run {
 }
 
 type AgentEvent =
+  | {readonly type: 'restart'}
   | {readonly type: 'turn'}
   | {readonly type: 'text'; readonly text: string}
   | {
@@ -120,6 +124,8 @@ export const initialRun: Run = {
 
 export function reduce(run: Run, event: AgentEvent): Run {
   switch (event.type) {
+    case 'restart':
+      return {...initialRun, entries: [{kind: 'chat-full'}]};
     case 'turn':
       return {...run, phase: {kind: 'thinking'}};
     case 'text':
@@ -182,15 +188,15 @@ function toModel(call: ModelToolCall, result: ToolResult): ModelToolResult {
 }
 
 /**
- * Reads the brief as the model's first get_editor_state call, and shows it as
- * the list's first row. The row's arguments are the brief, which its summary
- * describes; the model saw no arguments.
+ * Reads the brief as a get_editor_state call the model made, and shows it as
+ * a row. The row's arguments are the brief, which its summary describes; the
+ * model saw no arguments.
  */
 function seed(
+  id: string,
   brief: () => Record<string, unknown>,
   dispatch: (event: AgentEvent) => void,
-) {
-  const id = 'state-0';
+): ToolStep[] {
   let output: Record<string, unknown> | undefined;
   let status: CallStatus = {status: 'done'};
   try {
@@ -211,101 +217,144 @@ function seed(
   return output ? [step(id, STATE_TOOL, {}, output)] : [];
 }
 
-/**
- * Sends the request to the model with the tools, runs each call it makes and
- * sends the results back, turn after turn, until it answers. `onChange` sees
- * every state of the run.
- */
-export async function runAgent(
-  options: {
-    readonly provider: ModelProvider;
-    readonly tools: readonly AgentTool[];
-    readonly request: string;
-    /** A short read of the editor, given to the model as get_editor_state's answer. */
-    readonly brief?: () => Record<string, unknown>;
-    readonly signal: AbortSignal;
-    readonly maxTurns?: number;
-  },
-  onChange: (run: Run) => void,
-): Promise<Run> {
-  const {provider, tools, signal, maxTurns = MAX_TURNS} = options;
-  let run = initialRun;
-  const dispatch = (event: AgentEvent) => {
-    run = reduce(run, event);
-    onChange(run);
-    return run;
-  };
-  const end = (phase: Ending) => dispatch({type: 'end', phase});
+/** A conversation with the model, kept from one request to the next. */
+export interface Chat {
+  /**
+   * Sends the request with a fresh read of the editor, runs each call the
+   * model makes and sends the results back, turn after turn, until it
+   * answers. `onChange` sees every state of the run. One request at a time.
+   */
+  send(
+    request: string,
+    signal: AbortSignal,
+    onChange: (run: Run) => void,
+  ): Promise<Run>;
+  /** Forgets the conversation: the next request starts a new one. */
+  end(): void;
+}
 
-  onChange(run);
+export function createChat(options: {
+  readonly provider: ModelProvider;
+  readonly tools: readonly AgentTool[];
+  /** A short read of the editor, given to the model as get_editor_state's answer. */
+  readonly brief?: () => Record<string, unknown>;
+  readonly maxTurns?: number;
+}): Chat {
+  const {provider, tools, brief, maxTurns = MAX_TURNS} = options;
+  const specs = tools.map(({name, description, inputSchema}) => ({
+    name,
+    description,
+    inputSchema,
+  }));
   let session: ModelSession | undefined;
-  try {
-    const specs = tools.map(({name, description, inputSchema}) => ({
-      name,
-      description,
-      inputSchema,
-    }));
-    if ((await provider.availability(specs)) !== 'available')
-      return end({kind: 'unavailable'});
-    const history = options.brief ? seed(options.brief, dispatch) : [];
-    session = await provider.open({
-      system: SYSTEM_PROMPT,
-      history,
-      tools: specs,
-      signal,
-    });
-    let input: TurnInput = {kind: 'text', text: options.request};
-    let calls = 0;
-    for (let turn = 1; ; turn++) {
-      const results: ModelToolResult[] = [];
-      let reason: 'stop' | 'tool-calls' = 'stop';
-      for await (const event of session.stream(input, signal)) {
-        if (signal.aborted) break;
-        if (event.type === 'text-delta') {
-          dispatch({type: 'text', text: event.text});
-        } else if (event.type === 'tool-call') {
-          const tool = tools.find(tool => tool.name === event.call.name);
-          const id = `call-${++calls}`;
-          dispatch({
-            type: 'call',
-            id,
-            call: event.call,
-            readOnly: tool?.annotations?.readOnlyHint === true,
+  // Unique in the session, which keeps the reads of earlier requests.
+  let reads = 0;
+
+  const drop = (old: ModelSession) => {
+    old.destroy();
+    if (session === old) session = undefined;
+  };
+
+  async function send(
+    request: string,
+    signal: AbortSignal,
+    onChange: (run: Run) => void,
+  ): Promise<Run> {
+    let run = initialRun;
+    const dispatch = (event: AgentEvent) => {
+      run = reduce(run, event);
+      onChange(run);
+      return run;
+    };
+    const end = (phase: Ending) => dispatch({type: 'end', phase});
+
+    onChange(run);
+    try {
+      if ((await provider.availability(specs)) !== 'available')
+        return end({kind: 'unavailable'});
+      for (;;) {
+        const fresh = !session;
+        if (!session) {
+          const opened = await provider.open({
+            system: SYSTEM_PROMPT,
+            tools: specs,
+            signal,
           });
-          const result =
-            event.call.name === 'export_image' &&
-            !asksForExport(options.request)
-              ? NO_EXPORT
-              : await execute(tools, event.call);
-          dispatch({
-            type: 'settled',
-            id,
-            tabId: writtenTabId(event.call.name, result),
-            status: result.ok
-              ? {status: 'done'}
-              : {status: 'failed', error: result.error},
-          });
-          results.push(toModel(event.call, result));
-        } else {
-          reason = event.reason;
+          if (signal.aborted) {
+            opened.destroy();
+            return end({kind: 'stopped'});
+          }
+          session = opened;
+        }
+        const current = session;
+        const history = brief ? seed(`state-${reads++}`, brief, dispatch) : [];
+        let calls = 0;
+        try {
+          let input: TurnInput = {kind: 'text', text: request, history};
+          for (let turn = 1; ; turn++) {
+            const results: ModelToolResult[] = [];
+            let reason: 'stop' | 'tool-calls' = 'stop';
+            for await (const event of current.stream(input, signal)) {
+              if (signal.aborted) break;
+              if (event.type === 'text-delta') {
+                dispatch({type: 'text', text: event.text});
+              } else if (event.type === 'tool-call') {
+                const tool = tools.find(tool => tool.name === event.call.name);
+                const id = `call-${++calls}`;
+                dispatch({
+                  type: 'call',
+                  id,
+                  call: event.call,
+                  readOnly: tool?.annotations?.readOnlyHint === true,
+                });
+                const result =
+                  event.call.name === 'export_image' && !asksForExport(request)
+                    ? NO_EXPORT
+                    : await execute(tools, event.call);
+                dispatch({
+                  type: 'settled',
+                  id,
+                  tabId: writtenTabId(event.call.name, result),
+                  status: result.ok
+                    ? {status: 'done'}
+                    : {status: 'failed', error: result.error},
+                });
+                results.push(toModel(event.call, result));
+              } else {
+                reason = event.reason;
+              }
+            }
+            if (signal.aborted) return end({kind: 'stopped'});
+            if (reason === 'stop' || results.length === 0)
+              return end({kind: 'answered'});
+            if (turn >= maxTurns) return end({kind: 'turn-limit'});
+            dispatch({type: 'turn'});
+            input = {kind: 'tool-results', results};
+          }
+        } catch (error) {
+          if (!(error instanceof ContextFullError)) throw error;
+          drop(current);
+          // Calls already made would run twice in a new conversation, and a
+          // new one that is already full cannot take the request at all.
+          if (fresh || calls > 0 || signal.aborted) throw error;
+          dispatch({type: 'restart'});
         }
       }
+    } catch (error) {
       if (signal.aborted) return end({kind: 'stopped'});
-      if (reason === 'stop' || results.length === 0)
-        return end({kind: 'answered'});
-      if (turn >= maxTurns) return end({kind: 'turn-limit'});
-      dispatch({type: 'turn'});
-      input = {kind: 'tool-results', results};
+      if (error instanceof ModelStartError)
+        return end({kind: 'cannot-start', reason: error.reason});
+      return end({
+        kind: 'failed',
+        message: error instanceof Error ? error.message : String(error),
+      });
     }
-  } catch (error) {
-    if (signal.aborted) return end({kind: 'stopped'});
-    if (error instanceof ModelStartError)
-      return end({kind: 'cannot-start', reason: error.reason});
-    return end({
-      kind: 'failed',
-      message: error instanceof Error ? error.message : String(error),
-    });
-  } finally {
-    session?.destroy();
   }
+
+  return {
+    send,
+    end: () => {
+      if (session) drop(session);
+    },
+  };
 }

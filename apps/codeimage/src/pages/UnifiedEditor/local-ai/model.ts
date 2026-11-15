@@ -38,7 +38,12 @@ export interface ToolStep {
 }
 
 export type TurnInput =
-  | {readonly kind: 'text'; readonly text: string}
+  | {
+      readonly kind: 'text';
+      readonly text: string;
+      /** Calls to add before the text, as if the model had made them. */
+      readonly history?: readonly ToolStep[];
+    }
   | {
       readonly kind: 'tool-results';
       readonly results: readonly ModelToolResult[];
@@ -49,6 +54,10 @@ export type ModelEvent =
   | {readonly type: 'tool-call'; readonly call: ModelToolCall}
   | {readonly type: 'done'; readonly reason: 'stop' | 'tool-calls'};
 
+/**
+ * One conversation: each text turn continues from the turns before it. A
+ * stream throws ContextFullError when the session has no room for the turn.
+ */
 export interface ModelSession {
   stream(input: TurnInput, signal: AbortSignal): AsyncIterable<ModelEvent>;
   destroy(): void;
@@ -60,8 +69,6 @@ export interface ModelProvider {
   open(input: {
     readonly system: string;
     readonly tools: readonly ToolSpec[];
-    /** Calls the session starts with, as if the model had made them. */
-    readonly history?: readonly ToolStep[];
     readonly signal: AbortSignal;
   }): Promise<ModelSession>;
 }
@@ -77,5 +84,13 @@ export class ModelStartError extends Error {
   ) {
     super(`The model could not start (${reason}).`, options);
     this.name = 'ModelStartError';
+  }
+}
+
+/** The session's context has no room left for the turn. */
+export class ContextFullError extends Error {
+  constructor(options?: {cause?: unknown}) {
+    super("The request does not fit in the model's context.", options);
+    this.name = 'ContextFullError';
   }
 }

@@ -73,12 +73,12 @@ export const input = style({
   overflowY: 'auto',
 });
 
-/** The run, as the agent activity card draws its calls. */
+/** The conversation, its calls drawn as the agent activity card draws them. */
 export const panel = style({
   ...enter,
   display: 'flex',
   flexDirection: 'column',
-  gap: '6px',
+  gap: '10px',
   boxSizing: 'border-box',
   maxHeight: 'min(360px, 50dvh)',
   overflowY: 'auto',
@@ -90,6 +90,32 @@ export const panel = style({
   boxShadow: c.dialog.panelShadow,
   fontSize: '13px',
   scrollbarWidth: 'thin',
+});
+
+export const header = style({
+  position: 'sticky',
+  top: '-10px',
+  zIndex: 1,
+  display: 'flex',
+  justifyContent: 'flex-end',
+  margin: '-10px -10px -6px',
+  padding: '6px 6px 0',
+  background: c.dialog.panelBackgroundColor,
+});
+
+/** One request and what it did. Earlier ones step back from the latest. */
+export const block = style({
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '6px',
+  // The panel scrolls: a block keeps its height instead of shrinking.
+  flexShrink: 0,
+  transition: `opacity 200ms ${ease}`,
+  selectors: {
+    '& + &': {paddingTop: '10px', borderTop: `1px solid ${c.divider}`},
+    '&[data-earlier]': {opacity: 0.6},
+    '&[data-earlier]:hover, &[data-earlier]:focus-within': {opacity: 1},
+  },
 });
 
 export const asked = style({
@@ -128,6 +154,14 @@ export const outcome = style({
     '&:empty': {display: 'none'},
     '&[data-failed]': {color: c.button.danger.backgroundColor},
   },
+});
+
+/** Why the conversation started over at this request. */
+export const notice = style({
+  padding: '4px 8px',
+  color: c.descriptionTextColor,
+  fontSize: '12px',
+  fontStyle: 'italic',
 });
 
 /** What the model wrote between its calls. */

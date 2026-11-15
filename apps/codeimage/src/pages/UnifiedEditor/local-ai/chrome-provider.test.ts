@@ -2,6 +2,7 @@ import {describe, expect, it, vi} from 'vitest';
 import {createChromeProvider, plainSchema} from './chrome-provider';
 import type {LanguageModelApi, Session} from './language-model';
 import type {ModelEvent, ModelSession} from './model';
+import {ContextFullError} from './model';
 
 vi.spyOn(console, 'info').mockImplementation(() => {});
 
@@ -21,21 +22,40 @@ class Failure {
 }
 
 function fakeChrome(
-  turns: readonly (readonly unknown[])[],
-  {rejectTools = false} = {},
+  turns: readonly (readonly unknown[] | Error)[],
+  {
+    rejectTools = false,
+    context = {},
+  }: {
+    rejectTools?: boolean;
+    context?: Pick<
+      Session,
+      'contextUsage' | 'contextWindow' | 'inputUsage' | 'inputQuota'
+    >;
+  } = {},
 ) {
   const prompts: unknown[] = [];
   const appended: unknown[] = [];
+  /** What the clone holds, in order: appends and prompts. */
+  const timeline: string[] = [];
   const created: object[] = [];
   const clones = vi.fn();
   const destroyed = vi.fn();
   const session = (): Session => ({
+    ...context,
     promptStreaming: input => {
       prompts.push(input);
-      return streamOf(turns[prompts.length - 1] ?? []);
+      timeline.push('prompt');
+      const turn = turns[prompts.length - 1] ?? [];
+      if (turn instanceof Error)
+        return new ReadableStream({
+          start: controller => controller.error(turn),
+        });
+      return streamOf(turn);
     },
     append: async input => {
       appended.push(input);
+      timeline.push('append');
     },
     clone: async () => {
       clones();
@@ -54,7 +74,7 @@ function fakeChrome(
       return session();
     },
   };
-  return {api, prompts, appended, created, clones, destroyed};
+  return {api, prompts, appended, timeline, created, clones, destroyed};
 }
 
 const collect = async (
@@ -134,27 +154,13 @@ describe('createChromeProvider', () => {
     });
   });
 
-  it('clones one base session per request and appends the history', async () => {
+  it('clones one base session per conversation', async () => {
     const fake = fakeChrome([]);
-    const provider = createChromeProvider(fake.api, {
-      LanguageModelToolSuccess: Success,
-    });
-    const history = [
-      {
-        call: {id: 'state-0', name: 'get_editor_state', args: {}},
-        result: {
-          callId: 'state-0',
-          name: 'get_editor_state',
-          ok: true,
-          output: {tabs: ['index.ts']},
-        },
-      },
-    ];
+    const provider = createChromeProvider(fake.api, {});
     const open = () =>
       provider.open({
         system: 'Edit the screenshot.',
         tools: TOOLS,
-        history,
         signal: new AbortController().signal,
       });
     const first = await open();
@@ -164,14 +170,39 @@ describe('createChromeProvider', () => {
     expect(fake.created).toHaveLength(1);
     expect(fake.clones).toHaveBeenCalledTimes(2);
     expect(fake.destroyed).toHaveBeenCalledOnce();
+  });
+
+  it('appends the history before each request it comes with', async () => {
+    const fake = fakeChrome([[], []]);
+    const session = await createChromeProvider(fake.api, {
+      LanguageModelToolSuccess: Success,
+    }).open({system: '', tools: TOOLS, signal: new AbortController().signal});
+    const state = (id: string, tabs: string[]) => ({
+      call: {id, name: 'get_editor_state', args: {}},
+      result: {callId: id, name: 'get_editor_state', ok: true, output: {tabs}},
+    });
+
+    await collect(session, {
+      kind: 'text',
+      text: 'make it darker',
+      history: [state('state-0', ['index.ts'])],
+    });
+    await collect(session, {
+      kind: 'text',
+      text: 'now lighter',
+      history: [state('state-1', ['main.py'])],
+    });
+
+    expect(fake.timeline).toEqual(['append', 'prompt', 'append', 'prompt']);
+    expect(fake.prompts).toEqual(['make it darker', 'now lighter']);
     expect(JSON.stringify(fake.created[0])).not.toContain('index.ts');
-    expect(fake.appended[0]).toStrictEqual([
+    expect(fake.appended[1]).toStrictEqual([
       {
         role: 'assistant',
         content: [
           {
             type: 'tool-call',
-            value: {callId: 'state-0', name: 'get_editor_state', arguments: {}},
+            value: {callId: 'state-1', name: 'get_editor_state', arguments: {}},
           },
         ],
       },
@@ -181,14 +212,50 @@ describe('createChromeProvider', () => {
           {
             type: 'tool-response',
             value: new Success({
-              callId: 'state-0',
+              callId: 'state-1',
               name: 'get_editor_state',
-              result: [{type: 'object', value: {tabs: ['index.ts']}}],
+              result: [{type: 'object', value: {tabs: ['main.py']}}],
             }),
           },
         ],
       },
     ]);
+  });
+
+  it.each([
+    [{contextUsage: 900, contextWindow: 1000}, true],
+    [{inputUsage: 900, inputQuota: 1000}, true],
+    [{contextUsage: 800, contextWindow: 1000}, false],
+    [{}, false],
+  ])(
+    'with %o after a request, says the next one does not fit: %s',
+    async (context, full) => {
+      const fake = fakeChrome([[], []], {context});
+      const session = await createChromeProvider(fake.api, {}).open({
+        system: '',
+        tools: TOOLS,
+        signal: new AbortController().signal,
+      });
+      await collect(session, {kind: 'text', text: 'one'});
+      const next = collect(session, {kind: 'text', text: 'two'});
+      if (full) await expect(next).rejects.toBeInstanceOf(ContextFullError);
+      else await next;
+      expect(fake.prompts).toEqual(full ? ['one'] : ['one', 'two']);
+    },
+  );
+
+  it('reads a QuotaExceededError as a full context', async () => {
+    const fake = fakeChrome([
+      new DOMException('The input is too large.', 'QuotaExceededError'),
+    ]);
+    const session = await createChromeProvider(fake.api, {}).open({
+      system: '',
+      tools: TOOLS,
+      signal: new AbortController().signal,
+    });
+    await expect(
+      collect(session, {kind: 'text', text: 'go'}),
+    ).rejects.toBeInstanceOf(ContextFullError);
   });
 
   it('streams text deltas, cumulative text and tool calls as events', async () => {
