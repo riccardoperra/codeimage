@@ -50,9 +50,11 @@ export const RELEASES = [
     date: '2026-11-14',
     major: true,
     highlights: [
+      {id: 'animate', where: null},
       {id: 'layouts', where: 'setting:layout', experimental: true},
       {id: 'marks', where: 'editor:line-marks'},
       {id: 'takumi', where: 'setting:rendering-engine', experimental: true},
+      {id: 'cli', where: null},
       {id: 'signature', where: 'control:signature.saved'},
       {id: 'window-styles', where: 'control:window.style'},
       {id: 'redact', where: null},
@@ -71,14 +73,11 @@ export const RELEASES = [
 ] as const satisfies readonly Release[];
 
 /**
- * Nothing in UPCOMING is rendered or decided on. To ship an entry, move it
- * into RELEASES: animate first of all; cli immediately after takumi. Both are headline entries.
+ * Prepared highlights for features that are not in the bundle yet. Nothing in
+ * UPCOMING is rendered or decided on. To ship an entry, move it into RELEASES.
  * See docs/plans/2026-whats-new/rationale.md for the shipping checklist.
  */
-export const UPCOMING = [
-  {id: 'animate', where: null},
-  {id: 'cli', where: null},
-] as const satisfies readonly Highlight[];
+export const UPCOMING = [] as const satisfies readonly Highlight[];
 
 export type ContentHighlightId = HighlightId | (typeof UPCOMING)[number]['id'];
 

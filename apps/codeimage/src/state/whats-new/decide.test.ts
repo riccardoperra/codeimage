@@ -7,8 +7,10 @@ import {
   parseFacts,
   serializeFacts,
 } from './decide';
-import type {Release} from './registry';
+import type {Highlight, Release} from './registry';
 import {RELEASES, UPCOMING} from './registry';
+
+const upcoming: readonly Highlight[] = UPCOMING;
 
 const day = (iso: string) => Date.parse(iso);
 const facts = (
@@ -167,7 +169,7 @@ describe('registry', () => {
     expect(new Set(releaseIds).size).toBe(releaseIds.length);
     const allIds = [
       ...highlightIds,
-      ...UPCOMING.map(highlight => highlight.id),
+      ...upcoming.map(highlight => highlight.id),
     ];
     expect(new Set(allIds).size).toBe(allIds.length);
   });
@@ -193,9 +195,11 @@ it('announces 2.0 as a Showcase and advances all located highlights within three
 
 it('prioritizes the editorial order and keeps accessory highlights after the headlines', () => {
   expect(RELEASES[0].highlights.map(highlight => highlight.id)).toEqual([
+    'animate',
     'layouts',
     'marks',
     'takumi',
+    'cli',
     'signature',
     'window-styles',
     'redact',
@@ -215,9 +219,11 @@ it('prioritizes the editorial order and keeps accessory highlights after the hea
       .filter(highlight => !('accessory' in highlight))
       .map(highlight => highlight.id),
   ).toEqual([
+    'animate',
     'layouts',
     'marks',
     'takumi',
+    'cli',
     'signature',
     'window-styles',
     'redact',
@@ -232,10 +238,10 @@ it('prioritizes the editorial order and keeps accessory highlights after the hea
 it('never decides on upcoming content, even when stored facts mention it', () => {
   const result = decide(
     RELEASES,
-    facts(UPCOMING.map(highlight => highlight.id)),
+    facts(upcoming.map(highlight => highlight.id)),
     day('2026-11-15'),
   );
-  for (const {id} of UPCOMING) {
+  for (const {id} of upcoming) {
     expect([...result.fresh]).not.toContain(id);
     expect(result.dots).not.toContain(id);
     expect(
