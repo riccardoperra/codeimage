@@ -59,6 +59,7 @@ jobs:
           name: libs-dist
           path: |
             packages/*/dist
+            packages/cli/publish
             packages/prisma-models/generated
           include-hidden-files: true
           retention-days: 1
