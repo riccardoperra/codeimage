@@ -49,7 +49,7 @@ export function AnimationPreview(props: ParentProps) {
   const previewing = () => animation.playback().state !== 'editing';
 
   // Reads the tabs only while previewing, so typing plans nothing. Equal
-  // inputs keep the last plan.
+  // inputs keep the last plan, and closing the panel drops it.
   const request = createMemo<
     | {
         settings: ReturnType<typeof animation.settings>;
@@ -59,6 +59,7 @@ export function AnimationPreview(props: ParentProps) {
       }
     | undefined
   >(previous => {
+    if (!animation.open()) return undefined;
     if (!previewing()) return previous;
     const settings = animation.settings();
     const [first, ...rest] = settings.steps.map((step): PreviewTab => {
@@ -96,7 +97,9 @@ export function AnimationPreview(props: ParentProps) {
   const [plan] = createResource(request, ({settings, tabs, style}) =>
     planPreview(owner, settings, tabs, style),
   );
-  const ready = () => previewing() && plan.state === 'ready';
+  const planned = () =>
+    request() && plan.state === 'ready' ? plan() : undefined;
+  const ready = () => previewing() && planned() !== undefined;
 
   createEffect(
     on(
@@ -120,7 +123,7 @@ export function AnimationPreview(props: ParentProps) {
       >
         {props.children}
       </div>
-      <Show when={plan.state === 'ready' && plan()} keyed>
+      <Show when={planned()} keyed>
         {plan => <AnimationStage plan={plan} visible={ready()} />}
       </Show>
     </div>
