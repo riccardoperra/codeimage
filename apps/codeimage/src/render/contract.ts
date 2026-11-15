@@ -16,6 +16,7 @@ export interface FrameMarkup {
 }
 
 export interface FrameHost {
+  offline?: boolean;
   measure(markup: FrameMarkup): Promise<FrameSize>;
   pixels(markup: FrameMarkup, size: number): Promise<Uint8Array>;
 }
@@ -23,6 +24,7 @@ export interface FrameHost {
 export interface ComposedFrame extends FrameMarkup {
   size: FrameSize;
   browserCss: string[];
+  watermarkFrame: {painted: boolean; inset: number};
 }
 
 export interface RenderEntry<Snapshot, Annotation> {

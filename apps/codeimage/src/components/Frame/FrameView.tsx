@@ -43,6 +43,7 @@ export function FrameView(props: VoidProps<FrameViewProps>) {
     <div class={styles.previewWrapper} ref={props.ref}>
       <div
         class={styles.container}
+        data-watermark-frame
         data-snapshot-frame
         style={assignInlineVars({
           overflow: 'hidden',
@@ -67,6 +68,7 @@ export function FrameView(props: VoidProps<FrameViewProps>) {
         })}
       >
         <div
+          data-watermark-background
           class={styles.previewOverlay}
           style={assignInlineVars({
             [styles.frameVars.backgroundColor]: isAssetUrl(frame.background)

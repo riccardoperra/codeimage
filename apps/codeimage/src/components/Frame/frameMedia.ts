@@ -109,6 +109,7 @@ async function fetchImage(
 export async function resolveFrameMedia(
   request: FrameMediaRequest,
   sample: (image: ImageBytes) => Promise<Uint8Array>,
+  offline = false,
 ): Promise<{media: FrameMedia; images: ImageBytes[]}> {
   const [background, avatar] = await Promise.all([
     (async () => {
@@ -118,6 +119,8 @@ export async function resolveFrameMedia(
         throw new Error(
           `Frame background "${id}" is a browser asset; the snapshot does not carry its image`,
         );
+      if (offline)
+        throw new Error('Remote background is unavailable with --offline');
       const url = id.slice(assetLinkPrefix.length);
       const signal = AbortSignal.timeout(BACKGROUND_TIMEOUT_MS);
       try {
@@ -133,7 +136,7 @@ export async function resolveFrameMedia(
       }
     })(),
     (async () => {
-      if (!request.avatar) return null;
+      if (!request.avatar || offline) return null;
       try {
         const signal = AbortSignal.timeout(AVATAR_TIMEOUT_MS);
         const url = await avatarImageUrl(request.avatar, signal);

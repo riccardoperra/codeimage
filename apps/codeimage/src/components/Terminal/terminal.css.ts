@@ -1,3 +1,4 @@
+import {WATERMARK} from '@codeimage/render/watermark';
 import {windowVars} from './windowPalette.css';
 import {themeVars} from '@codeimage/ui';
 import {createTheme, createVar, fallbackVar, style} from '@vanilla-extract/css';
@@ -116,6 +117,6 @@ export const watermark = style({
   position: 'absolute',
   right: '6px',
   bottom: '-6px',
-  opacity: 0.35,
+  opacity: WATERMARK.opacity,
   backgroundColor: 'inherit',
 });
