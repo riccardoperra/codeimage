@@ -63,9 +63,9 @@ Two candidates, one on Opus and one on Fable. No cross-judge ran, because no mod
 
 ## Implementation
 
-The first release is `2.0`, titled "CodeImage 2.0", dated `2026-11-14`, with `major: true`. Set the date to the real release day before publishing. It announces Line marks, Social sizes, Signatures, Hide secrets, Window styles, One image per tab, Copy alt text, Command menu, Takumi export engine, Editor layouts, and Theme card styles, in that order. The first six are headline cards in the Showcase. Copy alt text, Command menu and the three experiments have `accessory: true` and appear as still, compact rows under the localized “Also new” heading. The Nudge and archive keep registry order and one presentation for all entries. Takumi, layouts and theme card styles remain experiments. Takumi is optional in Settings, Experiments, with automatic fallback to the current exporter; the integration evidence does not measure performance, so the announcement makes no speed claim. The major changeset is `.changeset/codeimage-2-0.md`. The id can change because this registry has not shipped in app 1.10.0.
+The first release is `2.0`, titled "CodeImage 2.0", dated `2026-11-14`, with `major: true`. Set the date to the real release day before publishing. It announces Editor layouts, Line marks, Takumi export engine, Signatures, Window styles, Hide secrets, Social sizes, One image per tab, Copy alt text, Command menu and Theme card styles, in that order. The first six are headline cards in the Showcase. The remaining five have `accessory: true` and appear as still, compact rows under the localized “Also new” heading. The Nudge and archive keep registry order and one presentation for all entries. The redesigned editor is the default route. Layout choice remains in Settings, Experiments; Inspector is the default and Dock and Studio are labelled experiments in the setting description. Takumi is explicitly experimental and optional there, with automatic fallback to browser export. Theme card variants also remain experimental. The integration evidence does not measure performance, so the announcement makes no speed claim. The major changeset is `.changeset/codeimage-2-0.md`. The id can change because this registry has not shipped in app 1.10.0.
 
-The first three eligible dots are marks, social, and signature. A Show me request can use an invisible anchor for a later highlight, so its coachmark remains reachable without changing the three dots or their registry order. Show me opens a coachmark without recording seen. Clicking a dot or acknowledging its coachmark records seen, as does real use. Export reveals its menu and keeps the dot on its arrow because the menu owns focus. Its dot opens a coachmark after the menu closes.
+The first three eligible dots are layouts, marks, and takumi. A Show me request can use an invisible anchor for a later highlight, so its coachmark remains reachable without changing the three dots or their registry order. Show me opens a coachmark without recording seen. Clicking a dot or acknowledging its coachmark records seen, as does real use. Export reveals its menu and keeps the dot on its arrow because the menu owns focus. Its dot opens a coachmark after the menu closes.
 
 `WhatsNewHost` mounts once in the unified editor and once in the classic editor. While a release waits to be shown, and only then, it lets the editor settle for a moment and then watches the DOM for visible dialogs, menus, and expanded popup triggers, at most once a frame. The watcher stops as soon as the announcement shows, so a visit with nothing pending observes nothing. Inline listboxes, including the theme picker, do not block announcements. The announcement then remains latched until dismissal or minimization. A major release uses the scrollable Showcase sheet unless the user has minimized it; it then announces through the Nudge, including after reload or another tab’s next focus. This release uses the Showcase. Dismiss and Done move focus to the visible control before the card in tab order, before the card becomes inert or unmounts, only if focus is inside the card. Coachmarks use the same rule. It skips text fields, because focus in one, the code editor included, opens a phone's keyboard over the editor for a user who only closed a card. Escape inside the expanded Nudge dismisses it instantly with the same persisted fact; Escape elsewhere leaves it alone. Its native key listener stops the key before document-level shortcuts.
 
@@ -125,7 +125,7 @@ The Animate entry describes code steps, pauses, transitions, easing and preview.
 To ship a prepared highlight:
 
 1. Confirm its feature and the capabilities described by its copy are on `main` and in the bundle.
-2. Move its one entry from `UPCOMING` into the release’s `highlights`: **animate first of all**, **cli immediately after window-styles**. Both are headline highlights; leave `accessory` absent. The content types derive automatically from the two lists, so no locale or illustration changes are required.
+2. Move its one entry from `UPCOMING` into the release’s `highlights`: **animate first of all**, **cli immediately after takumi**. Both are headline highlights; leave `accessory` absent. The content types derive automatically from the two lists, so no locale or illustration changes are required.
 3. Keep `where: null` until a shared owner can bind its real place. Add a stable documentation link when one is published. A located feature also needs seen-on-use integration and a place check.
 4. Confirm unique ids, policy and content tests. Update the explicit editorial order test when moving the entry. Check the three surfaces and both themes, and set the release date to its actual publishing date.
 
@@ -135,7 +135,7 @@ The minus button records only a `minimized` release id and emits `whats-new-mini
 
 Pointer minimization uses a 200ms ease-out exit of the dialog panel, with its origin at bottom left, scaling toward the Nudge’s width (capped at .94) while translating toward the Nudge’s bottom-left placement. It fades while moving, and the Nudge enters when the exit finishes. Escape and close can interrupt the exit and still dismiss. Keyboard minimization skips the exit and Nudge entrance entirely and focuses the Nudge’s first control. Pointer cleanup returns focus to a safe button rather than a text field. Reduced motion uses opacity only. On phones the Nudge reserves 76px plus the safe-area inset, leaving room above the bottom controls.
 
-The drawings are flat: opaque token-based surfaces, two-pixel strokes, six-pixel window radii and independently drawn 64×44 thumbnails. `play` uses one viewport observer that disconnects after the first intersection; CSS only animates transform and opacity, while `still`, `thumb`, reduced motion and keyboard-triggered steps show the final state. The Apple design skill’s spatial consistency and restrained feedback complement the Emil design-engineering skill; the owner’s flat-art direction takes precedence over material effects.
+The drawings use the prototype’s filled media panels, gradient tiles, abstract bars and independently drawn 64×44 thumbnails. `play` uses one viewport observer that disconnects after the first intersection; CSS only animates transform and opacity, while `still`, `thumb`, reduced motion and keyboard-triggered steps show the final state. The round-four prototype direction below supersedes the earlier flat-art direction.
 
 ## Round four illustration language
 
@@ -155,3 +155,13 @@ Each illustration has a separately composed 64×44 symbol, a complete still
 state and one explanation on first viewport entry. The viewport observer
 immediately disconnects. Motion uses transform and opacity with shared tokens;
 reduced motion uses opacity alone, and keyboard-triggered Nudge steps are instant.
+
+## Round four Showcase grid
+
+A six-column grid uses 12px gaps and 18px card radii. The first headline spans
+all six columns, middle cards form pairs of three columns, and the final three
+cards span two columns each. Six current cards fill three rows; adding Animate
+first and CLI after Takumi gives eight cards filling four rows without gaps.
+Below 600px every card spans one column. Only headline cards rise, at a 45ms
+stagger; archive and accessory rows and dots stay still. Reduced motion fades
+without translation. Cards put the media above centered title and copy.

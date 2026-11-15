@@ -29,13 +29,13 @@ export const duration = {
 
 /**
  * The Showcase's entrance: when each part starts, in ms from the sheet
- * opening. The title leads. The gaps shrink down the sheet, so the parts
- * arrive as one wave, and a card past the fifth keeps the fifth's time.
+ * opening. The title leads; cards rise in registry order at a 45ms stagger.
  */
 export const showcaseAt = {
   title: 0,
   subtitle: 80,
-  cards: [160, 240, 300, 340, 370],
+  cards: 160,
+  stagger: 45,
   footer: 400,
   /** A card's picture starts explaining this long after its card. */
   play: 350,

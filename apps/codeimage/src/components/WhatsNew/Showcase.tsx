@@ -18,10 +18,15 @@ import {releaseDate, releaseTitle} from './releaseDate';
 import * as styles from './whats-new.css';
 
 const at = (start: number) => ({'--whats-new-at': ms(start)});
-const cardAt = (index: number) => {
-  const {cards, play} = showcaseAt;
-  const start = cards[Math.min(index, cards.length - 1)];
-  return {...at(start), '--whats-new-play-at': ms(start + play)};
+const cardAt = (index: number, count: number) => {
+  const {cards, stagger, play} = showcaseAt;
+  const start = cards + index * stagger;
+  return {
+    ...at(start),
+    '--whats-new-play-at': ms(play),
+    // A full row, pairs, then three thirds tile both six and eight cards.
+    '--whats-new-span': index === 0 ? 6 : index < count - 3 ? 3 : 2,
+  };
 };
 
 export function Showcase(props: {
@@ -30,6 +35,8 @@ export function Showcase(props: {
   minimize: (keyboard: boolean) => void;
 }) {
   const news = getWhatsNew();
+  const headlines = () =>
+    props.release.highlights.filter(highlight => !('accessory' in highlight));
   let title!: HTMLDivElement;
   let exit: Animation | undefined;
   let minimizing = false;
@@ -176,15 +183,11 @@ export function Showcase(props: {
           </p>
         </header>
         <div class={styles.grid}>
-          <For
-            each={props.release.highlights.filter(
-              highlight => !('accessory' in highlight),
-            )}
-          >
+          <For each={headlines()}>
             {(highlight, index) => (
               <article
                 class={styles.card}
-                style={cardAt(index())}
+                style={cardAt(index(), headlines().length)}
                 data-highlight={highlight.id}
               >
                 <Dynamic component={illustrations[highlight.id]} mode="play" />

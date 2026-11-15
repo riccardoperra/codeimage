@@ -193,28 +193,40 @@ it('announces 2.0 as a Showcase and advances all located highlights within three
 
 it('prioritizes the editorial order and keeps accessory highlights after the headlines', () => {
   expect(RELEASES[0].highlights.map(highlight => highlight.id)).toEqual([
+    'layouts',
     'marks',
-    'social',
+    'takumi',
     'signature',
-    'redact',
     'window-styles',
+    'redact',
+    'social',
     'tabs',
     'alt',
     'command-menu',
-    'takumi',
-    'layouts',
     'theme-cards',
   ]);
   expect(decide(RELEASES, NO_FACTS, day('2026-11-15')).dots).toEqual([
+    'layouts',
     'marks',
-    'social',
+    'takumi',
+  ]);
+  expect(
+    RELEASES[0].highlights
+      .filter(highlight => !('accessory' in highlight))
+      .map(highlight => highlight.id),
+  ).toEqual([
+    'layouts',
+    'marks',
+    'takumi',
     'signature',
+    'window-styles',
+    'redact',
   ]);
   expect(
     RELEASES[0].highlights
       .filter(highlight => 'accessory' in highlight)
       .map(highlight => highlight.id),
-  ).toEqual(['alt', 'command-menu', 'takumi', 'layouts', 'theme-cards']);
+  ).toEqual(['social', 'tabs', 'alt', 'command-menu', 'theme-cards']);
 });
 
 it('never decides on upcoming content, even when stored facts mention it', () => {

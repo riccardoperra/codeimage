@@ -320,10 +320,10 @@ it('waits for control panels to reveal, opens a temporary coachmark and preserve
   await settle();
   expect(app.store.revealedAt('control:window.style')).toBe('window-styles');
   expect(app.store.isNew('window-styles')).toBe(true);
-  expect(app.store.dotAt('control:signature.saved')).toBe('signature');
+  expect(app.store.dotAt('setting:layout')).toBe('layouts');
   expect(app.store.dotAt('control:window.style')).toBeUndefined();
   app.store.endReveal('window-styles');
-  expect(app.store.dotAt('control:signature.saved')).toBe('signature');
+  expect(app.store.dotAt('setting:layout')).toBe('layouts');
   unbind();
   expect(app.store.canShowMe('window-styles')).toBe(false);
   app.dispose();

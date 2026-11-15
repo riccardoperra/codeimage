@@ -50,26 +50,16 @@ export const RELEASES = [
     date: '2026-11-14',
     major: true,
     highlights: [
+      {id: 'layouts', where: 'setting:layout', experimental: true},
       {id: 'marks', where: 'editor:line-marks'},
-      {id: 'social', where: 'control:frame.aspectRatio'},
+      {id: 'takumi', where: 'setting:rendering-engine', experimental: true},
       {id: 'signature', where: 'control:signature.saved'},
-      {id: 'redact', where: null},
       {id: 'window-styles', where: 'control:window.style'},
-      {id: 'tabs', where: 'export:tabs'},
+      {id: 'redact', where: null},
+      {id: 'social', where: 'control:frame.aspectRatio', accessory: true},
+      {id: 'tabs', where: 'export:tabs', accessory: true},
       {id: 'alt', where: 'export:alt', accessory: true},
       {id: 'command-menu', where: 'command-menu', accessory: true},
-      {
-        id: 'takumi',
-        where: 'setting:rendering-engine',
-        experimental: true,
-        accessory: true,
-      },
-      {
-        id: 'layouts',
-        where: 'setting:layout',
-        experimental: true,
-        accessory: true,
-      },
       {
         id: 'theme-cards',
         where: 'setting:theme-cards',
@@ -82,7 +72,7 @@ export const RELEASES = [
 
 /**
  * Nothing in UPCOMING is rendered or decided on. To ship an entry, move it
- * into RELEASES: animate first of all; cli immediately after window-styles.
+ * into RELEASES: animate first of all; cli immediately after takumi. Both are headline entries.
  * See docs/plans/2026-whats-new/rationale.md for the shipping checklist.
  */
 export const UPCOMING = [

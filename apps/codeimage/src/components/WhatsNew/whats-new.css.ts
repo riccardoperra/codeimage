@@ -306,21 +306,46 @@ export const heroTitle = style({
 });
 export const grid = style({
   display: 'grid',
-  gridTemplateColumns: 'repeat(2, minmax(0, 1fr))',
+  gridTemplateColumns: 'repeat(6, minmax(0, 1fr))',
   gap: '12px',
   '@media': {
-    'screen and (max-width: 768px)': {gridTemplateColumns: 'minmax(0, 1fr)'},
+    'screen and (max-width: 600px)': {gridTemplateColumns: 'minmax(0, 1fr)'},
   },
 });
 export const card = style([
   enter(8, showcaseFor.card),
   {
-    padding: '12px',
-    borderRadius: '16px',
+    minWidth: 0,
+    gridColumn: 'span var(--whats-new-span, 2)',
+    padding: '12px 12px 18px',
+    borderRadius: '18px',
     background: c.panel.background,
-    selectors: {'&:first-child': {gridColumn: '1 / -1'}},
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '16px',
+    textAlign: 'center',
+    '@media': {'screen and (max-width: 600px)': {gridColumn: '1 / -1'}},
   },
 ]);
+globalStyle(`${card} > [data-picture]`, {flexShrink: 0});
+globalStyle(`${card}:first-child > [data-picture]`, {
+  height: '168px',
+  padding: '24px',
+});
+globalStyle(
+  `${card}:not(:first-child):not(:nth-last-child(-n+3)) > [data-picture]`,
+  {
+    height: '140px',
+  },
+);
+globalStyle(`${card} > ${copy}`, {
+  padding: '0 4px',
+  maxWidth: '44ch',
+  alignSelf: 'center',
+});
+globalStyle(`${card} ${title}`, {fontSize: '17px', marginTop: '8px'});
+globalStyle(`${card}:first-child ${title}`, {fontSize: '22px'});
+globalStyle(`${card} ${actions}`, {justifyContent: 'center'});
 export const sheetFooter = style({
   display: 'flex',
   alignItems: 'center',
@@ -360,16 +385,14 @@ export const accessoryThumb = style({
   height: '44px',
   flexShrink: 0,
 });
+globalStyle(`${accessory} > button`, {flexShrink: 0});
 export const accessoryCopy = style({flex: 1, minWidth: 0});
 export const accessoryTitle = style({
   margin: '0 0 4px',
   fontSize: '13px',
   fontWeight: 600,
 });
-export const accessoryBody = style([
-  body,
-  {whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis'},
-]);
+export const accessoryBody = style([body, {overflowWrap: 'anywhere'}]);
 
 export const headerActions = style({
   display: 'flex',

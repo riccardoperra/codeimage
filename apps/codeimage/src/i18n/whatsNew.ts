@@ -83,11 +83,11 @@ const en = {
     },
     takumi: {
       title: 'Takumi export engine',
-      body: 'Try the optional Takumi engine in Settings, Experiments. If it cannot render an export, CodeImage automatically uses the current exporter.',
+      body: 'Try the optional Takumi engine in Settings, Experiments. If it cannot render an export, CodeImage automatically uses browser export.',
     },
     layouts: {
       title: 'Editor layouts',
-      body: 'Choose Inspector, Dock or Studio in Settings, Experiments.',
+      body: 'A redesigned editor with three layouts: Inspector, Dock and Studio. Inspector is the default; try Dock and Studio in Settings, Experiments.',
     },
     'theme-cards': {
       title: 'Theme card styles',
@@ -170,11 +170,11 @@ const it = {
     },
     takumi: {
       title: 'Motore di esportazione Takumi',
-      body: 'Prova il motore opzionale Takumi in Impostazioni, Esperimenti. Se non riesce a generare un’esportazione, CodeImage usa automaticamente il motore attuale.',
+      body: 'Prova il motore opzionale Takumi in Impostazioni, Esperimenti. Se non riesce a generare un’esportazione, CodeImage usa automaticamente l’esportazione del browser.',
     },
     layouts: {
       title: "Disposizioni dell'editor",
-      body: 'Scegli Ispettore, Dock o Studio in Impostazioni, Esperimenti.',
+      body: 'Un editor ridisegnato con tre disposizioni: Ispettore, Dock e Studio. Ispettore è quella predefinita; prova Dock e Studio in Impostazioni, Esperimenti.',
     },
     'theme-cards': {
       title: 'Stili delle schede dei temi',
@@ -257,11 +257,11 @@ const de = {
     },
     takumi: {
       title: 'Takumi-Exportengine',
-      body: 'Probiere die optionale Takumi-Engine unter Einstellungen, Experimente aus. Kann sie einen Export nicht rendern, nutzt CodeImage automatisch den bisherigen Exporter.',
+      body: 'Probiere die optionale Takumi-Engine unter Einstellungen, Experimente aus. Kann sie einen Export nicht rendern, nutzt CodeImage automatisch den Browser-Export.',
     },
     layouts: {
       title: 'Editor-Layouts',
-      body: 'Wähle Inspektor, Dock oder Studio unter Einstellungen, Experimente.',
+      body: 'Ein neu gestalteter Editor mit drei Layouts: Inspektor, Dock und Studio. Inspektor ist der Standard; probiere Dock und Studio unter Einstellungen, Experimente aus.',
     },
     'theme-cards': {
       title: 'Stile der Themenkarten',
@@ -344,11 +344,11 @@ const es = {
     },
     takumi: {
       title: 'Motor de exportación Takumi',
-      body: 'Prueba el motor opcional Takumi en Ajustes, Experimentos. Si no puede generar una exportación, CodeImage usa automáticamente el exportador actual.',
+      body: 'Prueba el motor opcional Takumi en Ajustes, Experimentos. Si no puede generar una exportación, CodeImage usa automáticamente la exportación del navegador.',
     },
     layouts: {
       title: 'Diseños del editor',
-      body: 'Elige Inspector, Dock o Estudio en Ajustes, Experimentos.',
+      body: 'Un editor rediseñado con tres diseños: Inspector, Dock y Estudio. Inspector es el predeterminado; prueba Dock y Estudio en Ajustes, Experimentos.',
     },
     'theme-cards': {
       title: 'Estilos de tarjetas de temas',
