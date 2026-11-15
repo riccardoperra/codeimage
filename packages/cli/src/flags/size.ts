@@ -97,7 +97,15 @@ export const size: Flag = {
         }),
         ...(handle && {
           signature: {
-            ...(current ?? createSignature(handle)),
+            ...(current && current.handle === handle
+              ? current
+              : {
+                  ...createSignature(handle),
+                  ...(current && {
+                    style: current.style,
+                    platform: current.platform,
+                  }),
+                }),
             handle,
             position:
               values['signature-position'] === undefined && current

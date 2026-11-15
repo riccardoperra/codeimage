@@ -49,10 +49,11 @@ describe('size flag', () => {
   it.each([
     {argv: []},
     {argv: ['--size', 'square']},
+    {argv: ['--signature', '  @me  ']},
     {argv: ['--signature', '@new']},
     {argv: ['--signature-position', 'bottom-left']},
   ])(
-    'preserves preset signature through planImages with %j',
+    'preserves presentation and resets identity only for a changed handle with %j',
     async ({argv: flags}) => {
       const args = parseArgs(flags);
       if (args.kind !== 'render') throw new Error('Expected render arguments');
@@ -80,7 +81,12 @@ describe('size flag', () => {
       );
       expect(output.snapshot.frame.signature).toEqual({
         ...signature,
-        ...(flags.includes('--signature') && {handle: '@new'}),
+        ...(flags.includes('@new') && {
+          ...createSignature('@new'),
+          style: signature.style,
+          platform: signature.platform,
+          position: signature.position,
+        }),
         ...(flags.includes('--signature-position') && {
           position: 'bottom-left',
         }),

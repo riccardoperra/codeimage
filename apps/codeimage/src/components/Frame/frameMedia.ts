@@ -95,6 +95,7 @@ export function createFrameMedia(
 }
 
 const AVATAR_TIMEOUT_MS = 3000;
+const BACKGROUND_TIMEOUT_MS = 10000;
 
 async function fetchImage(
   src: string,
@@ -120,7 +121,19 @@ export async function resolveFrameMedia(
         );
       if (offline)
         throw new Error('Remote background is unavailable with --offline');
-      return fetchImage(id.slice('link:'.length));
+      const url = id.slice(assetLinkPrefix.length);
+      const signal = AbortSignal.timeout(BACKGROUND_TIMEOUT_MS);
+      try {
+        return await fetchImage(url, signal);
+      } catch (cause) {
+        if (signal.aborted) {
+          throw new Error(
+            `Background image ${url} timed out after ${BACKGROUND_TIMEOUT_MS} ms`,
+            {cause},
+          );
+        }
+        throw cause;
+      }
     })(),
     (async () => {
       if (!request.avatar || offline) return null;

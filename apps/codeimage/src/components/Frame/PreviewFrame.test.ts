@@ -25,7 +25,10 @@ vi.mock('@codeimage/store/canvas', () => ({
   getExportCanvasStore: () => ({get: {}}),
 }));
 vi.mock('@codeimage/store/editor', () => ({
-  getRootEditorStore: () => ({state: {options: {}}}),
+  getRootEditorStore: () => ({
+    state: {options: {}},
+    computed: {selectedFont: () => ({name: 'Mono'})},
+  }),
 }));
 vi.mock('@codeimage/store/editor/activeEditor', () => ({
   getActiveEditorStore: () => ({editor: () => undefined}),
@@ -36,8 +39,11 @@ vi.mock('@codeimage/store/editor/config.store', () => ({
 vi.mock('@codeimage/store/editor/terminal', () => ({
   getTerminalState: () => ({state: {}}),
 }));
+// Each entry stands for a theme resource; undefined while it loads.
+const loaded = vi.hoisted(() => () => ({id: 'stub', editorTheme: []}));
+const themes = vi.hoisted(() => ({list: [loaded] as (() => unknown)[]}));
 vi.mock('@codeimage/store/theme/theme.store', () => ({
-  getThemeStore: () => ({themeArray: () => [() => ({})]}),
+  getThemeStore: () => ({themeArray: () => themes.list}),
 }));
 vi.mock('@codeimage/store/effects/onCopyToClipboard', () => ({
   dispatchCopyToClipboard: vi.fn(),
@@ -48,7 +54,7 @@ vi.mock('solid-js/web', async importOriginal => ({
   Portal: (props: ParentProps) => props.children,
 }));
 vi.mock('../Terminal/DynamicTerminal/DynamicTerminal', () => ({
-  DynamicTerminal: () => null,
+  DynamicTerminal: (props: ParentProps) => props.children,
 }));
 vi.mock('./FrameSkeleton', () => ({FrameSkeleton: () => null}));
 vi.mock('./FrameSignature.css', () => ({}));
@@ -119,3 +125,22 @@ for (const [width, height, resolution] of [
     }
   });
 }
+
+// The new editor mounts the export copy while the theme resources still load.
+test('waits for a loaded theme before drawing the code', () => {
+  const draw = () =>
+    renderToString(() =>
+      createComponent(PreviewFrame, {
+        ref: () => undefined,
+        tab,
+        language: null,
+      }),
+    );
+  themes.list = [() => undefined, () => undefined];
+  try {
+    assert.ok(!draw().includes('data-static-code-view'));
+  } finally {
+    themes.list = [loaded];
+  }
+  assert.ok(draw().includes('data-static-code-view'));
+});
