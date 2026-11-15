@@ -21,6 +21,7 @@ import {getWhatsNew, RELEASES} from '../../../state/whats-new';
 import type {HighlightId} from '../../../state/whats-new';
 import {CopyAltTextButton} from '../../../components/Toolbar/CopyAltTextButton';
 import {ExportExtension} from '../../../hooks/use-export-image';
+import {EXPORT_SCALES, exportFormats, JPEG_QUALITY} from './export-formats';
 import type {AppLocaleEntries} from '../../../i18n';
 import {SwitchField} from '../controls/fields';
 import type {EditorControlsModel, ThemeEntry} from '../model';
@@ -434,11 +435,10 @@ export function createSettingSections(model: EditorControlsModel) {
               <Segmented
                 value={exportStore.get.extension}
                 onChange={value => exportStore.set('extension', value)}
-                items={[
-                  {label: 'PNG', value: ExportExtension.png},
-                  {label: 'SVG', value: ExportExtension.svg},
-                  {label: 'JPEG', value: ExportExtension.jpeg},
-                ]}
+                items={exportFormats.map(format => ({
+                  label: format.name,
+                  value: format.extension,
+                }))}
               />
             ),
           },
@@ -458,9 +458,9 @@ export function createSettingSections(model: EditorControlsModel) {
                         onChange={value =>
                           exportStore.set('jpegQuality', value)
                         }
-                        min={70}
-                        max={100}
-                        step={2}
+                        min={JPEG_QUALITY.min}
+                        max={JPEG_QUALITY.max}
+                        step={JPEG_QUALITY.step}
                       />
                     </div>
                   ),
@@ -496,7 +496,7 @@ export function createSettingSections(model: EditorControlsModel) {
                   onChange={value =>
                     exportStore.set('devicePixelRatio', Number(value))
                   }
-                  items={[1, 2, 3, 6].map(scale => ({
+                  items={EXPORT_SCALES.map(scale => ({
                     label: `${scale}x`,
                     value: String(scale),
                   }))}
