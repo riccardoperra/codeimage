@@ -136,3 +136,22 @@ The minus button records only a `minimized` release id and emits `whats-new-mini
 Pointer minimization uses a 200ms ease-out exit of the dialog panel, with its origin at bottom left, scaling toward the Nudge’s width (capped at .94) while translating toward the Nudge’s bottom-left placement. It fades while moving, and the Nudge enters when the exit finishes. Escape and close can interrupt the exit and still dismiss. Keyboard minimization skips the exit and Nudge entrance entirely and focuses the Nudge’s first control. Pointer cleanup returns focus to a safe button rather than a text field. Reduced motion uses opacity only. On phones the Nudge reserves 76px plus the safe-area inset, leaving room above the bottom controls.
 
 The drawings are flat: opaque token-based surfaces, two-pixel strokes, six-pixel window radii and independently drawn 64×44 thumbnails. `play` uses one viewport observer that disconnects after the first intersection; CSS only animates transform and opacity, while `still`, `thumb`, reduced motion and keyboard-triggered steps show the final state. The Apple design skill’s spatial consistency and restrained feedback complement the Emil design-engineering skill; the owner’s flat-art direction takes precedence over material effects.
+
+## Round four illustration language
+
+The owner’s prototype supersedes the earlier flat, outlined-window direction.
+The media panels stay `#0f0f10` in both themes: the bars, green secret, chips and
+canvas gradients retain their contrast in Showcase cards and the small Settings
+archive rows. The surrounding sheet and cards follow the selected theme.
+
+Marks, redact, social sizes, tabs, alt text and CLI port the prototype’s filled
+HTML/CSS language: 8px abstract bars, full-bleed tinted marks, 10–11px labels and
+orange/purple, blue and pink/orange canvas tiles. Takumi replaces the prototype’s
+flask and label with bars flowing into a rendered PNG tile; it makes no speed
+claim. Signatures, window styles, command menu, layouts, theme cards and Animate
+extend the same shapes. UI words come from type-complete locale records.
+
+Each illustration has a separately composed 64×44 symbol, a complete still
+state and one explanation on first viewport entry. The viewport observer
+immediately disconnects. Motion uses transform and opacity with shared tokens;
+reduced motion uses opacity alone, and keyboard-triggered Nudge steps are instant.

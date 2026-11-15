@@ -1,9 +1,10 @@
 import type {ContentHighlightId, ReleaseId} from '../state/whats-new/registry';
 
 type WhatsNewMessages = Record<
-  Exclude<keyof typeof en, 'highlights' | 'releases'>,
+  Exclude<keyof typeof en, 'highlights' | 'releases' | 'illustration'>,
   string
 > & {
+  illustration: Record<keyof typeof en.illustration, string>;
   highlights: Record<ContentHighlightId, {title: string; body: string}>;
   releases: Record<ReleaseId, {title: string}>;
 };
@@ -30,6 +31,15 @@ const en = {
       title: 'CodeImage 2.0',
     },
   } satisfies Record<ReleaseId, {title: string}>,
+  illustration: {
+    secretHidden: '1 secret hidden',
+    altDescription:
+      'TypeScript snippet with a Counter component built on createSignal.',
+    alt: 'ALT',
+    cliOutput: 'same image as the web export',
+    optional: 'Optional engine',
+    exportImage: 'Export image',
+  },
   highlights: {
     animate: {
       title: 'Animate your code',
@@ -107,6 +117,15 @@ const it = {
     '2.0': {
       title: 'CodeImage 2.0',
     },
+  },
+  illustration: {
+    secretHidden: '1 segreto nascosto',
+    altDescription:
+      'Snippet TypeScript con un componente Counter basato su createSignal.',
+    alt: 'ALT',
+    cliOutput: 'stessa immagine dell’esportazione web',
+    optional: 'Motore opzionale',
+    exportImage: 'Esporta immagine',
   },
   highlights: {
     animate: {
@@ -186,6 +205,15 @@ const de = {
       title: 'CodeImage 2.0',
     },
   },
+  illustration: {
+    secretHidden: '1 Geheimnis verborgen',
+    altDescription:
+      'TypeScript-Snippet mit einer Counter-Komponente auf Basis von createSignal.',
+    alt: 'ALT',
+    cliOutput: 'gleiches Bild wie beim Web-Export',
+    optional: 'Optionale Engine',
+    exportImage: 'Bild exportieren',
+  },
   highlights: {
     animate: {
       title: 'Animiere deinen Code',
@@ -263,6 +291,15 @@ const es = {
     '2.0': {
       title: 'CodeImage 2.0',
     },
+  },
+  illustration: {
+    secretHidden: '1 secreto oculto',
+    altDescription:
+      'Fragmento TypeScript con un componente Counter basado en createSignal.',
+    alt: 'ALT',
+    cliOutput: 'la misma imagen que la exportación web',
+    optional: 'Motor opcional',
+    exportImage: 'Exportar imagen',
   },
   highlights: {
     animate: {
