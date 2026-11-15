@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import assert from 'node:assert/strict';
+import {createMockContext} from './mock-context.mjs';
 import {writeFile, readFile} from 'node:fs/promises';
 import {resolve} from 'node:path';
 import {PNG} from 'pngjs';
@@ -110,9 +111,47 @@ export async function audit({page, context, base, out, server}) {
     if ((await button.getAttribute('aria-expanded')) !== 'true')
       await button.click();
   }
+  async function windowStyle(name) {
+    await section('window');
+    await page
+      .locator('[data-control="window.style"]')
+      .getByRole('button')
+      .click();
+    const dialog = page.getByRole('dialog', {name: 'Window', exact: true});
+    const close = dialog.getByRole('button', {name: 'Close', exact: true});
+    await close.hover();
+    const radio = page.getByRole('radio', {name, exact: true});
+    await radio.press('Space');
+    assert.ok(await radio.isChecked(), `Window style ${name} selected`);
+    await close.click();
+  }
+  async function storedPresets() {
+    return page.evaluate(
+      () =>
+        new Promise((resolve, reject) => {
+          const request = indexedDB.open('keyval-store');
+          request.onerror = () => reject(request.error);
+          request.onsuccess = () => {
+            const database = request.result;
+            const read = database
+              .transaction('keyval')
+              .objectStore('keyval')
+              .get('presets');
+            read.onsuccess = () => {
+              database.close();
+              resolve(read.result);
+            };
+            read.onerror = () => {
+              database.close();
+              reject(read.error);
+            };
+          };
+        }),
+    );
+  }
   async function fresh({name, layout, viewport, initialize}, run) {
     const previous = {page, context};
-    context = await context.browser().newContext({
+    context = await createMockContext(context.browser(), base, {
       viewport,
       locale: 'en-US',
       colorScheme: 'dark',
@@ -134,8 +173,8 @@ export async function audit({page, context, base, out, server}) {
         snapshots: true,
         sources: true,
       });
-      if (initialize) await initialize(context);
       page = await context.newPage();
+      if (initialize) await initialize(context, page);
       page.setDefaultTimeout(60000);
       const errors = [];
       page.on('pageerror', error => errors.push(String(error)));
@@ -219,20 +258,10 @@ export async function audit({page, context, base, out, server}) {
   });
   await feature('watermark', async () => {
     const {verifyWatermark} = await import('./watermark.mjs');
-    await verifyWatermark({page, out, download, section});
+    await verifyWatermark({page, out, download, section, windowStyle});
   });
   await feature('tabs', async () => {
-    await section('window');
-    await page
-      .locator('[data-control="window.style"]')
-      .getByRole('button')
-      .click();
-    await page.getByRole('radio', {name: 'Editor', exact: true}).focus();
-    await page.keyboard.press('Space');
-    await page
-      .getByRole('dialog', {name: 'Window', exact: true})
-      .getByRole('button', {name: 'Close', exact: true})
-      .click();
+    await windowStyle('Editor');
     const strip = page
       .locator('[data-window-tabs]')
       .filter({has: page.getByRole('button', {name: 'Add tab', exact: true})})
@@ -727,7 +756,16 @@ export async function audit({page, context, base, out, server}) {
     await rename.getByRole('textbox').fill('Renamed preset');
     await rename.getByRole('button', {name: 'Confirm', exact: true}).click();
     await item('Renamed preset').waitFor();
-    assert.equal(await item('Managed preset').count(), 0);
+    await item('Managed preset').waitFor({state: 'hidden'});
+    let savedPreset;
+    for (let i = 0; i < 50; i++) {
+      savedPreset = (await storedPresets())?.find(
+        preset => preset.name === 'Renamed preset',
+      );
+      if (savedPreset) break;
+      await page.waitForTimeout(100);
+    }
+    assert.ok(savedPreset, 'renamed preset persisted');
     await item('Renamed preset')
       .getByRole('button', {name: 'Preset menu', exact: true})
       .click();
@@ -736,6 +774,12 @@ export async function audit({page, context, base, out, server}) {
       .getByRole('alertdialog', {name: 'Delete preset', exact: true})
       .getByRole('button', {name: 'Confirm', exact: true})
       .click();
+    await item('Renamed preset').waitFor({state: 'hidden'});
+    const deleted = async () =>
+      !(await storedPresets())?.some(preset => preset.id === savedPreset.id);
+    for (let i = 0; i < 50 && !(await deleted()); i++)
+      await page.waitForTimeout(100);
+    assert.ok(await deleted(), 'preset deletion persisted before reload');
     await page.reload();
     await editor().waitFor();
     await page.getByRole('button', {name: 'Presets', exact: true}).click();
@@ -743,17 +787,7 @@ export async function audit({page, context, base, out, server}) {
   });
   await feature('animate', async () => {
     // The Editor window names its Add tab button; the default one does not.
-    await section('window');
-    await page
-      .locator('[data-control="window.style"]')
-      .getByRole('button')
-      .click();
-    await page.getByRole('radio', {name: 'Editor', exact: true}).focus();
-    await page.keyboard.press('Space');
-    await page
-      .getByRole('dialog', {name: 'Window', exact: true})
-      .getByRole('button', {name: 'Close', exact: true})
-      .click();
+    await windowStyle('Editor');
     await editor().fill('const step = 1;');
     await page
       .locator('[data-window-tabs]')
@@ -847,28 +881,7 @@ export async function audit({page, context, base, out, server}) {
     await panel.waitFor({state: 'hidden'});
   });
   async function animationFixture() {
-    await section('window');
-    await page
-      .locator('[data-control="window.style"]')
-      .getByRole('button')
-      .click();
-    const windowDialog = page.getByRole('dialog', {
-      name: 'Window',
-      exact: true,
-    });
-    await windowDialog.waitFor();
-    const editorStyle = page.getByRole('radio', {name: 'Editor', exact: true});
-    await editorStyle.focus();
-    await page.waitForFunction(
-      () => document.activeElement?.getAttribute('value') === 'editor',
-    );
-    await page.keyboard.press('Space');
-    await page.waitForFunction(() =>
-      document.querySelector('[data-window-tabs]'),
-    );
-    await windowDialog
-      .getByRole('button', {name: 'Close', exact: true})
-      .click();
+    await windowStyle('Editor');
     await editor().fill('const first = 1;');
     await page
       .locator('[data-window-tabs]')
@@ -910,9 +923,11 @@ export async function audit({page, context, base, out, server}) {
           {width: 1440, height: 900},
           {width: 390, height: 844},
         ]) {
-          const isolated = await context
-            .browser()
-            .newContext({viewport, hasTouch: true, locale: 'en-US'});
+          const isolated = await createMockContext(context.browser(), base, {
+            viewport,
+            hasTouch: true,
+            locale: 'en-US',
+          });
           await isolated.tracing.start({snapshots: true});
           page = await isolated.newPage();
           page.setDefaultTimeout(12000);
@@ -1475,7 +1490,7 @@ export async function audit({page, context, base, out, server}) {
       await editor().innerText(),
       'const persisted = "verification";',
     );
-    const lateContext = await context.browser().newContext({
+    const lateContext = await createMockContext(context.browser(), base, {
       viewport: {width: 1440, height: 1000},
       storageState: await context.storageState({indexedDB: true}),
     });

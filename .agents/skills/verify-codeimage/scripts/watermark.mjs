@@ -8,7 +8,13 @@ const require = createRequire(
 );
 const {unzipSync} = require('fflate');
 
-export async function verifyWatermark({page, out, download, section}) {
+export async function verifyWatermark({
+  page,
+  out,
+  download,
+  section,
+  windowStyle,
+}) {
   const editor = page.locator('.cm-content[contenteditable="true"]').first();
   const originalCode = await editor.innerText();
   const long = 'export const greet = (name: string) => `Hello, ${name}!`;';
@@ -110,19 +116,6 @@ export async function verifyWatermark({page, out, download, section}) {
     );
     return frames;
   };
-  const setStyle = async name => {
-    await section('window');
-    await page
-      .locator('[data-control="window.style"]')
-      .getByRole('button')
-      .click();
-    await page.getByRole('radio', {name, exact: true}).focus();
-    await page.keyboard.press('Space');
-    await page
-      .getByRole('dialog', {name: 'Window', exact: true})
-      .getByRole('button', {name: 'Close', exact: true})
-      .click();
-  };
   for (const style of [
     'macOS',
     'macOS gray',
@@ -132,7 +125,7 @@ export async function verifyWatermark({page, out, download, section}) {
     'Editor',
     'Terminal',
   ]) {
-    await setStyle(style);
+    await windowStyle(style);
     await editor.fill('x');
     const free = await sample(`${style}-free`);
     assert.ok(
@@ -150,7 +143,7 @@ export async function verifyWatermark({page, out, download, section}) {
     });
     await download(`watermark-${style.replaceAll(' ', '-')}.png`);
   }
-  await setStyle('Editor');
+  await windowStyle('Editor');
   await editor.fill(
     Array.from({length: 15}, (_, i) =>
       i === 14 ? long : `const line${i} = ${i};`,
@@ -295,7 +288,7 @@ export async function verifyWatermark({page, out, download, section}) {
     .getByRole('button')
     .click();
   await page.getByRole('option', {name: '64', exact: true}).click();
-  await setStyle('macOS');
+  await windowStyle('macOS');
   await page.locator('[data-settings-trigger]').click();
   await page.locator('[data-settings-section="experiments"]').click();
   await page.locator('#settings-rendering-engine').focus();
