@@ -93,13 +93,53 @@ describe('CLI streams', {timeout: 30_000}, () => {
       expect(await readdir(dir)).toEqual([]);
     },
   );
-  it('keeps file output, sidecars, help and human inventory off stdout', async () => {
-    const path = join(dir, 'out.png');
-    const image = await run(['--offline', '-o', path, '--alt', '--quiet']);
-    expect(image.status, image.stderr).toBe(0);
-    expect(image.stdout.length).toBe(0);
-    expect(PNG.sync.read(await readFile(path)).width).toBeGreaterThan(0);
-    expect(image.stderr).toContain(path);
+  it.each([false, true])(
+    'prints only the primary file path to stdout, quiet=%s',
+    async quiet => {
+      const path = join(dir, 'out with spaces.png');
+      const image = await run([
+        '--offline',
+        '-o',
+        path,
+        '--alt',
+        ...(quiet ? ['--quiet'] : []),
+      ]);
+      expect(image.status, image.stderr).toBe(0);
+      expect(image.stdout.toString()).toBe(`${path}\n`);
+      expect(PNG.sync.read(await readFile(path)).width).toBeGreaterThan(0);
+      expect(await readFile(`${path}.alt.txt`, 'utf8')).toContain('answer');
+      expect(image.stderr).toContain(`${path} · `);
+      expect(image.stderr).toMatch(/\d+ B · \d+ ms/);
+      expect(image.stderr).toContain(`${path}.alt.txt`);
+    },
+  );
+  it.each([false, true])(
+    'prints per-tab paths in write order without sidecars, quiet=%s',
+    async quiet => {
+      const files = [join(dir, 'b.ts'), join(dir, 'a.ts')];
+      await writeFile(files[0], 'const second = 2;\n');
+      await writeFile(files[1], 'const first = 1;\n');
+      const paths = [join(dir, 'out-01.png'), join(dir, 'out-02.png')];
+      const result = await run([
+        ...files,
+        '--offline',
+        '--split-tabs',
+        '--alt',
+        '-o',
+        join(dir, 'out.png'),
+        ...(quiet ? ['--quiet'] : []),
+      ]);
+      expect(result.status, result.stderr).toBe(0);
+      expect(result.stdout.toString()).toBe(`${paths.join('\n')}\n`);
+      for (const [index, path] of paths.entries()) {
+        expect(PNG.sync.read(await readFile(path)).width).toBeGreaterThan(0);
+        expect(await readFile(`${path}.alt.txt`, 'utf8')).toContain(
+          ['second', 'first'][index],
+        );
+      }
+    },
+  );
+  it('keeps help and human inventory off stdout', async () => {
     for (const args of [['--help'], ['fonts', 'list']]) {
       const result = await run(args);
       expect(result.status, result.stderr).toBe(0);
@@ -161,7 +201,7 @@ describe('CLI streams', {timeout: 30_000}, () => {
       path,
     ]);
     expect(gif.status, gif.stderr).toBe(0);
-    expect(gif.stdout.length).toBe(0);
+    expect(gif.stdout.toString()).toBe(`${path}\n`);
     expect((await readFile(path)).subarray(0, 6).toString()).toBe('GIF89a');
     expect(gif.stderr).toContain('so this one plays at 25 instead of 30');
     expect(gif.stderr).toContain(path);

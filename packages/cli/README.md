@@ -29,8 +29,12 @@ The format comes from `--format`, else from the `-o` extension, else PNG.
 follows the content.
 
 `-o -` writes only image data to stdout. Without `-o`, redirected stdout receives
-the image; a terminal writes `codeimage.<format>`. Help, lists, paths, progress and
-errors go to stderr. `--quiet`, CI and non-TTY output use plain text. Exit codes are 0 for success, 1 for render or
+the image; a terminal writes `codeimage.<format>`. When writing files, stdout
+contains only the primary image or video paths, one per line in write order,
+including with `--quiet`. Sidecar paths, size and time summaries, help, human
+font lists, progress, and errors go to stderr. `fonts list --json` writes JSON
+to stdout. `--quiet`, CI and non-TTY output use plain text.
+Exit codes are 0 for success, 1 for render or
 write failures, and 2 for invalid options, presets, or inputs. Running with no
 files from a terminal prints usage and exits with 2.
 
