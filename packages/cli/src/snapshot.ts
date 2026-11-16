@@ -21,6 +21,14 @@ const presetSchema = z.looseObject({
 
 export type Preset = z.output<typeof presetSchema>;
 
+// The editor saves its default theme as fleetTheme and draws it as the
+// first theme of the registry, fleetDark.
+function editorTheme(themeId: string, label: string) {
+  const id = themeId === 'fleetTheme' ? 'fleetDark' : themeId;
+  resolveTheme(id, label);
+  return id;
+}
+
 export function parsePreset(text: string): Preset {
   let preset: Preset;
   try {
@@ -34,11 +42,7 @@ export function parsePreset(text: string): Preset {
           : String(error);
     throw new UsageError(`--preset: ${message}`);
   }
-  const themeId =
-    preset.editor.themeId === 'fleetTheme'
-      ? 'fleetDark'
-      : preset.editor.themeId;
-  resolveTheme(themeId, '--preset editor.themeId');
+  const themeId = editorTheme(preset.editor.themeId, '--preset editor.themeId');
   return {...preset, editor: {...preset.editor, themeId}};
 }
 
@@ -92,7 +96,17 @@ function projectSnapshot(
     if (value !== undefined)
       throw new UsageError(`${flag}: a project input keeps its own settings`);
   }
-  return {...project, format: args.format, scale: args.scale};
+  const {editor} = project;
+  const themeId = editorTheme(
+    editor.options.themeId,
+    `${inputs[0].name} editor.options.themeId`,
+  );
+  return {
+    ...project,
+    editor: {...editor, options: {...editor.options, themeId}},
+    format: args.format,
+    scale: args.scale,
+  };
 }
 
 export async function buildSnapshot({

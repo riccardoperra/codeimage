@@ -217,6 +217,17 @@ describe('animate flag', () => {
     };
     const files = [{name: 'project.json', code: JSON.stringify(project)}];
     const {document, notes} = await plan(['-o', 'demo.gif'], files);
+    const saved = {
+      ...project,
+      editor: {
+        ...project.editor,
+        options: {...project.editor.options, themeId: 'fleetTheme'},
+      },
+    };
+    expect(
+      (await plan([], [{name: 'saved.json', code: JSON.stringify(saved)}]))
+        .document.editor.options.themeId,
+    ).toBe('fleetDark');
     expect(document.editor.editors.map(tab => tab.id)).toEqual([
       'one',
       'two',
