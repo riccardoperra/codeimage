@@ -65,13 +65,7 @@ export function placeWatermark(scene: WatermarkScene): WatermarkPlacement {
     const inset = scene.frame.inset;
     for (const bottom of [true, false]) {
       for (const right of [true, false]) {
-        const slot = bottom
-          ? right
-            ? 'frame-bottom-right'
-            : 'frame-bottom-left'
-          : right
-            ? 'frame-top-right'
-            : 'frame-top-left';
+        const slot = frameSlot(bottom, right);
         candidates.push({
           slot,
           rect: at(
@@ -141,11 +135,7 @@ export function isTransparentColor(value: string): boolean {
     /^(?:rgba?|hsla?|hwb|lab|lch|oklab|oklch|color)\((.*)\)$/.exec(color);
   if (!functional) return false;
   const channels = functional[1];
-  const alpha = channels.includes('/')
-    ? channels.slice(channels.lastIndexOf('/') + 1).trim()
-    : channels.split(',').length === 4
-      ? channels.split(',')[3].trim()
-      : undefined;
+  const alpha = colorAlpha(channels);
   if (
     alpha === undefined ||
     !/^[+-]?(?:\d*\.\d+|\d+\.?\d*)(?:e[+-]?\d+)?%?$/.test(alpha)
@@ -165,4 +155,14 @@ export function canHostWatermarkFrame(frame: {
     frame.opacity > 0 &&
     (frame.hasImage || !isTransparentColor(frame.backgroundColor))
   );
+}
+
+function frameSlot(bottom: boolean, right: boolean): WatermarkSlot {
+  if (bottom) return right ? 'frame-bottom-right' : 'frame-bottom-left';
+  return right ? 'frame-top-right' : 'frame-top-left';
+}
+function colorAlpha(channels: string) {
+  if (channels.includes('/'))
+    return channels.slice(channels.lastIndexOf('/') + 1).trim();
+  if (channels.split(',').length === 4) return channels.split(',')[3].trim();
 }
