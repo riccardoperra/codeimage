@@ -1,5 +1,6 @@
 {
   "plugins": ["unicorn", "import"],
+  "jsPlugins": ["./tools/oxlint-plugin-codeimage/index.mjs"],
   "categories": {
     "correctness": "error"
   },
@@ -19,6 +20,7 @@
     "docs/**"
   ],
   "rules": {
+    "codeimage/no-comments": "error",
     "max-lines": [
       "error",
       {
