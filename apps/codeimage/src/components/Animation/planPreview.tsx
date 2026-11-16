@@ -198,7 +198,9 @@ export async function measurePreview(
   let measurements = await measureLayouts();
   if (getFrameState().store.signature)
     measurements = await measureLayouts(
-      Math.ceil(Math.max(...measurements.map(({layout}) => layout.size.width))),
+      Math.round(
+        Math.max(...measurements.map(({layout}) => layout.size.width)),
+      ),
     );
 
   const step = (index: number) => ({
