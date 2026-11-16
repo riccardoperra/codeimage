@@ -77,12 +77,18 @@ async function createProject(page, base, options = {}) {
   if (options.delayed) {
     await page.evaluate(async () => {
       const {worker} = await import('/src/mocks/browser.ts');
-      const {http, HttpResponse, delay} =
+      const {http, HttpResponse} =
         await import('/node_modules/msw/lib/core/index.mjs');
       const {db} = await import('/src/mocks/db.ts');
+      const pending = new Promise(resolve => {
+        window.__verifyReleaseProject = () => {
+          resolve();
+          delete window.__verifyReleaseProject;
+        };
+      });
       worker.use(
         http.get('*/api/v1/project/:id', async ({params}) => {
-          await delay(1800);
+          await pending;
           return HttpResponse.json(
             db.project.findFirst({where: {id: {equals: params.id}}}),
           );
@@ -297,6 +303,7 @@ export async function auditSnippets({feature, doctor, context, base, out}) {
       const layout = await page
         .locator('.unified-editor > header + *')
         .boundingBox();
+      await page.evaluate(() => window.__verifyReleaseProject());
       await ready(page);
       assert.equal(new URL(page.url()).pathname, `/${project.id}`);
       assert.equal(await page.locator('.unified-editor').count(), 1);
@@ -334,13 +341,15 @@ export async function auditSnippets({feature, doctor, context, base, out}) {
       );
       await openThemes(
         page,
-        await page.locator('[data-layout]').evaluate(root =>
-          root.dataset.layout === 'dock'
-            ? 'dock'
-            : root.dataset.panelNav === 'rail'
-              ? 'studio'
-              : 'inspector',
-        ),
+        await page
+          .locator('[data-layout]')
+          .evaluate(root =>
+            root.dataset.layout === 'dock'
+              ? 'dock'
+              : root.dataset.panelNav === 'rail'
+                ? 'studio'
+                : 'inspector',
+          ),
         page.viewportSize().width,
       );
       assert.equal(

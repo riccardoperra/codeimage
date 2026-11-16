@@ -5,6 +5,8 @@ export const island = style({
   width: 'calc(100% - 24px)',
   maxWidth: 1100,
   minWidth: 0,
+  minHeight: 0,
+  maxHeight: 'max(60dvh, 300px)',
   margin: '0 auto 12px',
   boxSizing: 'border-box',
   flexShrink: 0,
@@ -14,11 +16,27 @@ export const island = style({
   color: c.baseText,
   boxShadow: c.dialog.panelShadow,
   display: 'grid',
+  gridTemplateRows: 'max-content minmax(0, 1fr)',
   gap: 10,
   fontSize: themeVars.fontSize.sm,
+  selectors: {
+    '&[data-compact]': {
+      gridTemplateRows:
+        'max-content max-content max-content minmax(40px, 1fr) max-content',
+    },
+  },
   '@media': {
     '(max-width: 768px)': {padding: 12, width: 'calc(100% - 16px)', gap: 8},
   },
+});
+// Menu triggers stay outside scrolling ancestors; only the content can scroll.
+export const body = style({
+  minHeight: 0,
+  display: 'grid',
+  gridAutoRows: 'max-content',
+  gap: 10,
+  overflowY: 'auto',
+  selectors: {'&[data-compact]': {display: 'contents', overflowY: 'visible'}},
 });
 globalStyle(
   `${island} [data-cui="button"], ${island} [data-cui="icon-button"], ${island} [aria-haspopup="listbox"]`,
@@ -27,8 +45,13 @@ globalStyle(
   },
 );
 export const transport = style({
+  position: 'sticky',
+  top: 0,
+  zIndex: 2,
+  background: c.dialog.panelBackgroundColor,
   minWidth: 0,
   display: 'flex',
+  flexWrap: 'wrap',
   gap: 8,
   alignItems: 'center',
   minHeight: 36,
@@ -47,17 +70,16 @@ export const spacer = style({
 });
 export const header = style({
   display: 'flex',
+  flexWrap: 'wrap',
   alignItems: 'center',
   gap: 8,
   minWidth: 0,
 });
 export const title = style({width: 160, minWidth: 0});
-export const desktopHeader = style({
-  '@media': {'(max-width: 768px)': {display: 'none'}},
-});
-export const mobileHeader = style({
-  display: 'none',
-  '@media': {'(max-width: 768px)': {display: 'block'}},
+globalStyle(`${transport} button, ${header} button, ${header} input`, {
+  minWidth: 36,
+  minHeight: 36,
+  flexShrink: 0,
 });
 export const details = style({
   display: 'flex',
@@ -69,6 +91,7 @@ export const details = style({
 });
 export const field = style({
   display: 'flex',
+  flexWrap: 'wrap',
   alignItems: 'center',
   gap: 8,
   minWidth: 0,
@@ -76,7 +99,9 @@ export const field = style({
 export const number = style({
   position: 'relative',
   width: 110,
-  '@media': {'(max-width: 768px)': {width: 142}},
+  selectors: {
+    '&[data-compact]': {display: 'flex', gap: 8, width: 228, maxWidth: '100%'},
+  },
 });
 export const hint = style({margin: 0, opacity: 0.7, fontSize: 12});
 
@@ -85,8 +110,9 @@ globalStyle(`${island} input`, {
 });
 globalStyle(`${number} input`, {
   paddingRight: 28,
-  '@media': {'(max-width: 768px)': {paddingRight: 84}},
 });
+globalStyle(`${number}[data-compact] > :first-child`, {flex: 1, minWidth: 0});
+globalStyle(`${number}[data-compact] input`, {paddingRight: 8});
 export const durationSteppers = style({
   position: 'absolute',
   right: 4,
@@ -94,7 +120,12 @@ export const durationSteppers = style({
   transform: 'translateY(-50%)',
   display: 'flex',
   flexDirection: 'column',
-  '@media': {'(max-width: 768px)': {flexDirection: 'row'}},
+});
+globalStyle(`${number}[data-compact] ${durationSteppers}`, {
+  position: 'static',
+  transform: 'none',
+  flexDirection: 'row',
+  flexShrink: 0,
 });
 globalStyle(`${durationSteppers} button`, {
   height: 14,
@@ -102,9 +133,12 @@ globalStyle(`${durationSteppers} button`, {
   width: 20,
   minWidth: 20,
   padding: 0,
-  '@media': {
-    '(max-width: 768px)': {height: 40, minHeight: 40, width: 40, minWidth: 40},
-  },
+});
+globalStyle(`${number}[data-compact] ${durationSteppers} button`, {
+  height: 40,
+  minHeight: 40,
+  width: 40,
+  minWidth: 40,
 });
 globalStyle(`${number} button svg`, {
   width: 12,
@@ -113,4 +147,10 @@ globalStyle(`${number} button svg`, {
 });
 globalStyle('[data-animation-steps-menu] [role="menuitem"]', {
   '@media': {'(max-width: 768px)': {minHeight: 40, minWidth: 40}},
+});
+globalStyle('[data-animation-steps-menu][role="menu"]', {
+  maxHeight: 'var(--kb-popper-content-available-height)',
+  maxWidth: 'min(calc(100vw - 16px), var(--kb-popper-content-available-width))',
+  overflowY: 'auto',
+  overscrollBehavior: 'contain',
 });

@@ -365,6 +365,7 @@ async function verifyActivity({page, call, out, padding}) {
   const card = page.locator(CARD);
   await card.waitFor({state: 'detached', timeout: 20000});
 
+  const downloading = page.waitForEvent('download', {timeout: 60000});
   const exporting = call('export_image', {
     format: 'png',
     scale: 2,
@@ -373,10 +374,7 @@ async function verifyActivity({page, call, out, padding}) {
   await page
     .locator(`${CARD} li[data-tool="export_image"][data-status="running"]`)
     .waitFor({timeout: 5000});
-  const [download] = await Promise.all([
-    page.waitForEvent('download', {timeout: 60000}),
-    exporting,
-  ]);
+  const [download] = await Promise.all([downloading, exporting]);
   await download.cancel().catch(() => {});
 
   await call('set_code', {

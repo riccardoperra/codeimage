@@ -19,7 +19,7 @@ export function TransportBar(props: {compact: boolean}) {
     document.querySelector<HTMLElement>('[data-animate-toggle]')?.focus();
   };
   return (
-    <div class={styles.transport}>
+    <div class={styles.transport} data-animation-transport>
       <IconButton
         size="sm"
         theme="primary"
@@ -49,10 +49,8 @@ export function TransportBar(props: {compact: boolean}) {
         {formatSeconds(animation.durationMs(), locale())}
       </output>
       <span class={styles.spacer} />
-      <div class={styles.desktopHeader}>
-        <HeaderField />
-      </div>
       <Show when={!props.compact}>
+        <HeaderField />
         <StepsMenu />
       </Show>
       <IconButton

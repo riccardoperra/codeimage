@@ -20,6 +20,7 @@ import type {AppLocaleEntries} from '../../i18n';
 import {CloseIcon} from '../Icons/CloseIcon';
 import {DurationInput} from './SegmentDetails';
 import {EasingField} from './EasingField';
+import {HeaderField} from './HeaderField';
 import {EasingCurve} from './EasingCurve';
 import {formatDuration} from './format';
 import * as styles from './PhoneSteps.css';
@@ -34,6 +35,18 @@ function StepRow(props: {id: string; open: (id: string) => void}) {
     editor.state.editors.find(tab => tab.id === step()?.editorId)?.tab
       .tabName || t('animation.untitledTab');
   const transition = () => transitionOf(animation.settings(), step());
+  const label = () =>
+    t(
+      index() > 0
+        ? 'animation.stepDescription'
+        : 'animation.firstStepDescription',
+      {
+        n: String(index() + 1),
+        tab: name(),
+        transition: formatDuration(transition().ms, locale()),
+        hold: formatDuration(step()?.holdMs ?? 0, locale()),
+      },
+    );
   const open = () => props.open(props.id);
   return (
     <li>
@@ -42,6 +55,7 @@ function StepRow(props: {id: string; open: (id: string) => void}) {
         class={styles.row}
         data-animation-step-row
         aria-haspopup="dialog"
+        aria-label={label()}
         data-step-id={props.id}
         data-selected={
           animation.selection()?.stepId === props.id ? '' : undefined
@@ -54,21 +68,19 @@ function StepRow(props: {id: string; open: (id: string) => void}) {
         }
         onClick={open}
       >
-        <span class={styles.index}>{index() + 1}</span>
-        <span class={styles.name}>{name()}</span>
-        <span
-          class={styles.metric}
-          aria-label={`${t('animation.transition')}: ${index() > 0 ? formatDuration(transition().ms, locale()) : '—'}`}
-        >
+        <span class={styles.index} aria-hidden="true">
+          {index() + 1}
+        </span>
+        <span class={styles.name} aria-hidden="true">
+          {name()}
+        </span>
+        <span class={styles.metric} aria-hidden="true">
           <Show when={index() > 0} fallback="—">
             <EasingCurve easing={easingOf(transition().easing)} glyph />
             {formatDuration(transition().ms, locale())}
           </Show>
         </span>
-        <span
-          class={styles.metric}
-          aria-label={`${t('animation.hold')}: ${formatDuration(step()?.holdMs ?? 0, locale())}`}
-        >
+        <span class={styles.metric} aria-hidden="true">
           {formatDuration(step()?.holdMs ?? 0, locale())}
         </span>
       </button>
@@ -98,8 +110,19 @@ function StepFields(props: {
   const timing = (ms: number) =>
     animation.actions.setTransition(props.id, {ms});
   const apply = () => animation.actions.applyToAll(props.id);
-  const earlier = () => animation.actions.moveStep(props.id, -1);
-  const later = () => animation.actions.moveStep(props.id, 1);
+  let earlierButton!: HTMLButtonElement;
+  let laterButton!: HTMLButtonElement;
+  const earlier = () => {
+    const focused = document.activeElement === earlierButton;
+    animation.actions.moveStep(props.id, -1);
+    if (focused && index() === 0) laterButton.focus();
+  };
+  const later = () => {
+    const focused = document.activeElement === laterButton;
+    animation.actions.moveStep(props.id, 1);
+    if (focused && index() === animation.settings().steps.length - 1)
+      earlierButton.focus();
+  };
   const duplicate = () => {
     props.close();
     animation.actions.duplicateAsNext(props.id);
@@ -126,6 +149,8 @@ function StepFields(props: {
       <DurationInput
         id="animationHold"
         label={t('animation.hold')}
+        field="hold"
+        compact
         value={step()?.holdMs ?? 0}
         limits={DURATION_LIMITS.holdMs}
         commit={hold}
@@ -135,6 +160,8 @@ function StepFields(props: {
         <DurationInput
           id="animationTransition"
           label={t('animation.transition')}
+          field="transition"
+          compact
           value={transition().ms}
           limits={DURATION_LIMITS.transitionMs}
           commit={timing}
@@ -149,6 +176,7 @@ function StepFields(props: {
       </Show>
       <div class={styles.actions}>
         <Button
+          ref={earlierButton}
           size="sm"
           theme="secondary"
           disabled={index() === 0}
@@ -157,6 +185,7 @@ function StepFields(props: {
           {t('animation.moveEarlier')}
         </Button>
         <Button
+          ref={laterButton}
           size="sm"
           theme="secondary"
           disabled={index() === animation.settings().steps.length - 1}
@@ -170,6 +199,11 @@ function StepFields(props: {
           size="sm"
           theme="secondary"
           disabled={!editor.computed.canAddEditor()}
+          aria-describedby={
+            !editor.computed.canAddEditor()
+              ? 'animation-duplicate-limit'
+              : undefined
+          }
           onClick={duplicate}
         >
           {t('animation.duplicate')}
@@ -183,6 +217,11 @@ function StepFields(props: {
           {t('animation.remove')}
         </Button>
       </div>
+      <Show when={!editor.computed.canAddEditor()}>
+        <p id="animation-duplicate-limit" class={styles.hint}>
+          {t('animation.duplicateLimit')}
+        </p>
+      </Show>
     </>
   );
 }
@@ -251,33 +290,34 @@ export function PhoneSteps() {
         data-animation-step-list
       >
         <For each={ids()}>{id => <StepRow id={id} open={show} />}</For>
-        <li>
-          <DropdownMenu placement="top-end">
-            <DropdownMenuTrigger
-              as={Button}
-              size="sm"
-              theme="secondary"
-              variant="ghost"
-              class={styles.add}
-              data-animation-add-step
-            >
-              + {t('animation.addStepRow')}
-            </DropdownMenuTrigger>
-            <DropdownMenuPortal>
-              <DropdownMenuContent data-animation-steps-menu>
-                <For each={editor.state.editors}>
-                  {tab => (
-                    <AddStep
-                      id={tab.id}
-                      name={tab.tab.tabName || t('animation.untitledTab')}
-                    />
-                  )}
-                </For>
-              </DropdownMenuContent>
-            </DropdownMenuPortal>
-          </DropdownMenu>
-        </li>
       </ol>
+      <div class={styles.footer}>
+        <HeaderField />
+        <DropdownMenu placement="top-end">
+          <DropdownMenuTrigger
+            as={Button}
+            size="sm"
+            theme="secondary"
+            variant="ghost"
+            class={styles.add}
+            data-animation-add-step
+          >
+            + {t('animation.addStepRow')}
+          </DropdownMenuTrigger>
+          <DropdownMenuPortal>
+            <DropdownMenuContent data-animation-steps-menu>
+              <For each={editor.state.editors}>
+                {tab => (
+                  <AddStep
+                    id={tab.id}
+                    name={tab.tab.tabName || t('animation.untitledTab')}
+                  />
+                )}
+              </For>
+            </DropdownMenuContent>
+          </DropdownMenuPortal>
+        </DropdownMenu>
+      </div>
       <Dialog open={!!sheetId()} onOpenChange={changeOpen}>
         <Dialog.Portal>
           <Dialog.Overlay class={styles.overlay} />

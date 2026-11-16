@@ -16,6 +16,14 @@ export async function audit({page, context, base, out, server}) {
   page.setDefaultTimeout(12000);
   await context.grantPermissions(['clipboard-read', 'clipboard-write']);
   const results = [];
+  const animationCells = [];
+  const saveResults = () =>
+    writeFile(resolve(out, 'audit.json'), JSON.stringify(results, null, 2));
+  const saveCells = () =>
+    writeFile(
+      resolve(out, 'animation-cells.json'),
+      JSON.stringify(animationCells, null, 2),
+    );
   const requested = new Set(
     (process.env.VERIFY_CASES ?? '')
       .split(',')
@@ -95,16 +103,14 @@ export async function audit({page, context, base, out, server}) {
       );
       results.push({feature: name, status: 'failed', error: String(error)});
       console.log(`FAIL ${name}: ${String(error).slice(0, 400)}`);
+      await saveResults();
       await doctor(
         '/',
         name === 'projects' ? 'dashboard' : 'editor',
         'inspector',
       );
     }
-    await writeFile(
-      resolve(out, 'audit.json'),
-      JSON.stringify(results, null, 2),
-    );
+    await saveResults();
   }
   async function settings(section) {
     await page.locator('[data-settings-trigger]').click();
@@ -1139,15 +1145,31 @@ export async function audit({page, context, base, out, server}) {
       await page.waitForTimeout(100);
     assert.equal(await saved(), true, 'animation fixture saved before reload');
   }
-  async function animationMatrix(caseName, run, phoneOnly = false) {
+  async function animationMatrix(
+    caseName,
+    run,
+    phoneOnly = false,
+    viewports = [
+      {width: 1440, height: 900},
+      {width: 390, height: 844},
+    ],
+  ) {
     const original = page;
+    const cells = new Set(
+      (process.env.VERIFY_ANIMATE_CELLS ?? '')
+        .split(',')
+        .map(value => value.trim())
+        .filter(Boolean),
+    );
+    const visited = [];
     try {
       for (const layout of ['inspector', 'dock', 'studio']) {
-        for (const viewport of [
-          {width: 1440, height: 900},
-          {width: 390, height: 844},
-        ]) {
-          if ((viewport.width === 390) !== phoneOnly) continue;
+        for (const viewport of viewports) {
+          if (phoneOnly !== null && (viewport.width === 390) !== phoneOnly)
+            continue;
+          const name = `${layout}-${viewport.width}`;
+          if (cells.size && !cells.has(name)) continue;
+          visited.push(name);
           const isolated = await createMockContext(context.browser(), base, {
             viewport,
             hasTouch: true,
@@ -1167,12 +1189,16 @@ export async function audit({page, context, base, out, server}) {
             )
               warnings.push(message.text());
           });
+          if (caseName === 'followups')
+            await page.addInitScript(() => {
+              // LAN HTTP has getRandomValues, but no secure-context randomUUID.
+              Object.defineProperty(crypto, 'randomUUID', {value: undefined});
+            });
           await page.addInitScript(() => {
             const warn = console.warn;
             console.warn = (...args) =>
               warn(...args, new Error('warning source').stack);
           });
-          const name = `${layout}-${viewport.width}`;
           console.log(`RUN animate-${caseName} ${name}`);
           try {
             await page.setViewportSize({width: 1440, height: 900});
@@ -1195,7 +1221,7 @@ export async function audit({page, context, base, out, server}) {
             );
             await page.setViewportSize(viewport);
             await page.reload();
-            await editor().waitFor();
+            await editor().waitFor({timeout: 60000});
             await page.evaluate(() => {
               window.__animationFirstFrames = [];
               let samples = 0;
@@ -1240,8 +1266,25 @@ export async function audit({page, context, base, out, server}) {
               `${name}: no Solid ownership warnings`,
             );
             await shot(`animate-${caseName}-${name}`);
+            animationCells.push({
+              feature: `animate-${caseName}`,
+              cell: name,
+              layout,
+              viewport,
+              status: 'passed',
+            });
+            await saveCells();
             console.log(`PASS animate matrix ${name}`);
           } catch (error) {
+            animationCells.push({
+              feature: `animate-${caseName}`,
+              cell: name,
+              layout,
+              viewport,
+              status: 'failed',
+              error: String(error),
+            });
+            await saveCells();
             await shot(`animate-${caseName}-${name}-failure`).catch(() => {});
             await writeFile(
               resolve(out, `animate-${caseName}-${name}-failure.txt`),
@@ -1249,7 +1292,10 @@ export async function audit({page, context, base, out, server}) {
                 '\n' +
                 warnings.join('\n') +
                 '\n' +
-                (await page.locator('body').ariaSnapshot()),
+                (await page
+                  .locator('body')
+                  .ariaSnapshot()
+                  .catch(() => 'Renderer closed by watchdog')),
             );
             throw error;
           } finally {
@@ -1263,6 +1309,11 @@ export async function audit({page, context, base, out, server}) {
     } finally {
       page = original;
     }
+    assert.ok(
+      visited.length > 0,
+      'No animation matrix cells matched VERIFY_ANIMATE_CELLS',
+    );
+    return visited;
   }
   const animationSegments = () => page.locator('[data-animation-segment]');
   const durationInput = () => page.locator('#animationDuration-input');
@@ -1383,7 +1434,7 @@ export async function audit({page, context, base, out, server}) {
         await sheet.waitFor({state: 'hidden'});
         assert.match(
           await rows.nth(1).ariaSnapshot(),
-          /Hold \(ms\): 0 ms/,
+          /Hold: 0 ms/,
           'row exposes its hold duration to assistive technology',
         );
         for (const control of [
@@ -1469,10 +1520,12 @@ export async function audit({page, context, base, out, server}) {
         assert.equal(await rows.count(), 2);
         for (let count = 2; count < 30; count++) {
           await page.locator('[data-animation-add-step]').tap();
-          await page
-            .getByRole('menuitem', {name: 'index.tsx', exact: true})
-            .first()
-            .tap();
+          await activateAnimationItem(
+            page
+              .getByRole('menuitem', {name: 'index.tsx', exact: true})
+              .first(),
+            true,
+          );
           await page.waitForFunction(
             () => !document.querySelector('[role=menu]'),
           );
@@ -1503,7 +1556,7 @@ export async function audit({page, context, base, out, server}) {
     );
   });
   await feature('animate-focus', async () => {
-    await animationMatrix('focus', async () => {
+    await animationMatrix('focus', async ({name}) => {
       const transition = animationSegments().nth(1);
       const hold = animationSegments().first();
       await transition.click();
@@ -1540,7 +1593,7 @@ export async function audit({page, context, base, out, server}) {
         await durationInput().evaluate(el => el === document.activeElement),
       );
       const increment = page.getByRole('button', {
-        name: 'Increase duration by 100 ms',
+        name: 'Increase transition by 100 ms',
         exact: true,
       });
       await page.keyboard.press('ArrowUp');
@@ -1574,9 +1627,47 @@ export async function audit({page, context, base, out, server}) {
       await hold.click();
       await transition.click();
       await hold.click();
+      assert.equal(await hold.getAttribute('data-selected'), '');
       await animationMenu('Duplicate as next step');
       await page.waitForFunction(() =>
         document.activeElement?.classList.contains('cm-content'),
+      );
+      const savedDuplicate = await page.waitForFunction(
+        () =>
+          new Promise(resolve => {
+            const request = indexedDB.open('keyval-store');
+            request.onsuccess = () => {
+              const read = request.result
+                .transaction('keyval')
+                .objectStore('keyval')
+                .get('document');
+              read.onsuccess = () => {
+                request.result.close();
+                resolve(
+                  read.result?.editor?.editors?.length === 3
+                    ? read.result
+                    : false,
+                );
+              };
+            };
+          }),
+      );
+      const persistedDuplicate = await savedDuplicate.jsonValue();
+      assert.equal(
+        new Set(persistedDuplicate.editor.editors.map(tab => tab.id)).size,
+        3,
+        'duplicated tab has a distinct persistent identity',
+      );
+      await writeFile(
+        resolve(out, `animate-focus-${name}-duplicate.json`),
+        JSON.stringify(
+          {
+            editorIds: persistedDuplicate.editor.editors.map(tab => tab.id),
+            code: await editor().innerText(),
+          },
+          null,
+          2,
+        ),
       );
       assert.ok(
         (await editor().innerText()).includes('const first = 1;'),
@@ -1585,15 +1676,37 @@ export async function audit({page, context, base, out, server}) {
     });
   });
 
+  async function activateAnimationItem(item, touch = false) {
+    await item.waitFor();
+    await page.waitForFunction(
+      element => {
+        const box = element.getBoundingClientRect();
+        return element.contains(
+          document.elementFromPoint(
+            box.x + box.width / 2,
+            box.y + box.height / 2,
+          ),
+        );
+      },
+      await item.elementHandle(),
+    );
+    const box = await item.boundingBox();
+    assert.ok(box);
+    if (touch)
+      await page.touchscreen.tap(box.x + box.width / 2, box.y + box.height / 2);
+    else await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2);
+  }
   async function addAnimationStep() {
     await page.getByRole('button', {name: 'Steps', exact: true}).click();
-    await page
-      .getByRole('menuitem', {name: 'Add to animation', exact: true})
-      .hover();
+    const add = page.getByRole('menuitem', {
+      name: 'Add to animation',
+      exact: true,
+    });
+    await add.hover();
     const submenu = page.getByRole('menu').last();
-    await submenu
-      .getByRole('menuitem', {name: 'index.tsx', exact: true})
-      .click();
+    await activateAnimationItem(
+      submenu.getByRole('menuitem', {name: 'index.tsx', exact: true}),
+    );
     await page.waitForFunction(() => !document.querySelector('[role=menu]'));
   }
   async function visibleInStrip(locator) {
@@ -1604,6 +1717,17 @@ export async function audit({page, context, base, out, server}) {
         .getBoundingClientRect();
       return box.x >= root.x - 1 && box.right <= root.right + 1;
     });
+  }
+  async function assertAnimationLabelsFit() {
+    const labels = await page
+      .locator('[data-segment-label]')
+      .evaluateAll(elements =>
+        elements.map(el => ({client: el.clientWidth, scroll: el.scrollWidth})),
+      );
+    assert.ok(
+      labels.every(label => label.scroll <= label.client + 1),
+      'labels fit instead of clipping',
+    );
   }
   await feature('animate-geometry', async () => {
     await animationMatrix('geometry', async ({name}) => {
@@ -1723,12 +1847,7 @@ export async function audit({page, context, base, out, server}) {
           await scroller.evaluate(el => el.scrollWidth <= el.clientWidth + 1),
           `${target} steps fit the panel`,
         );
-        assert.ok(
-          (await animationSegments()
-            .locator('[data-segment-label="number"]')
-            .count()) > 0 || target === 30,
-          'narrow holds use numbers',
-        );
+        await assertAnimationLabelsFit();
         if (target >= 8)
           assert.ok(
             (await animationSegments()
@@ -1814,6 +1933,484 @@ export async function audit({page, context, base, out, server}) {
         JSON.stringify(measurements, null, 2),
       );
     });
+  });
+
+  await feature('animate-followups', async () => {
+    return animationMatrix(
+      'followups',
+      async ({viewport, name}) => {
+        const panel = page.locator('[data-animate-panel]');
+        const rows = page.locator('[data-animation-step-row]');
+        const sheet = page.locator('[data-animation-step-sheet]');
+        const keyboardOpen = async (trigger, key) => {
+          const browserSession = await context.browser().newBrowserCDPSession();
+          const session = await page.context().newCDPSession(page);
+          const {targetInfo} = await session.send('Target.getTargetInfo');
+          let timer;
+          try {
+            await Promise.race([
+              (async () => {
+                await trigger.focus();
+                await trigger.press(key, {timeout: 3000});
+                await page.getByRole('menu').first().waitFor({timeout: 3000});
+                await page.waitForFunction(
+                  () =>
+                    document.activeElement?.getAttribute('role') === 'menuitem',
+                  undefined,
+                  {timeout: 3000},
+                );
+              })(),
+              new Promise((_, reject) => {
+                timer = setTimeout(() => {
+                  // Close the renderer from the browser process even if its JS loops.
+                  void browserSession
+                    .send('Target.closeTarget', {
+                      targetId: targetInfo.targetId,
+                    })
+                    .catch(() => {});
+                  reject(
+                    new Error(`${name}: ${key} menu open exceeded 5 seconds`),
+                  );
+                }, 5000);
+              }),
+            ]);
+          } finally {
+            clearTimeout(timer);
+            await session.detach().catch(() => {});
+            await browserSession.detach();
+          }
+        };
+        const checkKeyboardMenus = async () => {
+          const listMode = (await rows.count()) > 0;
+          const trigger = listMode
+            ? page.locator('[data-animation-add-step]')
+            : panel.getByRole('button', {name: 'Steps', exact: true});
+          for (const key of ['Enter', 'Space']) {
+            await keyboardOpen(trigger, key);
+            await page.keyboard.press('Escape');
+            await page.waitForFunction(
+              () => !document.querySelector('[role=menu]'),
+            );
+            await page.waitForFunction(
+              el => el === document.activeElement,
+              await trigger.elementHandle(),
+              {timeout: 2000},
+            );
+          }
+        };
+        const closeSheet = async () => {
+          await sheet
+            .getByRole('button', {name: 'Close step settings', exact: true})
+            .click();
+          await sheet.waitFor({state: 'hidden'});
+        };
+        const openSheet = async index => {
+          await rows.nth(index).click();
+          await page.waitForFunction(() =>
+            document
+              .querySelector('[data-animation-step-sheet]')
+              ?.contains(document.activeElement),
+          );
+        };
+        const setTiming = async (index, kind, value) => {
+          if (await rows.count()) {
+            await openSheet(index);
+            const input = page.locator(
+              kind === 'hold'
+                ? '#animationHold-input'
+                : '#animationTransition-input',
+            );
+            await input.fill(String(value));
+            await input.press('Enter');
+            await closeSheet();
+          } else {
+            await animationSegments()
+              .nth(index * 2 - (kind === 'transition' ? 1 : 0))
+              .click();
+            await typeDuration(value);
+          }
+        };
+        const assertControls = async () => {
+          const checks = await panel
+            .locator(
+              '[data-animation-transport] button:visible, [data-animation-transport] input:visible',
+            )
+            .evaluateAll(buttons =>
+              buttons.map(button => {
+                const box = button.getBoundingClientRect();
+                const root = button
+                  .closest('[data-animate-panel]')
+                  .getBoundingClientRect();
+                return {
+                  name: button.getAttribute('aria-label') || button.textContent,
+                  width: box.width,
+                  height: box.height,
+                  inside:
+                    box.left >= root.left &&
+                    box.right <= root.right &&
+                    box.top >= Math.max(0, root.top) &&
+                    box.bottom <= Math.min(innerHeight, root.bottom),
+                  hit: [
+                    [box.x + box.width / 2, box.y + box.height / 2],
+                    [box.x + 2, box.y + box.height / 2],
+                    [box.right - 2, box.y + box.height / 2],
+                    [box.x + box.width / 2, box.y + 2],
+                    [box.x + box.width / 2, box.bottom - 2],
+                  ].every(([x, y]) =>
+                    button.contains(document.elementFromPoint(x, y)),
+                  ),
+                };
+              }),
+            );
+          for (const check of checks) {
+            assert.ok(
+              check.inside && check.hit,
+              `${name}: visible and clickable ${check.name}`,
+            );
+            // Desktop duration steppers retain their keyboard alternative.
+            if (!/by 100 ms/.test(check.name))
+              assert.ok(
+                check.width >= 35.99 && check.height >= 35.99,
+                `${name}: target size ${check.name}`,
+              );
+          }
+          assert.ok(
+            await panel.evaluate(el => el.scrollWidth <= el.clientWidth + 1),
+            'no horizontal overflow',
+          );
+        };
+        await assertControls();
+        await checkKeyboardMenus();
+        const header = panel.locator('[aria-haspopup="listbox"]:visible');
+        await header.click();
+        await page
+          .getByRole('option', {name: 'Title only', exact: true})
+          .click();
+        await page
+          .getByRole('option', {name: 'Title only', exact: true})
+          .waitFor({state: 'hidden'});
+        await panel
+          .getByRole('textbox', {name: 'Title', exact: true})
+          .fill('Follow-up');
+        await assertControls();
+        const ordered = panel.locator(
+          '[data-animation-transport] button:visible:not([disabled]), [data-animation-transport] input:visible',
+        );
+        await ordered.first().focus();
+        for (let i = 1; i < (await ordered.count()); i++) {
+          await page.keyboard.press('Tab');
+          assert.ok(
+            await ordered.nth(i).evaluate(el => el === document.activeElement),
+            'wrapping preserves transport keyboard order',
+          );
+        }
+        await setTiming(0, 'hold', 0);
+        await setTiming(1, 'hold', 0);
+        await setTiming(1, 'transition', 300);
+        if (await rows.count()) {
+          assert.match(
+            await rows.first().getAttribute('aria-label'),
+            /Step 1.*No incoming transition.*Hold: 0 ms/,
+          );
+          assert.match(
+            await rows.nth(1).getAttribute('aria-label'),
+            /Step 2.*Transition: 300 ms.*Hold: 0 ms/,
+          );
+          assert.doesNotMatch(
+            await rows.nth(1).getAttribute('aria-label'),
+            /\(ms\)/,
+          );
+        } else {
+          const tick = page.locator('[data-animation-tick]');
+          assert.equal(await tick.count(), 1);
+          assert.equal(await tick.textContent(), '0.00 s');
+          assert.equal(await tick.getAttribute('data-alignment'), 'start');
+          assert.ok(
+            await tick.evaluate(el => {
+              const box = el.getBoundingClientRect();
+              const root = el
+                .closest('[data-animation-scroller]')
+                .getBoundingClientRect();
+              return box.left >= root.left && box.right <= root.right;
+            }),
+            'sole ruler label is fully visible',
+          );
+        }
+        if (await rows.count()) await openSheet(1);
+        else await animationSegments().nth(1).click();
+        await page.locator('[data-easing-trigger]').click();
+        const easing = page.getByRole('dialog', {name: 'Easing', exact: true});
+        const linear = easing.getByRole('tab', {name: 'Linear', exact: true});
+        await linear.click({timeout: 3000});
+        assert.ok(
+          await linear.evaluate(el => {
+            const box = el.getBoundingClientRect();
+            return (
+              box.top >= 0 &&
+              box.bottom <= innerHeight &&
+              el.contains(
+                document.elementFromPoint(
+                  box.x + box.width / 2,
+                  box.y + box.height / 2,
+                ),
+              )
+            );
+          }),
+          'easing tabs stay visible and clickable',
+        );
+        await shot(`animate-followups-${name}-easing`);
+        await linear.press('Escape');
+        await easing.waitFor({state: 'hidden'});
+        if (await rows.count()) await closeSheet();
+        await shot(`animate-followups-${name}-short`);
+        for (let count = 2; count < 30; count++) {
+          if (await rows.count()) {
+            await page.locator('[data-animation-add-step]').click();
+            await activateAnimationItem(
+              page
+                .getByRole('menuitem', {name: 'index.tsx', exact: true})
+                .first(),
+              true,
+            );
+            await page.waitForFunction(
+              () => !document.querySelector('[role=menu]'),
+            );
+          } else await addAnimationStep();
+          if ([12, 30].includes(count + 1)) {
+            const segments = animationSegments();
+            const targets = await segments.evaluateAll(elements =>
+              elements.map(el => el.getBoundingClientRect().width),
+            );
+            assert.ok(
+              targets.every(width => width >= 7.99),
+              'editable strip slots are at least 8px',
+            );
+            if (await rows.count()) {
+              assert.equal(await rows.count(), count + 1);
+              assert.ok(
+                await page
+                  .locator('[data-animation-step-list]')
+                  .evaluate(el => el.clientHeight >= 40),
+                'short windows retain a full row in the list viewport',
+              );
+              assert.ok(
+                await rows
+                  .first()
+                  .evaluate(el => el.getBoundingClientRect().height >= 40),
+              );
+              await openSheet(0);
+              assert.equal(
+                await page.locator('#animationHold-input').inputValue(),
+                '0',
+                'zero hold remains selectable in dense mode',
+              );
+              await closeSheet();
+            }
+            await checkKeyboardMenus();
+            await assertAnimationLabelsFit();
+            await assertControls();
+            const box = await panel.boundingBox();
+            assert.ok(
+              box.y >= 0 && box.y + box.height <= viewport.height,
+              'panel fits vertically',
+            );
+            const headerControl = panel.locator(
+              '[aria-haspopup="listbox"]:visible',
+            );
+            await headerControl.scrollIntoViewIfNeeded();
+            assert.ok(
+              await headerControl.evaluate(el => {
+                const box = el.getBoundingClientRect();
+                return el.contains(
+                  document.elementFromPoint(
+                    box.x + box.width / 2,
+                    box.y + box.height / 2,
+                  ),
+                );
+              }),
+              'header stays reachable in a short window',
+            );
+            await panel.evaluate(el => (el.scrollTop = 0));
+            await shot(`animate-followups-${name}-${count + 1}-steps`);
+          }
+        }
+        if (await rows.count()) {
+          await openSheet(28);
+          const later = sheet.getByRole('button', {
+            name: 'Move later',
+            exact: true,
+          });
+          const earlier = sheet.getByRole('button', {
+            name: 'Move earlier',
+            exact: true,
+          });
+          await later.tap();
+          assert.equal(await later.isDisabled(), true);
+          assert.ok(
+            await earlier.evaluate(el => el === document.activeElement),
+            'disabled Move later transfers focus to Move earlier',
+          );
+          for (let i = 0; i < 29; i++) await earlier.click();
+          assert.equal(await earlier.isDisabled(), true);
+          assert.ok(
+            await later.evaluate(el => el === document.activeElement),
+            'disabled Move earlier transfers focus to Move later',
+          );
+          const hold = page.locator('#animationHold-input');
+          const before = await hold.inputValue();
+          await hold.tap();
+          assert.equal(
+            await hold.inputValue(),
+            before,
+            'field centre focuses without incrementing',
+          );
+          assert.ok(await hold.evaluate(el => el === document.activeElement));
+          assert.equal(
+            await sheet
+              .getByRole('button', {
+                name: 'Increase hold by 100 ms',
+                exact: true,
+              })
+              .count(),
+            1,
+          );
+          assert.equal(
+            await sheet
+              .getByRole('button', {
+                name: 'Decrease hold by 100 ms',
+                exact: true,
+              })
+              .count(),
+            1,
+          );
+          await later.click();
+          assert.equal(
+            await sheet
+              .getByRole('button', {
+                name: 'Increase transition by 100 ms',
+                exact: true,
+              })
+              .count(),
+            1,
+          );
+          assert.equal(
+            await sheet
+              .getByRole('button', {
+                name: 'Decrease transition by 100 ms',
+                exact: true,
+              })
+              .count(),
+            1,
+          );
+          await shot(`animate-followups-${name}-sheet`);
+          await closeSheet();
+        }
+        // The tab limit is independent of the number of animation steps.
+        await page.setViewportSize({width: 1440, height: 900});
+        for (let i = 0; i < 4; i++) {
+          await page
+            .locator('[data-window-tabs]')
+            .filter({
+              has: page.getByRole('button', {name: 'Add tab', exact: true}),
+            })
+            .first()
+            .getByRole('button', {name: 'Add tab', exact: true})
+            .click();
+        }
+        await page.setViewportSize(viewport);
+        await page.waitForFunction(() => {
+          const scroller = document.querySelector('[data-animation-scroller]');
+          const compact =
+            innerWidth <= 768 || scroller.clientWidth - 8 <= 59 * 8;
+          return (
+            !!document.querySelector('[data-animation-step-list]') === compact
+          );
+        });
+        const reason = 'Six tabs maximum. Close a tab to duplicate a step.';
+        if (await rows.count()) {
+          await openSheet(0);
+          const duplicate = sheet.getByRole('button', {
+            name: 'Duplicate as next step',
+            exact: true,
+          });
+          assert.equal(await duplicate.isDisabled(), true);
+          assert.equal(
+            await duplicate.getAttribute('aria-describedby'),
+            'animation-duplicate-limit',
+          );
+          assert.equal(
+            await sheet.locator('#animation-duplicate-limit').innerText(),
+            reason,
+          );
+          await shot(`animate-followups-${name}-limit`);
+          await closeSheet();
+        } else {
+          await animationSegments().first().click();
+          await keyboardOpen(
+            page.getByRole('button', {name: 'Steps', exact: true}),
+            'Enter',
+          );
+          await page.keyboard.press('ArrowDown');
+          const duplicate = page.getByRole('menuitem', {
+            name: 'Duplicate as next step',
+            exact: true,
+          });
+          assert.ok(
+            await duplicate.evaluate(el => el === document.activeElement),
+            'blocked Duplicate remains keyboard reachable',
+          );
+          assert.equal(
+            await duplicate.getAttribute('aria-describedby'),
+            'animation-duplicate-limit',
+          );
+          assert.equal(await duplicate.getAttribute('aria-disabled'), 'true');
+          assert.match(await duplicate.ariaSnapshot(), /Six tabs maximum/);
+          const stepsBefore = await animationSegments().count();
+          await duplicate.press('Enter');
+          assert.equal(
+            await animationSegments().count(),
+            stepsBefore,
+            'blocked Duplicate does not add a step',
+          );
+          if (await page.getByRole('menu').count()) {
+            await page.keyboard.press('Escape');
+            await page.waitForFunction(
+              () => !document.querySelector('[role=menu]'),
+            );
+          }
+          await keyboardOpen(
+            page.getByRole('button', {name: 'Steps', exact: true}),
+            'Enter',
+          );
+          assert.equal(
+            await page
+              .getByRole('menuitem', {
+                name: 'Duplicate as next step',
+                exact: true,
+              })
+              .getAttribute('aria-disabled'),
+            'true',
+          );
+          assert.equal(
+            await page.locator('#animation-duplicate-limit').innerText(),
+            reason,
+          );
+          await shot(`animate-followups-${name}-limit`);
+          await page.keyboard.press('Escape');
+          await page.waitForFunction(
+            () => !document.querySelector('[role=menu]'),
+          );
+        }
+      },
+      null,
+      [
+        {width: 769, height: 900},
+        {width: 1024, height: 900},
+        {width: 844, height: 390},
+        {width: 390, height: 844},
+        {width: 1440, height: 900},
+      ],
+    );
   });
 
   await auditSnippets({feature, doctor, context, base, out});

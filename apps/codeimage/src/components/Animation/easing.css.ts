@@ -4,6 +4,9 @@ const c = themeVars.dynamicColors;
 export const content = style({
   width: 340,
   maxWidth: 'calc(100vw - 32px)',
+  maxHeight:
+    'min(calc(100dvh - 16px), var(--kb-popper-content-available-height))',
+  overflowY: 'auto',
   rowGap: 12,
   padding: 16,
 });

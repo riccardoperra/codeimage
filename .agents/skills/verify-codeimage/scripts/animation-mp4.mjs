@@ -74,8 +74,21 @@ export function animationMp4Cases({
     await dialog()
       .getByRole('button', {name: new RegExp(label)})
       .click();
-    await page.keyboard.press(position);
-    await page.keyboard.press('Enter');
+    const listbox = page.getByRole('listbox').last();
+    await listbox.waitFor();
+    const popup = await listbox.elementHandle();
+    const options = listbox.getByRole('option');
+    const option = position === 'Home' ? options.first() : options.last();
+    const value = await option.innerText();
+    await option.click();
+    await popup.waitForElementState('hidden');
+    assert.ok(
+      (
+        await dialog()
+          .getByRole('button', {name: new RegExp(label)})
+          .innerText()
+      ).includes(value),
+    );
     await ready();
   }
   async function ready() {

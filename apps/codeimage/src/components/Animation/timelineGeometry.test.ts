@@ -27,7 +27,7 @@ for (const count of [3, 8, 15, 30]) {
         minWidth: 8,
       });
       assert.ok(geometry.scale > 0);
-      const positions = geometry.ticks(500).map(geometry.timeToX);
+      const positions = geometry.ticks(500).map(tick => tick.x);
       assert.equal(positions[0], 0);
       assert.ok(
         positions.every(
@@ -124,6 +124,36 @@ test('labels collapse before they overlap', () => {
   );
   assert.ok(numbered.entries.some(entry => entry.label === 'number'));
 });
+
+test('a sub-500 ms timeline keeps its sole tick aligned to the start', () => {
+  const geometry = timelineGeometry(
+    [
+      {kind: 'hold', stepId: 'a', index: 0, startMs: 0, durationMs: 0},
+      {kind: 'transition', stepId: 'b', index: 1, startMs: 0, durationMs: 300},
+      {kind: 'hold', stepId: 'b', index: 1, startMs: 300, durationMs: 0},
+    ],
+    220,
+  );
+  assert.deepEqual(geometry.ticks(500), [{ms: 0, x: 0, alignment: 'start'}]);
+});
+
+for (const count of [2, 12, 30]) {
+  for (const width of [197, 225, 320, 1000]) {
+    test(`${count} steps at ${width}px preserve edit targets or request the step list`, () => {
+      const geometry = timelineGeometry(segments(count), width);
+      assert.equal(geometry.dense, (count * 2 - 1) * 8 >= width);
+      assert.ok(Math.abs(geometry.width - width) < 1e-8);
+      if (!geometry.dense)
+        assert.ok(geometry.entries.every(entry => entry.width >= 8));
+      for (const entry of geometry.entries) {
+        if (entry.label === 'number')
+          assert.ok(
+            entry.width >= String(entry.segment.index + 1).length * 7 + 8,
+          );
+      }
+    });
+  }
+}
 
 for (const width of [320, 390, 1000]) {
   test(`zero first hold anchors time zero at the origin at ${width}px`, () => {

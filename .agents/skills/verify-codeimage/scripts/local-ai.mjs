@@ -387,10 +387,8 @@ const LAYOUTS = [
 async function dismissNudge(page) {
   const nudge = page.locator('[data-whats-new=nudge]');
   await nudge.waitFor({timeout: 8000}).catch(() => {});
-  await nudge
-    .getByRole('button', {name: "Dismiss what's new"})
-    .click()
-    .catch(() => {});
+  if (!(await nudge.isVisible())) return;
+  await nudge.getByRole('button', {name: "Dismiss what's new"}).click();
   await nudge.waitFor({state: 'hidden'});
 }
 

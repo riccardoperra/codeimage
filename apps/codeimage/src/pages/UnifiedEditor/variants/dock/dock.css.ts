@@ -556,10 +556,13 @@ export const grabber = style({
 export const animateBottom = createVar();
 export const animate = style({
   position: 'absolute',
+  display: 'grid',
+  gridTemplateRows: 'minmax(0, 1fr)',
+  maxHeight: `calc(100% - ${animateBottom})`,
   bottom: animateBottom,
   left: 0,
   right: 0,
-  zIndex: 2,
+  zIndex: 3,
   '@media': {[phone]: {position: 'relative', bottom: 'auto', order: 2}},
 });
 
