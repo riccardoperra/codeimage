@@ -1023,12 +1023,10 @@ const label = 'a much longer label that pushes the code past the width of the ta
     const document = parseSnapshotDocument(input);
     const {scale} = document;
     await useDocument(document);
-    const [first, second] = document.editor.editors.map(({id}) => id);
-    const fromStatic = await staticExport(document, first);
-    const toStatic = await staticExport(document, second);
+    const [first] = document.editor.editors.map(({id}) => id);
     const reference = await diffPercent(
       decode((await renderSnapshot(input)) as Uint8Array),
-      fromStatic,
+      await staticExport(document, first),
     );
     const animation = await withWatermarks(
       await entry.renderAnimationScenes(document, settings, host(scale)),
@@ -1060,7 +1058,11 @@ const label = 'a much longer label that pushes the code past the width of the ta
           timeMs,
         }),
       );
-    // Where the static export of a step sits in the video, in device pixels.
+    // A hold draws its step's static export on the clip's canvas, so a
+    // transition starts and ends on the whole frame of its holds.
+    const fromHoldImage = await frameAt(fromHold, 0);
+    const toHoldImage = await frameAt(toHold, 0);
+    // Where a reference sits in the video, in device pixels.
     const origin = (reference: PNG) => ({
       x: Math.floor((animation.width - reference.width / scale) / 2) * scale,
       y: Math.floor((animation.height - reference.height / scale) / 2) * scale,
@@ -1083,10 +1085,11 @@ const label = 'a much longer label that pushes the code past the width of the ta
         }),
         scale,
       );
-    // html > body > scene > preview wrapper > frame
+    // html > body > scene > canvas > preview wrapper > frame. The canvas
+    // paints the frame background before the wrapper.
     const frameOf = async (scene: {html: string}, timeMs: number) =>
       (await layoutAt(scene, timeMs)).children[0].children[0].children[0]
-        .children[0];
+        .children.at(-1)!.children[0];
     const frameSize = async (scene: {html: string}, timeMs: number) => {
       const frame = await frameOf(scene, timeMs);
       return `${Math.round(frame.width)}x${Math.round(frame.height)}`;
@@ -1102,7 +1105,7 @@ const label = 'a much longer label that pushes the code past the width of the ta
     // the code box.
     const windowOf = (frame: Measured): Rect | null => {
       if (!document.frame.exportTarget || !path) return null;
-      const window = frame.children[path[4]].children[path[5]];
+      const window = frame.children[path[5]].children[path[6]];
       const [a, , , d, x, y] = window.transform;
       return {
         x: x - frame.transform[4],
@@ -1195,13 +1198,13 @@ const label = 'a much longer label that pushes the code past the width of the ta
     ];
     const end = await frameAt(late, late.durationMs);
     const startDiff = await diffPercent(
-      centered(start, fromStatic),
-      fromStatic,
+      centered(start, fromHoldImage),
+      fromHoldImage,
       join(out, `${name}-start-diff.png`),
     );
     const endDiff = await diffPercent(
-      centered(end, toStatic),
-      toStatic,
+      centered(end, toHoldImage),
+      toHoldImage,
       join(out, `${name}-end-diff.png`),
     );
     const paintJump = (
@@ -1232,14 +1235,14 @@ const label = 'a much longer label that pushes the code past the width of the ta
         : `row ${row + 1} moved ${shifts[row].toFixed(3)} levels`;
     };
     const paint =
-      paintJump(start, fromStatic, fromLayout, from) ??
-      paintJump(end, toStatic, toLayout, to);
+      paintJump(start, fromHoldImage, fromLayout, from) ??
+      paintJump(end, toHoldImage, toLayout, to);
     let worstFrame = Math.max(startDiff, endDiff);
     if (identity) {
       // The second half shows the second tab as active.
       for (const [scene, reference] of [
-        [early, fromStatic],
-        [late, toStatic],
+        [early, fromHoldImage],
+        [late, toHoldImage],
       ] as const) {
         for (let t = 0; t <= scene.durationMs; t += 1000 / settings.fps) {
           const frame = await frameAt(scene, Math.round(t));
@@ -1257,12 +1260,12 @@ const label = 'a much longer label that pushes the code past the width of the ta
       ),
     );
     await writeFile(
-      join(out, `${name}-from-static.png`),
-      PNG.sync.write(fromStatic),
+      join(out, `${name}-from-hold.png`),
+      PNG.sync.write(fromHoldImage),
     );
     await writeFile(
-      join(out, `${name}-to-static.png`),
-      PNG.sync.write(toStatic),
+      join(out, `${name}-to-hold.png`),
+      PNG.sync.write(toHoldImage),
     );
     const encoded: Record<string, string> = {};
     let encodedDiff = 0;
