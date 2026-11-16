@@ -8,6 +8,7 @@ export interface PreviewRequest {
   tabs: NonEmpty<PreviewTab>;
   style: CodeStyle;
   key: string;
+  scope?: string;
 }
 
 export function createPreviewSnapshot(
