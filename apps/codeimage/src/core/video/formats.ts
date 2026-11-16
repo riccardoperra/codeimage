@@ -20,7 +20,7 @@ type Estimate = Size & {
   frameBudget: number;
   pixelRatio: number;
   textArea: number;
-  background: boolean;
+  backgroundArea: number;
 };
 
 const mp4Fps = (fps: AnimationFps): VideoFps => (fps === 25 ? 30 : fps);
@@ -58,8 +58,8 @@ export const ANIMATION_FORMATS = {
       fps: gifFps(fps),
     }),
     // Text edges grow more slowly than pixel area as scale increases. A
-    // separate background term avoids charging a hidden frame for gradients.
-    // Coefficients and the 20% headroom are calibrated by the Chrome matrix
+    // separate background term includes the exposed gradient in every frame.
+    // Coefficients and the 20% headroom are checked by the Chrome matrix
     // in docs/plans/a5-verification.md, rather than by elapsed clip length.
     estimate: ({
       width,
@@ -67,13 +67,14 @@ export const ANIMATION_FORMATS = {
       frameBudget,
       pixelRatio,
       textArea,
-      background,
+      backgroundArea,
     }: Estimate) => {
       const text = textArea * 0.2 * pixelRatio ** 1.2;
       const chrome = 2500 * pixelRatio ** 1.2;
-      const backdrop = background
-        ? (width * height) ** 0.65 * 3.1
-        : Math.sqrt(width * height) * 2;
+      const backdrop =
+        backgroundArea > 0
+          ? (width * height) ** 0.65 * 3.1 + backgroundArea * 0.02
+          : Math.sqrt(width * height) * 2;
       return 800 + (text + chrome + backdrop) * frameBudget * 1.2;
     },
     check: async (_config: GifConfig): Promise<Mp4Support> => ({
@@ -158,7 +159,9 @@ export function gifFrameBudget(
 export function nearestAnimationFps(
   format: AnimationFormat,
   fps: AnimationFps,
+  selected?: AnimationFps,
 ) {
+  if (selected !== undefined) return selected;
   return ANIMATION_FORMATS[format].fpsOptions.reduce<AnimationFps>(
     (nearest, value) =>
       Math.abs(value - fps) < Math.abs(nearest - fps) ? value : nearest,

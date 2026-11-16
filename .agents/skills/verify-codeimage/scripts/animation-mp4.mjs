@@ -808,6 +808,43 @@ export function animationMp4Cases({
     gifEstimates: async () => {
       const results = [];
       for (const fixture of [
+        {
+          name: 'estimate-1080p-fifty',
+          lineCounts: [6, 8, 9],
+          output: true,
+          fps: 50,
+          transition: 1000,
+        },
+        {
+          name: 'estimate-1080p-twelve',
+          output: true,
+          steps: 4,
+          transition: 1200,
+          rotate: true,
+        },
+        {name: 'heldout-1080p-nine', lines: 9, output: true, transition: 900},
+        {
+          name: 'heldout-square-fifty',
+          lines: 6,
+          target: 'Square',
+          fps: 50,
+          steps: 4,
+          transition: 800,
+        },
+        {
+          name: 'heldout-portrait-gradient',
+          lines: 3,
+          target: 'LinkedIn portrait',
+          transition: 1000,
+        },
+        {
+          name: 'estimate-1080p-hidden',
+          lines: 6,
+          output: true,
+          fps: 50,
+          transition: 1000,
+          hidden: true,
+        },
         {name: 'estimate-short-1x', lines: 3, scale: 1},
         {name: 'estimate-short-2x', lines: 3, scale: 2},
         {name: 'estimate-hidden-2x', lines: 3, scale: 2, hidden: true},

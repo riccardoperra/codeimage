@@ -91,6 +91,19 @@ export function animationSnapshot() {
       false,
     );
     const {timeline, languages} = planPreviewTimeline(settings, measured);
+    const backgroundArea =
+      (measured.steps.reduce((sum, {layout}) => {
+        const window = layout.window;
+        const windowArea = window
+          ? window.width * window.height * window.scale ** 2
+          : Math.max(0, layout.size.width - frame.store.padding * 2) *
+            Math.max(0, layout.size.height - frame.store.padding * 2);
+        return (
+          sum + Math.max(0, layout.size.width * layout.size.height - windowArea)
+        );
+      }, 0) /
+        measured.steps.length) *
+      pixelRatio ** 2;
     const contentSize = {
       width: timeline.width * pixelRatio,
       height: timeline.height * pixelRatio,
@@ -108,6 +121,7 @@ export function animationSnapshot() {
       contentSize,
       config,
       metrics: measured.metrics,
+      backgroundArea,
     };
   };
   const describe = async (
@@ -116,12 +130,8 @@ export function animationSnapshot() {
     scale: number,
     format: AnimationFormat,
   ) => {
-    const {config, timeline, tabs, metrics, pixelRatio} = await measure(
-      fps,
-      output,
-      scale,
-      format,
-    );
+    const {config, timeline, tabs, metrics, pixelRatio, backgroundArea} =
+      await measure(fps, output, scale, format);
     const ms = timeline.scenes.reduce(
       (sum, scene) => sum + scene.durationMs,
       0,
@@ -142,7 +152,8 @@ export function animationSnapshot() {
           tabs.length) *
         metrics.charWidth *
         metrics.lineHeight,
-      background: frame.store.visible && frame.store.opacity > 0,
+      backgroundArea:
+        frame.store.visible && frame.store.opacity > 0 ? backgroundArea : 0,
     });
     return {config, durationMs, estimatedBytes, frameBudget};
   };

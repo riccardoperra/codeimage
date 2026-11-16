@@ -164,14 +164,18 @@ export function compileScene(
   ].join('');
   const activeRanges: [number, number][] = moving
     ? [[0, timing.transitionMs]]
-    : [];
-  if (!moving) {
-    if (leaving) activeRanges.push([0, timing.transitionMs * LEAVE_END]);
-    if (entering)
-      activeRanges.push([
-        timing.transitionMs * ENTER_START,
-        timing.transitionMs,
-      ]);
-  }
+    : [
+        ...(leaving
+          ? [[0, timing.transitionMs * LEAVE_END] satisfies [number, number]]
+          : []),
+        ...(entering
+          ? [
+              [
+                timing.transitionMs * ENTER_START,
+                timing.transitionMs,
+              ] satisfies [number, number],
+            ]
+          : []),
+      ];
   return {html, css: keyframes.join('\n'), activeRanges};
 }

@@ -13,7 +13,7 @@ import {
 import {Dialog} from '@kobalte/core/dialog';
 import {Progress} from '@kobalte/core/progress';
 import {RadioGroup} from '@kobalte/core/radio-group';
-import {type Accessor, createEffect, createSignal, Show} from 'solid-js';
+import {type Accessor, batch, createEffect, createSignal, Show} from 'solid-js';
 import download from 'downloadjs';
 import {parseToRgb, rgb} from 'polished';
 import {useExportAnimation} from '../../../hooks/use-export-animation';
@@ -62,10 +62,7 @@ export function createAnimationExporter() {
   const snapshot = animationSnapshot();
   const [open, setOpen] = createSignal(false);
   const [fps, setFps] = createSignal<AnimationFps>(30);
-  const persistFps = (value: AnimationFps) => {
-    setFps(value);
-    if (value !== 25) animation.actions.setFps(value);
-  };
+  let selectedFps: Partial<Record<AnimationFormat, AnimationFps>> = {};
   const [format, setFormat] = createSignal<AnimationFormat>('mp4');
   const [mp4Support, setMp4Support] = createSignal<Mp4Support>();
   const [scale, setScale] = createSignal<1 | 2 | 3>(2);
@@ -108,7 +105,7 @@ export function createAnimationExporter() {
       if (selected !== outputFormat) {
         setFormat(selected);
         const rate = nearestAnimationFps(selected, frameRate);
-        persistFps(rate);
+        setFps(rate);
         value = await snapshot.describe(rate, output, outputScale, selected);
       }
       if (current === generation) setSummary(value);
@@ -128,6 +125,7 @@ export function createAnimationExporter() {
     setOpen(true);
     setFormat('mp4');
     const rate = animation.settings().fps;
+    selectedFps = {mp4: rate};
     setFps(rate);
     void refresh();
   };
@@ -138,14 +136,19 @@ export function createAnimationExporter() {
     setOpen(false);
   };
   const changeFps = (value: AnimationFps | null) => {
-    if (!value) return;
-    persistFps(value);
+    if (!value || value === fps()) return;
+    selectedFps[format()] = value;
+    setFps(value);
+    if (value !== 25) animation.actions.setFps(value);
     void refresh();
   };
   const changeFormat = (value: string) => {
     if (value !== 'mp4' && value !== 'gif') return;
-    setFormat(value);
-    persistFps(nearestAnimationFps(value, fps()));
+    const rate = nearestAnimationFps(value, fps(), selectedFps[value]);
+    batch(() => {
+      setFormat(value);
+      setFps(rate);
+    });
     void refresh();
   };
   const changeSize = (value: 'current' | '1080p' | null) => {

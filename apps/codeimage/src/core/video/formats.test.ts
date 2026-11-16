@@ -133,15 +133,18 @@ describe('animation format table', () => {
       frameBudget: 33,
       pixelRatio: 1,
       textArea: 100000,
-      background: true,
+      backgroundArea: 100000,
     };
     const estimate = ANIMATION_FORMATS.gif.estimate(input);
     expect(estimate).toBeGreaterThan(0);
+    expect(
+      ANIMATION_FORMATS.gif.estimate({...input, backgroundArea: 200000}),
+    ).toBeGreaterThan(estimate);
     expect(ANIMATION_FORMATS.gif.estimate({...input, durationMs: 100000})).toBe(
       estimate,
     );
     expect(
-      ANIMATION_FORMATS.gif.estimate({...input, background: false}),
+      ANIMATION_FORMATS.gif.estimate({...input, backgroundArea: 0}),
     ).toBeLessThan(estimate);
     expect(
       ANIMATION_FORMATS.gif.estimate({...input, textArea: 10000}),
@@ -163,7 +166,6 @@ describe('animation format table', () => {
   });
   it.each([
     ['gif', 24, 25],
-    ['mp4', 25, 24],
     ['gif', 50, 50],
     ['mp4', 50, 50],
     ['gif', 60, 60],
@@ -171,6 +173,17 @@ describe('animation format table', () => {
     'keeps compatible rates and clamps %s %d to %d',
     (format, from, to) => {
       expect(nearestAnimationFps(format, from)).toBe(to);
+    },
+  );
+  it.each([24, 30, 50, 60] as const)(
+    'restores the selected MP4 %d fps after visiting GIF',
+    selected => {
+      const gif = nearestAnimationFps('gif', selected);
+      expect(gif).toBe(selected < 50 ? 25 : selected);
+      expect(nearestAnimationFps('mp4', gif, selected)).toBe(selected);
+      expect(ANIMATION_FORMATS.gif.frameRate(gif)).toBe(
+        selected < 50 ? 25 : 50,
+      );
     },
   );
   it('falls back to GIF only when MP4 is unavailable and needs no WebCodecs for GIF', async () => {

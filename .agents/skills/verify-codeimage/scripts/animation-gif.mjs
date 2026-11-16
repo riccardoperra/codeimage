@@ -292,8 +292,6 @@ export function animationGifCases({
     assert.ok(stats?.frames > 0, 'worker completed a real encode');
     const bytes = await readFile(file);
     assert.equal(bytes.toString('ascii', 0, 6), 'GIF89a');
-    if (bytes.length >= 8_000_000)
-      assert.ok(suggestion, 'every measured GIF of at least 8 MB suggests MP4');
     const frames = decodeGif(bytes);
     let durationMs = 0,
       frameCount = 0;
@@ -316,6 +314,8 @@ export function animationGifCases({
         },
       };
     });
+    if (process.env.VERIFY_GIF_CAPTURE_JOB === '1')
+      await writeFile(resolve(out, `${name}-job.json`), JSON.stringify(job));
     const fidelity = compare ? await quality(file, job, out, name) : undefined;
     await shot(name);
     const result = {
@@ -342,6 +342,12 @@ export function animationGifCases({
       resolve(out, `${name}.json`),
       JSON.stringify(result, null, 2),
     );
+    if (bytes.length >= 8_000_000)
+      assert.ok(suggestion, 'every measured GIF of at least 8 MB suggests MP4');
+    assert.ok(
+      estimatedBytes >= bytes.length * 0.9,
+      'estimate is at most 10% low',
+    );
     return result;
   }
   async function measurements(fixture) {
@@ -354,9 +360,9 @@ export function animationGifCases({
         ]
       : Array.from({length: 3}, (_, step) =>
           Array.from(
-            {length: fixture.lines ?? 12},
+            {length: fixture.lineCounts?.[step] ?? fixture.lines ?? 12},
             (_, i) =>
-              `const item${i} = transform(${step + 1 + i}, item${Math.max(0, i - 1)});`,
+              `const item${fixture.rotate ? (i + step) % 12 : i} = transform(${step + 1 + i}, item${Math.max(0, i - 1)});`,
           ).join('\n'),
         );
     await setup(12, codes);
@@ -380,8 +386,21 @@ export function animationGifCases({
         .nth(step % codes.length)
         .click();
     }
+    if (fixture.target || fixture.hidden) {
+      const frame = page.locator('[data-section="frame"] > button');
+      if ((await frame.getAttribute('aria-expanded')) !== 'true')
+        await frame.click();
+    }
+    if (fixture.target) {
+      await page
+        .locator('[data-control="frame.aspectRatio"]')
+        .getByRole('button')
+        .click();
+      await page
+        .getByRole('option', {name: fixture.target, exact: true})
+        .click();
+    }
     if (fixture.hidden) {
-      await page.locator('[data-section="frame"] > button').click();
       await page.getByRole('switch', {name: 'Visible', exact: true}).focus();
       await page.keyboard.press('Space');
     }
@@ -400,7 +419,8 @@ export function animationGifCases({
     await open();
     await ready();
     await selectGif();
-    await choose('Scale', `${fixture.scale}×`);
+    if (fixture.output) await choose('Output size', '1,920 × 1,080');
+    else if (!fixture.target) await choose('Scale', `${fixture.scale}×`);
     if (fixture.fps === 50) await chooseRate(50);
     const result = await exportGif(fixture.name, !!fixture.palette);
     if (fixture.palette) {
@@ -514,46 +534,78 @@ export function animationGifCases({
     }
     await open();
     await ready();
-    await chooseRate(24);
+    const storedFps = () =>
+      page.evaluate(
+        () =>
+          new Promise((resolve, reject) => {
+            const request = indexedDB.open('keyval-store');
+            request.onerror = () => reject(request.error);
+            request.onsuccess = () => {
+              const db = request.result;
+              const read = db
+                .transaction('keyval')
+                .objectStore('keyval')
+                .get('document');
+              read.onsuccess = () => {
+                resolve(read.result?.animation?.fps);
+                db.close();
+              };
+              read.onerror = () => {
+                reject(read.error);
+                db.close();
+              };
+            };
+          }),
+      );
+    const assertRate = async rate =>
+      assert.match(
+        await dialog()
+          .getByRole('button', {name: /Frame rate/})
+          .innerText(),
+        new RegExp(`${rate} fps`),
+      );
+    const selectMp4 = async () => {
+      await dialog().getByRole('radio', {name: 'MP4', exact: true}).focus();
+      await page.keyboard.press('Space');
+      await ready();
+    };
+    for (const rate of [30, 24, 50, 60]) {
+      await chooseRate(rate);
+      await page.waitForTimeout(700);
+      assert.equal(await storedFps(), rate, 'explicit FPS choice persists');
+      await selectGif();
+      await assertRate(rate < 50 ? 25 : rate);
+      if (rate === 60)
+        assert.match(
+          await dialog().locator('[data-gif-fps-note]').innerText(),
+          /50 fps.*60 fps/,
+        );
+      await page.waitForTimeout(700);
+      assert.equal(
+        await storedFps(),
+        rate,
+        'automatic GIF rate never persists',
+      );
+      await selectMp4();
+      await assertRate(rate);
+      await page.waitForTimeout(700);
+      assert.equal(
+        await storedFps(),
+        rate,
+        'MP4 round trip preserves saved FPS',
+      );
+      await close();
+      await open();
+      await ready();
+      await assertRate(rate);
+    }
     await selectGif();
-    assert.match(
-      await dialog()
-        .getByRole('button', {name: /Frame rate/})
-        .innerText(),
-      /25 fps/,
-    );
-    await dialog().getByRole('radio', {name: 'MP4', exact: true}).focus();
-    await page.keyboard.press('Space');
-    await ready();
-    assert.match(
-      await dialog()
-        .getByRole('button', {name: /Frame rate/})
-        .innerText(),
-      /24 fps/,
-    );
-    await chooseRate(50);
+    await chooseRate(25);
+    await selectMp4();
+    await assertRate(60);
     await selectGif();
-    assert.match(
-      await dialog()
-        .getByRole('button', {name: /Frame rate/})
-        .innerText(),
-      /50 fps/,
-    );
-    await dialog().getByRole('radio', {name: 'MP4', exact: true}).focus();
-    await page.keyboard.press('Space');
-    await ready();
-    assert.match(
-      await dialog()
-        .getByRole('button', {name: /Frame rate/})
-        .innerText(),
-      /50 fps/,
-    );
-    await chooseRate(60); // 60 persists from MP4 into GIF.
-    await selectGif();
-    assert.match(
-      await dialog().locator('[data-gif-fps-note]').innerText(),
-      /50 fps.*60 fps/,
-    );
+    await assertRate(25);
+    await chooseRate(60);
     results.push(await exportGif('gif-60-as-50', true));
     await cancelWorker();
     // Optional interleaved measurements reuse the visible format controls.

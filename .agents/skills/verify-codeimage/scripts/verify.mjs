@@ -87,9 +87,20 @@ try {
     await new Promise(r => setTimeout(r, 500));
   }
   assert.ok(ready, 'Vite HTTP readiness');
-  browser = await chromium.launch({
-    channel: process.env.VERIFY_BROWSER_CHANNEL || undefined,
-  });
+  browser =
+    process.env.VERIFY_BROWSER_CHANNEL === 'chrome'
+      ? (
+          await chromium.launchPersistentContext(`${scratch}-chrome`, {
+            channel: 'chrome',
+            args: process.env.VERIFY_CHROME_PORT
+              ? [`--remote-debugging-port=${process.env.VERIFY_CHROME_PORT}`]
+              : [],
+          })
+        ).browser()
+      : await chromium.launch({
+          channel: process.env.VERIFY_BROWSER_CHANNEL || undefined,
+        });
+  assert.ok(browser, 'owned browser launched');
   context = await createMockContext(browser, base, {
     viewport: {width: 1440, height: 1000},
     locale: 'en-US',
@@ -122,6 +133,11 @@ try {
         }).trim(),
         editorVisible: await editor.isVisible(),
         browserVersion: browser.version(),
+        chromeProfile:
+          process.env.VERIFY_BROWSER_CHANNEL === 'chrome'
+            ? `${scratch}-chrome`
+            : undefined,
+        chromeDebugPort: process.env.VERIFY_CHROME_PORT,
         browserChannel: process.env.VERIFY_BROWSER_CHANNEL || 'chromium',
         msw: log.some(s => s.includes('Mocking enabled')),
         version: log.find(s => s.includes('CodeImage version')),
@@ -209,6 +225,7 @@ try {
   }
   await rm(scratch, {recursive: true, force: true});
   await rm(`${scratch}-cache`, {recursive: true, force: true});
+  await rm(`${scratch}-chrome`, {recursive: true, force: true});
   await writeFile(resolve(out, 'run.log'), log.join(''));
   assert.ok(
     (await readFile(resolve(out, 'result.json'))).length,
