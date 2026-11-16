@@ -70,8 +70,7 @@ are excluded.
 | ------------------------------------------------------- | ---------------: | ---------------: | --------: | ---------: |
 | Initial                                                 |         1.0129 s |         1.0704 s |    1.0568 |   2.3625 s |
 | Alternate pair order after deferring video-only imports |         1.0641 s |         1.1430 s |    1.0742 |   2.3278 s |
-
-| Confirming run with the same implementation | 1.0309 s | 1.0373 s | 1.0062 | 2.2709 s |
+| Confirming run with the same implementation             |         1.0309 s |         1.0373 s |    1.0062 |   2.2709 s |
 
 A same-binary control used the base executable for both sides, with ten cold
 runs per side and alternating pair order. Its medians were 0.8758 s and
@@ -86,12 +85,10 @@ retains all three runs. Host scheduling noise is material, so the last pass
 does not establish a stable WebP speed difference.
 
 The second run's WebP range is 0.856 to 1.812 s on the base and 0.792 to 1.405 s
-on head. A ten-pair control comparing the base executable with itself has
-medians 0.8758 s and 0.8217 s, a ratio of 0.9383.
-That control varies by more than the 5% gate. The machine also runs other
-programs. Native output and the entire SSR entry are identical across sides,
-but the cause of the measured WebP difference is not isolated. The WebP
-performance verdict remains inconclusive pending a stable measurement.
+on head. The machine also runs other programs. Native output and the entire
+SSR entry are identical across sides, but the cause of the measured WebP
+difference is not isolated. Timing consistency remains unverified despite
+the confirming run passing the numeric gate.
 
 Raw measurements, load at every start, and byte counts are in
 `/tmp/codeimage-a6/perf/results.json`, `perf-balanced/results.json`, and
