@@ -1,5 +1,7 @@
 # Animate
 
+Unequal step sizes are covered by `animation-mp4-step-size` and `animation-gif-step-size`. Both decode real exports in Inspector, Dock and Studio and check the tallest step's final line, natural window widths, seamless padding, and identical output across active tabs and reloads. See [Export](export.md#animation-audit) for artifacts and the static PNG baseline option.
+
 Play one tab morphing into the next, and edit timing with a fitted desktop timeline or a phone step list saved with the document.
 
 ## Sub-features

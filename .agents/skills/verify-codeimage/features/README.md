@@ -32,3 +32,5 @@ Additional case names are `agent-tools`, `local-ai`, `export-options`, `settings
 For real API and PostgreSQL prerequisites, read [backend modes](../references/backend-modes.md). The automated MSW-specific boundary fixtures cannot establish real API authorization.
 
 A5 adds `animation-gif` and `animation-gif-fallback`; see [Export](export.md) and [Animate](animate.md). The verification record covers thirty-nine journeys on the pinned A5 branch. Main can add independent journeys after that pin, so use the actual `audit.json` results for each run's case count rather than the older base index count above.
+
+`animation-mp4-step-size` and `animation-gif-step-size` check unequal natural step sizes, clipping, background seams, and identical decoded exports across active tabs and reloads in all three desktop layouts. See [Export](export.md#animation-audit).

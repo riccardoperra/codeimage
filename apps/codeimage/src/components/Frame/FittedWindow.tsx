@@ -6,11 +6,18 @@ import {
   onCleanup,
   untrack,
   type ParentProps,
+  type JSX,
 } from 'solid-js';
 import type {WatermarkScope} from '../../core/watermark/scope';
 import {WatermarkContext} from '../../core/watermark/scope';
 
 export const FITTED_WINDOW_MIN_WIDTH = 480;
+
+export const naturalWindowStyle = {
+  display: 'block',
+  width: 'max-content',
+  'min-width': `${FITTED_WINDOW_MIN_WIDTH}px`,
+} satisfies JSX.CSSProperties;
 
 interface Size {
   width: number;
@@ -39,7 +46,11 @@ function fitFrameWindow(frame: HTMLElement) {
 
 /** The window's box in a frame, and the watermark scope its children register in. */
 export function FittedWindow(
-  props: ParentProps<{active: boolean; watermark: WatermarkScope}>,
+  props: ParentProps<{
+    active: boolean;
+    natural?: boolean;
+    watermark: WatermarkScope;
+  }>,
 ) {
   const [viewport, setViewport] = createSignal<HTMLDivElement>();
   const [content, setContent] = createSignal<HTMLDivElement>();
@@ -92,7 +103,9 @@ export function FittedWindow(
                 'min-width': `${FITTED_WINDOW_MIN_WIDTH}px`,
                 'transform-origin': 'center',
               }
-            : {display: 'contents', transform: 'none'}
+            : props.natural
+              ? {...naturalWindowStyle, transform: 'none'}
+              : {display: 'contents', transform: 'none'}
         }
       >
         <WatermarkContext.Provider value={watermark}>

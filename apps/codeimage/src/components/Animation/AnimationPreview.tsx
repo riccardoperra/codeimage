@@ -288,6 +288,8 @@ function AnimationScenes(props: {plan: PreviewPlan; visible: boolean}) {
             >
               <FrameView
                 animated
+                natural
+                signatureWidth={timeline.width}
                 header={props.plan.header}
                 activeTabId={tab.id}
                 code={
