@@ -33,6 +33,7 @@ model Project {
   updatedAt       DateTime             @updatedAt
   owner           User                 @relation(fields: [ownerId], references: [id], onDelete: Cascade)
   ownerId         String
+  animation       Json?
 
   @@unique([id, ownerId])
   @@index([name, ownerId])

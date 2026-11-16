@@ -1,6 +1,6 @@
 # Unified editor
 
-This folder contains the editor page, its shared controls, and the Inspector, Dock, and Studio layouts.
+This folder contains the editor page, its shared controls, and the Sidebar and Dock layouts.
 
 The route table in `apps/codeimage/src/index.tsx` selects the page.
 
@@ -14,13 +14,14 @@ The unified editor uses the shared stores and local document.
 
 ## Preferences
 
-`shell/preferences.ts` saves `{layout, inspectorSide, themeCards, exportStyle}` in `localStorage` under `codeimage:editor-settings`.
-The defaults are Inspector, a panel on the right, Window theme cards, and the Menu export style.
+`shell/preferences.ts` saves `{layout, panelNav, panelSide, themeCards, exportStyle}` in `localStorage` under `codeimage:editor-settings`.
+The defaults are the Sidebar as an Accordion on the right, Window theme cards, and the Menu export style.
 There is no migration from the previous storage key.
 
 Settings and the command menu change these choices.
 The Experiments section offers the layouts and theme cards.
-Appearance contains the colour mode, the Inspector panel side, and the export style.
+Appearance contains the colour mode, the Sidebar's navigation (Accordion or Rail) and side, and the export style.
+A stored `layout` of `inspector` or `studio`, from before the Sidebar, reads as the Accordion on its saved side or the Rail on the left.
 The `v` and `t` URL parameters have no effect.
 Changing a preference leaves the URL unchanged.
 
@@ -38,8 +39,9 @@ Each layout exports `meta` and a default component with `VariantProps`.
 The props contain `model`, `stage`, `pageState`, and `ThemePicker`.
 
 The page root has class `unified-editor` and a `data-layout` attribute.
-Inspector also sets `data-inspector-side` on the page and layout roots.
-Phones keep the Inspector panel in a bottom sheet on either side setting.
+The Sidebar also sets `data-panel-nav` and `data-panel-side` on the page, and `data-panel-side` on the layout root.
+`variants/sidebar/index.tsx` renders `Accordion.tsx` or `Rail.tsx` for the navigation. Both render the sections of `panels.tsx`, placed by `places.ts`.
+Phones keep the Accordion in a bottom sheet and the Rail at the bottom, on either side setting.
 
 The header sits above the layout.
 `header.css.ts` defines an 8px inset, a 36px row, and an 8px gap.
@@ -90,23 +92,23 @@ A resize observer hides the trigger if it would overlap the frame or extend beyo
 The keyboard shortcut and command-menu entry still open help when the trigger is hidden.
 Phones keep their existing help trigger, placement, and dialog.
 
-`CanvasToolbar.tsx` contains Format code and Copy image on desktop in all three layouts.
+`CanvasToolbar.tsx` contains Format code, Copy image and, with the Local AI experiment, Ask AI on desktop in all three layouts. Ask AI turns the toolbar into the Local AI bar.
 Shortcut help has its own trigger. Randomize stays in the command menu and its shortcut, without a button.
 
 `shell/Header.tsx` contains the logo, account controls, Share, and Export.
 `shell/header-actions.ts` lets mounted layout entries claim Commands, Settings, or Experiments.
 The header renders only unclaimed actions, and cleanup returns ownership when an entry unmounts.
-Inspector keeps Commands before Experiments and Settings in the header.
-Dock claims Commands and Settings; Studio claims all three in its desktop rail.
-Studio groups Commands, Settings, Experiments, and GitHub at the bottom, retaining `CommandMenuButton` and its announcement dot.
+The Accordion keeps Commands before Experiments and Settings in the header.
+Dock claims Commands and Settings; the Rail claims all three on desktop.
+The Rail groups Commands, Settings, Experiments, and GitHub at the bottom, retaining `CommandMenuButton` and its announcement dot.
 Phones claim no header actions and keep the existing header.
 
 `shell/SettingsDialog.tsx` stays mounted while layouts change.
 `shell/sections.tsx` defines the sections, groups, and rows.
 Search reads those same rows.
 About contains the repository, Bugs and feedback, Releases, and Better Comments for GitHub links.
-`shell/links.ts` shares their destinations with the existing external-link commands and Studio's repository button.
-Better Comments retains its Umami event. Dock and Studio have no footer.
+`shell/links.ts` shares their destinations with the existing external-link commands and the Rail's repository button.
+Better Comments retains its Umami event. Dock and the Rail have no footer.
 `shell/settings-state.ts` controls the open section and restores focus when the dialog closes.
 Dialogs opened by a settings row live in `SettingsDialog`, so closing the row's panel cannot dispose them.
 
@@ -165,8 +167,15 @@ Each snippet keeps its own signature copy, so later edits to a saved signature l
 Shared controls render the dots and bind reveal actions.
 Layouts do not import What's new modules. The root oxlint override enforces that boundary.
 
+Show me on a `control:` place calls `model.controls.reveal`, a generic capability each layout registers to open the panel that holds a control.
+Dock and the Sidebar read the panel from their placement maps, which also drive rendering, so a control without a panel fails the typecheck.
+`editor:line-marks` belongs to the line marks CodeMirror plugin, which renders its dot into `document.body`, outside the exported DOM.
+A highlight whose row is not rendered, such as window style with the title bar off, has no dot and no Show me.
+The Showcase has a minimise button that stores the release in `minimized`, after which it announces through the Nudge.
+`UPCOMING` in the registry holds prepared highlights that nothing renders.
+
 The shell offers a permanent Experiments button that opens Settings on that section.
-Studio hosts it beside Settings in the desktop rail; Inspector and Dock keep it in the header.
+The Rail hosts it beside Settings on desktop; the Accordion and Dock keep it in the header.
 Its labelled, secondary ghost What's new button is available for `NEW_FOR_DAYS` (45 days)
 from the newest release's date, only while neither Nudge nor Showcase is on screen.
 It reopens the newest release expanded for this session, without resetting stored facts.
@@ -180,11 +189,29 @@ Reloading respects the stored dismissal. A still unread dot on the sparkle icon 
 unseen highlights, outside the three feature-dot slots.
 Both extra buttons hide at widths of 768px and below; the mobile header stays unchanged.
 After expiry, the Settings archive remains available.
+Closing the Showcase dismisses the release and hands over to the header with the same pointer or keyboard behavior.
+The header always reopens an expanded Nudge, even for a major release that was never minimized.
 
 `components/WhatsNew/motion.ts` defines curves, durations, and stagger delays for announcements.
 The announcement styles and exit timers read those constants.
 Keyboard actions do not animate.
 Reduced motion uses opacity without delays and shows illustrations in their final state.
+
+## Animate
+
+The stage supplies `AnimatePanel` and `AnimateToggle`, and `Canvas` wraps the frame in `AnimationPreview`.
+Layouts place the island under the canvas.
+Desktop Dock floats it above the bar and adds its measured height to the canvas inset.
+Compact Dock puts it above the bar and never opens it together with the sheet.
+Both Sidebar navigations give it its own row, so `FitFrame` refits the frame.
+
+The components live in `components/Animation/`, the store in `state/editor/animation.ts`, and the settings rules in `state/editor/animationSettings.ts`.
+Steps are tabs with stable ids, saved with the document; selection and playback are not saved.
+Keys the island swallows use native `on:keydown` listeners, because the body hotkeys run before Solid's delegated handlers.
+Stopping a key that way also stops delegated handlers below it, so keep those listeners around text fields only.
+
+`scripts/parity/live-animate.ts` runs the Animate lanes in Chrome, `scripts/parity/animation-defaults.ts` compares default timelines with a base, and `scripts/parity/animation-preview.ts --preview` compares the preview with Takumi.
+`docs/plans/animate-new-ui-verification.md` lists the commands.
 
 ## Verification
 

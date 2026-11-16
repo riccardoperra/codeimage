@@ -7,7 +7,9 @@ import {mkdir, writeFile, readFile, mkdtemp, cp, rm} from 'node:fs/promises';
 import {resolve} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {chromium} from 'playwright';
+import {createMockContext} from './mock-context.mjs';
 import {PNG} from 'pngjs';
+import {dismissNews} from './news.mjs';
 const root = fileURLToPath(new URL('../../../..', import.meta.url));
 process.chdir(root);
 const require = createRequire(import.meta.url);
@@ -15,6 +17,14 @@ const out = resolve(
   process.env.ARTIFACT_DIR ?? `/tmp/codeimage-verification-${Date.now()}`,
 );
 const port = Number(process.env.VERIFY_PORT ?? 4437);
+const debugPort = Number(process.env.VERIFY_DEBUG_PORT ?? port + 10000);
+assert.ok(
+  Number.isInteger(debugPort) &&
+    debugPort > 0 &&
+    debugPort < 65536 &&
+    debugPort !== port,
+  'VERIFY_DEBUG_PORT must be a distinct valid port',
+);
 assert.ok(
   !process.env.VERIFY_CASES || process.env.VERIFY_AUDIT === '1',
   'VERIFY_CASES requires VERIFY_AUDIT=1',
@@ -22,23 +32,12 @@ assert.ok(
 await mkdir(out, {recursive: true});
 console.log(`Evidence: ${out}`);
 // Fail before launching if another instance owns this port.
-await new Promise((ok, fail) => {
-  const probe = createServer();
-  probe.once('error', fail);
-  probe.listen(port, '127.0.0.1', () => probe.close(ok));
-});
-const cases = (process.env.VERIFY_CASES ?? '')
-  .split(',')
-  .map(name => name.trim());
-if (
-  process.env.VERIFY_AUDIT === '1' &&
-  (!process.env.VERIFY_CASES || cases.includes('frame-cold-start'))
-) {
-  for (const cache of [
-    'node_modules/.vite',
-    'apps/codeimage/node_modules/.vite',
-  ])
-    await rm(resolve(root, cache), {recursive: true, force: true});
+for (const checkPort of [port, debugPort]) {
+  await new Promise((ok, fail) => {
+    const probe = createServer();
+    probe.once('error', fail);
+    probe.listen(checkPort, '127.0.0.1', () => probe.close(ok));
+  });
 }
 const scratch = await mkdtemp('/tmp/codeimage-verify-public-');
 try {
@@ -59,7 +58,7 @@ const server = spawn(
   [
     '--input-type=module',
     '-e',
-    `import {createServer} from 'vite'; const server = await createServer({publicDir:process.env.VERIFY_PUBLIC, server:{host:'127.0.0.1',port:Number(process.env.VERIFY_PORT),strictPort:true}}); await server.listen();`,
+    `import {createServer} from 'vite'; const server = await createServer({cacheDir:process.env.VERIFY_PUBLIC+'-cache',publicDir:process.env.VERIFY_PUBLIC, server:{host:'127.0.0.1',port:Number(process.env.VERIFY_PORT),strictPort:true}}); await server.listen();`,
   ],
   {
     cwd: resolve(root, 'apps/codeimage'),
@@ -78,7 +77,7 @@ const server = spawn(
 );
 server.stdout.on('data', b => log.push(String(b)));
 server.stderr.on('data', b => log.push(String(b)));
-let browser, context;
+let browser, context, profile;
 const errors = [];
 const actions = [];
 const base = `http://127.0.0.1:${port}`;
@@ -98,10 +97,17 @@ try {
     await new Promise(r => setTimeout(r, 500));
   }
   assert.ok(ready, 'Vite HTTP readiness');
-  browser = await chromium.launch();
-  context = await browser.newContext({
+  profile = await mkdtemp(`/tmp/codeimage-chrome-${port}-`);
+  const owner = await chromium.launchPersistentContext(profile, {
+    channel: process.env.VERIFY_BROWSER_CHANNEL || undefined,
+    args: [`--remote-debugging-port=${debugPort}`],
+  });
+  browser = owner.browser();
+  assert.ok(browser, 'Owned Chrome browser is available');
+  context = await createMockContext(browser, base, {
     viewport: {width: 1440, height: 1000},
     locale: 'en-US',
+    hasTouch: process.env.VERIFY_TOUCH === '1',
   });
   await context.tracing.start({
     screenshots: true,
@@ -115,19 +121,24 @@ try {
   await page.goto(base);
   const editor = page.locator('.cm-content[contenteditable="true"]').first();
   await editor.waitFor();
-  const close = page.getByRole('button', {name: 'close', exact: true});
-  if (await close.isVisible()) await close.click();
+  await dismissNews(page);
   await page.evaluate(() => document.fonts.ready);
   await writeFile(
     resolve(out, 'doctor.json'),
     JSON.stringify(
       {
         pid: server.pid,
+        publicDir: scratch,
+        cacheDir: `${scratch}-cache`,
         base,
         head: execFileSync('git', ['rev-parse', 'HEAD'], {
           encoding: 'utf8',
         }).trim(),
         editorVisible: await editor.isVisible(),
+        browserVersion: browser.version(),
+        browserChannel: process.env.VERIFY_BROWSER_CHANNEL || 'chromium',
+        profile,
+        debugPort,
         msw: log.some(s => s.includes('Mocking enabled')),
         version: log.find(s => s.includes('CodeImage version')),
       },
@@ -146,6 +157,12 @@ try {
   const code =
     'const verification = "CodeImage user journey";\nconsole.log(verification);';
   await editor.fill(code);
+  await page.waitForFunction(
+    code =>
+      document.querySelector('.cm-content[contenteditable="true"]')
+        ?.innerText === code,
+    code,
+  );
   assert.equal(await editor.innerText(), code);
   actions.push(
     'Filled visible CodeMirror editor and asserted exact two-line text',
@@ -196,6 +213,7 @@ try {
       .stop({path: resolve(out, 'trace.zip')})
       .catch(() => {});
   if (browser) await browser.close();
+  if (profile) await rm(profile, {recursive: true, force: true});
   if (server.exitCode === null) {
     server.kill('SIGTERM');
     await new Promise(r => {
@@ -207,6 +225,8 @@ try {
     });
   }
   await rm(scratch, {recursive: true, force: true});
+  await rm(`${scratch}-cache`, {recursive: true, force: true});
+  await rm(`${scratch}-chrome`, {recursive: true, force: true});
   await writeFile(resolve(out, 'run.log'), log.join(''));
   assert.ok(
     (await readFile(resolve(out, 'result.json'))).length,

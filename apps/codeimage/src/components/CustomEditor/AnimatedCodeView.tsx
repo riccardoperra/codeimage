@@ -1,6 +1,7 @@
 import type {CustomTheme} from '@codeimage/highlight';
-import {createEffect, createMemo} from 'solid-js';
+import {createEffect, createMemo, on} from 'solid-js';
 import {isServer} from 'solid-js/web';
+import {useWatermarkScope} from '../../core/watermark/scope';
 import {getStaticTheme, mountStaticTheme} from './staticTheme';
 import './plugins/lineMarks/marks.css';
 
@@ -13,12 +14,20 @@ export interface AnimatedCodeViewProps {
   fontFamily: string;
   fontWeight: number;
   enableLigatures: boolean;
+  timeMs?: number;
 }
 
 // StaticCodeView with the code area replaced by the compiled spans. Focus
 // lives in each span's keyframes, so the root leaves out data-line-focus.
 export default function AnimatedCodeView(props: AnimatedCodeViewProps) {
   const theme = createMemo(() => getStaticTheme(props.theme));
+  const watermark = useWatermarkScope();
+  createEffect(
+    on(
+      () => props.timeMs,
+      () => watermark?.invalidate(),
+    ),
+  );
   if (!isServer) createEffect(() => mountStaticTheme(document, props.theme));
   return (
     <code class={`language-${props.languageId}`}>
@@ -37,6 +46,7 @@ export default function AnimatedCodeView(props: AnimatedCodeViewProps) {
       >
         <div
           class="cm-scroller"
+          ref={root => watermark?.attach('code', {kind: 'static', root})}
           style={{'grid-template-rows': 'repeat(1, auto)'}}
           // compileScene escapes every token text and class.
           // oxlint-disable-next-line solid/no-innerhtml

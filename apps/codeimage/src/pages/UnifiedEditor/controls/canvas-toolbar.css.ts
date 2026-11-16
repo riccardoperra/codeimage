@@ -4,6 +4,15 @@ import {globalStyle, style} from '@vanilla-extract/css';
 const c = themeVars.dynamicColors;
 const phone = 'screen and (max-width: 768px)';
 
+/** Where the prompt bar opens, over the toolbar. */
+export const anchor = style({
+  position: 'relative',
+  display: 'flex',
+  justifyContent: 'center',
+  maxWidth: '100%',
+  minWidth: 0,
+});
+
 /** One island over the canvas for what is done to the image itself. */
 export const toolbar = style({
   display: 'flex',
@@ -18,6 +27,7 @@ export const toolbar = style({
   background: c.panel.background,
   color: c.panel.textColor,
   pointerEvents: 'auto',
+  selectors: {'&[data-covered]': {visibility: 'hidden'}},
 });
 
 globalStyle(`${toolbar} button`, {

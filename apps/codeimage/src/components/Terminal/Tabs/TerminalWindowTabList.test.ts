@@ -112,7 +112,10 @@ test('only-active exports use the live selection when no explicit tab id is give
 vi.mock('../TerminalHost', () => ({
   TerminalHost: (props: {children: unknown}) => props.children,
 }));
-vi.mock('../terminal.css', () => ({content: 'code-content'}));
+vi.mock('../terminal.css', () => ({
+  content: 'code-content',
+  title: 'title',
+}));
 vi.mock('../WindowStyles/WindowStyles.css', () => ({
   theme: 'theme',
   body: 'body',
@@ -189,3 +192,19 @@ test('an unnamed shell export has no decorative prompt', () => {
   expect(html).not.toContain('cat ');
   expect(html).not.toContain('Untitled');
 });
+
+for (const component of [CardTerminal, EditorTerminal, ShellTerminal]) {
+  test(`${component.name} renders a fixed title without tab chrome`, () => {
+    const html = renderToString(() =>
+      createComponent(component, {
+        ...terminal,
+        showTab: false,
+        title: 'A story',
+      }),
+    );
+    expect(html).toContain('A story');
+    expect(html).not.toContain('src/first.ts');
+    expect(html).not.toContain('breadcrumb');
+    expect(html).not.toContain('cat ');
+  });
+}

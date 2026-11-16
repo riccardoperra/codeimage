@@ -5,6 +5,8 @@ import {useI18n} from '@codeimage/locale';
 import {getAuth0State} from '@codeimage/store/auth/auth0';
 import {getRootEditorStore} from '@codeimage/store/editor';
 import {icons} from '@codeui/kit';
+import {RemoteSvgIcon} from '@codeimage/ui';
+import {assignInlineVars} from '@vanilla-extract/dynamic';
 import {Dialog} from '@kobalte/core/dialog';
 import {useNavigate} from '@solidjs/router';
 import {
@@ -12,9 +14,11 @@ import {
   createSignal,
   createUniqueId,
   For,
+  Match,
   onCleanup,
   onMount,
   Show,
+  Switch,
   untrack,
 } from 'solid-js';
 import {
@@ -26,14 +30,17 @@ import {toggleMark} from '../../../components/CustomEditor/plugins/lineMarks/sta
 import type {AppLocaleEntries} from '../../../i18n';
 import {getWhatsNew} from '../../../state/whats-new';
 import {ControlOverlay, controlOverlay} from '../controls/ControlOverlay';
+import {localAi} from '../local-ai/LocalAi';
 import {shortcutHelp} from '../controls/ShortcutHelp';
 import type {EditorControlsModel} from '../model';
 import {exportCommands, settingsCommands} from '../shell/commands';
+import {ExternalIcon, GitHubIcon, NewsIcon, SparklesIcon} from '../shell/icons';
+import {ThemeSwatch} from '../ThemeSwatch';
 import {settings} from '../shell/settings-state';
 import type {Stage} from '../stage';
 import * as styles from './command-menu.css';
 import {buildCommands, filterCommands} from './commands';
-import type {Action, Command} from './commands';
+import type {Action, Command, Leading} from './commands';
 import {createListedModel} from './listed-model';
 import {commandMenu} from './state';
 
@@ -46,6 +53,43 @@ interface CommandMenuProps {
 interface Row {
   readonly command: Command;
   readonly index: number;
+}
+
+interface Group {
+  readonly name: string;
+  readonly section?: string;
+  readonly rows: Row[];
+}
+
+/** The mark at the start of a row, in a box of one size for every kind. */
+function RowLeading(props: {leading: Leading}) {
+  return (
+    <span class={styles.leading} aria-hidden="true">
+      <Switch>
+        <Match when={props.leading.kind === 'theme' && props.leading} keyed>
+          {leading => (
+            <ThemeSwatch theme={leading.theme} size={20} variant="syntax-orb" />
+          )}
+        </Match>
+        <Match when={props.leading.kind === 'fill' && props.leading} keyed>
+          {leading => (
+            <span
+              class={styles.fill}
+              style={assignInlineVars({[styles.fillValue]: leading.value})}
+            />
+          )}
+        </Match>
+        <Match when={props.leading.kind === 'icon' && props.leading} keyed>
+          {leading => <leading.icon size={16} />}
+        </Match>
+        <Match when={props.leading.kind === 'svg' && props.leading} keyed>
+          {leading => (
+            <RemoteSvgIcon content={leading.content} size="sm" delay={0} />
+          )}
+        </Match>
+      </Switch>
+    </span>
+  );
 }
 
 function SearchIcon() {
@@ -84,7 +128,11 @@ function Commands(
 
   const commands = untrack(() => {
     const actions: Action[] = [
-      {label: t('editor.randomize'), run: props.stage.randomize},
+      {
+        label: t('editor.randomize'),
+        icon: SparklesIcon,
+        run: props.stage.randomize,
+      },
       {label: t('shortcut.buttonAction'), note: '?', run: shortcutHelp.open},
       ...markCommands.map(command => ({
         label: t(`lineMarks.shortcut.${command.id}`),
@@ -97,6 +145,9 @@ function Commands(
         },
       })),
     ];
+    if (localAi.enabled()) {
+      actions.push({label: t('localAi.command'), run: localAi.open});
+    }
     if (props.stage.canFormat()) {
       actions.push({
         label: t('editor.formatCode'),
@@ -107,14 +158,19 @@ function Commands(
     const fromOldMenu: Command[] = [
       {
         id: 'whats-new',
-        group: t('editor.settings'),
+        group: t('editor.about'),
         label: t('editor.whatsNew'),
+        leading: {kind: 'icon', icon: NewsIcon},
         run: () => settings.open('whats-new'),
       },
-      ...editorLinks.map(link => ({
+      ...editorLinks.map((link): Command => ({
         id: link.id,
-        group: t('editor.settings'),
+        group: t('editor.about'),
         label: t(link.label),
+        leading: {
+          kind: 'icon',
+          icon: link.id === 'github' ? GitHubIcon : ExternalIcon,
+        },
         run: () => {
           trackEditorLink(link.id);
           window.open(link.href, '_blank', 'noopener,noreferrer');
@@ -124,7 +180,7 @@ function Commands(
     if (auth.loggedIn()) {
       fromOldMenu.push({
         id: 'logout',
-        group: t('editor.settings'),
+        group: t('editor.account'),
         label: t('editor.logout'),
         run: () => void auth.signOut().then(() => navigate('/')),
       });
@@ -147,11 +203,18 @@ function Commands(
   const [active, setActive] = createSignal(0);
   const results = createMemo(() => filterCommands(commands, query()));
   const groups = createMemo(() => {
-    const grouped: {name: string; rows: Row[]}[] = [];
+    const grouped: Group[] = [];
     results().forEach((command, index) => {
       const last = grouped[grouped.length - 1];
-      if (last?.name === command.group) last.rows.push({command, index});
-      else grouped.push({name: command.group, rows: [{command, index}]});
+      const row = {command, index};
+      // A heading that repeats its section, such as Font under Font, names it once.
+      const section =
+        command.section === command.group ? undefined : command.section;
+      if (last?.name === command.group && last.section === section) {
+        last.rows.push(row);
+        return;
+      }
+      grouped.push({name: command.group, section, rows: [row]});
     });
     return grouped;
   });
@@ -247,8 +310,17 @@ function Commands(
       >
         <For each={groups()}>
           {group => (
-            <div role="group" aria-label={group.name}>
+            <div
+              role="group"
+              aria-label={
+                group.section ? `${group.section} ${group.name}` : group.name
+              }
+            >
               <div class={styles.group} role="presentation">
+                <Show when={group.section}>
+                  <span class={styles.groupSection}>{group.section}</span>
+                  <span class={styles.groupSlash}>/</span>
+                </Show>
                 {group.name}
               </div>
               <For each={group.rows}>
@@ -267,8 +339,27 @@ function Commands(
                       }
                     }}
                     onClick={() => props.onRun(row.command)}
+                    aria-label={
+                      row.command.value === undefined
+                        ? undefined
+                        : row.command.label
+                    }
                   >
-                    <span class={styles.label}>{row.command.label}</span>
+                    <Show
+                      when={row.command.leading}
+                      keyed
+                      fallback={
+                        // Keeps the text in line with the rows that have a mark.
+                        <Show when={group.rows.some(r => r.command.leading)}>
+                          <span class={styles.leading} aria-hidden="true" />
+                        </Show>
+                      }
+                    >
+                      {leading => <RowLeading leading={leading} />}
+                    </Show>
+                    <span class={styles.label}>
+                      {row.command.value ?? row.command.label}
+                    </span>
                     <Show when={row.command.current}>
                       <icons.CheckIcon class={styles.check} />
                     </Show>

@@ -5,7 +5,7 @@ import {getTerminalState} from '@codeimage/store/editor/terminal';
 import {getPresetsStore} from '@codeimage/store/presets/presets';
 import type {PresetData} from '@codeimage/store/presets/types';
 import {getUiStore} from '@codeimage/store/ui';
-import {Box, HStack, Text, toast} from '@codeimage/ui';
+import {Box, Text, toast} from '@codeimage/ui';
 import {
   Button,
   DropdownMenu,
@@ -25,7 +25,6 @@ import clsx from 'clsx';
 import type {ParentComponent} from 'solid-js';
 import {ErrorBoundary, For, Show, Suspense} from 'solid-js';
 import type {AppLocaleEntries} from '../../../i18n';
-import {CloseIcon} from '../../../components/Icons/CloseIcon';
 import {CloudIcon} from '../../../components/Icons/CloudIcon';
 import {DotHorizontalIcon} from '../../../components/Icons/DotVertical';
 import {PanelDivider} from '../../../components/PropertyEditor/PanelDivider';
@@ -38,13 +37,8 @@ import {CopyCliConfigMenuItem} from '../../../components/Presets/CopyCliConfigMe
 import * as styles from '../../../components/Presets/PresetSwitcher/PresetSwitcher.css';
 import {PresetTooltipContent} from './PresetTooltipContent';
 
-type PresetSwitcherProps = {
-  onClose: () => void;
-};
-
-export const PresetSwitcher: ParentComponent<
-  PresetSwitcherProps & ThemeSwitcherVariant
-> = props => {
+/** The user's presets. The panel around it owns the title. */
+export const PresetSwitcher: ParentComponent<ThemeSwitcherVariant> = props => {
   const terminal = getTerminalState();
   const editor = getRootEditorStore();
   const frame = getFrameState();
@@ -72,44 +66,29 @@ export const PresetSwitcher: ParentComponent<
   return (
     <Box class={classes()}>
       <div class={styles.fixedTitle}>
-        <Box
-          display={'flex'}
-          justifyContent={'spaceBetween'}
-          alignItems={'center'}
-        >
-          <Text weight={'semibold'}>{t('presets.userPresets')}</Text>
-          <HStack spacing={2}>
-            <Tooltip
-              content={<PresetTooltipContent />}
-              disabled={!presetsStore.bridge.reachPresetLimit()}
-              placement="bottom"
-            >
-              <Button
-                size={'xs'}
-                theme={'primary'}
-                onClick={() => {
-                  openDialog(RenameContentDialog, {
-                    title: t('presets.addPreset.confirmTitle'),
-                    message: t('presets.addPreset.confirmMessage'),
-                    onConfirm: async name => {
-                      presetsStore.actions.addNewPreset({name});
-                    },
-                  });
-                }}
-                disabled={presetsStore.bridge.reachPresetLimit()}
-              >
-                {t('presets.addPreset.label')}
-              </Button>
-            </Tooltip>
-            <IconButton
-              aria-label={t('common.close')}
+        <Box display={'flex'} justifyContent={'flexEnd'} alignItems={'center'}>
+          <Tooltip
+            content={<PresetTooltipContent />}
+            disabled={!presetsStore.bridge.reachPresetLimit()}
+            placement="bottom"
+          >
+            <Button
               size={'xs'}
-              theme={'secondary'}
-              onClick={props.onClose}
+              theme={'primary'}
+              onClick={() => {
+                openDialog(RenameContentDialog, {
+                  title: t('presets.addPreset.confirmTitle'),
+                  message: t('presets.addPreset.confirmMessage'),
+                  onConfirm: async name => {
+                    presetsStore.actions.addNewPreset({name});
+                  },
+                });
+              }}
+              disabled={presetsStore.bridge.reachPresetLimit()}
             >
-              <CloseIcon />
-            </IconButton>
-          </HStack>
+              {t('presets.addPreset.label')}
+            </Button>
+          </Tooltip>
         </Box>
         <PanelDivider />
       </div>

@@ -12,7 +12,7 @@ Guests open `/`; saved projects open at `/:snippetId`. Signed-in `/` is the dash
 
 ## Driving it with Playwright
 
-Run the audit editor journey. Fill `.cm-content[contenteditable="true"]`, type a character and undo with `ControlOrMeta+z`; assert original text. The editor also has aria-label `codeimage-editor`, but theme preview editors carry the same label (`components/CustomEditor/CustomEditorPreview.tsx`), so it is not a unique selector. On unified Inspector expand `[data-section="editor"] > button` (titled Code), then choose language with `#inspector-editor-language-trigger`. The unified editor formats through button `Format code` (exact name); it is disabled when the language has no formatter. Capture selected language and code when checking language/format behavior.
+Run the audit editor journey. Fill `.cm-content[contenteditable="true"]`, type a character and undo with `ControlOrMeta+z`; assert original text. The editor also has aria-label `codeimage-editor`, but theme preview editors carry the same label (`components/CustomEditor/CustomEditorPreview.tsx`), so it is not a unique selector. In the Sidebar's Accordion expand `[data-section="code"] > button`, then choose language with `#sidebar-editor-language-trigger`. The unified editor formats through button `Format code` (exact name); it is disabled when the language has no formatter. Capture selected language and code when checking language/format behavior.
 
 Source: `components/CustomEditor/CustomEditor.tsx`, `pages/UnifiedEditor/model.tsx`, `pages/UnifiedEditor/controls/fields.tsx`, `pages/UnifiedEditor/controls/CanvasToolbar.tsx`.
 

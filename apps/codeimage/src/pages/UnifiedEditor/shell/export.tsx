@@ -25,11 +25,36 @@ import type {EditorPageState} from '../page-state';
 import {showExportSuccessToast} from '../../../components/Toolbar/ExportSuccessToast';
 import {deliverTabFiles, renderTabFiles} from '../../../hooks/export-tabs';
 import {ExportMode, exportImage} from '../../../hooks/use-export-image';
+import {
+  createAnimationExporter,
+  type AnimationExporter,
+} from './export-animation-dialog';
 import type {AppLocaleEntries} from '../../../i18n';
 import type {ExportChoice} from './export-formats';
 import {savedExportChoice} from './export-formats';
 
-type ExportAction = 'image' | 'eachTab' | 'share' | 'newTab' | 'copy';
+type ExportAction =
+  | 'image'
+  | 'eachTab'
+  | 'share'
+  | 'newTab'
+  | 'copy'
+  | 'animation'
+  | 'animationStart';
+
+/**
+ * How a requested export ended. `started` is a clipboard copy, which runs on
+ * after the call and reports only through a toast. `canceled` is a share sheet
+ * the user closed. `needs-review` leaves the secrets dialog open for the user.
+ */
+export type ExportOutcome =
+  | {readonly status: 'done'}
+  | {readonly status: 'started'}
+  | {readonly status: 'canceled'}
+  | {readonly status: 'busy'}
+  | {readonly status: 'not-ready'}
+  | {readonly status: 'needs-review'; readonly secrets: number}
+  | {readonly status: 'failed'};
 
 /** An export waiting for the secrets review, with the choice it was asked with. */
 interface PendingExport {
@@ -38,6 +63,9 @@ interface PendingExport {
 }
 
 export interface Exporter {
+  readonly animation: AnimationExporter;
+  readonly exportAnimation: () => void;
+  readonly startAnimation: () => void;
   readonly ready: Accessor<boolean>;
   /** True while an export runs. */
   readonly busy: Accessor<boolean>;
@@ -47,17 +75,18 @@ export interface Exporter {
    * Exports the image on the canvas with the choice, or with the export
    * settings without one. The other image actions take a choice the same way.
    */
-  readonly image: (choice?: ExportChoice) => void;
+  readonly image: (choice?: ExportChoice) => Promise<ExportOutcome>;
   /** One image per tab, in a zip. */
-  readonly eachTab: (choice?: ExportChoice) => void;
-  readonly share: (choice?: ExportChoice) => void;
-  readonly newTab: (choice?: ExportChoice) => void;
+  readonly eachTab: (choice?: ExportChoice) => Promise<ExportOutcome>;
+  readonly share: (choice?: ExportChoice) => Promise<ExportOutcome>;
+  readonly newTab: (choice?: ExportChoice) => Promise<ExportOutcome>;
   /** Copies a PNG at the choice's scale. */
-  readonly copy: (choice?: ExportChoice) => void;
+  readonly copy: (choice?: ExportChoice) => Promise<ExportOutcome>;
   readonly canCopy: Accessor<boolean>;
   readonly canShare: Accessor<boolean>;
   /** A requested export waits here while the user reviews visible secrets. */
   readonly confirming: Accessor<boolean>;
+  readonly confirmingAnimation: Accessor<boolean>;
   readonly confirm: () => void;
   readonly cancel: () => void;
   readonly copyAltText: () => void;
@@ -83,6 +112,7 @@ export function createExporter(
   const [t] = useI18n<AppLocaleEntries>();
   const editor = getRootEditorStore();
   const owner = getOwner();
+  const animation = createAnimationExporter();
   const [busy, setBusy] = createSignal(false);
   const [pending, setPending] = createSignal<PendingExport>();
   const secrets = () =>
@@ -140,17 +170,29 @@ export function createExporter(
       }),
     );
 
-  const run = async (action: ExportAction, choice: ExportChoice) => {
-    if (!ready() || busy() || dispatchCopyToClipboard.loading()) return;
+  const run = async (
+    action: ExportAction,
+    choice: ExportChoice,
+  ): Promise<ExportOutcome> => {
+    if (!ready()) return {status: 'not-ready'};
+    if (busy() || dispatchCopyToClipboard.loading()) return {status: 'busy'};
+    if (action === 'animation') {
+      animation.show();
+      return {status: 'started'};
+    }
+    if (action === 'animationStart') {
+      animation.start();
+      return {status: 'started'};
+    }
     if (action === 'copy') {
       const element = ref();
-      if (element)
-        dispatchCopyToClipboard({
-          ref: element,
-          renderer: config.get.renderer,
-          pixelRatio: choice.pixelRatio,
-        });
-      return;
+      if (!element) return {status: 'not-ready'};
+      dispatchCopyToClipboard({
+        ref: element,
+        renderer: config.get.renderer,
+        pixelRatio: choice.pixelRatio,
+      });
+      return {status: 'started'};
     }
     setBusy(true);
     if (action === 'eachTab') getWhatsNew().seen('tabs');
@@ -178,23 +220,34 @@ export function createExporter(
               options: options(mode, choice),
             }),
           ));
-      if (result && mode !== ExportMode.newTab) {
+      if (!result) return {status: 'canceled'};
+      if (mode !== ExportMode.newTab) {
         runWithOwner(owner, () =>
           showExportSuccessToast('altText.exported', text),
         );
       }
+      return {status: 'done'};
     } catch {
       showError();
+      return {status: 'failed'};
     } finally {
       setBusy(false);
     }
   };
 
-  const request = (action: ExportAction, choice?: ExportChoice) => {
-    if (!ready() || busy() || pending() || dispatchCopyToClipboard.loading())
-      return;
-    if (secrets() > 0) setPending({action, choice});
-    else void run(action, choice ?? savedExportChoice());
+  const request = async (
+    action: ExportAction,
+    choice?: ExportChoice,
+  ): Promise<ExportOutcome> => {
+    if (!ready()) return {status: 'not-ready'};
+    if (busy() || pending() || dispatchCopyToClipboard.loading())
+      return {status: 'busy'};
+    const count = secrets();
+    if (count > 0) {
+      setPending({action, choice});
+      return {status: 'needs-review', secrets: count};
+    }
+    return run(action, choice ?? savedExportChoice());
   };
 
   const confirm = () => {
@@ -212,12 +265,18 @@ export function createExporter(
     if (!activeEditor || !navigator.clipboard?.writeText) return;
     const text = altText(activeEditor);
     navigator.clipboard.writeText(text).then(
-      () => toast.success(() => t('altText.copied')),
+      () => {
+        getWhatsNew().seen('alt');
+        toast.success(() => t('altText.copied'));
+      },
       () => toast.error(() => t('altText.copyError')),
     );
   };
 
   return {
+    animation,
+    exportAnimation: () => request('animation'),
+    startAnimation: () => request('animationStart'),
     ready,
     busy: () => !ready() || busy() || dispatchCopyToClipboard.loading(),
     tabs: () => editor.state.editors.length,
@@ -229,6 +288,9 @@ export function createExporter(
     canCopy: () => ready() && !!navigator.clipboard?.write,
     canShare: () => !!navigator.share,
     confirming: () => pending() !== undefined,
+    confirmingAnimation: () =>
+      pending()?.action === 'animation' ||
+      pending()?.action === 'animationStart',
     confirm,
     cancel: () => setPending(undefined),
     copyAltText,

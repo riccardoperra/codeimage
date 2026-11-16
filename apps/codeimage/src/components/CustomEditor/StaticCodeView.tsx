@@ -10,6 +10,8 @@ import './plugins/lineMarks/marks.css';
 
 export interface StaticCodeViewProps {
   code: string;
+  // Animation capture mounts long code in small batches.
+  lineLimit?: number;
   marks: TabMarks;
   languageId: string;
   language: Language | null;
@@ -25,6 +27,8 @@ export default function StaticCodeView(props: StaticCodeViewProps) {
   const lines = createMemo(() =>
     tokenizeCode(props.code, props.language, props.theme),
   );
+  const visibleLines = () =>
+    lines().slice(0, props.lineLimit ?? lines().length);
   const theme = createMemo(() => getStaticTheme(props.theme));
   const watermark = useWatermarkScope();
   const marks = createMemo(
@@ -96,7 +100,7 @@ export default function StaticCodeView(props: StaticCodeViewProps) {
                 >
                   {gutterSpacer()}
                 </div>
-                <For each={lines()}>
+                <For each={visibleLines()}>
                   {(_, index) => (
                     <div
                       class="cm-gutterElement"
@@ -124,7 +128,7 @@ export default function StaticCodeView(props: StaticCodeViewProps) {
             style={{'white-space': 'pre'}}
             ref={root => watermark?.attach('code', {kind: 'static', root})}
           >
-            <For each={lines()}>
+            <For each={visibleLines()}>
               {(line, index) => (
                 <div
                   class="cm-line"

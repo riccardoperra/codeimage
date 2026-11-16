@@ -1,9 +1,8 @@
-type Path<Target, Prefix extends string = ''> = Target extends string
-  ? Prefix
-  : Path<
-      Target[keyof Target],
-      `${Prefix extends '' ? '' : `${Prefix}.`}${Extract<keyof Target, string>}`
-    >;
+type Path<Target> = {
+  [Key in Extract<keyof Target, string>]: Target[Key] extends string
+    ? Key
+    : `${Key}.${Path<Target[Key]>}`;
+}[Extract<keyof Target, string>];
 
 export type ExtractLocaleKeys<T> =
   T extends Record<string, infer U> ? U : never;

@@ -85,5 +85,6 @@ test('should map ProjectCreateRequest to Prisma ProjectCreateRequest with defaul
       fontWeight: 400,
       enableLigatures: true,
     },
+    animation: null,
   } satisfies ProjectDraft);
 });

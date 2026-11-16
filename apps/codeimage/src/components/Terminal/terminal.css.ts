@@ -127,5 +127,18 @@ export const watermark = style({
   right: '6px',
   bottom: '-6px',
   opacity: WATERMARK.opacity,
+  pointerEvents: 'none',
   backgroundColor: 'inherit',
+});
+
+export const title = style({
+  flex: 1,
+  minWidth: 0,
+  padding: '0 16px',
+  textAlign: 'center',
+  overflow: 'hidden',
+  textOverflow: 'ellipsis',
+  whiteSpace: 'nowrap',
+  fontSize: '13px',
+  color: terminalVars.textColor,
 });

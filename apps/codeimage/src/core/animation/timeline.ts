@@ -1,7 +1,7 @@
+import {curveOf} from './easing';
 import {animationCss, compileScene} from './compile';
 import {
-  EASING_CURVES,
-  type AnimationSettings,
+  type Easing,
   type CodeMetrics,
   type GlyphWidths,
   type NonEmpty,
@@ -24,12 +24,15 @@ export type WindowPlacement = {
 // An export target gives every step the same frame and moves the window.
 export type StepLayout = {size: Size; window: WindowPlacement | null};
 
-export type TimelineStep = Step & {layout: StepLayout; holdMs: number};
+export type TimelineStep = Step & {
+  layout: StepLayout;
+  holdMs: number;
+  transition?: {ms: number; easing: Easing};
+};
 
-export type TimelineOptions = Pick<
-  AnimationSettings,
-  'transitionMs' | 'easing'
-> & {
+export type TimelineOptions = {
+  transitionMs: number;
+  easing: Easing;
   // Frames per second of the export. Any rate, not only a persisted one.
   fps: number;
   lineNumbers: boolean;
@@ -65,6 +68,7 @@ export type TimelineScene =
       durationMs: number;
       // How far into the transition the scene starts.
       offsetMs: number;
+      activeRanges: readonly (readonly [number, number])[];
       // The code area, from compileScene.
       code: string;
       frame: FrameMotion;
@@ -86,8 +90,8 @@ export const windowDeclarations = (window: WindowPlacement) =>
   `left:${window.left}px;top:${window.top}px;width:${window.width}px;height:${window.height}px;transform:scale(${window.scale})`;
 
 // How far `easing` has moved at `time`, both from 0 to 1.
-function easedProgress(easing: AnimationSettings['easing'], time: number) {
-  const [x1, y1, x2, y2] = EASING_CURVES[easing];
+export function easedProgress(easing: Easing, time: number) {
+  const [x1, y1, x2, y2] = curveOf(easing);
   const bezier = (p1: number, p2: number, t: number) =>
     3 * p1 * t * (1 - t) ** 2 + 3 * p2 * t ** 2 * (1 - t) + t ** 3;
   // x grows with t, so halving the range finds the t whose x is `time`.
@@ -161,9 +165,9 @@ function windowStopTimes({startMs, transitionMs, fps}: Playback): number[] {
 function windowKeyframes(
   from: WindowPlacement,
   to: WindowPlacement,
-  easing: AnimationSettings['easing'],
+  easing: Easing,
   playback: Playback,
-): {stops: string; easing: AnimationSettings['easing']} {
+): {stops: string; easing: Easing} {
   if (from.scale === to.scale) {
     return {
       stops: `from{${windowDeclarations(from)}}to{${windowDeclarations(to)}}`,
@@ -214,11 +218,13 @@ export function frameRules(
     : sizedFrame(selectors, frame.animation);
 }
 
+export const transitionHalfMs = (ms: number) => Math.ceil(ms / 2);
+
 export function planTimeline(
   steps: NonEmpty<TimelineStep>,
   options: TimelineOptions,
 ): Timeline {
-  const {transitionMs, easing, fps, lineNumbers, metrics, widths} = options;
+  const {fps, lineNumbers, metrics, widths} = options;
   const sizes = steps.map(({layout}) => ({
     width: Math.round(layout.size.width),
     height: Math.round(layout.size.height),
@@ -226,20 +232,16 @@ export function planTimeline(
   const width = Math.max(...sizes.map(size => size.width));
   const height = Math.max(...sizes.map(size => size.height));
   // Whole pixels keep both ends on the pixels of the static export.
-  const frames = steps.map(
-    ({layout}, index): FramePlacement => ({
-      ...layout,
-      offset: {
-        x: Math.floor((width - sizes[index].width) / 2),
-        y: Math.floor((height - sizes[index].height) / 2),
-      },
-    }),
-  );
+  const frames = steps.map(({layout}, index): FramePlacement => ({
+    ...layout,
+    offset: {
+      x: Math.floor((width - sizes[index].width) / 2),
+      y: Math.floor((height - sizes[index].height) / 2),
+    },
+  }));
 
   const scenes: TimelineScene[] = [];
   const css: string[] = [];
-  // Rounding up keeps the first frame of a 1 ms transition on its first step.
-  const halfMs = Math.ceil(transitionMs / 2);
   let startMs = 0;
   for (const [index, step] of steps.entries()) {
     scenes.push({
@@ -251,6 +253,9 @@ export function planTimeline(
     startMs += step.holdMs;
     const next = steps[index + 1];
     if (!next) continue;
+    const transitionMs = next.transition?.ms ?? options.transitionMs;
+    const easing = next.transition?.easing ?? options.easing;
+    const halfMs = transitionHalfMs(transitionMs);
 
     const name = `t${index}`;
     const from = frames[index];
@@ -292,6 +297,16 @@ export function planTimeline(
         step: active,
         durationMs,
         offsetMs,
+        activeRanges: (boxDeclarations(from) !== boxDeclarations(to) ||
+        (from.window &&
+          to.window &&
+          windowDeclarations(from.window) !== windowDeclarations(to.window))
+          ? ([[0, transitionMs]] satisfies [number, number][])
+          : compiled.activeRanges
+        ).map(([start, end]): [number, number] => [
+          start - offsetMs,
+          end - offsetMs,
+        ]),
         code: compiled.html,
         frame: {
           ...motion,

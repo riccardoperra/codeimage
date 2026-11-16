@@ -3,8 +3,6 @@ import {globalStyle, keyframes, style} from '@vanilla-extract/css';
 import {
   curve,
   duration,
-  illustrationAt,
-  illustrationFor,
   ms,
   reduceMotion as reduce,
   showcaseFor,
@@ -46,7 +44,7 @@ export const nudge = style({
   '@media': {
     'screen and (max-width: 768px)': {
       left: '12px',
-      bottom: 'calc(12px + env(safe-area-inset-bottom, 0px))',
+      bottom: 'calc(76px + env(safe-area-inset-bottom, 0px))',
     },
     [reduce]: {
       transitionProperty: 'opacity',
@@ -73,6 +71,7 @@ export const muted = style({color: c.descriptionTextColor, fontSize: '12px'});
 export const expanded = style([
   face,
   {
+    position: 'relative',
     padding: '10px 10px 12px',
     clipPath: 'inset(0 round 18px)',
     transition: `clip-path ${ms(duration.reveal)} ${ease}`,
@@ -127,6 +126,15 @@ export const body = style({
 });
 // Every step keeps room for three lines, so Next never resizes the card.
 globalStyle(`${slide} ${body}`, {minHeight: '3lh'});
+// Show me sits under the step it belongs to, out of the footer row, so
+// Next and Done never shift sideways from one step to the next.
+export const reveal = style({marginTop: '10px'});
+export const nudgeClose = style({
+  position: 'absolute',
+  top: '8px',
+  right: '8px',
+  zIndex: 1,
+});
 export const actions = style({
   display: 'flex',
   alignItems: 'center',
@@ -157,141 +165,6 @@ export const tag = style({
   fontSize: '11px',
   fontWeight: 500,
 });
-export const illustration = style({
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  gap: '10px',
-  height: '140px',
-  borderRadius: '10px',
-  background: c.panel.background,
-  color: c.primary,
-  overflow: 'hidden',
-  selectors: {
-    '&[data-mode="thumb"]': {
-      height: '100%',
-      padding: '4px',
-      borderRadius: '8px',
-    },
-  },
-});
-// A thumbnail draws its picture at the size of its box.
-globalStyle(`${illustration}[data-mode="thumb"] svg`, {
-  width: '100%',
-  height: '100%',
-});
-export const thumbWindow = style({fill: c.background});
-export const miniWindow = style({
-  width: '180px',
-  color: c.baseText,
-  lineHeight: 1.8,
-  padding: '12px',
-  borderRadius: '10px',
-  background: c.background,
-  boxShadow: '0 4px 16px rgba(0,0,0,.08)',
-  fontSize: '11px',
-});
-export const redacted = style({color: c.primary, fontWeight: 600});
-export const wireCanvas = style({fill: 'currentColor', opacity: 0.1});
-export const wireFrame = style({fill: 'currentColor', opacity: 0.3});
-
-/*
- * A picture in a Nudge step or a Showcase card explains its feature once,
- * when it appears. Each part ends where the still picture has it, so the
- * archive's thumbnails and reduced motion show the last frame. A Showcase
- * card sets `--whats-new-play-at` to start its picture after it lands.
- */
-globalStyle(`${nudge}[data-instant] ${illustration}[data-mode="play"] *`, {
-  animation: 'none',
-});
-const playAt = (offset: number) =>
-  `calc(var(--whats-new-play-at, ${ms(duration.playAt)}) + ${ms(offset)})`;
-const plays = (
-  name: string,
-  length: number,
-  offset: number,
-  easing: string = ease,
-) => {
-  const playing = `${illustration}[data-mode="play"] &`;
-  return style({
-    selectors: {
-      [playing]: {
-        animation: `${name} ${ms(length)} ${easing} ${playAt(offset)} both`,
-      },
-    },
-    '@media': {[reduce]: {selectors: {[playing]: {animation: 'none'}}}},
-  });
-};
-const rise = keyframes({from: {opacity: 0, transform: 'translateY(6px)'}});
-const fromLeft = keyframes({
-  from: {opacity: 0, transform: 'translateX(-10px)'},
-});
-const fromRight = keyframes({from: {opacity: 0, transform: 'translateX(8px)'}});
-const press = keyframes({'40%': {transform: 'scale(.9)'}});
-const down = keyframes({from: {transform: 'translateY(-200%)'}});
-const wipeIn = keyframes({from: {clipPath: 'inset(0 100% 0 0)'}});
-const wipeOut = keyframes({from: {clipPath: 'inset(0)'}});
-
-// Redact: the secret is read first, then dots replace it from the left.
-export const secret = style({display: 'inline-grid'});
-globalStyle(`${secret} > *`, {gridArea: '1 / 1'});
-export const plain = style([
-  plays(wipeOut, illustrationFor.redact, illustrationAt.redact, curve.inOut),
-  {clipPath: 'inset(0 0 0 100%)'},
-]);
-export const dots = plays(
-  wipeIn,
-  illustrationFor.redact,
-  illustrationAt.redact,
-  curve.inOut,
-);
-// Tabs: one image per tab leaves the arrow, one after the other.
-export const tabOut = illustrationAt.tabs.map(at =>
-  plays(fromLeft, illustrationFor.tabs, at),
-);
-// Command menu: the shortcut is pressed, then a row is picked.
-export const keycap = plays(
-  press,
-  illustrationFor.shortcut,
-  illustrationAt.shortcut,
-);
-export const commandList = style({position: 'relative'});
-export const commandPick = style([
-  plays(
-    down,
-    illustrationFor.commandPick,
-    illustrationAt.commandPick,
-    curve.inOut,
-  ),
-  {
-    position: 'absolute',
-    insetInline: '-6px',
-    top: 'calc(2 * 1.8em)',
-    height: '1.8em',
-    borderRadius: '5px',
-    background: `color-mix(in srgb, ${c.primary} 16%, transparent)`,
-  },
-]);
-// Layouts: each layout's panel docks from its own edge.
-export const dockRight = plays(
-  fromRight,
-  illustrationFor.layout,
-  illustrationAt.layout[0],
-);
-export const dockBottom = plays(
-  rise,
-  illustrationFor.layout,
-  illustrationAt.layout[1],
-);
-export const dockLeft = plays(
-  fromLeft,
-  illustrationFor.layout,
-  illustrationAt.layout[2],
-);
-// Theme cards: the three styles arrive in reading order.
-export const themeStyle = illustrationAt.theme.map(at =>
-  plays(rise, illustrationFor.theme, at),
-);
 export const commandAnchor = style({
   position: 'relative',
   display: 'inline-flex',
@@ -427,20 +300,23 @@ export const sheetTitle = style({
   fontWeight: 500,
 });
 export const sheet = style({
-  maxHeight: 'min(760px, calc(100dvh - 32px))',
+  maxHeight: 'min(760px, calc(100dvh - 112px))',
   overflowY: 'auto',
   padding: '24px',
   color: c.baseText,
   '@media': {
     'screen and (max-width: 768px)': {
       padding: '16px',
-      maxHeight: 'calc(100dvh - 32px)',
+      maxHeight: 'calc(100dvh - 112px)',
     },
   },
 });
-globalStyle(`[role="dialog"][data-expanded]:has(> ${sheet})`, {
-  animation: `${fadeIn} ${ms(showcaseFor.sheet)} ${ease}`,
-});
+globalStyle(
+  `[data-expanded]:is([role="dialog"], [role="alertdialog"]):has(> ${sheet})`,
+  {
+    animation: `${fadeIn} ${ms(showcaseFor.sheet)} ${ease}`,
+  },
+);
 export const hero = style({textAlign: 'center', padding: '28px 0 32px'});
 export const heroTitle = style({
   fontSize: '34px',
@@ -450,21 +326,48 @@ export const heroTitle = style({
 });
 export const grid = style({
   display: 'grid',
-  gridTemplateColumns: 'repeat(2, minmax(0, 1fr))',
+  gridTemplateColumns: 'repeat(6, minmax(0, 1fr))',
   gap: '12px',
   '@media': {
-    'screen and (max-width: 768px)': {gridTemplateColumns: 'minmax(0, 1fr)'},
+    'screen and (max-width: 600px)': {gridTemplateColumns: 'minmax(0, 1fr)'},
   },
 });
 export const card = style([
   enter(8, showcaseFor.card),
   {
-    padding: '12px',
-    borderRadius: '16px',
+    minWidth: 0,
+    gridColumn: 'span var(--whats-new-span, 2)',
+    padding: '12px 12px 18px',
+    borderRadius: '18px',
     background: c.panel.background,
-    selectors: {'&:first-child': {gridColumn: '1 / -1'}},
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '16px',
+    textAlign: 'center',
+    '@media': {'screen and (max-width: 600px)': {gridColumn: '1 / -1'}},
   },
 ]);
+globalStyle(`:root[data-cui-theme="light"] ${card}`, {
+  background: `color-mix(in srgb, ${c.baseText} 4%, ${c.panel.background})`,
+});
+globalStyle(`${card} > [data-picture]`, {flexShrink: 0});
+globalStyle(`${card}:first-child > [data-picture]`, {
+  height: '168px',
+});
+globalStyle(
+  `${card}:not(:first-child):not(:nth-last-child(-n+3)) > [data-picture]`,
+  {
+    height: '140px',
+  },
+);
+globalStyle(`${card} > ${copy}`, {
+  padding: '0 4px',
+  maxWidth: '44ch',
+  alignSelf: 'center',
+});
+globalStyle(`${card} ${title}`, {fontSize: '17px', marginTop: '8px'});
+globalStyle(`${card}:first-child ${title}`, {fontSize: '22px'});
+globalStyle(`${card} ${actions}`, {justifyContent: 'center'});
 export const sheetFooter = style({
   display: 'flex',
   alignItems: 'center',
@@ -484,3 +387,37 @@ globalStyle(
   `${nudge} button:active, ${coachmark} button:active, ${sheet} button:active`,
   {'@media': {[reduce]: {transform: 'none'}}},
 );
+
+export const accessories = style({paddingTop: '24px'});
+export const alsoTitle = style({
+  margin: '0 0 12px',
+  fontSize: '13px',
+  fontWeight: 600,
+  color: c.descriptionTextColor,
+});
+export const accessory = style({
+  display: 'flex',
+  alignItems: 'center',
+  gap: '12px',
+  padding: '12px 0',
+  borderBottom: `1px solid ${c.input.backgroundColor}`,
+});
+export const accessoryThumb = style({
+  width: '64px',
+  height: '44px',
+  flexShrink: 0,
+});
+globalStyle(`${accessory} > button`, {flexShrink: 0});
+export const accessoryCopy = style({flex: 1, minWidth: 0});
+export const accessoryTitle = style({
+  margin: '0 0 4px',
+  fontSize: '13px',
+  fontWeight: 600,
+});
+export const accessoryBody = style([body, {overflowWrap: 'anywhere'}]);
+
+export const headerActions = style({
+  display: 'flex',
+  alignItems: 'center',
+  gap: '4px',
+});

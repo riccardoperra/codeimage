@@ -180,6 +180,9 @@ export const confirmation = style({
   placeItems: 'center',
   padding: themeVars.spacing['4'],
   pointerEvents: 'none',
+  selectors: {
+    '&[data-video-running]': {alignItems: 'end', justifyItems: 'end'},
+  },
 });
 
 export const confirmationPanel = style({
@@ -190,4 +193,84 @@ export const confirmationPanel = style({
   background: c.panel.background,
   color: c.baseText,
   boxShadow: c.dialog.panelShadow,
+});
+
+export const videoFields = style({
+  display: 'flex',
+  flexDirection: 'column',
+  gap: themeVars.spacing['3'],
+});
+export const videoRow = style({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  minHeight: themeVars.spacing['10'],
+  gap: themeVars.spacing['3'],
+});
+export const videoProgress = style({
+  width: '100%',
+  height: themeVars.spacing['2'],
+  borderRadius: themeVars.borderRadius.full,
+  overflow: 'hidden',
+  background: c.input.backgroundColor,
+});
+
+export const videoProgressFill = style({
+  height: '100%',
+  width: 'var(--kb-progress-fill-width)',
+  background: c.baseText,
+});
+
+// Kit selects portal at layer 50, above the video dialog and below secrets review.
+export const videoDialog = style([
+  confirmation,
+  {zIndex: `calc(${themeVars.zIndex['50']} - 1)`},
+]);
+export const videoBackdrop = style([
+  backdrop,
+  {zIndex: `calc(${themeVars.zIndex['50']} - 2)`},
+]);
+
+export const videoPopover = style([
+  surface,
+  {
+    selectors: {
+      '&&': {
+        width: 'min(448px, calc(100vw - 32px))',
+        maxHeight: 'calc(100dvh - 80px)',
+        overflowY: 'auto',
+        padding: themeVars.spacing['4'],
+      },
+    },
+  },
+]);
+
+export const videoColor = style({width: themeVars.spacing['24']});
+
+export const videoFormatItem = style({
+  display: 'flex',
+  alignItems: 'center',
+  gap: themeVars.spacing['2'],
+  minHeight: themeVars.spacing['8'],
+  selectors: {'&[data-disabled]': {opacity: themeVars.opacity['50']}},
+});
+export const videoFormatRadio = style({
+  display: 'grid',
+  placeItems: 'center',
+  width: themeVars.spacing['4'],
+  height: themeVars.spacing['4'],
+  border: `${themeVars.borderWidth.default} solid ${c.baseText}`,
+  borderRadius: themeVars.borderRadius.full,
+  selectors: {
+    '&[data-focus-visible]': {
+      outline: `${themeVars.borderWidth['2']} solid ${c.baseText}`,
+      outlineOffset: themeVars.spacing['1'],
+    },
+  },
+});
+export const videoFormatIndicator = style({
+  width: themeVars.spacing['2'],
+  height: themeVars.spacing['2'],
+  borderRadius: themeVars.borderRadius.full,
+  background: c.baseText,
 });

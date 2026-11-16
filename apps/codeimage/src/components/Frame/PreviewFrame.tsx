@@ -14,7 +14,7 @@ import type {ParentProps, Ref, VoidProps} from 'solid-js';
 import {createMemo, createResource, onMount, Show, Suspense} from 'solid-js';
 import {Portal} from 'solid-js/web';
 import {provideState} from 'statebuilder';
-import {useHotkey} from '../../hooks/use-hotkey';
+import {isKeyOwnedByFocus, useHotkey} from '../../hooks/use-hotkey';
 import * as styles from './Frame.css';
 import {FrameSkeleton} from './FrameSkeleton';
 import {FrameView} from './FrameView';
@@ -39,6 +39,26 @@ function PreviewPortal(props: ParentProps) {
   );
 }
 
+// The terminal theme and code font that every static or animated view of the
+// frame draws with.
+export function useFrameCodeStyle() {
+  const editor = getRootEditorStore();
+  const theme = createMemo(() => {
+    const themes = getThemeStore().themeArray();
+    return (
+      themes.find(theme => theme()?.id === editor.state.options.themeId)?.() ??
+      themes[0]()
+    );
+  });
+  return {
+    theme,
+    fontFamily: () => editor.computed.selectedFont().name,
+    fontWeight: () => editor.state.options.fontWeight,
+    enableLigatures: () => editor.state.options.enableLigatures,
+    showLineNumbers: () => editor.state.options.showLineNumbers,
+  };
+}
+
 export function PreviewFrame(props: VoidProps<PreviewFrameProps>) {
   const config = provideState(EditorConfigStore);
   let ref!: HTMLDivElement;
@@ -56,16 +76,9 @@ export function PreviewFrame(props: VoidProps<PreviewFrameProps>) {
   );
   // FrameView takes a loaded theme. A Suspense still creates its children
   // while it shows its fallback, so the frame below waits for the theme.
-  const theme = createMemo(() => {
-    const themes = getThemeStore().themeArray();
-    return (
-      themes.find(theme => theme()?.id === editor.state.options.themeId)?.() ??
-      themes[0]()
-    );
-  });
+  const {theme} = useFrameCodeStyle();
   const filterHotKey = () =>
-    editor.state.options.focused ||
-    document.activeElement?.nodeName === 'INPUT';
+    editor.state.options.focused || isKeyOwnedByFocus();
 
   onMount(() => {
     useHotkey(document.body, {

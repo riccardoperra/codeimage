@@ -53,6 +53,7 @@ function Row(props: {row: SettingRow}) {
         <span id={descriptionId()} class={styles.rowDescription}>
           {props.row.description()}
         </span>
+        <Show when={props.row.details}>{details => details()()}</Show>
       </div>
       <div class={styles.rowControl}>{props.row.control()}</div>
     </div>

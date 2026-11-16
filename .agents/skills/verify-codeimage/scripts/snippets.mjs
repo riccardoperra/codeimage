@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import {mkdir, readFile, writeFile} from 'node:fs/promises';
 import {resolve} from 'node:path';
 import {PNG} from 'pngjs';
+import {createMockContext} from './mock-context.mjs';
 
 const isSave = request =>
   request.method() === 'PUT' &&
@@ -11,6 +12,11 @@ const frame = page =>
 const code = page => page.locator('[data-fit-scale] .cm-content').first();
 
 async function dismissNews(page) {
+  const showcase = page.getByRole('dialog', {name: "What\'s new", exact: true});
+  if (await showcase.isVisible()) {
+    await showcase.getByRole('button', {name: 'Close', exact: true}).click();
+    await showcase.waitFor({state: 'hidden'});
+  }
   const dismiss = page.getByRole('button', {
     name: "Dismiss what's new",
     exact: true,
@@ -24,11 +30,16 @@ async function dismissNews(page) {
 async function ready(page, kind = 'owner') {
   await page.locator(`.unified-editor[data-page-state="${kind}"]`).waitFor();
   await code(page).waitFor();
+  await page
+    .locator('[data-fit-scale] [data-frame-placeholder]')
+    .waitFor({state: 'detached'});
+  await page.locator('[data-fit-scale] .cm-content .cm-line').first().waitFor();
   await page.evaluate(() => document.fonts.ready);
-  await page.waitForTimeout(500);
+  await page.waitForTimeout(800);
   await dismissNews(page);
   const close = page.getByRole('button', {name: /^close$/i}).first();
   if (await close.isVisible()) await close.click();
+  await page.locator('[data-whats-new="showcase"]').waitFor({state: 'hidden'});
 }
 
 async function command(page, label) {
@@ -66,12 +77,18 @@ async function createProject(page, base, options = {}) {
   if (options.delayed) {
     await page.evaluate(async () => {
       const {worker} = await import('/src/mocks/browser.ts');
-      const {http, HttpResponse, delay} =
+      const {http, HttpResponse} =
         await import('/node_modules/msw/lib/core/index.mjs');
       const {db} = await import('/src/mocks/db.ts');
+      const pending = new Promise(resolve => {
+        window.__verifyReleaseProject = () => {
+          resolve();
+          delete window.__verifyReleaseProject;
+        };
+      });
       worker.use(
         http.get('*/api/v1/project/:id', async ({params}) => {
-          await delay(1800);
+          await pending;
           return HttpResponse.json(
             db.project.findFirst({where: {id: {equals: params.id}}}),
           );
@@ -198,12 +215,26 @@ export async function auditSnippets({feature, doctor, context, base, out}) {
   const screenshots = resolve(out, 'read-only');
   await mkdir(screenshots, {recursive: true});
   async function matrix(name, run, {share = false} = {}) {
+    const layouts = process.env.VERIFY_SNIPPET_LAYOUT
+      ? [process.env.VERIFY_SNIPPET_LAYOUT]
+      : ['inspector', 'dock', 'studio'];
+    const widths = process.env.VERIFY_SNIPPET_WIDTH
+      ? [Number(process.env.VERIFY_SNIPPET_WIDTH)]
+      : [1440, 390];
+    assert.ok(
+      layouts.every(value => ['inspector', 'dock', 'studio'].includes(value)),
+      'known snippet layout',
+    );
+    assert.ok(
+      widths.every(value => [1440, 390].includes(value)),
+      'known snippet viewport',
+    );
     const lanes = [];
     try {
-      for (const layout of ['inspector', 'dock', 'studio']) {
-        for (const width of [1440, 390]) {
+      for (const layout of layouts) {
+        for (const width of widths) {
           const tag = `${layout}-${width}`;
-          const laneContext = await context.browser().newContext({
+          const laneContext = await createMockContext(context.browser(), base, {
             viewport: {width, height: width === 390 ? 844 : 900},
             locale: 'en-US',
             permissions: ['clipboard-read', 'clipboard-write'],
@@ -286,6 +317,7 @@ export async function auditSnippets({feature, doctor, context, base, out}) {
       const layout = await page
         .locator('.unified-editor > header + *')
         .boundingBox();
+      await page.evaluate(() => window.__verifyReleaseProject());
       await ready(page);
       assert.equal(new URL(page.url()).pathname, `/${project.id}`);
       assert.equal(await page.locator('.unified-editor').count(), 1);
@@ -323,7 +355,15 @@ export async function auditSnippets({feature, doctor, context, base, out}) {
       );
       await openThemes(
         page,
-        await page.locator('[data-layout]').getAttribute('data-layout'),
+        await page
+          .locator('[data-layout]')
+          .evaluate(root =>
+            root.dataset.layout === 'dock'
+              ? 'dock'
+              : root.dataset.panelNav === 'rail'
+                ? 'studio'
+                : 'inspector',
+          ),
         page.viewportSize().width,
       );
       assert.equal(
@@ -441,7 +481,7 @@ export async function auditSnippets({feature, doctor, context, base, out}) {
             0,
           );
         if (layout === 'studio') {
-          assert.equal(await page.locator('#studio-panel').count(), 0);
+          assert.equal(await page.locator('#sidebar-panel').count(), 0);
           if (width === 390)
             assert.equal(
               await page
