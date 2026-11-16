@@ -2,6 +2,10 @@ import type {Spoiler} from '@codeimage/store/editor/model';
 import type {TokenLine} from './tokenize';
 
 export const SPOILER_CLASS = 'cm-spoiler';
+export const SPOILER_DRIFT = 'codeimage-spoiler-drift';
+
+export const spoilerClockCss = (startMs: number) =>
+  `.${SPOILER_CLASS}{animation-delay:${-Math.round(startMs)}ms!important}`;
 
 export type SpoilerRun = {from: number; to: number; classes: string};
 

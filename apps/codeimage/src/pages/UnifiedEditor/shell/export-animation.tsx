@@ -34,6 +34,7 @@ import {
 } from '../../../core/video/formats';
 import type {AnimationExport} from '../../../core/video/protocol';
 import {createSignal, getOwner, runWithOwner, Show} from 'solid-js';
+import {spoilerClockCss} from '@core/snapshot/spoilers';
 import {render} from 'solid-js/web';
 
 const yieldToEditor = () =>
@@ -340,6 +341,7 @@ export function animationSnapshot() {
       const scenes: AnimationExport['scenes'] = [];
       const fontFamilies = new Set<string>();
       let text = '';
+      let startMs = 0;
       for (const [index, scene] of timeline.scenes.entries()) {
         await yieldToEditor();
         const snapshot = await cloneAnimationNode(roots[index]);
@@ -348,8 +350,9 @@ export function animationSnapshot() {
         scenes.push({
           html: snapshot.html,
           durationMs: scene.durationMs,
-          css: frameCss[index],
+          css: `${frameCss[index]}\n${spoilerClockCss(startMs)}`,
         });
+        startMs += scene.durationMs;
       }
       // Watermark observers need these layout rules until every scene is captured.
       captureStyle.remove();

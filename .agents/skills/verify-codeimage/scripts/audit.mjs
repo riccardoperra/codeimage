@@ -1066,8 +1066,22 @@ export async function audit({page, context, base, out, server}) {
       secret,
       'the author still reads the hidden value',
     );
+    await page.waitForTimeout(200);
+    await shot('spoiler-editor-open');
     await editor().press('End');
     await page.waitForTimeout(400);
+    assert.equal(
+      await page.locator('.cm-spoilerOpen').count(),
+      0,
+      'the spoiler closes when the cursor leaves it',
+    );
+    assert.equal(
+      await edit
+        .first()
+        .evaluate(element => getComputedStyle(element).webkitTextFillColor),
+      'rgba(0, 0, 0, 0)',
+      'the editor hides the value outside the spoiler',
+    );
     await shot('spoiler-editor');
     const copy = page.locator('[data-static-code-view]').first();
     await copy.waitFor({state: 'attached'});
@@ -1175,6 +1189,12 @@ export async function audit({page, context, base, out, server}) {
     const job = await page.evaluate(() => window.__spoilerJob);
     const first = job.scenes[0].html;
     assert.ok(!first.includes(secret), 'the exported hold hides the value');
+    assert.ok(
+      job.scenes[1].css.includes(
+        `animation-delay:-${job.scenes[0].durationMs}ms`,
+      ),
+      'particles keep the video clock across scenes',
+    );
     const {execFileSync} = await import('node:child_process');
     for (const at of [0.3, 0.6, total / 2000, (total - 100) / 1000])
       execFileSync('ffmpeg', [
@@ -1189,7 +1209,31 @@ export async function audit({page, context, base, out, server}) {
         '1',
         resolve(out, `spoiler-export-${at.toFixed(2)}.png`),
       ]);
-    return {frames, scenes: job.scenes.length};
+    const crop = at =>
+      execFileSync('ffmpeg', [
+        '-v',
+        'error',
+        '-ss',
+        at,
+        '-i',
+        file,
+        '-frames:v',
+        '1',
+        '-vf',
+        'crop=iw/3:ih/8:iw/3:ih*0.42',
+        '-f',
+        'rawvideo',
+        '-pix_fmt',
+        'gray',
+        '-',
+      ]);
+    const [early, late] = [crop('0.10'), crop('0.50')];
+    let change = 0;
+    for (let i = 0; i < early.length; i++)
+      change += Math.abs(early[i] - late[i]);
+    change /= early.length;
+    assert.ok(change > 1, `particles drift during the hold (${change})`);
+    return {frames, scenes: job.scenes.length, holdChange: change};
   });
   await feature('animate-typewriter', async () => {
     await page.evaluate(

@@ -35,6 +35,12 @@ const spoilerMark = Decoration.mark({
   inclusiveEnd: false,
 });
 
+const openSpoilerMark = Decoration.mark({
+  class: 'cm-spoilerEdit cm-spoilerOpen',
+  inclusiveStart: false,
+  inclusiveEnd: false,
+});
+
 function spoilerSet(doc: Text, marks: TabMarks): DecorationSet {
   return Decoration.set(
     (marks.spoilers ?? []).flatMap(({line, from, to}) => {
@@ -212,10 +218,19 @@ export const lineMarksField = StateField.define<MarkState>({
   provide: field => [
     EditorView.decorations.from(field, value => value.decorations),
     EditorView.decorations.from(field, value => value.focused),
-    EditorView.decorations.from(
-      field,
-      value => value.spoilers ?? Decoration.none,
-    ),
+    EditorView.decorations.compute([field, 'selection'], state => {
+      const spoilers = state.field(field).spoilers;
+      if (!spoilers?.size) return Decoration.none;
+      const ranges = [];
+      for (let cursor = spoilers.iter(); cursor.value; cursor.next()) {
+        const {from, to} = cursor;
+        const open = state.selection.ranges.some(
+          range => range.from <= to && range.to >= from,
+        );
+        ranges.push((open ? openSpoilerMark : spoilerMark).range(from, to));
+      }
+      return Decoration.set(ranges, true);
+    }),
     EditorView.editorAttributes.from(field, value => {
       let diff = false;
       for (let cursor = value.decorations.iter(); cursor.value; cursor.next()) {

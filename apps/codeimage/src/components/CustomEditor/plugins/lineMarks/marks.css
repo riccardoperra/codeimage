@@ -124,8 +124,20 @@
     infinite;
 }
 
-.cm-spoilerEdit {
-  opacity: 0.55;
+.cm-spoilerEdit,
+.cm-spoilerEdit * {
+  -webkit-text-fill-color: transparent;
+}
+
+.cm-editor.cm-focused .cm-spoilerOpen,
+.cm-editor.cm-focused .cm-spoilerOpen * {
+  -webkit-text-fill-color: currentColor;
+}
+
+.cm-editor.cm-focused .cm-spoilerOpen {
+  background-image: none;
+  text-decoration: underline dotted;
+  text-underline-offset: 3px;
 }
 
 @keyframes codeimage-spoiler-drift {

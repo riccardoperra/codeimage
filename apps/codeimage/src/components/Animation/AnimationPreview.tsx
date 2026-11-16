@@ -31,6 +31,7 @@ import {
   createPreviewSnapshot,
   type PreviewRequest,
 } from './createPreviewSnapshot';
+import {SPOILER_DRIFT} from '@core/snapshot/spoilers';
 import {
   type CodeStyle,
   measurePreview,
@@ -284,7 +285,10 @@ function AnimationScenes(props: {plan: PreviewPlan; visible: boolean}) {
     }
     for (const playing of shown.animations) {
       playing.pause();
-      playing.currentTime = localMs;
+      playing.currentTime =
+        'animationName' in playing && playing.animationName === SPOILER_DRIFT
+          ? animation.playhead()
+          : localMs;
     }
   });
 
