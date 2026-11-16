@@ -227,10 +227,7 @@ async function verifyPaddingExport({fresh, out}) {
       await capture(driver, out, 'signature-minimal', records);
     },
   );
-  return check(
-    records.filter(record => record.name.startsWith('signature')),
-    0.51,
-  );
+  return check(records, 0.51);
 }
 
 export async function auditFrameGeometry({feature, fresh, out}) {
