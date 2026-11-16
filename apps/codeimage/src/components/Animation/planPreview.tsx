@@ -25,6 +25,7 @@ import StaticCodeView from '../CustomEditor/StaticCodeView';
 import {targetLayout} from '@core/animation/target-layout';
 import * as frameStyles from '../Frame/Frame.css';
 import {FrameView} from '../Frame/PreviewFrame';
+import {getFrameState} from '@codeimage/store/editor/frame';
 
 export type PreviewTab = Pick<
   EditorState,
@@ -128,7 +129,6 @@ export async function measurePreview(
   style: CodeStyle,
   header: AnimationHeader,
   targetSize?: Size,
-  natural = true,
 ): Promise<PreviewMeasurement> {
   const languages = await Promise.all(
     tabs.map(tab => loadLanguage(tab.languageId, tab.tabName)),
@@ -169,34 +169,49 @@ export async function measurePreview(
       ),
     tabs.map(tab => tab.code),
   );
-  const layouts = await Promise.all(
-    tabs.map((tab, index) =>
-      measureHidden(
-        owner,
-        () => (
-          <FrameView
-            targetSize={targetSize}
-            natural={natural}
-            header={header}
-            activeTabId={tab.id}
-            code={codeView(tab, languages[index])}
-          />
+  const measureLayouts = (signatureWidth?: number) =>
+    Promise.all(
+      tabs.map((tab, index) =>
+        measureHidden(
+          owner,
+          () => (
+            <FrameView
+              targetSize={targetSize}
+              natural
+              signatureWidth={signatureWidth}
+              header={header}
+              activeTabId={tab.id}
+              code={codeView(tab, languages[index])}
+            />
+          ),
+          host => {
+            const window = host.querySelector<HTMLElement>(
+              '[data-header-visible]',
+            )!;
+            const {width, height} = window.getBoundingClientRect();
+            return {layout: stepLayout(host), windowArea: width * height};
+          },
         ),
-        stepLayout,
       ),
-    ),
-  );
+    );
+
+  let measurements = await measureLayouts();
+  if (getFrameState().store.signature)
+    measurements = await measureLayouts(
+      Math.ceil(Math.max(...measurements.map(({layout}) => layout.size.width))),
+    );
 
   const step = (index: number) => ({
     lines: tokenizeCode(tabs[index].code, languages[index], style.theme),
     marks: tabs[index].marks,
     lineNumberStart: tabs[index].lineNumberStart,
-    layout: layouts[index],
+    layout: measurements[index].layout,
   });
   const [, ...rest] = tabs;
   return {
     steps: [step(0), ...rest.map((_, index) => step(index + 1))],
     tabs: [...tabs],
+    windowAreas: measurements.map(({windowArea}) => windowArea),
     languages,
     metrics,
     widths,
@@ -205,6 +220,7 @@ export async function measurePreview(
 }
 
 export interface PreviewMeasurement {
+  windowAreas: number[];
   steps: NonEmpty<Omit<TimelineStep, 'holdMs'>>;
   tabs: PreviewTab[];
   languages: (Language | null)[];

@@ -923,7 +923,27 @@ export function animationMp4Cases({
     stepSizeGif: isolated('animation-gif-step-size', stepSize.gif),
     gifEstimates: async () => {
       const results = [];
+      const mixedCodes = [
+        'let a = 1;',
+        `const wide = "${'W'.repeat(130)}";`,
+        Array.from({length: 30}, (_, i) => `const row${i} = ${i};`).join('\n'),
+        Array.from({length: 6}, (_, i) => `const row${i} = ${i + 1};`).join(
+          '\n',
+        ),
+      ];
       for (const fixture of [
+        {
+          name: 'estimate-mixed-gradient-1x',
+          codes: mixedCodes,
+          scale: 1,
+          transition: 800,
+        },
+        {
+          name: 'estimate-mixed-gradient-2x',
+          codes: mixedCodes,
+          scale: 2,
+          transition: 800,
+        },
         {
           name: 'estimate-1080p-fifty',
           lineCounts: [6, 8, 9],

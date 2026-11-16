@@ -91,23 +91,14 @@ export function animationSnapshot() {
       output,
     );
     const {timeline, languages} = planPreviewTimeline(settings, measured);
-    // Natural padding is already covered by the gradient area term. Only
-    // fixed targets need an additional charge for their exposed background.
-    const backgroundArea = target
-      ? (measured.steps.reduce((sum, {layout}) => {
-          const window = layout.window;
-          const windowArea = window
-            ? window.width * window.height * window.scale ** 2
-            : Math.max(0, layout.size.width - frame.store.padding * 2) *
-              Math.max(0, layout.size.height - frame.store.padding * 2);
-          return (
-            sum +
-            Math.max(0, layout.size.width * layout.size.height - windowArea)
-          );
-        }, 0) /
-          measured.steps.length) *
-        pixelRatio ** 2
-      : 0;
+    const backgroundArea =
+      (measured.windowAreas.reduce(
+        (sum, windowArea) =>
+          sum + Math.max(0, timeline.width * timeline.height - windowArea),
+        0,
+      ) /
+        measured.windowAreas.length) *
+      pixelRatio ** 2;
     const contentSize = {
       width: timeline.width * pixelRatio,
       height: timeline.height * pixelRatio,
@@ -264,6 +255,7 @@ export function animationSnapshot() {
               targetSize={output}
               animated
               natural
+              signatureWidth={timeline.width}
               header={settings.header}
               activeTabId={tab.id}
               code={

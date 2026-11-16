@@ -1,5 +1,5 @@
 import type {AnimationHeader, Size} from '@core/animation/model';
-import {FittedWindow} from './FittedWindow';
+import {FittedWindow, naturalWindowStyle} from './FittedWindow';
 import {FrameSignature, framePadding, signatureScale} from './FrameSignature';
 import {getAssetsStore, isAssetUrl} from '@codeimage/store/assets/assets';
 import {AssetsImage} from '@codeimage/store/assets/AssetsImage';
@@ -91,6 +91,8 @@ export interface FrameViewProps {
   // Sizes the frame from its code, as the static export of one animation
   // step, instead of from the editor frame on screen.
   natural?: boolean;
+  // The fixed animation canvas width, shared by all of its steps.
+  signatureWidth?: number;
 }
 
 // The frame as the export draws it, around any code view.
@@ -107,7 +109,9 @@ export function FrameView(props: VoidProps<FrameViewProps>) {
       : getFrameState().exportTarget();
   const scale = () =>
     signatureScale(
-      target()?.resolution[0] ?? (props.natural ? 0 : frame.width),
+      props.signatureWidth ??
+        target()?.resolution[0] ??
+        (props.natural ? 0 : frame.width),
     );
   const terminal = getTerminalState().state;
   const editor = getRootEditorStore();
@@ -216,12 +220,19 @@ export function FrameView(props: VoidProps<FrameViewProps>) {
         <Show
           when={props.animated}
           fallback={
-            <FittedWindow active={!!target()} watermark={watermark}>
+            <FittedWindow
+              active={!!target()}
+              natural={props.natural}
+              watermark={watermark}
+            >
               {terminalView()}
             </FittedWindow>
           }
         >
-          <div data-animation-window style={{display: 'contents'}}>
+          <div
+            data-animation-window
+            style={props.natural ? naturalWindowStyle : {display: 'contents'}}
+          >
             <WatermarkContext.Provider value={watermark}>
               {terminalView()}
             </WatermarkContext.Provider>

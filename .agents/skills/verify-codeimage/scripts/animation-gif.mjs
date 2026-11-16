@@ -353,20 +353,22 @@ export function animationGifCases({
     return result;
   }
   async function measurements(fixture) {
-    const codes = fixture.palette
-      ? [
-          'const a = 1;',
-          'const b = 2;',
-          'const pink = "unique";\nconst re = /pink/g;\nconst template = `only here`;',
-          'const d = 4;',
-        ]
-      : Array.from({length: 3}, (_, step) =>
-          Array.from(
-            {length: fixture.lineCounts?.[step] ?? fixture.lines ?? 12},
-            (_, i) =>
-              `const item${fixture.rotate ? (i + step) % 12 : i} = transform(${step + 1 + i}, item${Math.max(0, i - 1)});`,
-          ).join('\n'),
-        );
+    const codes =
+      fixture.codes ??
+      (fixture.palette
+        ? [
+            'const a = 1;',
+            'const b = 2;',
+            'const pink = "unique";\nconst re = /pink/g;\nconst template = `only here`;',
+            'const d = 4;',
+          ]
+        : Array.from({length: 3}, (_, step) =>
+            Array.from(
+              {length: fixture.lineCounts?.[step] ?? fixture.lines ?? 12},
+              (_, i) =>
+                `const item${fixture.rotate ? (i + step) % 12 : i} = transform(${step + 1 + i}, item${Math.max(0, i - 1)});`,
+            ).join('\n'),
+          ));
     await setup(12, codes);
     const page = getPage();
     for (

@@ -20,7 +20,7 @@ export function animationStepSizeCases({
   editor,
 }) {
   const codes = [
-    'const small = 1;',
+    'let a = 1;',
     [
       ...Array.from({length: 11}, (_, i) => `const row${i} = ${i};`),
       'const lastLine = "BOTTOM_SENTINEL_WWWWWWWWWWWWW";',
@@ -58,6 +58,50 @@ export function animationStepSizeCases({
     await currentPage().evaluate(() => {
       if (window.__stepSizeInstrumented) return;
       window.__stepSizeInstrumented = true;
+      const remove = Element.prototype.remove;
+      Element.prototype.remove = function () {
+        if (
+          this.tagName === 'STYLE' &&
+          this.parentElement?.querySelector('[data-video-root]')
+        ) {
+          window.__stepSizeGeometry = [
+            ...this.parentElement.querySelectorAll('[data-video-root]'),
+          ].map(root => {
+            const rect = element => {
+              const {x, y, width, height} = element.getBoundingClientRect();
+              return {x, y, width, height};
+            };
+            const frame = root.querySelector('[data-watermark-frame]');
+            const windowBox = root.querySelector('[data-animation-window]');
+            const home = root.querySelector('[data-watermark-home]');
+            const mark = root.querySelector(
+              '[data-watermark-moved] svg, [data-watermark-home] svg',
+            );
+            const signature = root.querySelector('[data-frame-signature]');
+            const range = document.createRange();
+            return {
+              frame: rect(frame),
+              window: rect(windowBox),
+              placement: home?.dataset.watermarkPlacement,
+              mark: mark ? rect(mark) : null,
+              code: [...root.querySelectorAll('.cm-line')]
+                .filter(line => line.textContent.trim())
+                .map(line => {
+                  range.selectNodeContents(line);
+                  return rect(range);
+                }),
+              signature: signature
+                ? {
+                    scale: parseFloat(getComputedStyle(signature).bottom) / 20,
+                    box: rect(signature),
+                    padding: parseFloat(getComputedStyle(frame).paddingBottom),
+                  }
+                : null,
+            };
+          });
+        }
+        return remove.call(this);
+      };
       const send = Worker.prototype.postMessage;
       Worker.prototype.postMessage = function (message, ...rest) {
         if (message?.kind === 'export') window.__stepSizeJob = message.job;
@@ -149,6 +193,8 @@ export function animationStepSizeCases({
         'static PNG stays byte-identical to main',
       );
     }
+    if (process.env.VERIFY_STEP_STATIC_ONLY === '1')
+      return {staticSha256: digest(pngBytes)};
     await page.locator('[data-animate-toggle]').click();
     await page.locator('[data-animate-panel]').waitFor();
     const records = [];
@@ -260,6 +306,9 @@ export function animationStepSizeCases({
             resolve(out, `${name}-job.json`),
             JSON.stringify(job, null, 2),
           );
+          const geometry = await page.evaluate(() => window.__stepSizeGeometry);
+          const smallWindowWidth = geometry[0].window.width;
+          const tallWindowWidth = geometry.at(-1).window.width;
           const {width, height} = job.config;
           const bytes = decode(path);
           const frameBytes = width * height * 4;
@@ -368,6 +417,8 @@ export function animationStepSizeCases({
             seam,
             smallWindowDarkPixels,
             tallWindowDarkPixels,
+            smallWindowWidth,
+            tallWindowWidth,
           };
           records.push(record);
           await writeFile(
@@ -383,7 +434,7 @@ export function animationStepSizeCases({
               `${name}: final line differs by ${(lastLineDifference * 100).toFixed(2)}%`,
             );
           if (seam > 8) failures.push(`${name}: background seam ${seam}`);
-          if (smallWindowDarkPixels >= tallWindowDarkPixels * 0.8)
+          if (smallWindowWidth < 480 || smallWindowWidth >= tallWindowWidth)
             failures.push(
               `${name}: the small window is stretched to the tall step's width`,
             );
@@ -416,7 +467,119 @@ export function animationStepSizeCases({
       [],
       'natural steps are uncut, seamless and independent of the live editor',
     );
-    return records;
+    const details = [];
+    await doctor('/', 'editor', 'inspector');
+    const frameSection = page.locator('[data-section="frame"] > button');
+    if ((await frameSection.getAttribute('aria-expanded')) !== 'true')
+      await frameSection.click();
+    await page.getByRole('switch', {name: 'Visible', exact: true}).focus();
+    await page.keyboard.press('Space');
+    const intersects = (a, b) =>
+      a.x < b.x + b.width &&
+      b.x < a.x + a.width &&
+      a.y < b.y + b.height &&
+      b.y < a.y + a.height;
+    const contains = (a, b) =>
+      b.x >= a.x - 1 &&
+      b.y >= a.y - 1 &&
+      b.x + b.width <= a.x + a.width + 1 &&
+      b.y + b.height <= a.y + a.height + 1;
+    for (const signature of [false, true]) {
+      if (signature) {
+        await page.getByRole('switch', {name: 'Visible', exact: true}).focus();
+        await page.keyboard.press('Space');
+        await select(1);
+        await editor().fill(`const wide = "${'W'.repeat(150)}";`);
+        await page.locator('#signature-options').click();
+        await page
+          .getByPlaceholder('@handle or profile link', {exact: true})
+          .fill('@step_size');
+        await page.keyboard.press('Escape');
+      }
+      await instrument();
+      await open();
+      await ready();
+      if (format === 'gif') {
+        await page
+          .locator('[data-animation-export]')
+          .getByRole('radio', {name: 'GIF', exact: true})
+          .focus();
+        await page.keyboard.press('Space');
+        await ready();
+      }
+      await choose('Scale', '1×');
+      if (!signature)
+        await page
+          .getByRole('textbox', {name: 'Solid background', exact: true})
+          .fill('#f0a020');
+      const name = `step-size-${format}-${signature ? 'signature' : 'hidden-short'}`;
+      const pending = page.waitForEvent('download', {timeout: 180000});
+      await page
+        .locator('[data-animation-export]')
+        .getByRole('button', {
+          name: `Export ${format.toUpperCase()}`,
+          exact: true,
+        })
+        .click();
+      const path = resolve(out, `${name}.${format}`);
+      await (await pending).saveAs(path);
+      const geometry = await page.evaluate(() => window.__stepSizeGeometry);
+      const config = await page.evaluate(() => window.__stepSizeJob.config);
+      const bytes = decode(path);
+      const image = new PNG({width: config.width, height: config.height});
+      image.data.set(bytes.subarray(0, config.width * config.height * 4));
+      await writeFile(
+        resolve(out, `${name}-first-hold.png`),
+        PNG.sync.write(image),
+      );
+      await writeFile(
+        resolve(out, `${name}-geometry.json`),
+        JSON.stringify(geometry, null, 2),
+      );
+      if (signature) {
+        const expected =
+          Math.round(Math.min(2, Math.max(0.85, config.width / 640)) * 1000) /
+          1000;
+        assert.equal(
+          expected,
+          2,
+          'wide canvas exercises the static 2x signature cap',
+        );
+        for (const scene of geometry) {
+          assert.equal(
+            scene.signature.scale,
+            expected,
+            'all steps use the static scale of the fixed canvas',
+          );
+          assert.ok(
+            scene.signature.padding >= 60 * expected,
+            'signature space is reserved during measurement',
+          );
+          assert.ok(
+            contains(scene.frame, scene.signature.box),
+            'signature stays inside its step',
+          );
+        }
+      } else {
+        const first = geometry[0];
+        assert.ok(
+          first.window.width >= 480,
+          'short natural windows retain the static fitted minimum',
+        );
+        assert.notEqual(first.placement, 'unavoidable');
+        assert.ok(
+          first.mark && contains(first.window, first.mark),
+          'the full logo fits inside the hidden-frame window',
+        );
+        assert.ok(
+          first.code.every(line => !intersects(first.mark, line)),
+          'the watermark clears the short code',
+        );
+      }
+      details.push({name, config, geometry});
+      await close();
+    }
+    return {records, details};
   }
   return {mp4: () => run('mp4'), gif: () => run('gif')};
 }
