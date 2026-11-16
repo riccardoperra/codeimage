@@ -140,6 +140,17 @@ The What's new surfaces keep their own table of durations in `components/WhatsNe
 - Read state from data attributes on the page root, such as `data-layout`, `data-panel-nav` and `data-panel-side`, not from generated class names.
 - Use `zoom` to fit the frame, not `transform`. A transformed ancestor misplaces CodeMirror's tooltips.
 
+## The code editor
+
+The editor is CodeMirror 6. CodeMirror owns the DOM it renders and redraws it at any time, so a change made to it by hand is lost or fights with CodeMirror.
+
+- Change what the editor shows through CodeMirror, not through the DOM: `Decoration.line` or `Decoration.mark` for classes and attributes on lines and text, `GutterMarker` for gutter content, `showTooltip` or `hoverTooltip` for anything that floats over the code.
+- React to the editor through CodeMirror: `EditorView.domEventHandlers` for events, `EditorView.updateListener` or a `ViewPlugin` for selection and document changes. Do not listen on `document` for the editor's selection, and do not add listeners to `view.dom` or `view.contentDOM` by hand.
+- Do not query or edit the editor's DOM (`.cm-line`, `view.dom`, `view.contentDOM`). For positions, use `view.coordsAtPos`, `view.lineBlockAt` and `view.posAtCoords`.
+- To hide something, remove its extension (a `Compartment`, or `createExtension` returning `[]`). Do not clean the DOM afterwards.
+- Something drawn only while editing must not change the layout. The frame fits the longest line, so a line class may change opacity, background or an inset `box-shadow`, but an inline widget that adds width moves the frame.
+- Markup that no live `EditorView` owns, such as `StaticCodeView`, the animation scenes and export clones, may be read from the DOM.
+
 ## Text and languages
 
 - Every label, hint, tooltip and accessible name goes through the locale files. The app ships English, Italian, German and Spanish, and a missing key fails the typecheck.
