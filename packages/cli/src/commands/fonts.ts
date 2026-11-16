@@ -25,8 +25,7 @@ export function parseFontArgs(argv: string[]) {
     );
   }
   const {values, positionals: ids} = args;
-  if (!command || command === '--help' || command === '-h' || values.help)
-    return {kind: 'help'} as const;
+  if (isHelp(command) || values.help) return {kind: 'help'} as const;
   const quiet = values.quiet ?? false;
   const offline = values.offline ?? false;
   if (command === 'install' && !values.json && !values.yes) {
@@ -40,7 +39,7 @@ export function parseFontArgs(argv: string[]) {
       quiet,
     } as const;
   }
-  if (command === 'list' && !ids.length && !values.all && !values.yes)
+  if (isFontList(command, ids, values))
     return {kind: 'fonts-list', json: values.json ?? false, quiet} as const;
   if (command === 'clean' && !ids.length && !values.all && !values.json)
     return {kind: 'fonts-clean', yes: values.yes ?? false, quiet} as const;
@@ -103,4 +102,16 @@ export async function runFontCommand(args: FontCommand, ui: Ui) {
     );
     ui.success('fonts installed');
   }
+}
+
+function isHelp(command: string | undefined) {
+  return !command || command === '--help' || command === '-h';
+}
+
+function isFontList(
+  command: string,
+  ids: string[],
+  flags: {all?: boolean; yes?: boolean},
+) {
+  return command === 'list' && !ids.length && !flags.all && !flags.yes;
 }

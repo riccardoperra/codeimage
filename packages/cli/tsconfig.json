@@ -8,7 +8,10 @@
     "resolveJsonModule": true,
     "verbatimModuleSyntax": true,
     "skipLibCheck": true,
-    "types": ["node"]
+    "types": ["node"],
+    "paths": {
+      "@codeimage/store/*": ["../../apps/codeimage/src/state/*"]
+    }
   },
   "include": ["src", "*.config.ts"]
 }

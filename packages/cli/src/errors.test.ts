@@ -16,7 +16,7 @@ describe('describeError', () => {
         hint: 'Run: codeimage fonts install fira-code',
         exitCode: 1,
       });
-    // Reinstalling cannot fix a pinned hash that the server no longer matches.
+
     expect(
       describeError(new FontUnavailableError('fira-code', 'integrity', 'x')),
     ).toEqual({message: 'fira-code: x', exitCode: 1});

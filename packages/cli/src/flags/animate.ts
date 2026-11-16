@@ -18,7 +18,6 @@ import type {Flag, FlagValues} from './index';
 
 type Format = AnimationDocument['format'];
 
-// The format each output extension writes. An animated .png is an APNG.
 const FORMATS = new Map<string, Format>([
   ['webp', 'webp'],
   ['gif', 'gif'],
@@ -30,7 +29,7 @@ const TIMING_FLAGS = ['hold', 'transition', 'easing', 'fps'];
 
 export interface AnimationArgs {
   format: Format;
-  // Timing that no flag sets comes from the preset, then from the defaults.
+
   holdMs?: number;
   transitionMs?: number;
   easing?: AnimationSettings['easing'];
@@ -53,7 +52,6 @@ function format(values: FlagValues): Format {
   return format;
 }
 
-// The same limits as the editor's Animate panel.
 const LIMITS = {hold: {min: 0, max: 10_000}, transition: {min: 100, max: 5000}};
 
 function milliseconds(values: FlagValues, flag: 'hold' | 'transition') {
@@ -69,7 +67,6 @@ function milliseconds(values: FlagValues, flag: 'hold' | 'transition') {
   return ms;
 }
 
-// Undefined without --animate.
 export function parseAnimation(values: FlagValues): AnimationArgs | undefined {
   if (!values.animate) {
     const flag = TIMING_FLAGS.find(flag => values[flag] !== undefined);
@@ -109,13 +106,7 @@ export function parseAnimation(values: FlagValues): AnimationArgs | undefined {
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === 'object' && value !== null;
 
-// The settings as the editor saved them: a project input's own, or a
-// preset's, whose steps give their hold and transition to the input files in
-// order.
-function storedAnimation(
-  snapshot: SnapshotDocument,
-  preset?: Preset,
-): unknown {
+function storedAnimation(snapshot: SnapshotDocument, preset?: Preset): unknown {
   if ('animation' in snapshot) return snapshot.animation;
   const stored = isRecord(preset?.animation) ? preset.animation : {};
   const steps = Array.isArray(stored.steps) ? stored.steps : [];
@@ -129,7 +120,6 @@ function storedAnimation(
   };
 }
 
-// A flag sets its value for every step, over the stored settings.
 function withFlags(
   settings: AnimationSettings,
   args: AnimationArgs,
@@ -153,8 +143,6 @@ function withFlags(
   };
 }
 
-// The steps, timing, and header the editor would play. `notes` are for
-// stderr.
 export function planAnimation(
   snapshot: SnapshotDocument,
   args: AnimationArgs,
@@ -184,7 +172,7 @@ export function planAnimation(
     );
   }
   const played = animationFps(document.format, document.animation.fps);
-  // The rate someone asked for, by flag or in the saved settings.
+
   const asked =
     args.fps ??
     ANIMATION_FPS.find(fps => isRecord(stored) && fps === stored.fps);

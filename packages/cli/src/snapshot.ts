@@ -14,15 +14,12 @@ const presetSchema = z.looseObject({
   frame: projectSnapshotSchema.shape.frame,
   terminal: projectSnapshotSchema.shape.terminal,
   editor: projectSnapshotSchema.shape.editor.shape.options,
-  // The timing of --animate, checked by --animate only, so a still export
-  // never fails on it.
+
   animation: z.unknown().optional(),
 });
 
 export type Preset = z.output<typeof presetSchema>;
 
-// The editor saves its default theme as fleetTheme and draws it as the
-// first theme of the registry, fleetDark.
 function editorTheme(themeId: string, label: string) {
   const id = themeId === 'fleetTheme' ? 'fleetDark' : themeId;
   resolveTheme(id, label);
@@ -34,12 +31,10 @@ export function parsePreset(text: string): Preset {
   try {
     preset = presetSchema.parse(JSON.parse(text));
   } catch (error) {
-    const message =
-      error instanceof z.ZodError
-        ? formatIssues(error.issues)
-        : error instanceof Error
-          ? error.message
-          : String(error);
+    let message: string;
+    if (error instanceof z.ZodError) message = formatIssues(error.issues);
+    else if (error instanceof Error) message = error.message;
+    else message = String(error);
     throw new UsageError(`--preset: ${message}`);
   }
   const themeId = editorTheme(preset.editor.themeId, '--preset editor.themeId');
@@ -55,7 +50,6 @@ export type CodeInput = {
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === 'object' && value !== null;
 
-// A project as the editor saves it: a snapshot `$version` and tabs.
 function readProject({name, code}: CodeInput): ProjectSnapshot | undefined {
   let value: unknown;
   try {
@@ -76,8 +70,6 @@ function readProject({name, code}: CodeInput): ProjectSnapshot | undefined {
   return parsed.data;
 }
 
-// With --animate, a saved project as the only input plays its own tabs,
-// settings, and Animate timing, as the editor's export does.
 function projectSnapshot(
   args: RenderArgs,
   inputs: CodeInput[],
@@ -137,36 +129,45 @@ export async function buildSnapshot({
           terminal: preset.terminal.background,
           text: preset.terminal.textColor,
         };
-  const editors = inputs.map(({name, code, marks}, index) => {
-    const range = args.lines;
-    if (range) {
-      const lines = code.replace(/\r\n?/g, '\n').split('\n');
-      if (lines.at(-1) === '') lines.pop();
-      if (range.start > lines.length) {
-        throw new UsageError(`--lines: ${name} has only ${lines.length} lines`);
+  const editors = inputs.map(
+    ({name, code: inputCode, marks: inputMarks}, index) => {
+      let code = inputCode;
+      let marks = inputMarks;
+      const range = args.lines;
+      if (range) {
+        const lines = code.replace(/\r\n?/g, '\n').split('\n');
+        if (lines.at(-1) === '') lines.pop();
+        if (range.start > lines.length) {
+          throw new UsageError(
+            `--lines: ${name} has only ${lines.length} lines`,
+          );
+        }
+        code = lines.slice(range.start - 1, range.end).join('\n');
+        if (marks) {
+          marks = {
+            ...marks,
+            focusedLines: marks.focusedLines
+              .filter(line => line >= range.start && line <= range.end)
+              .map(line => line - range.start + 1),
+            lines: marks.lines
+              .filter(
+                mark => mark.line >= range.start && mark.line <= range.end,
+              )
+              .map(mark => ({...mark, line: mark.line - range.start + 1})),
+          };
+        }
       }
-      code = lines.slice(range.start - 1, range.end).join('\n');
-      if (marks) {
-        marks = {
-          ...marks,
-          focusedLines: marks.focusedLines
-            .filter(line => line >= range.start && line <= range.end)
-            .map(line => line - range.start + 1),
-          lines: marks.lines
-            .filter(mark => mark.line >= range.start && mark.line <= range.end)
-            .map(mark => ({...mark, line: mark.line - range.start + 1})),
-        };
-      }
-    }
-    return {
-      id: `cli-${index + 1}`,
-      code,
-      tabName: basename(name),
-      languageId: args.language ?? inferLanguageFromPath(name) ?? 'plain-text',
-      lineNumberStart: args.lines?.start ?? 1,
-      ...(marks && {marks}),
-    };
-  });
+      return {
+        id: `cli-${index + 1}`,
+        code,
+        tabName: basename(name),
+        languageId:
+          args.language ?? inferLanguageFromPath(name) ?? 'plain-text',
+        lineNumberStart: args.lines?.start ?? 1,
+        ...(marks && {marks}),
+      };
+    },
+  );
   return {
     $snippetId: null,
     $version: `${SUPPORTED_SNAPSHOT_MAJOR}.0.0`,

@@ -2,7 +2,6 @@ import {FontFileError, FontUnavailableError} from '@codeimage/render';
 import type {z} from 'zod';
 export class UsageError extends Error {}
 
-// The first three issues of a failed parse, for one line of stderr.
 export function formatIssues(issues: z.core.$ZodIssue[]) {
   const shown = issues
     .slice(0, 3)

@@ -54,7 +54,7 @@ export function createUi(quiet = false) {
   };
   const warn = (message: string) => {
     if (mode !== 'interactive') return text(`codeimage: ${message}`);
-    // A line written under a running spinner stays glued to its frame.
+
     progress?.clear();
     log.warn(message, common);
     if (progress) {

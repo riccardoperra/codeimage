@@ -136,7 +136,6 @@ async function main() {
 
 let partial: string | undefined;
 
-// An interrupted write leaves the previous file, or none, never a cut one.
 async function writeAtomically(path: string, data: string | Uint8Array) {
   partial = `${path}.${process.pid}.partial`;
   try {
@@ -150,8 +149,6 @@ async function writeAtomically(path: string, data: string | Uint8Array) {
   }
 }
 
-// process.exit waits for the running native render, so the handler re-raises
-// the signal with the default action instead.
 function removePartialAndStop(signal: NodeJS.Signals) {
   stopVideo();
   if (partial) rmSync(partial, {force: true});

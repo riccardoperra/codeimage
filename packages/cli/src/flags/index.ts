@@ -18,7 +18,6 @@ export interface ImageOutput {
   snapshot: SnapshotDocument;
 }
 
-// A citty option, plus Node's `multiple` for repeatable options.
 export type FlagArg = (StringArgDef | BooleanArgDef) & {
   alias?: string;
   multiple?: boolean;

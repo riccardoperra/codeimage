@@ -95,7 +95,6 @@ describe('animate flag', () => {
     });
     const stored = await plan([], inputs, preset);
     expect(stored.document.animation).toMatchObject({
-      // The third file has no step in the preset.
       steps: [{holdMs: 100}, {holdMs: 300}, {holdMs: 800}],
       transitionMs: 500,
       easing: 'snappy',

@@ -80,8 +80,6 @@ export const COMMAND = defineCommand({
   },
 });
 
-// Citty's parser accepts unknown flags and missing values, so Node parses the
-// same definitions strictly. The type covers the options read in this file.
 const OPTIONS = Object.fromEntries(
   Object.entries(ARGS).map(([name, {alias, ...arg}]) => [
     name,
@@ -107,75 +105,14 @@ export function resolveTheme(id: string, flag = '--theme') {
 
 export function parseArgs(argv: string[], stdoutIsTTY = true) {
   if (argv[0] === 'fonts') return parseFontArgs(argv.slice(1));
-  let parsed;
-  try {
-    parsed = parseNodeArgs({
-      args: argv,
-      allowPositionals: true,
-      options: OPTIONS,
-    });
-  } catch (error) {
-    throw new UsageError(
-      error instanceof Error ? error.message : String(error),
-    );
-  }
+  const parsed = readArguments(argv);
   const {values, positionals: files} = parsed;
   if (values.help) return {kind: 'help'} as const;
 
   if (values.output === '') throw new UsageError('-o: expected a path or -');
-  const mp4 =
-    'animate' in values &&
-    values.animate === true &&
-    (values.format?.toLowerCase() ??
-      extname(values.output ?? '')
-        .slice(1)
-        .toLowerCase()) === 'mp4';
-  const animation = parseAnimation(mp4 ? {...values, format: 'webp'} : values);
-  if (values.ffmpeg !== undefined && (!mp4 || !values.ffmpeg.trim())) {
-    throw new UsageError(
-      '--ffmpeg: expected an executable path with --animate and MP4 output',
-    );
-  }
-  // An animation has its own formats, and its snapshot keeps the default.
-  const format = animation
-    ? 'png'
-    : values.format === undefined
-      ? (formatOf(
-          extname(values.output ?? '')
-            .slice(1)
-            .toLowerCase(),
-        ) ?? 'png')
-      : formatOf(values.format);
-  if (!format) {
-    throw new UsageError('--format: expected png, jpeg, webp, or svg');
-  }
-  const scale = Number(values.scale ?? DEFAULT_SCALE);
-  if (!Number.isFinite(scale) || scale <= 0 || scale > 3) {
-    throw new UsageError('--scale: expected a number above 0 and at most 3');
-  }
-  if (
-    values.lang !== undefined &&
-    !SUPPORTED_LANGUAGES.some(language => language.id === values.lang)
-  ) {
-    throw new UsageError(
-      `--lang: unknown language ${JSON.stringify(values.lang)}. Valid ids: ${SUPPORTED_LANGUAGES.map(language => language.id).join(', ')}`,
-    );
-  }
-  if (values.theme !== undefined) resolveTheme(values.theme);
-  let lines: {start: number; end: number} | undefined;
-  if (values.lines !== undefined) {
-    const match = /^([1-9]\d*)-([1-9]\d*)$/.exec(values.lines);
-    const start = Number(match?.[1]);
-    const end = Number(match?.[2]);
-    if (
-      !Number.isSafeInteger(start) ||
-      !Number.isSafeInteger(end) ||
-      end < start
-    ) {
-      throw new UsageError('--lines: expected a range such as 10-30');
-    }
-    lines = {start, end};
-  }
+  const {mp4, animation, format} = parseOutput(values);
+  const scale = validateValues(values);
+  const lines = parseLines(values.lines);
   if (values.preset === '')
     throw new UsageError('--preset: expected a JSON file path');
   if (files.filter(file => file === '-').length > 1) {
@@ -207,3 +144,83 @@ export type RenderArgs = Extract<
   ReturnType<typeof parseArgs>,
   {kind: 'render'}
 >;
+
+function readArguments(argv: string[]) {
+  try {
+    return parseNodeArgs({
+      args: argv,
+      allowPositionals: true,
+      options: OPTIONS,
+    });
+  } catch (error) {
+    throw new UsageError(
+      error instanceof Error ? error.message : String(error),
+    );
+  }
+}
+type CoreValues = ReturnType<typeof readArguments>['values'];
+function parseOutput(values: CoreValues) {
+  const mp4 =
+    'animate' in values &&
+    values.animate === true &&
+    (values.format?.toLowerCase() ??
+      extname(values.output ?? '')
+        .slice(1)
+        .toLowerCase()) === 'mp4';
+  const animation = parseAnimation(mp4 ? {...values, format: 'webp'} : values);
+  if (values.ffmpeg !== undefined && (!mp4 || !values.ffmpeg.trim())) {
+    throw new UsageError(
+      '--ffmpeg: expected an executable path with --animate and MP4 output',
+    );
+  }
+  let format: ReturnType<typeof formatOf>;
+  if (animation) format = 'png';
+  else if (values.format === undefined)
+    format =
+      formatOf(
+        extname(values.output ?? '')
+          .slice(1)
+          .toLowerCase(),
+      ) ?? 'png';
+  else format = formatOf(values.format);
+  if (!format) {
+    throw new UsageError('--format: expected png, jpeg, webp, or svg');
+  }
+
+  return {mp4, animation, format};
+}
+function validateValues(values: CoreValues) {
+  const scale = Number(values.scale ?? DEFAULT_SCALE);
+  if (!Number.isFinite(scale) || scale <= 0 || scale > 3) {
+    throw new UsageError('--scale: expected a number above 0 and at most 3');
+  }
+  if (
+    values.lang !== undefined &&
+    !SUPPORTED_LANGUAGES.some(language => language.id === values.lang)
+  ) {
+    throw new UsageError(
+      `--lang: unknown language ${JSON.stringify(values.lang)}. Valid ids: ${SUPPORTED_LANGUAGES.map(language => language.id).join(', ')}`,
+    );
+  }
+  if (values.theme !== undefined) resolveTheme(values.theme);
+
+  return scale;
+}
+function parseLines(value: string | undefined) {
+  let lines: {start: number; end: number} | undefined;
+  if (value !== undefined) {
+    const match = /^([1-9]\d*)-([1-9]\d*)$/.exec(value);
+    const start = Number(match?.[1]);
+    const end = Number(match?.[2]);
+    if (
+      !Number.isSafeInteger(start) ||
+      !Number.isSafeInteger(end) ||
+      end < start
+    ) {
+      throw new UsageError('--lines: expected a range such as 10-30');
+    }
+    lines = {start, end};
+  }
+
+  return lines;
+}
