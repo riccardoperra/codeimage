@@ -160,17 +160,7 @@ export const selectionBar = StateField.define<SelectionBar>({
 
 function toolbarSpace(view: EditorView) {
   const {innerWidth, innerHeight} = view.dom.ownerDocument.defaultView!;
-  const viewport = {
-    left: 8,
-    top: 8,
-    right: innerWidth - 8,
-    bottom: innerHeight - 8,
-  };
-  const toolbar = view.state.field(selectionBar).tooltip;
-  const line = toolbar && view.coordsAtPos(toolbar.pos);
-  return line
-    ? {...viewport, bottom: Math.min(viewport.bottom, line.bottom + 4)}
-    : viewport;
+  return {left: 8, top: 8, right: innerWidth - 8, bottom: innerHeight - 8};
 }
 
 function selectionToolbar(labels: LineMarkLabels): Extension {
@@ -318,8 +308,13 @@ const gutterDrag = ViewPlugin.define(
       );
       view.focus();
     };
+    const cancel = () => {
+      if (!drag) return;
+      drag = null;
+      view.dispatch({effects: setGutterPreview.of(null)});
+    };
     doc.addEventListener('pointerup', release);
-    doc.addEventListener('pointercancel', release);
+    doc.addEventListener('pointercancel', cancel);
     win.addEventListener('blur', release);
     return {
       start(line: BlockInfo, event: PointerEvent) {

@@ -127,6 +127,12 @@ export async function verifyLineMarkControls({page, editor, section, out}) {
   await editor.press('ControlOrMeta+Home');
   await editor.press('Shift+ArrowDown');
   await toolbar.waitFor();
+  await page.waitForFunction(
+    () =>
+      document
+        .querySelector('.cm-lineMarkMarker[data-mark-line="2"]')
+        ?.getBoundingClientRect().top >= 0,
+  );
   await toolbar.getByRole('button', {name: 'Highlight', exact: true}).click();
   await editor.locator('[data-mark="highlight"]').waitFor();
   await page.getByPlaceholder('Search theme...', {exact: true}).click();
