@@ -2,7 +2,6 @@ import type {PNG} from 'pngjs';
 import {describe, expect, it, vi} from 'vitest';
 import {countPixels, decode, plainDocument} from './test-utils';
 
-// Each call loads the renderer in a new module graph, as a new process would.
 const freshRenderer = async () => {
   vi.resetModules();
   return import('./render');
@@ -34,7 +33,6 @@ describe('fallback fonts', {timeout: 60_000}, () => {
   });
 });
 
-// The eager side retains P10's CSS ranges and registration order.
 describe('lazy font selection', {timeout: 60_000}, () => {
   it('is byte-identical to eager loading across scripts and families', async () => {
     const {Renderer} = await import('@takumi-rs/core');
@@ -71,8 +69,7 @@ describe('lazy font selection', {timeout: 60_000}, () => {
             unicodeRange: file.declaredRange,
           });
       }
-      // The second box has no text, like the watermark: its height is the
-      // strut of an Inter face nothing else asks for.
+
       const pages = (text: string) => [
         `<div style="font-family:'${code.family}';font-size:16px;color:black;background:white">${text}<span style="font-family:'Inter var'"> tab.ts ${text}</span></div>`,
         `<div style="font-family:'Inter var';font-size:16px;background:white"><div style="font-family:'${code.family}'">${text}</div><div style="width:24px;background:black"><svg width="8" height="8"></svg></div></div>`,
