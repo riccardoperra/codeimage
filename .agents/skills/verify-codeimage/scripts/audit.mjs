@@ -198,14 +198,8 @@ export async function audit({page, context, base, out, server}) {
     }
   }
   await feature('keyboard-scroll', () => verifyKeyboardScroll({fresh, out}));
-  await feature('frame-cold-start', async () => {
-    const {verifyColdStart} = await import('./frame-regressions.mjs');
-    return verifyColdStart({fresh, out});
-  });
-  await feature('export-screen-parity', async () => {
-    const {verifyExportScreen} = await import('./frame-regressions.mjs');
-    return verifyExportScreen({fresh, out});
-  });
+  const {auditFrameGeometry} = await import('./export-geometry.mjs');
+  await auditFrameGeometry({feature, fresh, out});
   await feature('agent-tools', async () => {
     const {verifyAgentTools} = await import('./agent-tools.mjs');
     return verifyAgentTools({fresh, out});

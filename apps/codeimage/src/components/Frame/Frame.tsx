@@ -15,7 +15,7 @@ import {createHorizontalResize} from '@core/hooks/resizable';
 import {createResizeObserver} from '@solid-primitives/resize-observer';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 import type {ParentComponent} from 'solid-js';
-import {createEffect, on, onMount, Show} from 'solid-js';
+import {batch, createEffect, on, onCleanup, onMount, Show} from 'solid-js';
 import {useI18n} from '@codeimage/locale';
 import {signatureEditor} from '@codeimage/store/frame/signatureEditor';
 import type {AppLocaleEntries} from '../../i18n';
@@ -83,21 +83,20 @@ export const Frame: ParentComponent<FrameProps> = props => {
   const roundedWidth = () => `${Math.floor(width())}px`;
   const modality = useModality();
 
-  createResizeObserver(ref, () => {
-    setTimeout(() => {
-      const refValue = ref();
-      if (!refValue) return;
-      const {clientWidth, clientHeight} = refValue;
-      props.onWidthChange(clientWidth);
-      props.onHeightChange(clientHeight);
-    });
-  });
-
   onMount(() => {
     const refValue = ref();
     if (!refValue) return;
 
-    props.onWidthChange?.(refValue.clientWidth ?? 0);
+    const observer = new ResizeObserver(entries => {
+      const size = entries[0]?.borderBoxSize[0];
+      if (!size) return;
+      batch(() => {
+        props.onWidthChange(size.inlineSize);
+        props.onHeightChange(size.blockSize);
+      });
+    });
+    observer.observe(refValue, {box: 'border-box'});
+    onCleanup(() => observer.disconnect());
 
     const preview = refValue.querySelector('[data-preview]');
     createResizeObserver(
