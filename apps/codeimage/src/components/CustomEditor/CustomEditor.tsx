@@ -1,5 +1,6 @@
 import {getEditorStore} from '@codeimage/store/editor';
 import {scriptLinesExtension} from './plugins/scriptLines';
+import {animateAidsHidden} from '@core/animation/aids';
 import {SUPPORTED_LANGUAGES} from '@codeimage/config';
 import {useI18n} from '@codeimage/locale';
 import type {AppLocaleEntries} from '../../i18n';
@@ -254,7 +255,8 @@ export default function CustomEditor(props: VoidProps<CustomEditorProps>) {
   createExtension(() => EditorState.readOnly.of(props.readOnly));
   const scriptAidStep = createMemo(() => {
     const {animation} = getEditorStore();
-    if (props.readOnly || !animation.open()) return false;
+    if (props.readOnly || !animation.open() || animateAidsHidden())
+      return false;
     const selected = animation.selection();
     const selectedStep = animation
       .settings()
