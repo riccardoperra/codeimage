@@ -59,8 +59,11 @@ async function measureHidden<T>(
 ): Promise<T> {
   await new Promise<void>(resolve => setTimeout(resolve, 0));
   const host = document.createElement('div');
+  // The frame sets `visibility: visible` on itself, which beats a hidden
+  // parent, so the host also clears opacity and clips everything away.
+  // Neither changes the boxes measured below.
   host.style.cssText =
-    'position:fixed;left:0;top:0;visibility:hidden;pointer-events:none';
+    'position:fixed;left:0;top:0;visibility:hidden;opacity:0;clip-path:inset(50%);z-index:-1;pointer-events:none';
   document.body.append(host);
   let dispose: (() => void) | undefined;
   try {
