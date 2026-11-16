@@ -89,13 +89,11 @@ describe('parseSnapshotDocument', () => {
           borderType: 'hairline',
         },
       });
-      expect(parsed.terminal.type).toBe(
-        type === 'terminal'
-          ? 'shell'
-          : ['card', 'editor', 'shell'].includes(type ?? '')
-            ? type
-            : 'macOs',
-      );
+      let expected = 'macOs';
+      if (type === 'terminal') expected = 'shell';
+      else if (['card', 'editor', 'shell'].includes(type ?? ''))
+        expected = type ?? 'macOs';
+      expect(parsed.terminal.type).toBe(expected);
       expect(parsed.terminal.surface).toBe('wash');
       expect(parsed.terminal.borderType).toBe('hairline');
     },

@@ -2,8 +2,6 @@ import {fileURLToPath} from 'node:url';
 import {describe, expect, it} from 'vitest';
 import {parseAnimationSettings} from './document';
 
-// The editor's parser. A computed path keeps tsc out of the app's sources,
-// whose aliases only vitest.config.ts resolves.
 const EDITOR = fileURLToPath(
   new URL(
     '../../../apps/codeimage/src/state/editor/animationSettings.ts',
@@ -20,8 +18,6 @@ const {parseDraft, reconcileSteps, seedSteps} = (await import(
 
 const tabs = ['a', 'b', 'c'] as const;
 
-// What the editor plays for a saved value. The Animate panel seeds every tab
-// when it opens on a project without steps.
 function editorSettings(value: unknown) {
   const draft = parseDraft(value);
   return reconcileSteps(
