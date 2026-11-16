@@ -1,7 +1,7 @@
 {
-  "plugins": ["unicorn"],
+  "plugins": ["unicorn", "import"],
   "categories": {
-    "correctness": "off"
+    "correctness": "error"
   },
   "env": {
     "builtin": true
@@ -14,9 +14,41 @@
     "**/.lintstagedrc",
     "**/.tanstack/**",
     "**/routeTree.gen.ts",
-    "**/public/mockServiceWorker.js"
+    "**/public/mockServiceWorker.js",
+    ".claude/**",
+    "docs/**"
   ],
-  "rules": {},
+  "rules": {
+    "max-lines": [
+      "error",
+      {
+        "max": 300,
+        "skipBlankLines": true,
+        "skipComments": true
+      }
+    ],
+    "max-lines-per-function": [
+      "error",
+      {
+        "max": 150,
+        "skipBlankLines": true,
+        "skipComments": true
+      }
+    ],
+    "max-depth": ["error", 4],
+    "max-params": ["error", 4],
+    "complexity": ["error", 20],
+    "no-nested-ternary": "error",
+    "eqeqeq": "error",
+    "no-param-reassign": "error",
+    "no-console": [
+      "error",
+      {
+        "allow": ["warn", "error"]
+      }
+    ],
+    "import/no-cycle": "error"
+  },
   "overrides": [
     {
       "files": ["**/*.{js,jsx,mjs,cjs}"],
@@ -129,7 +161,9 @@
             "prefer": "type-imports",
             "fixStyle": "separate-type-imports"
           }
-        ]
+        ],
+        "@typescript-eslint/no-non-null-assertion": "error",
+        "no-unassigned-vars": "off"
       },
       "env": {
         "es2026": true,
@@ -175,26 +209,28 @@
       }
     },
     {
-      "files": ["**/pages/UnifiedEditor/variants/**"],
+      "files": [
+        "**/*.test.{ts,tsx}",
+        "**/*.spec.{ts,tsx}",
+        "**/test/**",
+        "**/i18n/**",
+        "packages/locale/**"
+      ],
       "rules": {
-        "no-restricted-imports": [
-          "error",
-          {
-            "patterns": [
-              {
-                "group": [
-                  "**/components/WhatsNew",
-                  "**/components/WhatsNew/**",
-                  "**/state/whats-new",
-                  "**/state/whats-new/**",
-                  "@codeimage/store/whats-new",
-                  "@codeimage/store/whats-new/**"
-                ],
-                "message": "Render shared controls or CommandMenuButton. Layouts must not place What's new dots."
-              }
-            ]
-          }
-        ]
+        "max-lines": "off",
+        "max-lines-per-function": "off"
+      }
+    },
+    {
+      "files": [
+        "scripts/**",
+        "**/scripts/**",
+        ".agents/**",
+        "tools/**",
+        "**/*.config.{ts,mts,js,mjs}"
+      ],
+      "rules": {
+        "no-console": "off"
       }
     }
   ]

@@ -1,0 +1,792 @@
+{
+  ".agents/skills/verify-codeimage/scripts/agent-tools.mjs": {
+    "eslint(max-lines)": 476,
+    "eslint(max-lines-per-function)": 2
+  },
+  ".agents/skills/verify-codeimage/scripts/animation-gif.mjs": {
+    "eslint(complexity)": 2,
+    "eslint(max-depth)": 1,
+    "eslint(max-lines)": 768,
+    "eslint(max-lines-per-function)": 3
+  },
+  ".agents/skills/verify-codeimage/scripts/animation-mp4.mjs": {
+    "eslint(max-depth)": 1,
+    "eslint(max-lines)": 1071,
+    "eslint(max-lines-per-function)": 2,
+    "eslint(no-param-reassign)": 7
+  },
+  ".agents/skills/verify-codeimage/scripts/animation-step-size.mjs": {
+    "eslint(complexity)": 1,
+    "eslint(max-depth)": 4,
+    "eslint(max-lines)": 575,
+    "eslint(max-lines-per-function)": 2
+  },
+  ".agents/skills/verify-codeimage/scripts/audit.mjs": {
+    "eslint(max-depth)": 1,
+    "eslint(max-lines)": 2625,
+    "eslint(max-lines-per-function)": 9,
+    "eslint(no-param-reassign)": 6
+  },
+  ".agents/skills/verify-codeimage/scripts/frame-regressions.mjs": {
+    "eslint(max-lines)": 444,
+    "eslint(max-lines-per-function)": 3
+  },
+  ".agents/skills/verify-codeimage/scripts/keyboard-scroll.mjs": {
+    "eslint(max-lines)": 330,
+    "eslint(max-lines-per-function)": 3
+  },
+  ".agents/skills/verify-codeimage/scripts/local-ai.mjs": {
+    "eslint(max-lines)": 1246,
+    "eslint(max-lines-per-function)": 2,
+    "eslint(no-nested-ternary)": 1,
+    "eslint(no-unused-vars)": 1
+  },
+  ".agents/skills/verify-codeimage/scripts/snippets.mjs": {
+    "eslint(max-depth)": 1,
+    "eslint(max-lines)": 679,
+    "eslint(max-lines-per-function)": 3,
+    "eslint(no-nested-ternary)": 1,
+    "eslint(no-useless-escape)": 1
+  },
+  ".agents/skills/verify-codeimage/scripts/watermark.mjs": {
+    "eslint(max-lines)": 339,
+    "eslint(max-lines-per-function)": 1
+  },
+  "apps/api/src/modules/project/project.contract.ts": {
+    "eslint(max-lines)": 431
+  },
+  "apps/api/src/modules/project/project.model.ts": {
+    "eslint(max-lines)": 323
+  },
+  "apps/api/src/modules/project/project.repository.ts": {
+    "eslint(max-lines)": 310
+  },
+  "apps/api/src/plugins/auth0.ts": {
+    "typescript(no-non-null-assertion)": 2
+  },
+  "apps/api/test/architecture.test.ts": {
+    "eslint(no-nested-ternary)": 1,
+    "typescript(no-non-null-assertion)": 2
+  },
+  "apps/api/test/helpers/app.ts": {
+    "eslint(no-nested-ternary)": 1
+  },
+  "apps/api/test/modules/project/mapper/animation.test.ts": {
+    "typescript(no-non-null-assertion)": 1
+  },
+  "apps/api/test/plugins/cors.test.ts": {
+    "unicorn(no-unnecessary-await)": 1
+  },
+  "apps/codeimage/public/mockServiceWorker.js": {
+    "unused-disable-directive": 1
+  },
+  "apps/codeimage/src/components/Animation/AnimationPreview.tsx": {
+    "eslint(max-lines)": 314,
+    "eslint(no-nested-ternary)": 1,
+    "typescript(no-non-null-assertion)": 6
+  },
+  "apps/codeimage/src/components/Animation/EasingCurve.tsx": {
+    "typescript(no-non-null-assertion)": 2
+  },
+  "apps/codeimage/src/components/Animation/EasingField.tsx": {
+    "typescript(no-non-null-assertion)": 1
+  },
+  "apps/codeimage/src/components/Animation/PhoneSteps.tsx": {
+    "eslint(max-lines)": 338
+  },
+  "apps/codeimage/src/components/Animation/StripTimeline.tsx": {
+    "eslint(max-lines)": 357,
+    "eslint(max-lines-per-function)": 1,
+    "eslint(no-nested-ternary)": 2,
+    "typescript(no-non-null-assertion)": 1
+  },
+  "apps/codeimage/src/components/Animation/createPreviewSnapshot.test.ts": {
+    "typescript(no-non-null-assertion)": 5
+  },
+  "apps/codeimage/src/components/Animation/createPreviewSnapshot.ts": {
+    "typescript(no-non-null-assertion)": 1
+  },
+  "apps/codeimage/src/components/Animation/measureCache.ts": {
+    "typescript(no-non-null-assertion)": 1
+  },
+  "apps/codeimage/src/components/Animation/planPreview.tsx": {
+    "eslint(max-params)": 1,
+    "typescript(no-non-null-assertion)": 2
+  },
+  "apps/codeimage/src/components/Animation/timelineGeometry.test.ts": {
+    "eslint(no-nested-ternary)": 1
+  },
+  "apps/codeimage/src/components/Animation/timelineGeometry.ts": {
+    "eslint(no-nested-ternary)": 3
+  },
+  "apps/codeimage/src/components/CustomEditor/CanvasEditor.tsx": {
+    "eslint(max-lines)": 315,
+    "eslint(max-lines-per-function)": 1
+  },
+  "apps/codeimage/src/components/CustomEditor/CustomEditor.tsx": {
+    "eslint(complexity)": 1,
+    "eslint(max-lines)": 333,
+    "eslint(max-lines-per-function)": 1,
+    "eslint(no-extra-boolean-cast)": 1
+  },
+  "apps/codeimage/src/components/CustomEditor/CustomEditorPreview.tsx": {
+    "unused-disable-directive": 1
+  },
+  "apps/codeimage/src/components/CustomEditor/plugins/lineMarks/controls.ts": {
+    "eslint(max-lines)": 339,
+    "eslint(no-param-reassign)": 3,
+    "typescript(no-non-null-assertion)": 1
+  },
+  "apps/codeimage/src/components/CustomEditor/plugins/lineMarks/diffImportHistory.test.ts": {
+    "typescript(no-non-null-assertion)": 1
+  },
+  "apps/codeimage/src/components/CustomEditor/plugins/lineMarks/gutter.ts": {
+    "eslint(complexity)": 1,
+    "eslint(eqeqeq)": 1,
+    "eslint(max-lines)": 445,
+    "eslint(max-lines-per-function)": 2,
+    "eslint(no-nested-ternary)": 7,
+    "typescript(no-non-null-assertion)": 2
+  },
+  "apps/codeimage/src/components/CustomEditor/plugins/lineMarks/news.tsx": {
+    "solid(reactivity)": 1
+  },
+  "apps/codeimage/src/components/CustomEditor/plugins/lineMarks/state.ts": {
+    "eslint(no-param-reassign)": 2
+  },
+  "apps/codeimage/src/components/FeatureBadge/FeatureCheckBanner.tsx": {
+    "eslint(no-extra-boolean-cast)": 1,
+    "solid(components-return-once)": 5,
+    "typescript(no-non-null-assertion)": 1
+  },
+  "apps/codeimage/src/components/Frame/FittedWindow.tsx": {
+    "eslint(no-nested-ternary)": 1,
+    "typescript(no-non-null-assertion)": 1
+  },
+  "apps/codeimage/src/components/Frame/Frame.tsx": {
+    "eslint(max-lines-per-function)": 1,
+    "typescript(no-non-null-assertion)": 2
+  },
+  "apps/codeimage/src/components/Frame/FrameSignature.tsx": {
+    "typescript(no-non-null-assertion)": 1
+  },
+  "apps/codeimage/src/components/Frame/ManagedFrame.tsx": {
+    "typescript(no-non-null-assertion)": 1
+  },
+  "apps/codeimage/src/components/Frame/PreviewFrame.tsx": {
+    "eslint(no-nested-ternary)": 2,
+    "typescript(no-non-null-assertion)": 3,
+    "unused-disable-directive": 1
+  },
+  "apps/codeimage/src/components/PropertyEditor/SuspenseEditorItem.tsx": {
+    "typescript(no-non-null-assertion)": 1
+  },
+  "apps/codeimage/src/components/Terminal/MacOsTerminal/MacOsTerminal.tsx": {
+    "import(no-cycle)": 1
+  },
+  "apps/codeimage/src/components/Terminal/MacOsTerminal/MacOsTerminalGrayTheme.tsx": {
+    "import(no-cycle)": 1
+  },
+  "apps/codeimage/src/components/Terminal/MacOsTerminal/MacOsTerminalOutlineTheme.tsx": {
+    "import(no-cycle)": 1
+  },
+  "apps/codeimage/src/components/Terminal/Tabs/Tab/DraggableWindowTab.tsx": {
+    "solid(reactivity)": 1
+  },
+  "apps/codeimage/src/components/Terminal/Tabs/TabName/TabName.tsx": {
+    "eslint(eqeqeq)": 1
+  },
+  "apps/codeimage/src/components/Terminal/Tabs/TerminalWindowTabList.tsx": {
+    "eslint(no-nested-ternary)": 2,
+    "import(no-cycle)": 2
+  },
+  "apps/codeimage/src/components/Terminal/Tabs/TerminalWindowTabListPreview.tsx": {
+    "import(no-cycle)": 1
+  },
+  "apps/codeimage/src/components/Terminal/Tabs/createTabTheme.ts": {
+    "unused-disable-directive": 1
+  },
+  "apps/codeimage/src/components/Terminal/TerminalHost.tsx": {
+    "unicorn(no-useless-fallback-in-spread)": 1
+  },
+  "apps/codeimage/src/components/Terminal/WindowStyles/WindowStyles.tsx": {
+    "import(no-cycle)": 2
+  },
+  "apps/codeimage/src/components/Terminal/WindowsTerminal/WindowsTerminal.tsx": {
+    "import(no-cycle)": 1
+  },
+  "apps/codeimage/src/components/Toolbar/GenerateLinkButton.tsx": {
+    "unicorn(no-empty-file)": 1
+  },
+  "apps/codeimage/src/components/Toolbar/SettingsDialog.tsx": {
+    "eslint(max-lines-per-function)": 1
+  },
+  "apps/codeimage/src/components/Toolbar/ToolbarSnippetName.tsx": {
+    "solid(reactivity)": 1,
+    "typescript(no-non-null-assertion)": 2
+  },
+  "apps/codeimage/src/components/Watermark/Watermark.tsx": {
+    "eslint(complexity)": 1,
+    "eslint(max-depth)": 2,
+    "eslint(max-lines-per-function)": 1
+  },
+  "apps/codeimage/src/components/WhatsNew/Nudge.tsx": {
+    "eslint(max-lines-per-function)": 1
+  },
+  "apps/codeimage/src/components/WhatsNew/Showcase.tsx": {
+    "eslint(max-lines)": 324,
+    "eslint(max-lines-per-function)": 1,
+    "eslint(no-nested-ternary)": 1
+  },
+  "apps/codeimage/src/components/WhatsNew/illustrations.css.ts": {
+    "eslint(max-lines)": 1133
+  },
+  "apps/codeimage/src/components/WhatsNew/illustrations.tsx": {
+    "eslint(max-lines)": 551,
+    "eslint(max-lines-per-function)": 1
+  },
+  "apps/codeimage/src/components/WhatsNew/whats-new.css.ts": {
+    "eslint(max-lines)": 390
+  },
+  "apps/codeimage/src/core/altText.perf.ts": {
+    "eslint(no-console)": 1
+  },
+  "apps/codeimage/src/core/animation/AnimatedCodeView.test.ts": {
+    "typescript(no-non-null-assertion)": 1
+  },
+  "apps/codeimage/src/core/animation/animation.perf.ts": {
+    "eslint(no-console)": 1
+  },
+  "apps/codeimage/src/core/animation/compile.test.ts": {
+    "typescript(no-non-null-assertion)": 1
+  },
+  "apps/codeimage/src/core/animation/pair.test.ts": {
+    "typescript(no-non-null-assertion)": 5
+  },
+  "apps/codeimage/src/core/animation/pair.ts": {
+    "typescript(no-non-null-assertion)": 1
+  },
+  "apps/codeimage/src/core/animation/test-utils.ts": {
+    "eslint(no-nested-ternary)": 1,
+    "typescript(no-non-null-assertion)": 2
+  },
+  "apps/codeimage/src/core/animation/timeline.ts": {
+    "eslint(no-nested-ternary)": 1
+  },
+  "apps/codeimage/src/core/configuration/terminal-themes.ts": {
+    "import(no-cycle)": 5
+  },
+  "apps/codeimage/src/core/constants/noop.ts": {
+    "unused-disable-directive": 1
+  },
+  "apps/codeimage/src/core/constants/umami.ts": {
+    "eslint(no-console)": 3
+  },
+  "apps/codeimage/src/core/diff/mapLines.ts": {
+    "eslint(complexity)": 1
+  },
+  "apps/codeimage/src/core/diff/parseAnnotations.ts": {
+    "eslint(complexity)": 1,
+    "eslint(no-nested-ternary)": 2
+  },
+  "apps/codeimage/src/core/diff/parseUnifiedDiff.ts": {
+    "eslint(complexity)": 1
+  },
+  "apps/codeimage/src/core/gif/decode.test-utils.ts": {
+    "eslint(complexity)": 1,
+    "typescript(no-non-null-assertion)": 3
+  },
+  "apps/codeimage/src/core/hooks/createControlledDialog.ts": {
+    "unused-disable-directive": 1
+  },
+  "apps/codeimage/src/core/hooks/resizable.ts": {
+    "eslint(max-lines-per-function)": 1
+  },
+  "apps/codeimage/src/core/modules/dnd/ConstrainDragAxis.tsx": {
+    "typescript(no-non-null-assertion)": 1
+  },
+  "apps/codeimage/src/core/rasterize/takumi.ts": {
+    "eslint(max-lines)": 449,
+    "eslint(no-nested-ternary)": 1,
+    "typescript(no-non-null-assertion)": 1
+  },
+  "apps/codeimage/src/core/video/encode.test.ts": {
+    "typescript(no-non-null-assertion)": 1,
+    "unicorn(no-useless-spread)": 2
+  },
+  "apps/codeimage/src/core/video/encode.ts": {
+    "eslint(no-nested-ternary)": 3
+  },
+  "apps/codeimage/src/core/video/formats.test.ts": {
+    "eslint(no-nested-ternary)": 1
+  },
+  "apps/codeimage/src/core/watermark/placement.ts": {
+    "eslint(no-nested-ternary)": 1
+  },
+  "apps/codeimage/src/core/watermark/scope.test.ts": {
+    "typescript(no-non-null-assertion)": 1
+  },
+  "apps/codeimage/src/data-access/client.ts": {
+    "eslint(no-console)": 1
+  },
+  "apps/codeimage/src/hooks/createPrettierFormatter.ts": {
+    "eslint(complexity)": 1,
+    "eslint(no-async-promise-executor)": 1,
+    "eslint(no-extra-boolean-cast)": 1,
+    "unicorn(no-useless-fallback-in-spread)": 1
+  },
+  "apps/codeimage/src/hooks/export-tab-name.ts": {
+    "eslint(no-control-regex)": 1
+  },
+  "apps/codeimage/src/index.tsx": {
+    "eslint(no-console)": 1,
+    "solid(components-return-once)": 1
+  },
+  "apps/codeimage/src/mocks/projectMockHandlers.ts": {
+    "eslint(complexity)": 2
+  },
+  "apps/codeimage/src/pages/Dashboard/components/CreateNewProjectButton/CreateNewProjectButton.tsx": {
+    "typescript(no-non-null-assertion)": 1
+  },
+  "apps/codeimage/src/pages/Dashboard/components/ProjectItem/ProjectItem.tsx": {
+    "solid(reactivity)": 1,
+    "typescript(no-non-null-assertion)": 1
+  },
+  "apps/codeimage/src/pages/Dashboard/components/ProjectList/ProjectEmptyListMessage.tsx": {
+    "typescript(no-non-null-assertion)": 1
+  },
+  "apps/codeimage/src/pages/Dashboard/components/ProjectList/ProjectList.tsx": {
+    "typescript(no-non-null-assertion)": 1
+  },
+  "apps/codeimage/src/pages/Dashboard/components/ProjectToolbar/ProjectToolbar.tsx": {
+    "typescript(no-non-null-assertion)": 1
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/EditorHost.tsx": {
+    "typescript(no-non-null-assertion)": 1
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/ReadOnlyNotice.tsx": {
+    "typescript(no-non-null-assertion)": 1
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/agent-tools/AgentTools.tsx": {
+    "solid(reactivity)": 2
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/agent-tools/FormatTabButton.tsx": {
+    "eslint(no-nested-ternary)": 1
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/agent-tools/ToolActivity.tsx": {
+    "eslint(no-nested-ternary)": 2,
+    "solid(reactivity)": 1
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/agent-tools/activity.ts": {
+    "eslint(complexity)": 1,
+    "eslint(no-nested-ternary)": 1
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/agent-tools/tools.test.ts": {
+    "typescript(no-non-null-assertion)": 2
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/agent-tools/tools.ts": {
+    "eslint(max-lines)": 605,
+    "eslint(max-lines-per-function)": 1
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/agent-tools/values.ts": {
+    "eslint(no-nested-ternary)": 1,
+    "unicorn(no-useless-length-check)": 1
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/command-menu/CommandMenu.tsx": {
+    "eslint(max-lines)": 411,
+    "eslint(max-lines-per-function)": 1,
+    "solid(reactivity)": 1
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/controls/ControlOverlay.tsx": {
+    "eslint(max-lines-per-function)": 1,
+    "eslint(no-nested-ternary)": 4,
+    "import(no-cycle)": 1
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/controls/ControlRow.tsx": {
+    "eslint(complexity)": 1,
+    "eslint(max-lines-per-function)": 1,
+    "import(no-cycle)": 1,
+    "solid(reactivity)": 2
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/controls/PickerContent.tsx": {
+    "solid(components-return-once)": 1,
+    "solid(reactivity)": 2
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/controls/SavedSignatures.tsx": {
+    "eslint(max-lines-per-function)": 1
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/controls/ShortcutHelp.tsx": {
+    "eslint(max-lines-per-function)": 1,
+    "solid(reactivity)": 1
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/controls/SignatureFields.tsx": {
+    "eslint(max-lines)": 478,
+    "eslint(no-nested-ternary)": 1,
+    "typescript(no-non-null-assertion)": 1
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/controls/fields.tsx": {
+    "solid(reactivity)": 1
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/controls/overlay-placement.ts": {
+    "eslint(no-nested-ternary)": 1
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/harness.tsx": {
+    "typescript(no-non-null-assertion)": 1
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/local-ai/LocalAi.tsx": {
+    "eslint(max-lines)": 416,
+    "solid(reactivity)": 3
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/local-ai/agent.ts": {
+    "eslint(complexity)": 1,
+    "eslint(max-depth)": 6,
+    "eslint(max-lines)": 312
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/local-ai/language-model.ts": {
+    "eslint(no-console)": 1
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/local-ai/prompt-api.ts": {
+    "eslint(no-nested-ternary)": 1
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/local-ai/requirements.test.ts": {
+    "typescript(no-non-null-assertion)": 1
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/local-ai/requirements.ts": {
+    "eslint(no-nested-ternary)": 2
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/localized/AspectRatioPicker.tsx": {
+    "typescript(no-non-null-assertion)": 1
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/localized/ColorPicker.tsx": {
+    "solid(reactivity)": 1
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/localized/FontPicker.tsx": {
+    "solid(reactivity)": 1
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/localized/ImagePickerInput.tsx": {
+    "solid(reactivity)": 1
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/localized/PresetSwitcher.tsx": {
+    "eslint(max-lines-per-function)": 1
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/model.tsx": {
+    "eslint(max-lines)": 711,
+    "eslint(max-lines-per-function)": 1,
+    "typescript(no-non-null-assertion)": 1
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/shell/Header.tsx": {
+    "typescript(no-non-null-assertion)": 1
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/shell/SettingsDialog.tsx": {
+    "eslint(max-lines-per-function)": 1,
+    "eslint(no-nested-ternary)": 1,
+    "solid(reactivity)": 1
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/shell/export-animation-dialog.tsx": {
+    "eslint(max-lines)": 560,
+    "eslint(max-lines-per-function)": 2,
+    "typescript(no-non-null-assertion)": 1
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/shell/export-animation.tsx": {
+    "eslint(max-lines)": 375,
+    "eslint(max-lines-per-function)": 2,
+    "eslint(max-params)": 1,
+    "typescript(no-non-null-assertion)": 2
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/shell/export-styles/choice-fields.tsx": {
+    "typescript(no-non-null-assertion)": 1
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/shell/export-styles/sheet.tsx": {
+    "eslint(max-lines-per-function)": 1,
+    "typescript(no-non-null-assertion)": 1
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/shell/export.tsx": {
+    "eslint(max-lines-per-function)": 1,
+    "eslint(no-nested-ternary)": 1
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/shell/preferences.ts": {
+    "eslint(no-nested-ternary)": 1
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/shell/sections.tsx": {
+    "eslint(max-lines)": 997,
+    "eslint(max-lines-per-function)": 1,
+    "solid(components-return-once)": 1,
+    "solid(reactivity)": 6,
+    "typescript(no-non-null-assertion)": 2
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/shell/settings.css.ts": {
+    "eslint(max-lines)": 602
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/theme-styles/style.ts": {
+    "typescript(no-non-null-assertion)": 1
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/variants/dock/dock.css.ts": {
+    "eslint(max-lines)": 456
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/variants/dock/index.tsx": {
+    "eslint(max-lines)": 504,
+    "eslint(max-lines-per-function)": 1,
+    "solid(reactivity)": 4
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/variants/dock/panels.tsx": {
+    "typescript(no-non-null-assertion)": 1
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/variants/sidebar/Accordion.tsx": {
+    "eslint(max-lines)": 420,
+    "eslint(max-lines-per-function)": 1,
+    "eslint(no-nested-ternary)": 2,
+    "solid(reactivity)": 1,
+    "typescript(no-non-null-assertion)": 1
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/variants/sidebar/Rail.tsx": {
+    "eslint(max-lines)": 456,
+    "eslint(max-lines-per-function)": 1,
+    "solid(reactivity)": 4,
+    "typescript(no-non-null-assertion)": 4
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/variants/sidebar/accordion.css.ts": {
+    "eslint(max-lines)": 310
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/variants/sidebar/overlays.ts": {
+    "eslint(complexity)": 1,
+    "eslint(no-nested-ternary)": 2
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/variants/sidebar/rail.css.ts": {
+    "eslint(max-lines)": 306
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/verify-i18n.mjs": {
+    "eslint(max-depth)": 14,
+    "eslint(max-lines)": 368,
+    "eslint(no-console)": 1
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/verify-locale-parity.mjs": {
+    "eslint(max-lines)": 327,
+    "eslint(no-console)": 4
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/verify-review.mjs": {
+    "eslint(max-depth)": 12,
+    "eslint(max-lines)": 658,
+    "eslint(no-console)": 3,
+    "eslint(no-unused-vars)": 1
+  },
+  "apps/codeimage/src/state/assets/AssetsImage.tsx": {
+    "solid(reactivity)": 1
+  },
+  "apps/codeimage/src/state/assets/assets.ts": {
+    "eslint(no-async-promise-executor)": 1,
+    "unused-disable-directive": 1
+  },
+  "apps/codeimage/src/state/editor/activeEditor.ts": {
+    "eslint(no-async-promise-executor)": 1,
+    "eslint(no-extra-boolean-cast)": 1,
+    "eslint(no-param-reassign)": 1
+  },
+  "apps/codeimage/src/state/editor/animation.ts": {
+    "eslint(max-lines)": 432,
+    "eslint(max-lines-per-function)": 1,
+    "eslint(no-nested-ternary)": 1,
+    "typescript(no-non-null-assertion)": 1
+  },
+  "apps/codeimage/src/state/editor/config.store.ts": {
+    "eslint(no-nested-ternary)": 1
+  },
+  "apps/codeimage/src/state/editor/createEditorSync.ts": {
+    "eslint(max-lines-per-function)": 1,
+    "eslint(no-console)": 1
+  },
+  "apps/codeimage/src/state/editor/editor.ts": {
+    "eslint(max-lines-per-function)": 1,
+    "unicorn(no-useless-fallback-in-spread)": 1
+  },
+  "apps/codeimage/src/state/editor/index.ts": {
+    "import(no-cycle)": 1
+  },
+  "apps/codeimage/src/state/editor/model.ts": {
+    "unused-disable-directive": 1
+  },
+  "apps/codeimage/src/state/editor/terminal.ts": {
+    "import(no-cycle)": 2,
+    "unused-disable-directive": 1
+  },
+  "apps/codeimage/src/state/effects/onCopyToClipboard.tsx": {
+    "typescript(no-non-null-assertion)": 2,
+    "unused-disable-directive": 1
+  },
+  "apps/codeimage/src/state/frame/avatar.ts": {
+    "eslint(no-nested-ternary)": 1
+  },
+  "apps/codeimage/src/state/frame/model.ts": {
+    "eslint(no-nested-ternary)": 1
+  },
+  "apps/codeimage/src/state/plugins/unique-id.ts": {
+    "unused-disable-directive": 1
+  },
+  "apps/codeimage/src/state/presets/bridge.ts": {
+    "typescript(no-non-null-assertion)": 1
+  },
+  "apps/codeimage/src/state/presets/presets.ts": {
+    "eslint(max-lines-per-function)": 1
+  },
+  "apps/codeimage/src/state/whats-new/decide.test.ts": {
+    "eslint(max-params)": 1
+  },
+  "apps/codeimage/src/state/whats-new/whats-new.store.ts": {
+    "eslint(max-lines-per-function)": 1
+  },
+  "apps/codeimage/src/theme/global.css.ts": {
+    "typescript(no-non-null-assertion)": 2
+  },
+  "apps/website/src/components/Landing/ComingSoon/ComingSoon.tsx": {
+    "eslint(max-lines-per-function)": 1,
+    "solid(style-prop)": 3
+  },
+  "apps/website/src/components/Landing/EditorSteps/CodeEditor/CodeEditor.tsx": {
+    "typescript(no-non-null-assertion)": 2
+  },
+  "apps/website/src/components/Landing/EditorSteps/EditorScene/DynamicBackgroundExpansion/DynamicBackgroundExpansion.tsx": {
+    "eslint(no-nested-ternary)": 1
+  },
+  "apps/website/src/components/Landing/EditorSteps/EditorScene/EditorScene.tsx": {
+    "eslint(max-lines-per-function)": 1
+  },
+  "apps/website/src/components/Landing/EditorSteps/StepCard/StepCard.tsx": {
+    "solid(style-prop)": 1
+  },
+  "apps/website/src/components/Landing/EditorSteps/scene.tsx": {
+    "eslint(no-param-reassign)": 1
+  },
+  "apps/website/src/components/Landing/Projects/Projects.tsx": {
+    "solid(style-prop)": 1
+  },
+  "apps/website/src/components/Umami/UmamiScript.tsx": {
+    "solid(components-return-once)": 1
+  },
+  "packages/atomic-state/src/experimental/effects/index.ts": {
+    "unused-disable-directive": 3
+  },
+  "packages/config/src/lib/base/languages.ts": {
+    "eslint(max-lines)": 816
+  },
+  "packages/dom-export/src/lib/applyStyleFromOptions.ts": {
+    "eslint(eqeqeq)": 1
+  },
+  "packages/dom-export/src/lib/cloneNode.ts": {
+    "eslint(eqeqeq)": 1,
+    "typescript(no-non-null-assertion)": 1,
+    "unused-disable-directive": 1
+  },
+  "packages/dom-export/src/lib/dataurl.ts": {
+    "eslint(eqeqeq)": 1,
+    "typescript(no-non-null-assertion)": 1
+  },
+  "packages/dom-export/src/lib/embedResources.ts": {
+    "eslint(max-params)": 1,
+    "unused-disable-directive": 1
+  },
+  "packages/dom-export/src/lib/embedWebFonts.ts": {
+    "eslint(eqeqeq)": 6,
+    "eslint(max-lines)": 330,
+    "eslint(no-nested-ternary)": 1,
+    "eslint(no-param-reassign)": 1,
+    "unused-disable-directive": 3
+  },
+  "packages/dom-export/src/lib/getBlobFromURL.ts": {
+    "eslint(eqeqeq)": 1
+  },
+  "packages/dom-export/src/lib/index.ts": {
+    "typescript(no-non-null-assertion)": 2
+  },
+  "packages/dom-export/src/lib/util.ts": {
+    "unused-disable-directive": 3
+  },
+  "packages/highlight/dev/themeStore.ts": {
+    "typescript(no-non-null-assertion)": 1
+  },
+  "packages/secrets/src/detect.ts": {
+    "eslint(complexity)": 1,
+    "eslint(no-nested-ternary)": 1
+  },
+  "packages/secrets/test/bench.ts": {
+    "eslint(no-console)": 1
+  },
+  "packages/ui/src/lib/primitives/Badge/Badge.tsx": {
+    "unused-disable-directive": 1
+  },
+  "packages/ui/src/lib/utils/factory.tsx": {
+    "unused-disable-directive": 6
+  },
+  "packages/ui/tools/build.ts": {
+    "typescript(no-non-null-assertion)": 3
+  },
+  "packages/ui/tools/with-solid.ts": {
+    "eslint(max-lines-per-function)": 1
+  },
+  "scripts/make-env.ts": {
+    "eslint(no-unused-vars)": 1
+  },
+  "scripts/parity/animation-defaults.ts": {
+    "typescript(no-non-null-assertion)": 1
+  },
+  "scripts/parity/animation-gif.ts": {
+    "eslint(complexity)": 1,
+    "eslint(max-depth)": 2,
+    "eslint(max-lines)": 1197,
+    "eslint(max-lines-per-function)": 2,
+    "eslint(max-params)": 1,
+    "eslint(no-nested-ternary)": 1,
+    "typescript(no-non-null-assertion)": 6
+  },
+  "scripts/parity/animation-preview-live.ts": {
+    "eslint(max-lines-per-function)": 1,
+    "typescript(no-non-null-assertion)": 2
+  },
+  "scripts/parity/animation-preview.ts": {
+    "eslint(max-lines)": 678,
+    "eslint(max-lines-per-function)": 1,
+    "typescript(no-non-null-assertion)": 6
+  },
+  "scripts/parity/export-matrix.ts": {
+    "eslint(max-depth)": 5
+  },
+  "scripts/parity/live-animate.ts": {
+    "eslint(max-depth)": 4,
+    "eslint(max-lines)": 988,
+    "typescript(no-non-null-assertion)": 19
+  },
+  "scripts/parity/new-editor-renderer.ts": {
+    "eslint(max-lines-per-function)": 1
+  },
+  "scripts/parity/rasterizers.ts": {
+    "eslint(complexity)": 1,
+    "eslint(max-depth)": 2,
+    "eslint(max-lines)": 1392,
+    "eslint(max-lines-per-function)": 3,
+    "eslint(max-params)": 1,
+    "typescript(no-non-null-assertion)": 4
+  },
+  "scripts/parity/signature-renderer.ts": {
+    "eslint(max-depth)": 1,
+    "eslint(max-lines-per-function)": 1
+  },
+  "scripts/verify-p5-focus.cjs": {
+    "eslint(max-lines)": 321,
+    "eslint(max-lines-per-function)": 1,
+    "eslint(no-undef)": 20
+  },
+  "scripts/verify-p5-gutter.cjs": {
+    "eslint(max-lines)": 564,
+    "eslint(max-lines-per-function)": 1,
+    "eslint(no-nested-ternary)": 1,
+    "eslint(no-undef)": 26
+  },
+  "scripts/verify-p5-import-undo.cjs": {
+    "eslint(max-lines-per-function)": 1,
+    "eslint(no-undef)": 12
+  },
+  "scripts/verify-p5-layout.cjs": {
+    "eslint(max-depth)": 11,
+    "eslint(max-lines)": 346,
+    "eslint(max-lines-per-function)": 1,
+    "eslint(no-undef)": 9
+  }
+}
