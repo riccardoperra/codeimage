@@ -123,6 +123,20 @@ export async function verifyLineMarkControls({page, editor, section, out}) {
   await page.keyboard.press('Shift+Tab');
   await page.keyboard.press('Tab');
   await focusedMarker(1);
+  await verifySelectionToolbar({page, editor, toolbar, out});
+  await verifyGutterDrag({page, editor, section, out, line});
+  return {
+    mouseMenu: true,
+    sidePanelScroll: true,
+    keyboardMenu: true,
+    markerNavigation: true,
+    toolbarFocus: true,
+    clampBelow: true,
+    clampAbove: true,
+  };
+}
+
+async function verifySelectionToolbar({page, editor, toolbar, out}) {
   await editor.click();
   await editor.press('ControlOrMeta+Home');
   await editor.press('Shift+ArrowDown');
@@ -142,6 +156,9 @@ export async function verifyLineMarkControls({page, editor, section, out}) {
   await page.screenshot({
     path: resolve(out, 'line-mark-toolbar-refocused.png'),
   });
+}
+
+async function verifyGutterDrag({page, editor, section, out, line}) {
   await editor.press('ControlOrMeta+a');
   await editor.press('ControlOrMeta+Alt+0');
   await editor.press('ControlOrMeta+Home');
@@ -187,15 +204,6 @@ export async function verifyLineMarkControls({page, editor, section, out}) {
     'dragging above the editor clears through the first line',
   );
   await page.screenshot({path: resolve(out, 'line-mark-drag-clamped.png')});
-  return {
-    mouseMenu: true,
-    sidePanelScroll: true,
-    keyboardMenu: true,
-    markerNavigation: true,
-    toolbarFocus: true,
-    clampBelow: true,
-    clampAbove: true,
-  };
 }
 
 export async function verifyLineMarkTouch({page, editor, out}) {

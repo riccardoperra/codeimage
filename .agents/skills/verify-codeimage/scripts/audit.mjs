@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 import assert from 'node:assert/strict';
+import {auditLineMarks} from './audit-line-marks.mjs';
+import {auditLineMarksNews} from './audit-line-marks-news.mjs';
 import {verifyKeyboardScroll} from './keyboard-scroll.mjs';
 import {createMockContext} from './mock-context.mjs';
 import {animationMp4Cases} from './animation-mp4.mjs';
@@ -413,104 +415,15 @@ export async function audit({page, context, base, out, server}) {
     await search.press('Enter');
     await search.waitFor({state: 'hidden'});
   });
-  await feature('line-mark-controls-phone', () =>
-    fresh(
-      {
-        name: 'line-mark-controls-phone',
-        layout: 'inspector',
-        viewport: {width: 390, height: 844},
-        hasTouch: true,
-      },
-      async ({page, doctor, editor}) => {
-        await doctor();
-        const {verifyLineMarkTouch} = await import('./line-mark-controls.mjs');
-        return verifyLineMarkTouch({page, editor: editor(), out});
-      },
-    ),
-  );
-  await feature('line-mark-controls', async () => {
-    const {verifyLineMarkControls} = await import('./line-mark-controls.mjs');
-    return verifyLineMarkControls({page, editor: editor(), section, out});
-  });
-  await feature('line-mark-tab-order', async () => {
-    const {verifyLineMarkTabOrder} = await import('./line-mark-layering.mjs');
-    return verifyLineMarkTabOrder({page, editor: editor(), out});
-  });
-  await feature('line-mark-zoom', async () => {
-    const {verifyLineMarkZoom} = await import('./line-mark-layering.mjs');
-    return verifyLineMarkZoom({page, editor: editor(), out});
-  });
-  await feature('line-mark-layouts', async () => {
-    const {verifyLineMarkLayout} = await import('./line-mark-layering.mjs');
-    const layouts = {};
-    for (const layout of ['inspector', 'dock', 'studio'])
-      layouts[layout] = await fresh(
-        {
-          name: `line-mark-layouts-${layout}`,
-          layout,
-          viewport: {width: 1440, height: 1000},
-        },
-        async ({page, doctor, editor}) => {
-          await doctor();
-          return verifyLineMarkLayout({page, editor: editor(), out, layout});
-        },
-      );
-    return layouts;
-  });
-  await feature('line-mark-export-clean', async () => {
-    const {verifyLineMarkExportClean} =
-      await import('./line-mark-layering.mjs');
-    return verifyLineMarkExportClean({page, editor: editor(), out, download});
-  });
-  await feature('line-mark-rail-sheet-phone', async () => {
-    const {verifyLineMarkRailSheet, lineNumberVariants, setLineNumbers} =
-      await import('./line-mark-layering.mjs');
-    const variants = {};
-    for (const [numbers, on] of lineNumberVariants)
-      variants[numbers] = await fresh(
-        {
-          name: `line-mark-rail-sheet-phone-${numbers}`,
-          layout: 'studio',
-          viewport: {width: 390, height: 844},
-          hasTouch: true,
-        },
-        async ({page, doctor, editor}) => {
-          await doctor();
-          await setLineNumbers(page, on);
-          return verifyLineMarkRailSheet({
-            page,
-            editor: editor(),
-            out,
-            numbers,
-          });
-        },
-      );
-    return variants;
-  });
-  await feature('line-marks', async () => {
-    await editor().fill('const marked = 1;\nconst other = 2;');
-    await editor().press('ControlOrMeta+a');
-    await editor().press('ControlOrMeta+Alt+0');
-    await editor().locator('[data-mark]').first().waitFor({state: 'detached'});
-    await editor().press('ControlOrMeta+Home');
-    await editor().press('ControlOrMeta+Alt+1');
-    await editor().locator('[data-mark="highlight"]').waitFor();
-    PNG.sync.read(await download('line-marks.png'));
-    await editor().press('ControlOrMeta+Alt+0');
-    assert.equal(await editor().locator('[data-mark="highlight"]').count(), 0);
-    const diff =
-      'diff --git a/demo.ts b/demo.ts\n--- a/demo.ts\n+++ b/demo.ts\n@@ -1 +1 @@\n-const before = 1;\n+const after = 2;\n';
-    await page.evaluate(text => navigator.clipboard.writeText(text), diff);
-    await editor().click();
-    await editor().press('ControlOrMeta+a');
-    await editor().press('ControlOrMeta+v');
-    await page
-      .getByRole('button', {name: 'Import as diff', exact: true})
-      .click();
-    await editor().locator('[data-mark="added"]').first().waitFor();
-    assert.match(await editor().innerText(), /const after = 2/);
-    await shot('diff-import');
-    await page.getByRole('button', {name: 'Undo', exact: true}).last().click();
+  await auditLineMarks({
+    page,
+    editor,
+    section,
+    out,
+    feature,
+    fresh,
+    download,
+    shot,
   });
   await feature('signatures', async () => {
     await section('frame');
@@ -570,137 +483,7 @@ export async function audit({page, context, base, out, server}) {
       .locator('[data-settings-section=general]')
       .waitFor({state: 'hidden'});
   });
-  await feature('whats-new-line-marks-dot', () =>
-    fresh(
-      {
-        name: 'whats-new-line-marks-dot',
-        layout: 'inspector',
-        viewport: {width: 1440, height: 900},
-      },
-      async ({page, settings, closeSettings}) => {
-        await page.goto(base, {waitUntil: 'domcontentloaded'});
-        await page.locator('.cm-content[contenteditable="true"]').waitFor();
-        // A fresh profile gets the announcement first. The dot shows after.
-        await dismissNews(page);
-        const badge = page.locator('[data-line-marks-news]');
-        await badge.waitFor();
-        const measure = () =>
-          page.evaluate(() => {
-            const badge = document.querySelector('[data-line-marks-news]');
-            const cell = document.querySelector(
-              '.cm-lineMarkMarker[data-mark-line="1"]',
-            )?.parentElement;
-            if (!badge || !cell) return null;
-            const b = badge.getBoundingClientRect();
-            const c = cell.getBoundingClientRect();
-            const button = badge.querySelector('button');
-            const hit = button?.getBoundingClientRect();
-            const top = hit
-              ? document.elementFromPoint(
-                  hit.left + hit.width / 2,
-                  hit.top + hit.height / 2,
-                )
-              : null;
-            return {
-              offsetX: Math.round(b.left - c.right),
-              offsetY: Math.round(b.top - c.top),
-              cellLeft: Math.round(c.left),
-              onScreen:
-                b.top >= 0 &&
-                b.left >= 0 &&
-                b.bottom <= innerHeight &&
-                b.right <= innerWidth,
-              ownsItsPoint: Boolean(top && badge.contains(top)),
-            };
-          });
-        const before = await measure();
-        assert.ok(before?.onScreen, 'the line marks dot is on screen');
-        assert.deepEqual([before.offsetX, before.offsetY], [-46, 0]);
-        const {setLineNumbers} = await import('./line-mark-layering.mjs');
-        await setLineNumbers(page, true);
-        await badge.waitFor();
-        await page.evaluate(
-          () =>
-            new Promise(done =>
-              requestAnimationFrame(() => requestAnimationFrame(done)),
-            ),
-        );
-        const numbers = await measure();
-        assert.ok(
-          numbers?.onScreen,
-          `the dot is on screen with line numbers on (${JSON.stringify(numbers)})`,
-        );
-        assert.deepEqual([numbers.offsetX, numbers.offsetY], [-46, 0]);
-        assert.ok(numbers.ownsItsPoint, 'the dot covers nothing but itself');
-        await setLineNumbers(page, false);
-        // Moving the inspector moves the canvas without a resize or a scroll.
-        await settings('appearance');
-        await page
-          .locator('[data-setting=panel-side]')
-          .getByRole('tab', {name: 'Left', exact: true})
-          .click();
-        await closeSettings();
-        await page.waitForFunction(
-          left =>
-            Math.round(
-              document
-                .querySelector('.cm-lineMarkMarker[data-mark-line="1"]')
-                ?.parentElement?.getBoundingClientRect().left ?? left,
-            ) !== left,
-          before.cellLeft,
-        );
-        await page.evaluate(
-          () =>
-            new Promise(done =>
-              requestAnimationFrame(() => requestAnimationFrame(done)),
-            ),
-        );
-        const after = await measure();
-        assert.ok(
-          after?.onScreen,
-          'the dot is still on screen after the canvas moved',
-        );
-        assert.notEqual(after.cellLeft, before.cellLeft);
-        assert.deepEqual([after.offsetX, after.offsetY], [-46, 0]);
-        assert.ok(after.ownsItsPoint, 'the dot covers nothing but itself');
-        await badge.getByRole('button').click();
-        const coachmark = page.getByRole('dialog', {
-          name: 'Line marks',
-          exact: true,
-        });
-        await coachmark.waitFor();
-        const row = await page
-          .locator('.cm-content[contenteditable="true"] .cm-line')
-          .first()
-          .boundingBox();
-        const point = {x: row.x + row.width - 2, y: row.y + 2};
-        await page.mouse.move(point.x, point.y);
-        assert.ok(
-          await page.evaluate(
-            point =>
-              document
-                .elementFromPoint(point.x, point.y)
-                ?.closest('.cm-content'),
-            point,
-          ),
-          'the pointer reaches the editor beside the coachmark',
-        );
-        assert.equal(
-          await coachmark.isVisible(),
-          true,
-          'hovering the editor preserves the coachmark',
-        );
-        await coachmark
-          .getByRole('button', {name: 'Got it', exact: true})
-          .click();
-        await coachmark.waitFor({state: 'hidden'});
-        await page.screenshot({
-          path: resolve(out, 'whats-new-line-marks-dot.png'),
-        });
-        return {before, numbers, after};
-      },
-    ),
-  );
+  await auditLineMarksNews({base, out, feature, fresh});
   // The current release is major, so a fresh profile gets the Showcase
   // sheet. Minimize turns it into the Nudge card, which steps through the
   // highlights, and a dismissal survives a reload.
