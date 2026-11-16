@@ -14,14 +14,11 @@ export function trackEncoder(child: ChildProcess) {
   return () => children.delete(child);
 }
 
-// Synchronous cleanup also runs while a native frame is in flight.
 export function stopVideo() {
   for (const child of children) child.kill('SIGKILL');
   for (const path of partials) {
     try {
       rmSync(path, {force: true});
-    } catch {
-      // Continue cleanup if a concurrent rename already removed the file.
-    }
+    } catch {}
   }
 }

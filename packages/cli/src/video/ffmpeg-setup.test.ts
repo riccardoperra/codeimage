@@ -243,21 +243,14 @@ describe('ffmpeg prerequisite', () => {
     },
   );
 
-  it.each(['stdin', 'stdout', 'stderr'])(
+  it.each(['stdin', 'stdout', 'stderr'] as const)(
     'never prompts or installs when %s is not a TTY',
     async stream => {
       state.files.add('/tools/brew');
-      Object.defineProperty(
-        process[
-          stream === 'stdin'
-            ? 'stdin'
-            : stream === 'stdout'
-              ? 'stdout'
-              : 'stderr'
-        ],
-        'isTTY',
-        {value: false, configurable: true},
-      );
+      Object.defineProperty(process[stream], 'isTTY', {
+        value: false,
+        configurable: true,
+      });
       await expect(resolveFfmpeg(darwin())).rejects.toThrow(
         /brew\.sh.*--ffmpeg.*CODEIMAGE_FFMPEG/,
       );
