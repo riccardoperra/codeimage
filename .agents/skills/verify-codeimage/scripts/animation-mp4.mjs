@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import {animationGifCases} from './animation-gif.mjs';
 import {execFileSync} from 'node:child_process';
 import {readFile, writeFile} from 'node:fs/promises';
 import {createMockContext} from './mock-context.mjs';
@@ -70,24 +71,19 @@ export function animationMp4Cases({
   const dialog = () => page.locator('[data-animation-export]');
   const close = () =>
     dialog().getByRole('button', {name: 'Close', exact: true}).click();
-  async function choose(label, position) {
+  async function choose(label, value) {
     await dialog()
       .getByRole('button', {name: new RegExp(label)})
       .click();
-    const listbox = page.getByRole('listbox').last();
-    await listbox.waitFor();
-    const popup = await listbox.elementHandle();
-    const options = listbox.getByRole('option');
-    const option = position === 'Home' ? options.first() : options.last();
-    const value = await option.innerText();
-    await option.click();
-    await popup.waitForElementState('hidden');
-    assert.ok(
-      (
-        await dialog()
-          .getByRole('button', {name: new RegExp(label)})
-          .innerText()
-      ).includes(value),
+    await page.getByRole('option', {name: value, exact: true}).click();
+    await page.waitForFunction(
+      ({label, value}) =>
+        [...document.querySelectorAll('[data-animation-export] button')].some(
+          button =>
+            button.getAttribute('aria-label') === label &&
+            button.textContent.includes(value),
+        ),
+      {label, value},
     );
     await ready();
   }
@@ -96,7 +92,8 @@ export function animationMp4Cases({
       () =>
         !!document.querySelector('[data-animation-export] [role="alert"]') ||
         [...document.querySelectorAll('[data-animation-export] button')].some(
-          button => button.textContent === 'Export MP4' && !button.disabled,
+          button =>
+            /^Export (MP4|GIF)$/.test(button.textContent) && !button.disabled,
         ),
       undefined,
       {timeout: 60000},
@@ -450,9 +447,13 @@ export function animationMp4Cases({
       }
       await open();
       await ready();
-      await choose('Output size', 'End');
-      await choose('Frame rate', 'End');
-      results.push(await exportFile('animation-1080p60'));
+      await choose('Output size', '1,920 × 1,080');
+      await choose('Frame rate', '60 fps');
+      const fullHd = await exportFile('animation-1080p60');
+      assert.equal(fullHd.stream.width, 1920);
+      assert.equal(fullHd.stream.height, 1080);
+      assert.equal(fullHd.stream.r_frame_rate, '60/1');
+      results.push(fullHd);
       await close();
       if (process.env.VERIFY_WEBKIT === '1') await crossWebkit();
       await open();
@@ -570,7 +571,7 @@ export function animationMp4Cases({
       await close();
       await open();
       await ready();
-      await choose('Scale', 'Home');
+      await choose('Scale', '1×');
       const single = await exportFile('animation-visible-1x');
       assert.ok(Math.abs(doubled.stream.width - single.stream.width * 2) <= 2);
       assert.ok(
@@ -791,7 +792,148 @@ export function animationMp4Cases({
     }
     return results;
   }
+  const gif = animationGifCases({
+    page: () => page,
+    out,
+    setup,
+    doctor,
+    open,
+    ready,
+    close,
+    choose,
+    shot: name => shot(name),
+    editor: () => editor(),
+  });
   return {
+    gifEstimates: async () => {
+      const results = [];
+      for (const fixture of [
+        {
+          name: 'estimate-1080p-fifty',
+          lineCounts: [6, 8, 9],
+          output: true,
+          fps: 50,
+          transition: 1000,
+        },
+        {
+          name: 'estimate-1080p-twelve',
+          output: true,
+          steps: 4,
+          transition: 1200,
+          rotate: true,
+        },
+        {
+          name: 'estimate-solid-1080p-twelve',
+          output: true,
+          steps: 4,
+          transition: 1200,
+          rotate: true,
+          solid: true,
+        },
+        {
+          name: 'estimate-solid-long-no-hint',
+          output: true,
+          steps: 9,
+          transition: 1200,
+          rotate: true,
+          solid: true,
+        },
+        {name: 'heldout-solid-1x', lines: 12, scale: 1, solid: true},
+        {name: 'heldout-solid-2x', lines: 12, scale: 2, solid: true},
+        {
+          name: 'heldout-solid-square',
+          lines: 6,
+          target: 'Square',
+          fps: 50,
+          steps: 4,
+          transition: 800,
+          solid: true,
+        },
+        {
+          name: 'heldout-solid-portrait',
+          lines: 3,
+          target: 'LinkedIn portrait',
+          transition: 1000,
+          solid: true,
+        },
+        {
+          name: 'heldout-solid-long-under-six',
+          output: true,
+          steps: 7,
+          transition: 1200,
+          rotate: true,
+          solid: true,
+        },
+        {
+          name: 'heldout-solid-over-eight',
+          output: true,
+          steps: 14,
+          transition: 1200,
+          rotate: true,
+          solid: true,
+        },
+        {name: 'estimate-1080p-nine', lines: 9, output: true, transition: 900},
+        {
+          name: 'estimate-square-fifty',
+          lines: 6,
+          target: 'Square',
+          fps: 50,
+          steps: 4,
+          transition: 800,
+        },
+        {
+          name: 'estimate-portrait-gradient',
+          lines: 3,
+          target: 'LinkedIn portrait',
+          transition: 1000,
+        },
+        {
+          name: 'estimate-1080p-hidden',
+          lines: 6,
+          output: true,
+          fps: 50,
+          transition: 1000,
+          hidden: true,
+        },
+        {name: 'estimate-short-1x', lines: 3, scale: 1},
+        {name: 'estimate-short-2x', lines: 3, scale: 2},
+        {name: 'estimate-hidden-2x', lines: 3, scale: 2, hidden: true},
+        {name: 'estimate-twelve-lines-1x', scale: 1},
+        {name: 'estimate-twelve-lines-2x', scale: 2},
+        {
+          name: 'estimate-twelve-steps-1x',
+          scale: 1,
+          steps: 12,
+          transition: 1200,
+        },
+        {name: 'estimate-near-eight-1x', scale: 1, steps: 9, transition: 1200},
+        {name: 'estimate-over-eight-1x', scale: 1, steps: 10, transition: 1200},
+        {name: 'estimate-fifty-2x', scale: 2, fps: 50},
+        {
+          name: 'heldout-square-twelve',
+          target: 'Square',
+          steps: 4,
+          transition: 900,
+        },
+        {
+          name: 'heldout-portrait-nine',
+          lines: 9,
+          target: 'LinkedIn portrait',
+          transition: 900,
+        },
+        {name: 'estimate-short-pink-hold-2x', scale: 2, palette: true},
+      ].filter(
+        f =>
+          !process.env.VERIFY_GIF_FIXTURES ||
+          process.env.VERIFY_GIF_FIXTURES.split(',').includes(f.name),
+      ))
+        results.push(
+          await isolated(fixture.name, () => gif.measurements(fixture))(),
+        );
+      return results;
+    },
+    gifLayouts: isolated('animation-gif', gif.layouts),
+    gifFallback: isolated('animation-gif-fallback', gif.fallback),
     layouts: isolated('animation-mp4', layouts),
     errors: isolated('animation-mp4-errors', errors),
     compositing: isolated('animation-mp4-compositing', compositing),

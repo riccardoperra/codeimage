@@ -1,10 +1,11 @@
 import {createSignal, onCleanup} from 'solid-js';
+import {errorMessage, type Mp4Support} from '../core/video/encode';
 import {
-  checkMp4Support,
-  errorMessage,
-  type Mp4Config,
-  type Mp4Support,
-} from '../core/video/encode';
+  ANIMATION_FORMATS,
+  checkAnimationSupport,
+  type AnimationConfig,
+  type AnimationFormat,
+} from '../core/video/formats';
 import type {
   AnimationEvent,
   AnimationFailure,
@@ -18,7 +19,13 @@ export type AnimationJob =
   | {kind: 'ready'; support: Mp4Support}
   | {kind: 'preparing'}
   | {kind: 'encoding'; done: number; total: number}
-  | {kind: 'done'; blob: Blob; size: number; durationMs: number}
+  | {
+      kind: 'done';
+      format: AnimationFormat;
+      blob: Blob;
+      size: number;
+      durationMs: number;
+    }
   | {
       kind: 'failed';
       reason: AnimationFailure;
@@ -40,11 +47,14 @@ export interface AnimationWorker {
 export function createAnimationExport(
   changed: (state: AnimationJob) => void,
   makeWorker: () => AnimationWorker,
-  check: (config: Mp4Config) => Promise<Mp4Support> = checkMp4Support,
+  check: (
+    config: AnimationConfig,
+  ) => Promise<Mp4Support> = checkAnimationSupport,
 ) {
   let state: AnimationJob = {kind: 'idle'};
   let worker: AnimationWorker | undefined;
   let generation = 0;
+  let format: AnimationFormat = 'mp4';
   let disconnectMessageError: (() => void) | undefined;
   const set = (value: AnimationJob) => {
     state = value;
@@ -81,10 +91,13 @@ export function createAnimationExport(
           return;
         case 'done': {
           if (state.kind !== 'encoding' && state.kind !== 'preparing') return;
-          const blob = new Blob([data.buffer], {type: 'video/mp4'});
+          const blob = new Blob([data.buffer], {
+            type: ANIMATION_FORMATS[format].mime,
+          });
           release();
           set({
             kind: 'done',
+            format,
             blob,
             size: blob.size,
             durationMs: data.durationMs,
@@ -120,7 +133,7 @@ export function createAnimationExport(
   };
   return {
     state: () => state,
-    async check(input: Mp4Config | (() => Promise<Mp4Config>)) {
+    async check(input: AnimationConfig | (() => Promise<AnimationConfig>)) {
       release();
       const current = ++generation;
       set({kind: 'checking'});
@@ -148,6 +161,7 @@ export function createAnimationExport(
       try {
         const job = await prepare();
         if (current !== generation) return;
+        format = job.config.kind;
         worker?.postMessage({kind: 'export', job});
       } catch (error) {
         if (current === generation) fail(errorMessage(error));

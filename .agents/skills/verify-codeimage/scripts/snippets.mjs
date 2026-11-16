@@ -215,10 +215,24 @@ export async function auditSnippets({feature, doctor, context, base, out}) {
   const screenshots = resolve(out, 'read-only');
   await mkdir(screenshots, {recursive: true});
   async function matrix(name, run, {share = false} = {}) {
+    const layouts = process.env.VERIFY_SNIPPET_LAYOUT
+      ? [process.env.VERIFY_SNIPPET_LAYOUT]
+      : ['inspector', 'dock', 'studio'];
+    const widths = process.env.VERIFY_SNIPPET_WIDTH
+      ? [Number(process.env.VERIFY_SNIPPET_WIDTH)]
+      : [1440, 390];
+    assert.ok(
+      layouts.every(value => ['inspector', 'dock', 'studio'].includes(value)),
+      'known snippet layout',
+    );
+    assert.ok(
+      widths.every(value => [1440, 390].includes(value)),
+      'known snippet viewport',
+    );
     const lanes = [];
     try {
-      for (const layout of ['inspector', 'dock', 'studio']) {
-        for (const width of [1440, 390]) {
+      for (const layout of layouts) {
+        for (const width of widths) {
           const tag = `${layout}-${width}`;
           const laneContext = await createMockContext(context.browser(), base, {
             viewport: {width, height: width === 390 ? 844 : 900},

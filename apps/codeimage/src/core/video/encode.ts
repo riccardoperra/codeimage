@@ -9,6 +9,7 @@ import type {AnimationSettings, Size} from '../animation/model';
 
 export type VideoFps = AnimationSettings['fps'];
 export type Mp4Config = {
+  kind: 'mp4';
   encoder: VideoEncoderConfig;
   fps: VideoFps;
   width: number;
@@ -39,6 +40,7 @@ export function mp4Config(size: Size, fps: VideoFps): Mp4Config {
             ? '33'
             : '34';
   return {
+    kind: 'mp4',
     width,
     height,
     fps,

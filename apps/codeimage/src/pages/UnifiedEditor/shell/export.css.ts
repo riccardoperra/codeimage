@@ -246,3 +246,31 @@ export const videoPopover = style([
 ]);
 
 export const videoColor = style({width: themeVars.spacing['24']});
+
+export const videoFormatItem = style({
+  display: 'flex',
+  alignItems: 'center',
+  gap: themeVars.spacing['2'],
+  minHeight: themeVars.spacing['8'],
+  selectors: {'&[data-disabled]': {opacity: themeVars.opacity['50']}},
+});
+export const videoFormatRadio = style({
+  display: 'grid',
+  placeItems: 'center',
+  width: themeVars.spacing['4'],
+  height: themeVars.spacing['4'],
+  border: `${themeVars.borderWidth.default} solid ${c.baseText}`,
+  borderRadius: themeVars.borderRadius.full,
+  selectors: {
+    '&[data-focus-visible]': {
+      outline: `${themeVars.borderWidth['2']} solid ${c.baseText}`,
+      outlineOffset: themeVars.spacing['1'],
+    },
+  },
+});
+export const videoFormatIndicator = style({
+  width: themeVars.spacing['2'],
+  height: themeVars.spacing['2'],
+  borderRadius: themeVars.borderRadius.full,
+  background: c.baseText,
+});

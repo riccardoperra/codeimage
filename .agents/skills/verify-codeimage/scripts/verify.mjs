@@ -226,6 +226,7 @@ try {
   }
   await rm(scratch, {recursive: true, force: true});
   await rm(`${scratch}-cache`, {recursive: true, force: true});
+  await rm(`${scratch}-chrome`, {recursive: true, force: true});
   await writeFile(resolve(out, 'run.log'), log.join(''));
   assert.ok(
     (await readFile(resolve(out, 'result.json'))).length,

@@ -68,6 +68,7 @@ export type TimelineScene =
       durationMs: number;
       // How far into the transition the scene starts.
       offsetMs: number;
+      activeRanges: readonly (readonly [number, number])[];
       // The code area, from compileScene.
       code: string;
       frame: FrameMotion;
@@ -296,6 +297,16 @@ export function planTimeline(
         step: active,
         durationMs,
         offsetMs,
+        activeRanges: (boxDeclarations(from) !== boxDeclarations(to) ||
+        (from.window &&
+          to.window &&
+          windowDeclarations(from.window) !== windowDeclarations(to.window))
+          ? ([[0, transitionMs]] satisfies [number, number][])
+          : compiled.activeRanges
+        ).map(([start, end]): [number, number] => [
+          start - offsetMs,
+          end - offsetMs,
+        ]),
         code: compiled.html,
         frame: {
           ...motion,

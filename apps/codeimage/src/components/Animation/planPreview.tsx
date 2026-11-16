@@ -214,7 +214,7 @@ export interface PreviewMeasurement {
 }
 
 export function planPreviewTimeline(
-  settings: AnimationSettings,
+  settings: Omit<AnimationSettings, 'fps'> & {fps: number},
   measured: PreviewMeasurement,
 ): PreviewPlan {
   const step = (

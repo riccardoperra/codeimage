@@ -1,5 +1,5 @@
 import type {Size} from '../animation/model';
-import type {Mp4Config} from './encode';
+import type {AnimationConfig} from './formats';
 import type {RasterizeResources} from '../rasterize/takumi';
 
 export type AnimationFailure =
@@ -15,12 +15,12 @@ export type AnimationExport = {
   scenes: AnimationScene[];
   resources: RasterizeResources;
   css: string;
-  config: Mp4Config;
+  config: AnimationConfig;
   pixelRatio: number;
   contentSize: Size;
 };
 export type AnimationRequest =
-  | {kind: 'warm'; config: Mp4Config}
+  | {kind: 'warm'; config: AnimationConfig}
   | {kind: 'export'; job: AnimationExport}
   | {kind: 'cancel'};
 export type AnimationEvent =

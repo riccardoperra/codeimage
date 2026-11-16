@@ -18,16 +18,18 @@ import {
 } from '../../../components/Animation/planPreview';
 import {prepareWatermark} from '../../../core/watermark/scope';
 import {frameRules} from '../../../core/animation/timeline';
-import type {
-  AnimationSettings,
-  NonEmpty,
-  Size,
-} from '../../../core/animation/model';
+import type {NonEmpty, Size} from '../../../core/animation/model';
 import {
   collectSnapshotResources,
   cloneAnimationNode,
 } from '../../../core/rasterize/takumi';
-import {mp4Config, type VideoFps} from '../../../core/video/encode';
+import {
+  ANIMATION_FORMATS,
+  animationConfig,
+  gifFrameBudget,
+  type AnimationFps,
+  type AnimationFormat,
+} from '../../../core/video/formats';
 import type {AnimationExport} from '../../../core/video/protocol';
 import {createSignal, getOwner, runWithOwner, Show} from 'solid-js';
 import {render} from 'solid-js/web';
@@ -41,13 +43,14 @@ export function animationSnapshot() {
   const style = useFrameCodeStyle();
   const owner = getOwner();
   const measure = async (
-    fps: VideoFps,
+    fps: AnimationFps,
     output: Size | undefined,
     scale: number,
+    format: AnimationFormat,
   ) => {
-    const settings: AnimationSettings = structuredClone({
+    const settings = structuredClone({
       ...animation.settings(),
-      fps,
+      fps: ANIMATION_FORMATS[format].frameRate(fps),
     });
     const tab = (editorId: string): PreviewTab => {
       const value = editor.state.editors.find(tab => tab.id === editorId);
@@ -89,11 +92,28 @@ export function animationSnapshot() {
       false,
     );
     const {timeline, languages} = planPreviewTimeline(settings, measured);
+    // Natural padding is already covered by the gradient area term. Only
+    // fixed targets need an additional charge for their exposed background.
+    const backgroundArea = target
+      ? (measured.steps.reduce((sum, {layout}) => {
+          const window = layout.window;
+          const windowArea = window
+            ? window.width * window.height * window.scale ** 2
+            : Math.max(0, layout.size.width - frame.store.padding * 2) *
+              Math.max(0, layout.size.height - frame.store.padding * 2);
+          return (
+            sum +
+            Math.max(0, layout.size.width * layout.size.height - windowArea)
+          );
+        }, 0) /
+          measured.steps.length) *
+        pixelRatio ** 2
+      : 0;
     const contentSize = {
       width: timeline.width * pixelRatio,
       height: timeline.height * pixelRatio,
     };
-    const config = mp4Config(contentSize, fps);
+    const config = animationConfig(format, contentSize, fps);
     return {
       settings,
       tabs,
@@ -105,25 +125,53 @@ export function animationSnapshot() {
       languages,
       contentSize,
       config,
+      metrics: measured.metrics,
+      backgroundArea,
     };
   };
   const describe = async (
-    fps: VideoFps,
+    fps: AnimationFps,
     output: Size | undefined,
     scale: number,
+    format: AnimationFormat,
   ) => {
-    const {config, timeline} = await measure(fps, output, scale);
+    const {config, timeline, tabs, metrics, pixelRatio, backgroundArea} =
+      await measure(fps, output, scale, format);
     const ms = timeline.scenes.reduce(
       (sum, scene) => sum + scene.durationMs,
       0,
     );
-    return {config, durationMs: (Math.ceil((ms * fps) / 1000) * 1000) / fps};
+    const durationMs =
+      (Math.ceil((ms * config.fps) / 1000) * 1000) / config.fps;
+    const frameBudget = gifFrameBudget(timeline.scenes, config.fps);
+    const estimatedBytes = ANIMATION_FORMATS[format].estimate({
+      ...config,
+      durationMs,
+      frameBudget,
+      pixelRatio,
+      textArea:
+        (tabs.reduce(
+          (sum, tab) => sum + tab.code.replace(/\s/g, '').length,
+          0,
+        ) /
+          tabs.length) *
+        metrics.charWidth *
+        metrics.lineHeight,
+      detailedBackground:
+        frame.store.visible &&
+        frame.store.opacity > 0 &&
+        (getAssetsStore().isAssetUrl(frame.store.background) ||
+          /(?:gradient|url)\(/i.test(frame.store.background ?? '')),
+      backgroundArea,
+    });
+    return {config, durationMs, estimatedBytes, frameBudget};
   };
   const capture = async (
-    fps: VideoFps,
+    fps: AnimationFps,
     output: Size | undefined,
     scale: number,
     matte: string,
+    format: AnimationFormat,
   ): Promise<AnimationExport> => {
     const {
       settings,
@@ -136,7 +184,7 @@ export function animationSnapshot() {
       languages,
       contentSize,
       config,
-    } = await measure(fps, output, scale);
+    } = await measure(fps, output, scale, format);
     const assets = getAssetsStore();
     const background = frame.store.background;
     const backgroundImage = assets.isAssetUrl(background)
