@@ -18,7 +18,7 @@ Read these before changing the editor:
 
 - Do not add code comments. Explain the change in the commit message or the pull request.
 - Styles are vanilla-extract `.css.ts` files with tokens from `@codeimage/ui`. A `style()` selector must target `&`; child selectors go in `globalStyle`.
-- Use the `@codeui/kit` components (Button, IconButton, Tooltip, Popover, DropdownMenu, SegmentedField) before building a control by hand.
+- Use the `@codeui/kit` components (Button, IconButton, Tooltip, Popover, DropdownMenu) and the app's `SegmentedField` (`@ui/SegmentedField`) before building a control by hand.
 - Every visible string goes through the locale files, in English, Italian, German and Spanish.
 - The editor is CodeMirror 6. Change it through decorations, gutter markers, tooltips and CodeMirror event handlers, never by editing or querying its DOM.
 - A native `on:keydown` that calls `stopPropagation` also stops Solid's delegated handlers below it. Use it only around text fields.
