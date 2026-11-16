@@ -148,9 +148,14 @@ async function run(kind, entry, index, extension) {
   return bytes;
 }
 for (let index = 0; index < 10; index++) {
-  const base = await run('base-webp', baseline, index, 'webp');
-  const next = await run('head-webp', head, index, 'webp');
-  assert.ok(base.equals(next), 'WebP bytes differ');
+  const order =
+    index % 2 ? ['head-webp', 'base-webp'] : ['base-webp', 'head-webp'];
+  const pair = [];
+  for (const kind of order)
+    pair.push(
+      await run(kind, kind === 'base-webp' ? baseline : head, index, 'webp'),
+    );
+  assert.ok(pair[0].equals(pair[1]), 'WebP bytes differ');
 }
 const baseMedian = median(
   runs.filter(run => run.kind === 'base-webp').map(run => run.ms),

@@ -13,8 +13,6 @@ import {parsePreset} from './snapshot';
 import type {CodeInput} from './snapshot';
 import {createUi} from './ui';
 import {describeError} from './errors';
-import {downloadFfmpeg} from './video/download';
-import {exportMp4, resolveFfmpeg} from './video/ffmpeg';
 import {stopVideo} from './video/lifecycle';
 
 const ui = createUi(process.argv.includes('--quiet'));
@@ -53,6 +51,7 @@ async function main() {
     return;
   }
   if (args.kind === 'install-ffmpeg') {
+    const {downloadFfmpeg} = await import('./video/download');
     process.stdout.write(`${await downloadFfmpeg()}\n`);
     return;
   }
@@ -96,6 +95,7 @@ async function main() {
     const started = performance.now();
     if (args.mp4 && args.animation) {
       const {document} = planAnimation(output.snapshot, args.animation, preset);
+      const {exportMp4, resolveFfmpeg} = await import('./video/ffmpeg');
       const ffmpeg = await resolveFfmpeg({path: args.ffmpeg});
       const {bytes} = await ui.run('Rendering MP4', async () =>
         exportMp4({

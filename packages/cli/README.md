@@ -264,7 +264,11 @@ Download failures exit with code 2 and list all four ways to supply ffmpeg.
 The downloaded ffmpeg builds include GPL components. They are separate
 executables and are not bundled in the CLI npm package. Operators should
 review the cached release notices and confirm the GPL-3.0 handling described
-in the animation plan before merging A6 or redistributing these binaries.
+in the animation plan before merging A6 or redistributing these binaries. The
+macOS arm64 asset in this release also reports `--enable-nonfree`, and its
+`ffmpeg -L` output says it is not legally redistributable. The operator must
+review this additional restriction; the GPL note alone does not describe that
+asset.
 
 Reproduce the CLI live lanes from a tmux pane after building:
 
