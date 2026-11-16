@@ -95,8 +95,8 @@ async function main() {
   for (const output of outputs) {
     const started = performance.now();
     if (args.mp4 && args.animation) {
-      const ffmpeg = await resolveFfmpeg({path: args.ffmpeg});
       const {document} = planAnimation(output.snapshot, args.animation, preset);
+      const ffmpeg = await resolveFfmpeg({path: args.ffmpeg});
       const {bytes} = await ui.run('Rendering MP4', async () =>
         exportMp4({
           animation: await renderer.animationFrames(document),
