@@ -75,7 +75,7 @@ describe('CLI streams', {timeout: 30_000}, () => {
         await renderUsage(COMMAND),
       ).replace(' (codeimage)', '');
       expect(result.stderr).toBe(
-        `CodeImage CLI\nhttps://app.codeimage.dev · https://github.com/riccardoperra/codeimage\n\n${usage.endsWith('\n') ? usage : `${usage}\n`}Fonts: codeimage fonts install [ids...] [--all] [--offline] | list [--json] | clean [-y]\n`,
+        `CodeImage CLI\nhttps://app.codeimage.dev · https://github.com/riccardoperra/codeimage\n\n${usage.endsWith('\n') ? usage : `${usage}\n`}Fonts: codeimage fonts install [ids...] [--all] [--offline] | list [--json] | clean [-y]\nVideo: codeimage a.ts b.ts --animate -o demo.mp4 [--ffmpeg <path>] (requires ffmpeg with libx264)\n`,
       );
     },
   );

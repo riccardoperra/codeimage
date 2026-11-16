@@ -25,7 +25,13 @@ const CORE_ARGS = {
     type: 'string',
     valueHint: 'type',
     description:
-      'png, jpeg, webp, or svg (default: from -o, else png). With --animate: webp, gif, or apng',
+      'png, jpeg, webp, or svg (default: from -o, else png). With --animate: mp4, webp, gif, or apng',
+  },
+  ffmpeg: {
+    type: 'string',
+    valueHint: 'path',
+    description:
+      'ffmpeg executable with libx264 for MP4 (default: CODEIMAGE_FFMPEG, PATH)',
   },
   theme: {
     type: 'string',
@@ -117,7 +123,19 @@ export function parseArgs(argv: string[], stdoutIsTTY = true) {
   if (values.help) return {kind: 'help'} as const;
 
   if (values.output === '') throw new UsageError('-o: expected a path or -');
-  const animation = parseAnimation(values);
+  const mp4 =
+    'animate' in values &&
+    values.animate === true &&
+    (values.format?.toLowerCase() ??
+      extname(values.output ?? '')
+        .slice(1)
+        .toLowerCase()) === 'mp4';
+  const animation = parseAnimation(mp4 ? {...values, format: 'webp'} : values);
+  if (values.ffmpeg !== undefined && (!mp4 || !values.ffmpeg.trim())) {
+    throw new UsageError(
+      '--ffmpeg: expected an executable path with --animate and MP4 output',
+    );
+  }
   // An animation has its own formats, and its snapshot keeps the default.
   const format = animation
     ? 'png'
@@ -173,10 +191,14 @@ export function parseArgs(argv: string[], stdoutIsTTY = true) {
     preset: values.preset,
     format,
     animation,
+    mp4,
+    ffmpeg: values.ffmpeg,
     scale,
     output:
       values.output ??
-      (stdoutIsTTY ? `codeimage.${animation?.format ?? format}` : '-'),
+      (stdoutIsTTY
+        ? `codeimage.${mp4 ? 'mp4' : (animation?.format ?? format)}`
+        : '-'),
     values: values as FlagValues,
   } as const;
 }

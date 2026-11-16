@@ -31,7 +31,13 @@ export {
   supportedFontIds,
   supportedThemeIds,
 } from './render';
-export type {AnnotatedCode, SnapshotFont, SnapshotMarkup} from './render';
+export type {
+  AnimationFrame,
+  RawAnimation,
+  AnnotatedCode,
+  SnapshotFont,
+  SnapshotMarkup,
+} from './render';
 
 export {openFontCache, FontUnavailableError, FontFileError} from './fontCache';
 export type {

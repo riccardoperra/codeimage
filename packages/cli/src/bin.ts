@@ -13,6 +13,7 @@ import {parsePreset} from './snapshot';
 import type {CodeInput} from './snapshot';
 import {createUi} from './ui';
 import {describeError} from './errors';
+import {stopVideo} from './video/lifecycle';
 
 const ui = createUi(process.argv.includes('--quiet'));
 
@@ -43,6 +44,9 @@ async function main() {
     ui.usage(await renderUsage(COMMAND));
     ui.text(
       'Fonts: codeimage fonts install [ids...] [--all] [--offline] | list [--json] | clean [-y]',
+    );
+    ui.text(
+      'Video: codeimage a.ts b.ts --animate -o demo.mp4 [--ffmpeg <path>] (requires ffmpeg with libx264)',
     );
     return;
   }
@@ -84,6 +88,24 @@ async function main() {
   };
   for (const output of outputs) {
     const started = performance.now();
+    if (args.mp4 && args.animation) {
+      const {document} = planAnimation(output.snapshot, args.animation, preset);
+      const {exportMp4, resolveFfmpeg} = await import('./video/ffmpeg');
+      const ffmpeg = await resolveFfmpeg({
+        path: args.ffmpeg,
+        prompts: ui.prompts,
+        warn: ui.warn,
+      });
+      const {bytes} = await ui.run('Rendering MP4', async () =>
+        exportMp4({
+          animation: await renderer.animationFrames(document),
+          ffmpeg,
+          output: output.path,
+        }),
+      );
+      ui.rendered({path: output.path, bytes, ms: performance.now() - started});
+      continue;
+    }
     const image = await ui.run(
       args.animation ? 'Rendering the animation' : 'Rendering',
       () => render(output.snapshot),
@@ -131,6 +153,7 @@ async function writeAtomically(path: string, data: string | Uint8Array) {
 // process.exit waits for the running native render, so the handler re-raises
 // the signal with the default action instead.
 function removePartialAndStop(signal: NodeJS.Signals) {
+  stopVideo();
   if (partial) rmSync(partial, {force: true});
   process.removeAllListeners(signal);
   process.kill(process.pid, signal);

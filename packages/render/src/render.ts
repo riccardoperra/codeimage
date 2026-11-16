@@ -105,6 +105,22 @@ export async function supportedFontIds(): Promise<string[]> {
 export interface RendererOptions extends FontCacheOptions {
   codeFontFile?: string;
 }
+
+export interface AnimationFrame {
+  width: number;
+  height: number;
+  // Treat as read-only: adjacent hold frames may share these bytes.
+  rgba: Uint8Array;
+}
+
+export interface RawAnimation {
+  width: number;
+  height: number;
+  fps: number;
+  durationMs: number;
+  // A single-use stream; frames are rendered only as the consumer requests them.
+  frames: AsyncIterable<AnimationFrame>;
+}
 // The frame rate a file of `format` plays at when the settings ask for `fps`.
 // A GIF frame lasts whole hundredths of a second, and Takumi rejects one
 // shorter than two of them. As the web export does (gifFps in
@@ -328,6 +344,60 @@ export function createRenderer(options: RendererOptions = {}) {
   }
 
   return {
+    async animationFrames(input: AnimationInput): Promise<RawAnimation> {
+      const document = parseAnimationDocument(input);
+      const opened = await open(document);
+      const {entry, renderer, fonts, fontFamilies, scale, pageCss} = opened;
+      const fps = document.animation.fps;
+      const animation = await entry.renderAnimationScenes(
+        document,
+        {...document.animation, fps},
+        opened.host,
+      );
+      const scenes = await watermarkScenes(animation, opened.placeWatermark);
+      const width = Math.floor(animation.width * scale);
+      const height = Math.floor(animation.height * scale);
+      const durationMs = scenes.reduce(
+        (sum, scene) => sum + scene.durationMs,
+        0,
+      );
+      return {
+        width,
+        height,
+        fps,
+        durationMs,
+        frames: (async function* () {
+          let index = 0;
+          let startMs = 0;
+          for (const scene of scenes) {
+            const html = normalizeStyleAttributes(scene.html);
+            const endMs = startMs + scene.durationMs;
+            let held: Uint8Array | undefined;
+            while ((index * 1000) / fps < endMs) {
+              options.signal?.throwIfAborted();
+              const rgba =
+                held ??
+                (await renderer.render(html, {
+                  css: pageCss(animation.css),
+                  images: animation.images,
+                  fontFamilies,
+                  fonts,
+                  width,
+                  height,
+                  format: 'raw',
+                  devicePixelRatio: scale,
+                  timeMs: Math.floor((index * 1000) / fps) - startMs,
+                  signal: options.signal,
+                }));
+              if (scene.kind === 'hold') held = rgba;
+              yield {width, height, rgba};
+              index++;
+            }
+            startMs = endMs;
+          }
+        })(),
+      };
+    },
     async markup(input: SnapshotInput): Promise<SnapshotMarkup> {
       return (await prepare(input)).markup;
     },
