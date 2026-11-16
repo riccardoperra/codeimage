@@ -5,27 +5,67 @@ import {easingOf} from '@core/animation/easing';
 import {
   parseAnimationSettings,
   parseDraft,
-  seedSteps,
+  deriveSteps,
   segmentsOf,
   stepAt,
 } from './animationSettings';
 
 const step = (editorId: string, holdMs = 800) => ({editorId, holdMs});
-test('legacy ids are deterministic, repeats survive and new tabs never join', () => {
-  const saved = {steps: [step('b'), step('a'), step('b'), step('missing')]};
-  const settings = parseAnimationSettings(saved, ['a', 'b', 'c']);
+const tabs = (...ids: [string, ...string[]]) => {
+  const tab = (id: string) => ({id, marks: {lines: [], focusedLines: []}});
+  return [tab(ids[0]), ...ids.slice(1).map(tab)] as const;
+};
+test('migration derives tab order, removes repeats and inserts new tabs while keeping timing by id', () => {
+  const saved = {
+    steps: [step('b', 450), step('a', 200), step('b', 900), step('missing')],
+  };
+  const settings = parseAnimationSettings(saved, tabs('a', 'b', 'c'));
   assert.deepEqual(
-    settings.steps.map(s => [s.id, s.editorId]),
+    settings.steps.map(s => [s.id, s.holdMs]),
     [
-      ['b', 'b'],
-      ['a', 'a'],
-      ['b~2', 'b'],
+      ['a', 200],
+      ['b', 450],
+      ['c', 800],
     ],
   );
-  assert.deepEqual(parseAnimationSettings(settings, ['a', 'b', 'c']), settings);
+  const reordered = parseAnimationSettings(settings, tabs('c', 'b'));
   assert.deepEqual(
-    seedSteps(['a', 'b']).map(s => s.id),
-    ['a', 'b'],
+    reordered.steps.map(s => [s.id, s.holdMs]),
+    [
+      ['c', 800],
+      ['b', 450],
+    ],
+  );
+  assert.deepEqual(
+    parseAnimationSettings(settings, tabs('a', 'b', 'c')),
+    settings,
+  );
+});
+test('scripts and diff marks derive stable step ids and views', () => {
+  assert.deepEqual(
+    deriveSteps([
+      {id: 'a', marks: {lines: [{line: 2, kind: 'added'}], focusedLines: []}},
+    ]).map(s => [s.id, s.view]),
+    [
+      ['a:before', {kind: 'diff', side: 'before'}],
+      ['a:after', {kind: 'diff', side: 'after'}],
+    ],
+  );
+  assert.deepEqual(
+    deriveSteps([
+      {
+        id: 'a',
+        marks: {
+          lines: [],
+          focusedLines: [],
+          script: {steps: ['one', 'two'], lines: []},
+        },
+      },
+    ]).map(s => [s.id, s.view]),
+    [
+      ['one', {kind: 'script', step: 1}],
+      ['two', {kind: 'script', step: 2}],
+    ],
   );
 });
 test('defaults, field validation, header trimming and bounds', () => {
@@ -41,7 +81,7 @@ test('defaults, field validation, header trimming and bounds', () => {
       fps: 25,
       header: {mode: 'title', title: ' hi '},
     },
-    ['a', 'b'],
+    tabs('a', 'b'),
   );
   assert.equal(settings.steps[0].holdMs, 0);
   assert.equal(settings.steps[1].holdMs, 10000);
@@ -52,8 +92,8 @@ test('defaults, field validation, header trimming and bounds', () => {
   assert.deepEqual(settings.header, {mode: 'title', title: 'hi'});
   assert.equal(settings.easing, 'smooth');
   assert.deepEqual(
-    parseAnimationSettings({steps: [step('a', 0)]}, ['a']).steps,
-    [{id: 'a', editorId: 'a', holdMs: 800}],
+    parseAnimationSettings({steps: [step('a', 0)]}, tabs('a')).steps,
+    [{id: 'a', editorId: 'a', view: {kind: 'tab'}, holdMs: 800}],
   );
   assert.equal(
     parseDraft({
@@ -68,11 +108,10 @@ test('stepAt agrees with scene ownership at every millisecond and boundary', () 
       steps: [
         step('a', 0),
         {...step('b', 50), transition: {ms: 101, easing: 'strong'}},
-        step('a', 0),
       ],
       transitionMs: 103,
     },
-    ['a', 'b'],
+    tabs('a', 'b'),
   );
   const toStep = (s: (typeof settings.steps)[number]) => ({
     lines: [],
@@ -101,7 +140,8 @@ test('stepAt agrees with scene ownership at every millisecond and boundary', () 
     start += scene.durationMs;
   }
   assert.equal(stepAt(settings, start), settings.steps.length - 1);
-  assert.equal(segmentsOf(settings).at(-1)?.startMs, start);
+  const last = segmentsOf(settings).at(-1)!;
+  assert.equal(last.startMs + last.durationMs, start);
 });
 
 test('a missing or invalid hold defaults independently of a valid step id', () => {

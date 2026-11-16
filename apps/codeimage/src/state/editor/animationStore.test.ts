@@ -16,7 +16,7 @@ const tab = (id: string): EditorState => ({
   marks: {lines: [{line: 1, kind: 'highlight'}], focusedLines: [1]},
   tab: {tabName: `${id}.ts`},
 });
-test('explicit enrollment, stable ids, transitions, commits, duplication and removal', () =>
+test('tabs always derive steps and timing updates persist independently of selection', () =>
   createRoot(dispose => {
     const [tabs, setTabs] = createSignal([tab('a'), tab('b')]);
     const [active, setActive] = createSignal('a');
@@ -42,19 +42,15 @@ test('explicit enrollment, stable ids, transitions, commits, duplication and rem
     });
     const saves: unknown[] = [];
     animation.stateToPersist$.subscribe(value => saves.push(value));
-    assert.equal(animation.stateToPersist(), undefined);
+    assert.equal(animation.stateToPersist().steps.length, 2);
     animation.actions.setOpen(true);
     assert.deepEqual(
       animation.settings().steps.map(s => s.id),
       ['a', 'b'],
     );
     setTabs([...state.editors, tab('c')]);
-    assert.equal(animation.settings().steps.length, 2);
-    animation.actions.addStep('a');
-    const id = animation.settings().steps[2].id;
-    assert.notEqual(id, 'a');
-    animation.actions.moveStep(id, -1);
-    assert.equal(animation.settings().steps[1].id, id);
+    assert.equal(animation.settings().steps.length, 3);
+    const id = 'c';
     const count = saves.length;
     animation.actions.setHoldMs(id, 1234, {commit: false});
     animation.actions.setTransition(
@@ -71,22 +67,19 @@ test('explicit enrollment, stable ids, transitions, commits, duplication and rem
     assert.ok(animation.settings().steps.every(s => !s.transition));
     animation.actions.setHeader({mode: 'title', title: ' hello '});
     assert.equal(animation.settings().header.title, 'hello');
-    animation.actions.duplicateAsNext(id);
-    assert.equal(
-      animation.settings().steps[2].editorId,
-      'copy',
-      JSON.stringify({steps: animation.settings().steps, tabs: state.editors}),
+    setTabs([state.editors[2], state.editors[0]]);
+    assert.deepEqual(
+      animation.settings().steps.map(step => step.id),
+      ['c', 'a'],
     );
-    assert.deepEqual(state.editors.at(-1)?.marks, state.editors[0].marks);
-    assert.equal(animation.playback().state, 'editing');
+    assert.equal(animation.settings().steps[0].holdMs, 1234);
     animation.actions.select({stepId: id, kind: 'hold'});
-    animation.actions.removeStep(id);
-    assert.equal(animation.selection(), null);
+    setTabs([state.editors[1]]);
+    assert.deepEqual(
+      animation.settings().steps.map(step => step.id),
+      ['a'],
+    );
     animation.actions.setFromPersistedState(animation.stateToPersist());
     assert.equal(animation.settings().header.mode, 'title');
-    while (animation.settings().steps.length > 1)
-      animation.actions.removeStep(animation.settings().steps[0].id);
-    animation.actions.removeStep(animation.settings().steps[0].id);
-    assert.equal(animation.settings().steps.length, 1);
     dispose();
   }));

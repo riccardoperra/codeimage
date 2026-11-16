@@ -1,9 +1,15 @@
 import type {LineMark, TabMarks} from '@codeimage/store/editor/model';
 import type {TokenLine} from '@core/snapshot/tokenize';
 
+export type StepView =
+  | {kind: 'tab'}
+  | {kind: 'diff'; side: 'before' | 'after'}
+  | {kind: 'script'; step: number};
+
 export type AnimationStepSettings = {
   id: string;
   editorId: string;
+  view?: StepView;
   holdMs: number;
   transition?: {ms: number; easing: EasingValue};
 };

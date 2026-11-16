@@ -1,3 +1,4 @@
+import {projectStep} from '@core/animation/project';
 import {Portal} from 'solid-js/web';
 import {useI18n} from '@codeimage/locale';
 import {getExportCanvasStore} from '@codeimage/store/canvas';
@@ -69,10 +70,9 @@ export function AnimationPreview(
       const tab = editor.state.editors.find(({id}) => id === step.editorId)!;
       return {
         id: tab.id,
-        code: tab.code,
+        ...projectStep({code: tab.code, marks: tab.marks}, step.view),
         languageId: tab.languageId,
         lineNumberStart: tab.lineNumberStart,
-        marks: tab.marks,
         tabName: tab.tab.tabName,
       };
     });

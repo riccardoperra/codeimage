@@ -25,7 +25,6 @@ import {
   clampDuration,
   parseDraft,
   reconcileSteps,
-  seedSteps,
   segmentsOf,
   stepAt,
   totalDurationMs,
@@ -128,7 +127,11 @@ export function createAnimationStore(
     return [first.id, ...rest.map(tab => tab.id)] as const;
   });
   const [draft, setDraft] = createSignal<AnimationDraft>(EMPTY_DRAFT);
-  const settings = createMemo(() => reconcileSteps(draft(), editorIds()));
+  const tabs = createMemo(() => {
+    const [first, ...rest] = editor.state.editors;
+    return [first, ...rest] as const;
+  });
+  const settings = createMemo(() => reconcileSteps(draft(), tabs()));
   const segments = createMemo(() => segmentsOf(settings()));
   const durationMs = createMemo(() => totalDurationMs(settings()));
   const [playback, setPlayback] = createSignal<Playback>({state: 'editing'});
@@ -217,10 +220,8 @@ export function createAnimationStore(
   );
   createEffect(
     on(
-      editorIds,
-      ids => {
-        if (!untrack(draft).steps.length) return;
-        const reconciled = reconcileSteps(untrack(draft), ids);
+      settings,
+      reconciled => {
         if (
           JSON.stringify(reconciled.steps) !==
           JSON.stringify(untrack(draft).steps)
@@ -236,10 +237,7 @@ export function createAnimationStore(
       {defer: true},
     ),
   );
-  const stateToPersist = () =>
-    draft().steps.length
-      ? {...settings(), steps: [...settings().steps]}
-      : undefined;
+  const stateToPersist = () => ({...settings(), steps: [...settings().steps]});
   const setHoldMs = (
     stepId: string,
     holdMs: number,
@@ -312,8 +310,6 @@ export function createAnimationStore(
     actions: {
       setOpen(value: boolean) {
         batch(() => {
-          if (value && !draft().steps.length)
-            update(settings => ({...settings, steps: seedSteps(editorIds())}));
           setOpen(value);
           if (!value) {
             edit();
