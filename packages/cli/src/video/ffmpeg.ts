@@ -36,8 +36,10 @@ export async function resolveFfmpeg({
   env = process.env,
   platform = process.platform,
   prompts,
+  warn,
 }: {
   path?: string;
+  warn?: (message: string) => void;
   env?: NodeJS.ProcessEnv;
   platform?: NodeJS.Platform;
   prompts?: Pick<NonNullable<Ui['prompts']>, 'confirm'>;
@@ -58,17 +60,23 @@ export async function resolveFfmpeg({
     }
   }
 
+  let warned = false;
   async function find() {
-    for (const [source, candidate] of [
-      ['--ffmpeg', path],
-      ['CODEIMAGE_FFMPEG', env.CODEIMAGE_FFMPEG],
-    ] as const) {
-      if (!candidate) continue;
-      if (await executable(candidate, platform))
-        return paths.resolve(candidate);
+    if (path) {
+      if (await executable(path, platform)) return paths.resolve(path);
       throw new UsageError(
-        `${source}: ${candidate} is not an executable file. ${FFMPEG_HELP}`,
+        `--ffmpeg: ${path} is not an executable file. ${FFMPEG_HELP}`,
       );
+    }
+    const fromEnv = env.CODEIMAGE_FFMPEG;
+    if (fromEnv) {
+      if (await executable(fromEnv, platform)) return paths.resolve(fromEnv);
+      if (!warned) {
+        warned = true;
+        warn?.(
+          `CODEIMAGE_FFMPEG: ${fromEnv} is not an executable file; looking for ffmpeg on PATH`,
+        );
+      }
     }
     const found = await onPath('ffmpeg');
     if (found) return found;

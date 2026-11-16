@@ -230,7 +230,17 @@ await lane(4, async () => {
   assert.equal(rejected.code, 2);
   assert.ok(rejected.stderr.includes(`--ffmpeg: ${flag} is not an executable`));
   assert.ok(!existsSync(invalid));
-  return {order: ['flag', 'CODEIMAGE_FFMPEG', 'PATH']};
+  await rm(fromEnv);
+  const fallback = join(out, 'resolve-env-fallback.mp4');
+  const warned = await start([...quick, '-o', fallback], {
+    env: {...process.env, PATH: path, CODEIMAGE_FFMPEG: fromEnv},
+  }).done;
+  assert.equal(warned.code, 0, warned.stderr);
+  assert.ok(
+    warned.stderr.includes(`CODEIMAGE_FFMPEG: ${fromEnv} is not an executable`),
+  );
+  probe(fallback);
+  return {order: ['flag', 'CODEIMAGE_FFMPEG', 'PATH'], envFallback: true};
 });
 await lane(5, async () => {
   const unsupported = join(out, 'unsupported-ffmpeg');

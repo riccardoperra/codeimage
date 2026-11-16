@@ -94,6 +94,7 @@ async function main() {
       const ffmpeg = await resolveFfmpeg({
         path: args.ffmpeg,
         prompts: ui.prompts,
+        warn: ui.warn,
       });
       const {bytes} = await ui.run('Rendering MP4', async () =>
         exportMp4({

@@ -1,8 +1,9 @@
 # A6 CLI MP4 verification
 
 MP4 requires user-installed ffmpeg with libx264. The CLI resolves it from
-`--ffmpeg <path>`, `CODEIMAGE_FFMPEG`, then PATH. An explicit flag or
-variable that is not an executable file exits 2 without falling back. On Windows it also checks
+`--ffmpeg <path>`, `CODEIMAGE_FFMPEG`, then PATH. A `--ffmpeg` path that
+is not an executable file exits 2 without falling back. An invalid
+`CODEIMAGE_FFMPEG` prints a warning and falls back to PATH. On Windows it also checks
 `%LOCALAPPDATA%\Microsoft\WinGet\Links\ffmpeg.exe` after PATH. The selected
 executable must list libx264 in `ffmpeg -hide_banner -encoders`.
 

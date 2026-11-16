@@ -153,21 +153,30 @@ describe('ffmpeg prerequisite', () => {
     expect(await resolveFfmpeg({platform, env})).toBe(linked);
   });
 
-  it.each([
-    ['--ffmpeg', {path: '/missing/ffmpeg'}],
-    ['CODEIMAGE_FFMPEG', {env: {...env, CODEIMAGE_FFMPEG: '/missing/ffmpeg'}}],
-  ] as const)(
-    'reports an invalid %s instead of falling back to PATH',
-    async (source, options) => {
-      state.files.add('/tools/ffmpeg');
-      state.files.add('/tools/brew');
-      await expect(resolveFfmpeg({...darwin(), ...options})).rejects.toThrow(
-        `${source}: /missing/ffmpeg is not an executable file`,
-      );
-      expect(state.confirm).not.toHaveBeenCalled();
-      expect(spawn).not.toHaveBeenCalled();
-    },
-  );
+  it('reports an invalid --ffmpeg instead of falling back to PATH', async () => {
+    state.files.add('/tools/ffmpeg');
+    state.files.add('/tools/brew');
+    await expect(
+      resolveFfmpeg({...darwin(), path: '/missing/ffmpeg'}),
+    ).rejects.toThrow('--ffmpeg: /missing/ffmpeg is not an executable file');
+    expect(state.confirm).not.toHaveBeenCalled();
+    expect(spawn).not.toHaveBeenCalled();
+  });
+
+  it('warns about an invalid CODEIMAGE_FFMPEG and falls back to PATH', async () => {
+    state.files.add('/tools/ffmpeg');
+    state.files.add('/tools/brew');
+    const warn = vi.fn();
+    await resolveFfmpeg({
+      ...darwin(),
+      env: {...env, CODEIMAGE_FFMPEG: '/missing/ffmpeg'},
+      warn,
+    });
+    expect(warn).toHaveBeenCalledExactlyOnceWith(
+      'CODEIMAGE_FFMPEG: /missing/ffmpeg is not an executable file; looking for ffmpeg on PATH',
+    );
+    expect(state.confirm).not.toHaveBeenCalled();
+  });
 
   it('does not check WinGet Links on macOS', async () => {
     state.files.add(
