@@ -44,7 +44,9 @@ async function quality(file, job, out, name) {
     still = 0,
     error = 0,
     maxDelta = 0,
-    wrong = 0;
+    wrong = 0,
+    pinkPixels = 0,
+    pinkMaxDelta = 0;
   let previous;
   const kept = [];
   for (let i = 0; i < total; i++) {
@@ -84,6 +86,10 @@ async function quality(file, job, out, name) {
         worst = Math.max(worst, d);
       }
       maxDelta = Math.max(maxDelta, worst);
+      if (raw[p] === 227 && raw[p + 1] === 148 && raw[p + 2] === 220) {
+        pinkPixels++;
+        pinkMaxDelta = Math.max(pinkMaxDelta, worst);
+      }
       wrong += Number(worst > 48);
       if (
         previous &&
@@ -156,6 +162,8 @@ async function quality(file, job, out, name) {
     errorMean: error / (total * job.config.width * job.config.height * 3),
     maxDelta,
     wrong,
+    pinkPixels,
+    pinkMaxDelta,
   };
   assert.equal(localPalettes, 0, 'only a global palette');
   assert.equal(holes, 0);
@@ -223,7 +231,9 @@ export function animationGifCases({
       Worker.prototype.postMessage = function (message, ...args) {
         if (message?.kind === 'export') {
           window.__gifJob = message.job;
+          window.__gifProgress = [];
           this.addEventListener('message', ({data}) => {
+            if (data.kind === 'progress') window.__gifProgress.push(data);
             if (data.kind === 'done') {
               const {buffer, ...stats} = data;
               window.__gifDone = stats;
@@ -236,6 +246,22 @@ export function animationGifCases({
   }
   async function exportGif(name, compare = false) {
     const page = getPage();
+    const estimateLabel = await dialog()
+      .locator('[data-animation-size-estimate]')
+      .innerText();
+    const estimatedBytes = Number(
+      await dialog()
+        .locator('[data-animation-size-estimate]')
+        .getAttribute('data-estimated-bytes'),
+    );
+    const frameBudget = Number(
+      await dialog()
+        .locator('[data-animation-size-estimate]')
+        .getAttribute('data-frame-budget'),
+    );
+    const suggestion = await dialog()
+      .locator('[data-gif-suggestion]')
+      .isVisible();
     const before = loadavg();
     const pageStarted = await page.evaluate(() => performance.now());
     const started = performance.now();
@@ -251,6 +277,14 @@ export function animationGifCases({
     await got.saveAs(file);
     const wallMs = performance.now() - started;
     const stats = await page.evaluate(() => window.__gifDone);
+    const progress = await page.evaluate(() => window.__gifProgress);
+    assert.ok(progress.length > 1);
+    assert.ok(
+      progress.every(p => p.total === stats.frames && p.done <= p.total),
+      'palette renders are excluded from frame progress',
+    );
+    assert.equal(progress[0].done, 0);
+    assert.equal(progress.at(-1).done, stats.frames);
     const longTasks = await page.evaluate(
       start => window.__gifTasks.filter(t => t.start >= start),
       pageStarted,
@@ -258,6 +292,8 @@ export function animationGifCases({
     assert.ok(stats?.frames > 0, 'worker completed a real encode');
     const bytes = await readFile(file);
     assert.equal(bytes.toString('ascii', 0, 6), 'GIF89a');
+    if (bytes.length >= 8_000_000)
+      assert.ok(suggestion, 'every measured GIF of at least 8 MB suggests MP4');
     const frames = decodeGif(bytes);
     let durationMs = 0,
       frameCount = 0;
@@ -288,6 +324,10 @@ export function animationGifCases({
       height: job.config.height,
       fps: job.config.fps,
       bytes: bytes.length,
+      estimateLabel,
+      estimatedBytes,
+      frameBudget,
+      suggestion,
       wallMs,
       longestMainThreadTaskMs: Math.max(0, ...longTasks.map(t => t.duration)),
       stats,
@@ -303,6 +343,120 @@ export function animationGifCases({
       JSON.stringify(result, null, 2),
     );
     return result;
+  }
+  async function measurements(fixture) {
+    const codes = fixture.palette
+      ? [
+          'const a = 1;',
+          'const b = 2;',
+          'const pink = "unique";\nconst re = /pink/g;\nconst template = `only here`;',
+          'const d = 4;',
+        ]
+      : Array.from({length: 3}, (_, step) =>
+          Array.from(
+            {length: fixture.lines ?? 12},
+            (_, i) =>
+              `const item${i} = transform(${step + 1 + i}, item${Math.max(0, i - 1)});`,
+          ).join('\n'),
+        );
+    await setup(12, codes);
+    const page = getPage();
+    for (
+      let step = codes.length;
+      step < (fixture.steps ?? codes.length);
+      step++
+    ) {
+      await page.getByRole('button', {name: 'Steps', exact: true}).click();
+      const add = page.getByRole('menuitem', {
+        name: 'Add to animation',
+        exact: true,
+      });
+      await add.hover();
+      await page.keyboard.press('ArrowRight');
+      await page
+        .locator('[data-animation-steps-menu]')
+        .last()
+        .getByRole('menuitem')
+        .nth(step % codes.length)
+        .click();
+    }
+    if (fixture.hidden) {
+      await page.locator('[data-section="frame"] > button').click();
+      await page.getByRole('switch', {name: 'Visible', exact: true}).focus();
+      await page.keyboard.press('Space');
+    }
+    const segments = page.locator('[data-animation-segment]');
+    const durations = fixture.palette
+      ? [8700, 700, 800, 200, 300, 200, 800]
+      : Array.from({length: (fixture.steps ?? codes.length) * 2 - 1}, (_, i) =>
+          i % 2 ? (fixture.transition ?? 600) : 600,
+        );
+    for (const [index, duration] of durations.entries()) {
+      await segments.nth(index).click();
+      await page.locator('#animationDuration-input').fill(String(duration));
+      await page.locator('#animationDuration-input').press('Enter');
+    }
+    await instrument();
+    await open();
+    await ready();
+    await selectGif();
+    await choose('Scale', `${fixture.scale}×`);
+    if (fixture.fps === 50) await chooseRate(50);
+    const result = await exportGif(fixture.name, !!fixture.palette);
+    if (fixture.palette) {
+      assert.ok(
+        result.fidelity.pinkPixels > 0,
+        'fixture includes the reported pink syntax',
+      );
+      assert.ok(
+        result.fidelity.pinkMaxDelta < 12,
+        'short hold keeps its unique pink syntax',
+      );
+    }
+    await close();
+    return {...result, fixture};
+  }
+  async function cancelWorker() {
+    const elapsedMs = await getPage().evaluate(
+      () =>
+        new Promise((resolve, reject) => {
+          const worker = new Worker('/src/workers/animation.worker.ts', {
+            type: 'module',
+          });
+          const timer = setTimeout(() => {
+            worker.terminate();
+            reject(new Error('GIF worker did not acknowledge Cancel'));
+          }, 10000);
+          let cancelledAt;
+          worker.onmessage = ({data}) => {
+            if (data.kind === 'failed') {
+              clearTimeout(timer);
+              worker.terminate();
+              reject(new Error(data.cause));
+            }
+            if (
+              data.kind === 'progress' &&
+              data.done >= 3 &&
+              cancelledAt === undefined
+            ) {
+              cancelledAt = performance.now();
+              worker.postMessage({kind: 'cancel'});
+            }
+            if (data.kind === 'cancelled') {
+              clearTimeout(timer);
+              worker.terminate();
+              resolve(performance.now() - cancelledAt);
+            }
+          };
+          worker.postMessage({kind: 'export', job: window.__gifJob});
+        }),
+    );
+    assert.ok(elapsedMs < 750, `worker receives Cancel in ${elapsedMs} ms`);
+    await writeFile(
+      resolve(out, 'gif-worker-cancel.json'),
+      JSON.stringify({elapsedMs}),
+    );
+    return elapsedMs;
   }
   async function layouts() {
     await setup(12);
@@ -360,6 +514,40 @@ export function animationGifCases({
     }
     await open();
     await ready();
+    await chooseRate(24);
+    await selectGif();
+    assert.match(
+      await dialog()
+        .getByRole('button', {name: /Frame rate/})
+        .innerText(),
+      /25 fps/,
+    );
+    await dialog().getByRole('radio', {name: 'MP4', exact: true}).focus();
+    await page.keyboard.press('Space');
+    await ready();
+    assert.match(
+      await dialog()
+        .getByRole('button', {name: /Frame rate/})
+        .innerText(),
+      /24 fps/,
+    );
+    await chooseRate(50);
+    await selectGif();
+    assert.match(
+      await dialog()
+        .getByRole('button', {name: /Frame rate/})
+        .innerText(),
+      /50 fps/,
+    );
+    await dialog().getByRole('radio', {name: 'MP4', exact: true}).focus();
+    await page.keyboard.press('Space');
+    await ready();
+    assert.match(
+      await dialog()
+        .getByRole('button', {name: /Frame rate/})
+        .innerText(),
+      /50 fps/,
+    );
     await chooseRate(60); // 60 persists from MP4 into GIF.
     await selectGif();
     assert.match(
@@ -367,6 +555,7 @@ export function animationGifCases({
       /50 fps.*60 fps/,
     );
     results.push(await exportGif('gif-60-as-50', true));
+    await cancelWorker();
     // Optional interleaved measurements reuse the visible format controls.
     // Output paths overwrite each rate's prior repeat to keep evidence small.
     for (let run = 1; run < Number(process.env.VERIFY_GIF_RUNS ?? 1); run++) {
@@ -403,7 +592,7 @@ export function animationGifCases({
     await open();
     await ready();
     await selectGif();
-    await choose('Output size', 'End');
+    await choose('Output size', '1,920 × 1,080');
     assert.ok(
       await dialog().locator('[data-gif-suggestion]').isVisible(),
       'large GIF suggests MP4',
@@ -478,5 +667,5 @@ export function animationGifCases({
     }
     return results;
   }
-  return {layouts, fallback};
+  return {layouts, fallback, measurements};
 }

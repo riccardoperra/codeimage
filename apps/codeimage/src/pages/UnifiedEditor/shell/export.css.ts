@@ -252,19 +252,19 @@ export const videoFormatItem = style({
   alignItems: 'center',
   gap: themeVars.spacing['2'],
   minHeight: themeVars.spacing['8'],
-  selectors: {'&[data-disabled]': {opacity: 0.5}},
+  selectors: {'&[data-disabled]': {opacity: themeVars.opacity['50']}},
 });
 export const videoFormatRadio = style({
   display: 'grid',
   placeItems: 'center',
   width: themeVars.spacing['4'],
   height: themeVars.spacing['4'],
-  border: `1px solid ${c.baseText}`,
+  border: `${themeVars.borderWidth.default} solid ${c.baseText}`,
   borderRadius: themeVars.borderRadius.full,
   selectors: {
     '&[data-focus-visible]': {
-      outline: `2px solid ${c.baseText}`,
-      outlineOffset: 3,
+      outline: `${themeVars.borderWidth['2']} solid ${c.baseText}`,
+      outlineOffset: themeVars.spacing['1'],
     },
   },
 });

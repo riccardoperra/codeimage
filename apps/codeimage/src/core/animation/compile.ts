@@ -56,11 +56,14 @@ export function compileScene(
   metrics: CodeMetrics,
   timing: SceneTiming,
   name: string,
-): {html: string; css: string} {
+): {html: string; css: string; activeRanges: [number, number][]} {
   const {charWidth, lineHeight} = metrics;
   const {from, to} = scene;
   const keyframes: string[] = [];
   let count = 0;
+  let moving = false;
+  let leaving = false;
+  let entering = false;
   const animate = (frames: string, id = `${name}-${count++}`) => {
     keyframes.push(`@keyframes ${id}{${frames}}`);
     return animationCss(id, timing);
@@ -84,6 +87,7 @@ export function compileScene(
         `{${at(pose)}${fades ? `;opacity:${pose.opacity}` : ''}}`;
       const style = [at(end)];
       if (fades || start.x !== end.x || start.y !== end.y) {
+        moving = true;
         style.push(animate(`from${frame(start)}to${frame(end)}`));
       }
       if (!fades && end.opacity !== 1) style.push(`opacity:${end.opacity}`);
@@ -93,12 +97,14 @@ export function compileScene(
       .map(item => {
         const motion: Motion = item;
         if (motion.kind === 'leave') {
+          leaving = true;
           const start = pose(motion.from, from);
           const fade = `0%{opacity:${start.opacity}}${percent(LEAVE_END)}{opacity:0}100%{opacity:0}`;
           return layer.element(item, `${at(start)};${animate(fade)}`);
         }
         const end = pose(motion.to, to);
         if (motion.kind === 'enter') {
+          entering = true;
           const fade = `0%{opacity:0}${percent(ENTER_START)}{opacity:0}100%{opacity:${end.opacity}}`;
           return layer.element(item, `${at(end)};${animate(fade)}`);
         }
@@ -116,6 +122,7 @@ export function compileScene(
   const sizedBox = (id: string, fromColumns: number, toColumns: number) => {
     const size = (columns: number, rows: number) =>
       `width:${px(columns * charWidth)};height:${px(rows * lineHeight)}`;
+    if (fromColumns !== toColumns || from.rows !== to.rows) moving = true;
     const end = size(toColumns, to.rows);
     return `position:relative;${end};${animate(`from{${size(fromColumns, from.rows)}}to{${end}}`, id)}`;
   };
@@ -155,5 +162,16 @@ export function compileScene(
       : `<div class="cm-gutters" aria-hidden="true"><div class="cm-gutter cm-lineNumbers"><div class="cm-gutterElement" style="grid-row:1">${bands(mark => `class="cm-gutterElement cm-lineMark-${mark}"`)}<div style="${sizedBox(`${name}-gutter`, gutter.fromColumns, gutter.toColumns)}">${numbers}</div></div></div></div>`,
     `<div class="cm-content cm-lineWrapping"><div class="cm-line" style="position:relative"><div style="position:absolute;left:0;top:0;right:0;bottom:0">${bands(mark => `data-mark="${mark}"`)}</div><div style="${sizedBox(`${name}-box`, from.columns, to.columns)}">${code}</div></div></div>`,
   ].join('');
-  return {html, css: keyframes.join('\n')};
+  const activeRanges: [number, number][] = moving
+    ? [[0, timing.transitionMs]]
+    : [];
+  if (!moving) {
+    if (leaving) activeRanges.push([0, timing.transitionMs * LEAVE_END]);
+    if (entering)
+      activeRanges.push([
+        timing.transitionMs * ENTER_START,
+        timing.transitionMs,
+      ]);
+  }
+  return {html, css: keyframes.join('\n'), activeRanges};
 }

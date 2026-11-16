@@ -17,7 +17,10 @@ export type AnimationFps = AnimationSettings['fps'] | 25;
 type Estimate = Size & {
   fps: AnimationFps;
   durationMs: number;
-  distinctFrames: number;
+  frameBudget: number;
+  pixelRatio: number;
+  textArea: number;
+  background: boolean;
 };
 
 const mp4Fps = (fps: AnimationFps): VideoFps => (fps === 25 ? 30 : fps);
@@ -54,8 +57,25 @@ export const ANIMATION_FORMATS = {
       height: Math.ceil(size.height),
       fps: gifFps(fps),
     }),
-    estimate: ({width, height, distinctFrames}: Estimate) =>
-      width * height * distinctFrames * 0.043,
+    // Text edges grow more slowly than pixel area as scale increases. A
+    // separate background term avoids charging a hidden frame for gradients.
+    // Coefficients and the 20% headroom are calibrated by the Chrome matrix
+    // in docs/plans/a5-verification.md, rather than by elapsed clip length.
+    estimate: ({
+      width,
+      height,
+      frameBudget,
+      pixelRatio,
+      textArea,
+      background,
+    }: Estimate) => {
+      const text = textArea * 0.2 * pixelRatio ** 1.2;
+      const chrome = 2500 * pixelRatio ** 1.2;
+      const backdrop = background
+        ? (width * height) ** 0.65 * 3.1
+        : Math.sqrt(width * height) * 2;
+      return 800 + (text + chrome + backdrop) * frameBudget * 1.2;
+    },
     check: async (_config: GifConfig): Promise<Mp4Support> => ({
       kind: 'supported',
     }),
@@ -92,18 +112,57 @@ export function createAnimationEncoder(
     : ANIMATION_FORMATS.gif.create(config, samples);
 }
 
-// Holds cost one GIF frame. Transitions are sampled at the output frame rate.
-export function estimateDistinctFrames(
-  scenes: Pick<TimelineScene, 'kind' | 'durationMs'>[],
+// The worker samples on one global clock, not a fresh clock per half-scene.
+// Budget one frame per visible hold, exactly as the GIF encoder merges it.
+// Collapse the compiler's static fade plateaus too. Quantization can merge
+// additional poses, so the remaining transition count is an upper bound.
+export function gifFrameBudget(
+  scenes: (
+    | {kind: 'hold'; durationMs: number}
+    | Pick<
+        Extract<TimelineScene, {kind: 'transition'}>,
+        'kind' | 'durationMs' | 'activeRanges'
+      >
+  )[],
   fps: number,
 ) {
-  return scenes.reduce(
-    (sum, scene) =>
-      sum +
-      (scene.kind === 'hold'
-        ? 1
-        : Math.max(1, Math.ceil((scene.durationMs * fps) / 1000))),
-    0,
+  let startMs = 0;
+  let count = 0;
+  for (const [index, scene] of scenes.entries()) {
+    const first = Math.ceil((startMs * fps) / 1000);
+    const end = Math.ceil(((startMs + scene.durationMs) * fps) / 1000);
+    const frames = end - first;
+    if (scene.kind === 'hold') count += Number(frames > 0);
+    else {
+      let previous = -1;
+      for (let frame = first; frame < end; frame++) {
+        const timeMs = Math.floor((frame * 1000) / fps) - startMs;
+        const pose = scene.activeRanges.reduce(
+          (sum, [start, end]) =>
+            sum + Math.max(0, Math.min(timeMs - start, end - start)),
+          0,
+        );
+        const repeatsHold =
+          timeMs === 0 &&
+          scene.activeRanges.length > 1 &&
+          scenes[index - 1]?.kind === 'hold';
+        if (pose !== previous && !repeatsHold) count++;
+        previous = pose;
+      }
+    }
+    startMs += scene.durationMs;
+  }
+  return count;
+}
+
+export function nearestAnimationFps(
+  format: AnimationFormat,
+  fps: AnimationFps,
+) {
+  return ANIMATION_FORMATS[format].fpsOptions.reduce<AnimationFps>(
+    (nearest, value) =>
+      Math.abs(value - fps) < Math.abs(nearest - fps) ? value : nearest,
+    ANIMATION_FORMATS[format].defaultFps,
   );
 }
 

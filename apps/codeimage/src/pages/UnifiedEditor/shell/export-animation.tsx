@@ -25,7 +25,7 @@ import {
 import {
   ANIMATION_FORMATS,
   animationConfig,
-  estimateDistinctFrames,
+  gifFrameBudget,
   type AnimationFps,
   type AnimationFormat,
 } from '../../../core/video/formats';
@@ -107,6 +107,7 @@ export function animationSnapshot() {
       languages,
       contentSize,
       config,
+      metrics: measured.metrics,
     };
   };
   const describe = async (
@@ -115,20 +116,35 @@ export function animationSnapshot() {
     scale: number,
     format: AnimationFormat,
   ) => {
-    const {config, timeline} = await measure(fps, output, scale, format);
+    const {config, timeline, tabs, metrics, pixelRatio} = await measure(
+      fps,
+      output,
+      scale,
+      format,
+    );
     const ms = timeline.scenes.reduce(
       (sum, scene) => sum + scene.durationMs,
       0,
     );
     const durationMs =
       (Math.ceil((ms * config.fps) / 1000) * 1000) / config.fps;
-    const distinctFrames = estimateDistinctFrames(timeline.scenes, config.fps);
+    const frameBudget = gifFrameBudget(timeline.scenes, config.fps);
     const estimatedBytes = ANIMATION_FORMATS[format].estimate({
       ...config,
       durationMs,
-      distinctFrames,
+      frameBudget,
+      pixelRatio,
+      textArea:
+        (tabs.reduce(
+          (sum, tab) => sum + tab.code.replace(/\s/g, '').length,
+          0,
+        ) /
+          tabs.length) *
+        metrics.charWidth *
+        metrics.lineHeight,
+      background: frame.store.visible && frame.store.opacity > 0,
     });
-    return {config, durationMs, estimatedBytes};
+    return {config, durationMs, estimatedBytes, frameBudget};
   };
   const capture = async (
     fps: AnimationFps,

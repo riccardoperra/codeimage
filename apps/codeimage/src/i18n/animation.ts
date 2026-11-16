@@ -261,7 +261,7 @@ export const animationLocale = {
         cancel: 'Abbrechen',
         start: '{{format}} exportieren',
         download: '{{format}} herunterladen',
-        gifFpsNote: 'Bei 60 fps wird das GIF mit 50 fps abgespielt.',
+        gifFpsNote: 'Bei 60 Bilder/s wird das GIF mit 50 Bilder/s abgespielt.',
         estimate: 'Geschätzte Größe · {{size}}',
         suggestMp4:
           'Dieses GIF könnte größer als 8 MB werden. Wähle MP4 für eine kleinere Datei.',

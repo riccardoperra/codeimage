@@ -71,12 +71,20 @@ export function animationMp4Cases({
   const dialog = () => page.locator('[data-animation-export]');
   const close = () =>
     dialog().getByRole('button', {name: 'Close', exact: true}).click();
-  async function choose(label, position) {
+  async function choose(label, value) {
     await dialog()
       .getByRole('button', {name: new RegExp(label)})
       .click();
-    await page.keyboard.press(position);
-    await page.keyboard.press('Enter');
+    await page.getByRole('option', {name: value, exact: true}).click();
+    await page.waitForFunction(
+      ({label, value}) =>
+        [...document.querySelectorAll('[data-animation-export] button')].some(
+          button =>
+            button.getAttribute('aria-label') === label &&
+            button.textContent.includes(value),
+        ),
+      {label, value},
+    );
     await ready();
   }
   async function ready() {
@@ -439,9 +447,13 @@ export function animationMp4Cases({
       }
       await open();
       await ready();
-      await choose('Output size', 'End');
-      await choose('Frame rate', 'End');
-      results.push(await exportFile('animation-1080p60'));
+      await choose('Output size', '1,920 × 1,080');
+      await choose('Frame rate', '60 fps');
+      const fullHd = await exportFile('animation-1080p60');
+      assert.equal(fullHd.stream.width, 1920);
+      assert.equal(fullHd.stream.height, 1080);
+      assert.equal(fullHd.stream.r_frame_rate, '60/1');
+      results.push(fullHd);
       await close();
       if (process.env.VERIFY_WEBKIT === '1') await crossWebkit();
       await open();
@@ -559,7 +571,7 @@ export function animationMp4Cases({
       await close();
       await open();
       await ready();
-      await choose('Scale', 'Home');
+      await choose('Scale', '1×');
       const single = await exportFile('animation-visible-1x');
       assert.ok(Math.abs(doubled.stream.width - single.stream.width * 2) <= 2);
       assert.ok(
@@ -793,6 +805,34 @@ export function animationMp4Cases({
     editor: () => editor(),
   });
   return {
+    gifEstimates: async () => {
+      const results = [];
+      for (const fixture of [
+        {name: 'estimate-short-1x', lines: 3, scale: 1},
+        {name: 'estimate-short-2x', lines: 3, scale: 2},
+        {name: 'estimate-hidden-2x', lines: 3, scale: 2, hidden: true},
+        {name: 'estimate-twelve-lines-1x', scale: 1},
+        {name: 'estimate-twelve-lines-2x', scale: 2},
+        {
+          name: 'estimate-twelve-steps-1x',
+          scale: 1,
+          steps: 12,
+          transition: 1200,
+        },
+        {name: 'estimate-near-eight-1x', scale: 1, steps: 9, transition: 1200},
+        {name: 'estimate-over-eight-1x', scale: 1, steps: 10, transition: 1200},
+        {name: 'estimate-fifty-2x', scale: 2, fps: 50},
+        {name: 'estimate-short-pink-hold-2x', scale: 2, palette: true},
+      ].filter(
+        f =>
+          !process.env.VERIFY_GIF_FIXTURES ||
+          process.env.VERIFY_GIF_FIXTURES.split(',').includes(f.name),
+      ))
+        results.push(
+          await isolated(fixture.name, () => gif.measurements(fixture))(),
+        );
+      return results;
+    },
     gifLayouts: isolated('animation-gif', gif.layouts),
     gifFallback: isolated('animation-gif-fallback', gif.fallback),
     layouts: isolated('animation-mp4', layouts),

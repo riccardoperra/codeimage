@@ -26,6 +26,7 @@ import {
   ANIMATION_FORMATS,
   GIF_SUGGEST_MP4_BYTES,
   preferredAnimationFormat,
+  nearestAnimationFps,
   type AnimationFps,
   type AnimationFormat,
 } from '../../../core/video/formats';
@@ -61,6 +62,10 @@ export function createAnimationExporter() {
   const snapshot = animationSnapshot();
   const [open, setOpen] = createSignal(false);
   const [fps, setFps] = createSignal<AnimationFps>(30);
+  const persistFps = (value: AnimationFps) => {
+    setFps(value);
+    if (value !== 25) animation.actions.setFps(value);
+  };
   const [format, setFormat] = createSignal<AnimationFormat>('mp4');
   const [mp4Support, setMp4Support] = createSignal<Mp4Support>();
   const [scale, setScale] = createSignal<1 | 2 | 3>(2);
@@ -102,9 +107,8 @@ export function createAnimationExporter() {
       const selected = preferredAnimationFormat(outputFormat, support);
       if (selected !== outputFormat) {
         setFormat(selected);
-        const rate =
-          frameRate === 60 ? 60 : ANIMATION_FORMATS[selected].defaultFps;
-        setFps(rate);
+        const rate = nearestAnimationFps(selected, frameRate);
+        persistFps(rate);
         value = await snapshot.describe(rate, output, outputScale, selected);
       }
       if (current === generation) setSummary(value);
@@ -135,14 +139,13 @@ export function createAnimationExporter() {
   };
   const changeFps = (value: AnimationFps | null) => {
     if (!value) return;
-    setFps(value);
-    if (value !== 25) animation.actions.setFps(value);
+    persistFps(value);
     void refresh();
   };
   const changeFormat = (value: string) => {
     if (value !== 'mp4' && value !== 'gif') return;
     setFormat(value);
-    setFps(fps() === 60 ? 60 : ANIMATION_FORMATS[value].defaultFps);
+    persistFps(nearestAnimationFps(value, fps()));
     void refresh();
   };
   const changeSize = (value: 'current' | '1080p' | null) => {
@@ -404,7 +407,11 @@ export function AnimationExportContent(props: {
             {value => (
               <div class={styles.hint}>
                 <div>{summaryLabel()}</div>
-                <div data-animation-size-estimate>
+                <div
+                  data-animation-size-estimate
+                  data-estimated-bytes={value().estimatedBytes}
+                  data-frame-budget={value().frameBudget}
+                >
                   {t('animation.export.estimate', {
                     size: megabytes(value().estimatedBytes),
                   })}
@@ -412,7 +419,7 @@ export function AnimationExportContent(props: {
                 <Show
                   when={
                     exporter().format() === 'gif' &&
-                    value().estimatedBytes > GIF_SUGGEST_MP4_BYTES
+                    value().estimatedBytes >= GIF_SUGGEST_MP4_BYTES
                   }
                 >
                   <p data-gif-suggestion>{t('animation.export.suggestMp4')}</p>

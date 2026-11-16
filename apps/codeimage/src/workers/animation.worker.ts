@@ -75,20 +75,23 @@ async function exportAnimation(job: AnimationExport) {
       return rgba;
     };
     const indices = ANIMATION_FORMATS[job.config.kind].paletteSamples
-      ? paletteFrameIndices(total)
+      ? paletteFrameIndices(job.scenes, job.config.fps)
       : [];
-    const progressTotal = total + indices.length;
-    send({kind: 'progress', done: 0, total: progressTotal});
+    send({kind: 'progress', done: 0, total});
     const samples: Uint8Array[] = [];
     for (const index of indices) {
+      await new Promise<void>(resolve => setTimeout(resolve, 0));
       if (cancelled) return;
-      samples.push(palettePixels(await render(index)));
-      send({kind: 'progress', done: samples.length, total: progressTotal});
+      samples.push(palettePixels(await render(index), indices.length));
     }
     reason = 'encoder';
     encoder = await createAnimationEncoder(job.config, samples);
     samples.length = 0;
     for (let index = 0; index < total; index++) {
+      // Takumi and gifenc may resolve synchronously. A microtask cannot
+      // receive Cancel; yield to the worker's message queue every 3 frames.
+      if (index % 3 === 0)
+        await new Promise<void>(resolve => setTimeout(resolve, 0));
       if (cancelled) return;
       const rgba = await render(index);
       reason = 'encoder';
@@ -96,8 +99,8 @@ async function exportAnimation(job: AnimationExport) {
       if (index % 3 === 0 || index === total - 1)
         send({
           kind: 'progress',
-          done: indices.length + index + 1,
-          total: progressTotal,
+          done: index + 1,
+          total,
         });
     }
     const buffer = await encoder.finish();

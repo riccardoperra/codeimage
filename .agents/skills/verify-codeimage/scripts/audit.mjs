@@ -909,6 +909,7 @@ export async function audit({page, context, base, out, server}) {
     shot,
     section,
   });
+  await feature('animation-gif-estimates', mp4.gifEstimates);
   await feature('animation-gif', mp4.gifLayouts);
   await feature('animation-gif-fallback', mp4.gifFallback);
   await feature('animation-mp4', mp4.layouts);

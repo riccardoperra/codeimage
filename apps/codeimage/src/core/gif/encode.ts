@@ -1,22 +1,34 @@
 import {GIFEncoder, nearestColorIndex, quantize} from 'gifenc';
 import type {Size} from '../animation/model';
+import type {TimelineScene} from '../animation/timeline';
 
 export type GifConfig = Size & {kind: 'gif'; fps: 25 | 50};
 export const gifFps = (requested: number): GifConfig['fps'] =>
   requested >= 50 ? 50 : 25;
 
-export function paletteFrameIndices(total: number) {
-  const count = Math.min(16, total);
-  return Array.from({length: count}, (_, index) =>
-    Math.round((index * (total - 1)) / Math.max(1, count - 1)),
-  );
+// One representative per visible scene includes every hold, however short it
+// is relative to the clip. Split transitions each contribute their midpoint.
+// The number of samples is bounded by scenes, rather than clip duration.
+export function paletteFrameIndices(
+  scenes: Pick<TimelineScene, 'durationMs'>[],
+  fps: number,
+) {
+  let startMs = 0;
+  const indices: number[] = [];
+  for (const scene of scenes) {
+    const first = Math.ceil((startMs * fps) / 1000);
+    const end = Math.ceil(((startMs + scene.durationMs) * fps) / 1000);
+    if (first < end) indices.push(Math.floor((first + end - 1) / 2));
+    startMs += scene.durationMs;
+  }
+  return indices;
 }
 
-// Bound palette memory independently of clip length and output resolution.
-// Sample across the entire image, retaining all pixels of smaller frames.
-export function palettePixels(rgba: Uint8Array) {
+// Keep the combined palette input below 4M pixels, independently of the
+// number of steps and output resolution. Every scene gets the same budget.
+export function palettePixels(rgba: Uint8Array, samples = 16) {
   const pixels = rgba.length / 4;
-  const count = Math.min(262144, pixels);
+  const count = Math.min(262144, Math.floor(4194304 / samples), pixels);
   const sample = new Uint8Array(count * 4);
   for (let i = 0; i < count; i++) {
     const at = Math.floor((i * pixels) / count) * 4;
