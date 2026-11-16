@@ -38,14 +38,7 @@ export const animationLocale = {
         lineRange: 'Lines {{from}}–{{to}}',
         lineChanges: 'Line changes',
       },
-      stepDescription:
-        'Step {{n}} · {{tab}}. Transition: {{transition}}. Hold: {{hold}}',
-      firstStepDescription:
-        'Step {{n}} · {{tab}}. No incoming transition. Hold: {{hold}}',
-      addStepRow: 'Add step',
       closeStep: 'Close step settings',
-      tab: 'Tab',
-      transitionShort: 'Transition',
       holdShort: 'Hold',
       export: {
         title: 'Export animation',
@@ -98,14 +91,8 @@ export const animationLocale = {
       decreaseHold: 'Decrease hold by 100 ms',
       increaseTransition: 'Increase transition by 100 ms',
       decreaseTransition: 'Decrease transition by 100 ms',
-      duplicateLimit: 'Six tabs maximum. Close a tab to duplicate a step.',
-      addStep: 'Add to animation',
-      duplicate: 'Duplicate as next step',
       remove: 'Remove step',
       needsSteps: 'Add a step or tab to play',
-      selectHint: 'Select a segment to edit its timing',
-      stepName: 'Step {{n}} · {{tab}}',
-      betweenSteps: 'Step {{from}} → {{to}}',
       header: {
         label: 'Header',
         tab: 'Current tab',
@@ -189,14 +176,7 @@ export const animationLocale = {
         lineRange: 'Righe {{from}}–{{to}}',
         lineChanges: 'Modifiche alle righe',
       },
-      stepDescription:
-        'Passaggio {{n}} · {{tab}}. Transizione: {{transition}}. Pausa: {{hold}}',
-      firstStepDescription:
-        'Passaggio {{n}} · {{tab}}. Nessuna transizione in entrata. Pausa: {{hold}}',
-      addStepRow: 'Aggiungi passaggio',
       closeStep: 'Chiudi impostazioni passaggio',
-      tab: 'Scheda',
-      transitionShort: 'Transizione',
       holdShort: 'Pausa',
       export: {
         title: 'Esporta animazione',
@@ -250,15 +230,8 @@ export const animationLocale = {
       decreaseHold: 'Riduci la pausa di 100 ms',
       increaseTransition: 'Aumenta la transizione di 100 ms',
       decreaseTransition: 'Riduci la transizione di 100 ms',
-      duplicateLimit:
-        'Massimo sei schede. Chiudi una scheda per duplicare un passaggio.',
-      addStep: 'Aggiungi all’animazione',
-      duplicate: 'Duplica come passaggio successivo',
       remove: 'Rimuovi passaggio',
       needsSteps: 'Aggiungi un passaggio o una scheda per riprodurre',
-      selectHint: 'Seleziona un segmento per modificarne i tempi',
-      stepName: 'Passaggio {{n}} · {{tab}}',
-      betweenSteps: 'Passaggio {{from}} → {{to}}',
       header: {
         label: 'Intestazione',
         tab: 'Scheda corrente',
@@ -341,14 +314,7 @@ export const animationLocale = {
         lineRange: 'Zeilen {{from}}–{{to}}',
         lineChanges: 'Zeilenänderungen',
       },
-      stepDescription:
-        'Schritt {{n}} · {{tab}}. Übergang: {{transition}}. Halten: {{hold}}',
-      firstStepDescription:
-        'Schritt {{n}} · {{tab}}. Kein eingehender Übergang. Halten: {{hold}}',
-      addStepRow: 'Schritt hinzufügen',
       closeStep: 'Schritteinstellungen schließen',
-      tab: 'Tab',
-      transitionShort: 'Übergang',
       holdShort: 'Halten',
       export: {
         title: 'Animation exportieren',
@@ -402,15 +368,8 @@ export const animationLocale = {
       decreaseHold: 'Pause um 100 ms verringern',
       increaseTransition: 'Übergang um 100 ms erhöhen',
       decreaseTransition: 'Übergang um 100 ms verringern',
-      duplicateLimit:
-        'Maximal sechs Tabs. Schließe einen Tab, um einen Schritt zu duplizieren.',
-      addStep: 'Zur Animation hinzufügen',
-      duplicate: 'Als nächsten Schritt duplizieren',
       remove: 'Schritt entfernen',
       needsSteps: 'Zum Abspielen einen Schritt oder Tab hinzufügen',
-      selectHint: 'Segment auswählen, um die Dauer zu ändern',
-      stepName: 'Schritt {{n}} · {{tab}}',
-      betweenSteps: 'Schritt {{from}} → {{to}}',
       header: {
         label: 'Kopfzeile',
         tab: 'Aktueller Tab',
@@ -494,14 +453,7 @@ export const animationLocale = {
         lineRange: 'Líneas {{from}}–{{to}}',
         lineChanges: 'Cambios de línea',
       },
-      stepDescription:
-        'Paso {{n}} · {{tab}}. Transición: {{transition}}. Pausa: {{hold}}',
-      firstStepDescription:
-        'Paso {{n}} · {{tab}}. Sin transición de entrada. Pausa: {{hold}}',
-      addStepRow: 'Añadir paso',
       closeStep: 'Cerrar ajustes del paso',
-      tab: 'Pestaña',
-      transitionShort: 'Transición',
       holdShort: 'Pausa',
       export: {
         title: 'Exportar animación',
@@ -555,15 +507,8 @@ export const animationLocale = {
       decreaseHold: 'Reducir la pausa en 100 ms',
       increaseTransition: 'Aumentar la transición en 100 ms',
       decreaseTransition: 'Reducir la transición en 100 ms',
-      duplicateLimit:
-        'Máximo seis pestañas. Cierra una pestaña para duplicar un paso.',
-      addStep: 'Añadir a la animación',
-      duplicate: 'Duplicar como siguiente paso',
       remove: 'Eliminar paso',
       needsSteps: 'Añade un paso o una pestaña para reproducir',
-      selectHint: 'Selecciona un segmento para editar su duración',
-      stepName: 'Paso {{n}} · {{tab}}',
-      betweenSteps: 'Paso {{from}} → {{to}}',
       header: {
         label: 'Encabezado',
         tab: 'Pestaña actual',

@@ -65,7 +65,7 @@ export function AnimationPreview(
   // inputs keep the last plan, and closing the panel drops it.
   const request = createMemo<PreviewRequest | undefined>(previous => {
     if (!animation.open()) return undefined;
-    if (!previewing() || animation.resizing()) return previous;
+    if (!previewing()) return previous;
     const settings = animation.settings();
     const [first, ...rest] = settings.steps.map((step): PreviewTab => {
       const tab = editor.state.editors.find(({id}) => id === step.editorId)!;
@@ -110,7 +110,6 @@ export function AnimationPreview(
       measurePreview(owner, tabs, style, settings.header, undefined, scope),
   );
   const planned = createMemo<PreviewPlan | undefined>(previous => {
-    if (animation.resizing()) return previous;
     const current = snapshot();
     return current
       ? planPreviewTimeline(current.settings, current.measured)

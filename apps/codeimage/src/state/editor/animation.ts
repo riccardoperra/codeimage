@@ -135,7 +135,6 @@ export function createAnimationStore(
   const [playback, setPlayback] = createSignal<Playback>({state: 'editing'});
   const [open, setOpen] = createSignal(false);
   const [selection, setSelection] = createSignal<SegmentSelection | null>(null);
-  const [resizing, setResizing] = createSignal(false);
   const changes = new Subject<void>();
   let cancelFocus: (() => void) | undefined;
   onCleanup(() => changes.complete());
@@ -302,7 +301,6 @@ export function createAnimationStore(
     currentStep,
     open,
     selection,
-    resizing,
     stateToPersist,
     stateToPersist$: changes.pipe(map(stateToPersist)),
     actions: {
@@ -321,7 +319,6 @@ export function createAnimationStore(
         edit();
       },
       select,
-      setResizing,
       setHoldMs,
       setTransition,
       editStep,
