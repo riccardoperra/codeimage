@@ -814,4 +814,3 @@ export const SUPPORTED_LANGUAGES: readonly LanguageDefinition[] = [
     ],
   },
 ];
-

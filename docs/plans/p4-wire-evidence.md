@@ -150,11 +150,11 @@ from file, stdin, and copied-preset commands for about 34 seconds.
 This run supersedes the earlier parity results. All four cells assert equal PNG dimensions and native Chrome DPR. Pixelmatch threshold remains 0.1 and the limit remains 0.5%.
 
 | Lane | Scale / native DPR | Chrome and CLI dimensions | Difference |
-| --- | --- | --- | --- |
-| 1 | 1 | 420×267 | 0.446763% |
-| 5 | 1 | 420×267 | 0.480649% |
-| 1 | 2 | 840×534 | 0.401953% |
-| 5 | 2 | 840×534 | 0.408641% |
+| ---- | ------------------ | ------------------------- | ---------- |
+| 1    | 1                  | 420×267                   | 0.446763%  |
+| 5    | 1                  | 420×267                   | 0.480649%  |
+| 1    | 2                  | 840×534                   | 0.401953%  |
+| 5    | 2                  | 840×534                   | 0.408641%  |
 
 Command: `pnpm exec tsx packages/cli/scripts/web-parity.ts --url http://localhost:4436 --out /tmp/p4-parity-69a4c64e`. Browsers ran sequentially. The dev server was stopped afterward.
 
