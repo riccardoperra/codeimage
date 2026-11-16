@@ -8,6 +8,8 @@ export interface PreviewRequest {
   tabs: NonEmpty<PreviewTab>;
   style: CodeStyle;
   key: string;
+  /** See measurePreview: reuses the steps already measured under it. */
+  scope?: string;
 }
 
 export function createPreviewSnapshot(

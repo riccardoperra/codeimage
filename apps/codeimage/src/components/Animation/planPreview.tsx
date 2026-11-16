@@ -3,6 +3,7 @@ import type {CustomTheme} from '@codeimage/highlight';
 import type {EditorState} from '@codeimage/store/editor/model';
 import type {Language} from '@codemirror/language';
 import {measureCode, type MeasuredNode} from '@core/animation/measure';
+import {graphemes, isAscii} from '@core/animation/pair';
 import type {
   AnimationHeader,
   AnimationSettings,
@@ -25,6 +26,7 @@ import StaticCodeView from '../CustomEditor/StaticCodeView';
 import {targetLayout} from '@core/animation/target-layout';
 import * as frameStyles from '../Frame/Frame.css';
 import {FrameView} from '../Frame/PreviewFrame';
+import {createMeasureCache} from './measureCache';
 import {getFrameState} from '@codeimage/store/editor/frame';
 
 export type PreviewTab = Pick<
@@ -124,6 +126,8 @@ function stepLayout(host: HTMLElement): StepLayout {
   };
 }
 
+const cache = createMeasureCache();
+
 // The browser side of renderAnimationScenes: measures the code font and each
 // step's static frame in the page, then plans the same timeline.
 export async function measurePreview(
@@ -132,7 +136,32 @@ export async function measurePreview(
   style: CodeStyle,
   header: AnimationHeader,
   targetSize?: Size,
+  /**
+   * Everything else the frame reads from the stores (frame, terminal, tab
+   * names). With it, steps already measured under the same scope are reused;
+   * without it, everything is measured again.
+   */
+  scope?: string,
 ): Promise<PreviewMeasurement> {
+  const font = JSON.stringify({
+    theme: style.theme.id,
+    fontFamily: style.fontFamily,
+    fontWeight: style.fontWeight,
+    enableLigatures: style.enableLigatures,
+    showLineNumbers: style.showLineNumbers,
+  });
+  // Only glyphs outside ASCII are measured one by one, so ASCII edits keep it.
+  const glyphs = [
+    ...new Set(
+      tabs.flatMap(tab => graphemes(tab.code)).filter(glyph => !isAscii(glyph)),
+    ),
+  ].sort();
+  const codeKey =
+    scope === undefined ? undefined : `code:${font}:${glyphs.join('\n')}`;
+  const layoutKey = (tab: PreviewTab, signatureWidth?: number) =>
+    scope === undefined
+      ? undefined
+      : `layout:${scope}:${font}:${JSON.stringify({header, targetSize, signatureWidth, tab})}`;
   const languages = await Promise.all(
     tabs.map(tab => loadLanguage(tab.languageId, tab.tabName)),
   );
@@ -154,46 +183,50 @@ export async function measurePreview(
     />
   );
 
-  const {metrics, widths} = await measureCode(
-    code =>
-      measureHidden(
-        owner,
-        () =>
-          codeView(
-            {
-              code,
-              languageId: 'plaintext',
-              lineNumberStart: 1,
-              marks: NO_MARKS,
-            },
-            null,
-          ),
-        codeTree,
-      ),
-    tabs.map(tab => tab.code),
+  const {metrics, widths} = await cache.get(codeKey, () =>
+    measureCode(
+      code =>
+        measureHidden(
+          owner,
+          () =>
+            codeView(
+              {
+                code,
+                languageId: 'plaintext',
+                lineNumberStart: 1,
+                marks: NO_MARKS,
+              },
+              null,
+            ),
+          codeTree,
+        ),
+      tabs.map(tab => tab.code),
+    ),
   );
   const measureLayouts = (signatureWidth?: number) =>
     Promise.all(
       tabs.map((tab, index) =>
-        measureHidden(
-          owner,
-          () => (
-            <FrameView
-              targetSize={targetSize}
-              natural
-              signatureWidth={signatureWidth}
-              header={header}
-              activeTabId={tab.id}
-              code={codeView(tab, languages[index])}
-            />
+        cache.get(layoutKey(tab, signatureWidth), () =>
+          measureHidden(
+            owner,
+            () => (
+              <FrameView
+                targetSize={targetSize}
+                natural
+                signatureWidth={signatureWidth}
+                header={header}
+                activeTabId={tab.id}
+                code={codeView(tab, languages[index])}
+              />
+            ),
+            host => {
+              const window = host.querySelector<HTMLElement>(
+                '[data-header-visible]',
+              )!;
+              const {width, height} = window.getBoundingClientRect();
+              return {layout: stepLayout(host), windowArea: width * height};
+            },
           ),
-          host => {
-            const window = host.querySelector<HTMLElement>(
-              '[data-header-visible]',
-            )!;
-            const {width, height} = window.getBoundingClientRect();
-            return {layout: stepLayout(host), windowArea: width * height};
-          },
         ),
       ),
     );
