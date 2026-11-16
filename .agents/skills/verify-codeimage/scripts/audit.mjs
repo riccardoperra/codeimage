@@ -34,7 +34,7 @@ export async function audit({page, context, base, out, server}) {
     page.screenshot({path: resolve(out, `${name}.png`), fullPage: true});
   // `layout` saves that layout as the preference first. Without it the
   // stored preference stands, which the persistence case relies on.
-  const doctor = createDoctor({page, server, base});
+  const doctor = createDoctor({page: () => page, server, base});
   async function feature(name, run) {
     if (requested.size && !requested.has(name)) return;
     console.log(`RUN ${name}`);
