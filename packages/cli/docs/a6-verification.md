@@ -71,15 +71,19 @@ are excluded.
 | Initial                                                 |         1.0129 s |         1.0704 s |    1.0568 |   2.3625 s |
 | Alternate pair order after deferring video-only imports |         1.0641 s |         1.1430 s |    1.0742 |   2.3278 s |
 
+| Confirming run with the same implementation | 1.0309 s | 1.0373 s | 1.0062 | 2.2709 s |
+
 A same-binary control used the base executable for both sides, with ten cold
 runs per side and alternating pair order. Its medians were 0.8758 s and
 0.8217 s, a ratio of 0.9383. Scheduling noise alone exceeded the 5% gate in
 that control. The WebP regression cause therefore remains unisolated, and
-the gate remains open rather than treating the byte comparison as a speed
-proof.
+the earlier failures remain visible rather than treating the byte
+comparison as a speed proof.
 
-Both measured WebP ratios exceed the 1.05 rule. Both MP4 medians pass the
-6-second rule. No WebP performance pass is claimed from these runs.
+The first two WebP ratios exceed the 1.05 rule. The confirming run passes
+that rule. All three MP4 medians pass the 6-second rule. The full record
+retains all three runs. Host scheduling noise is material, so the last pass
+does not establish a stable WebP speed difference.
 
 The second run's WebP range is 0.856 to 1.812 s on the base and 0.792 to 1.405 s
 on head. A ten-pair control comparing the base executable with itself has
@@ -91,7 +95,8 @@ performance verdict remains inconclusive pending a stable measurement.
 
 Raw measurements, load at every start, and byte counts are in
 `/tmp/codeimage-a6/perf/results.json`, `perf-balanced/results.json`, and
-`control-perf.json`. An untimed MP4 CPU/native sample is in
+`control-perf.json`. The confirming run is in
+`/tmp/codeimage-a6/perf-confirm/results.json`. An untimed MP4 CPU/native sample is in
 `/tmp/codeimage-a6/profile/`. The V8 sample spends most samples idle while
 awaiting native work and the pipe. The remaining per-frame JS cost includes
 odd-height padding. Profiling is separate from the reported runs and does
