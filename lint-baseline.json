@@ -27,7 +27,7 @@
   },
   ".agents/skills/verify-codeimage/scripts/audit.mjs": {
     "codeimage(no-comments)": 8,
-    "eslint(max-lines)": 1128,
+    "eslint(max-lines)": 1117,
     "eslint(max-lines-per-function)": 2,
     "eslint(no-param-reassign)": 4
   },

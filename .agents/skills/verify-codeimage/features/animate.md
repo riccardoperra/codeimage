@@ -15,7 +15,7 @@ Transition chips expose Duration, easing presets, a custom curve and Play transi
 Run from the repository root with Node 24:
 
 ```sh
-fnm exec --using=v24.14.0 env VERIFY_AUDIT=1 VERIFY_CASES=animate-tabs-timeline,animate-script-editing,animate-transition-popover,animate-mode-done,animate-script-reload,animate-phone-timeline,animate-script-export VERIFY_PORT=4479 ARTIFACT_DIR=/tmp/animate-timeline-proof node .agents/skills/verify-codeimage/scripts/verify.mjs
+fnm exec --using=v24.14.0 env VERIFY_AUDIT=1 VERIFY_CASES=animate-tabs-timeline,animate-script-editing,animate-transition-popover,animate-mode-done,animate-script-reload,animate-phone-timeline,animate-script-export,animate-script-badges VERIFY_PORT=4479 ARTIFACT_DIR=/tmp/animate-timeline-proof node .agents/skills/verify-codeimage/scripts/verify.mjs
 ```
 
 Use a unique evidence directory and available server/debugging ports for each run. The helper retains launch, doctor, isolated contexts, traces and cleanup. Every scenario uses visible controls and CodeMirror input. It never calls editor stores. Worker instrumentation observes the real export job and does not replace the renderer or encoder.
@@ -29,6 +29,7 @@ Use a unique evidence directory and available server/debugging ports for each ru
 | `animate-script-reload`      | Read actual IndexedDB document, reload, and verify stable step IDs and the restored script badge.                                                                                                   |
 | `animate-phone-timeline`     | 390×844 List layout; step opens bottom sheet; close and focus return.                                                                                                                               |
 | `animate-script-export`      | Export a real GIF with script visibility rules and aids visible in the editor; inspect all submitted scene HTML for aids; decode downloaded frames; retain first/last frame PNGs and scene payload. |
+| `animate-script-badges`      | Script badges render in the editor popup host, outside the editor, on their script line and inside the viewport, with line numbers off and on.                                                      |
 
 The older names `animate`, `animate-phone`, `animate-focus`, `animate-geometry` and `animate-followups` select the corresponding current journeys. The retired seeded-step, duplicate-enrollment and draggable full-strip assertions no longer describe the product. Pure timeline geometry tests remain in the app suite.
 

@@ -4,6 +4,7 @@ import {
   reloadJourney,
   exportScriptJourney,
 } from './animate-script-journeys.mjs';
+import {badgesJourney} from './animate-script-badges.mjs';
 
 export function animateTimelineCases({fresh, out}) {
   const journey = createTimelineJourney({fresh, out});
@@ -118,7 +119,21 @@ export function animateTimelineCases({fresh, out}) {
     {width: 390, height: 844},
   );
   const exportScript = exportScriptJourney(journey, out);
-  return {tabs, script, transition, done, reload, phone, exportScript};
+  return [
+    ['animate-tabs-timeline', tabs],
+    ['animate-script-editing', script],
+    ['animate-transition-popover', transition],
+    ['animate-mode-done', done],
+    ['animate-script-reload', reload],
+    ['animate-phone-timeline', phone],
+    ['animate-script-export', exportScript],
+    ['animate-script-badges', badgesJourney(journey)],
+    ['animate', tabs],
+    ['animate-phone', phone],
+    ['animate-focus', transition],
+    ['animate-geometry', tabs],
+    ['animate-followups', script],
+  ];
 }
 
 function scriptJourney(journey) {

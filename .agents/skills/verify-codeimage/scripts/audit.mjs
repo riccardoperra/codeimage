@@ -895,19 +895,8 @@ export async function audit({page, context, base, out, server}) {
   await feature('animation-mp4-parity', mp4.parity);
   await feature('animation-mp4-step-size', mp4.stepSizeMp4);
   await feature('animation-gif-step-size', mp4.stepSizeGif);
-  const timeline = animateTimelineCases({fresh, out});
-  await feature('animate-tabs-timeline', timeline.tabs);
-  await feature('animate-script-editing', timeline.script);
-  await feature('animate-transition-popover', timeline.transition);
-  await feature('animate-mode-done', timeline.done);
-  await feature('animate-script-reload', timeline.reload);
-  await feature('animate-phone-timeline', timeline.phone);
-  await feature('animate-script-export', timeline.exportScript);
-  await feature('animate', timeline.tabs);
-  await feature('animate-phone', timeline.phone);
-  await feature('animate-focus', timeline.transition);
-  await feature('animate-geometry', timeline.tabs);
-  await feature('animate-followups', timeline.script);
+  for (const [name, run] of animateTimelineCases({fresh, out}))
+    await feature(name, run);
   await auditSnippets({feature, doctor, context, base, out});
   await feature('projects', async () => {
     await page

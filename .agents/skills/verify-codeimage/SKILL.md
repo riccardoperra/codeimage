@@ -40,7 +40,7 @@ Add browser journeys as named cases in `scripts/audit.mjs` or its case helpers, 
 
 ## Tab script timeline
 
-The current Animate journeys are `animate-tabs-timeline`, `animate-script-editing`, `animate-transition-popover`, `animate-mode-done`, `animate-script-reload`, `animate-phone-timeline` and `animate-script-export`. Read [Animate](features/animate.md) for the exact command, selectors, artifact checks and scope. The script export case observes the real worker job and decodes its real GIF download. Retired seeded-step and full-strip cases now route to the current journeys under their existing names.
+The current Animate journeys are `animate-tabs-timeline`, `animate-script-editing`, `animate-transition-popover`, `animate-mode-done`, `animate-script-reload`, `animate-phone-timeline`, `animate-script-export` and `animate-script-badges`. Read [Animate](features/animate.md) for the exact command, selectors, artifact checks and scope. The script export case observes the real worker job and decodes its real GIF download. Retired seeded-step and full-strip cases now route to the current journeys under their existing names.
 
 ## Evidence
 
