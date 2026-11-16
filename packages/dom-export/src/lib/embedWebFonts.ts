@@ -2,6 +2,7 @@ import {fetchAsDataURL} from './dataurl';
 import {embedResources, shouldEmbed} from './embedResources';
 import type {Options} from './options';
 import {toArray} from './util';
+import {getFontName, matchesFontFace} from './fontValues';
 
 interface Metadata {
   url: string;
@@ -11,8 +12,6 @@ interface Metadata {
 type FontsMap = Record<string, Record<string, CSSStyleRule>>;
 
 const cssFetchCache: {[href: string]: Metadata} = {};
-
-const REGEXP_QUOTE_FONT_FAMILY = /^['"]|['"]$/g;
 
 async function fetchCSS(url: string) {
   let cache = cssFetchCache[url];
@@ -240,17 +239,6 @@ export function getFontsMap(cssStyleRules: CSSStyleRule[]): FontsMap {
   return fontInfo;
 }
 
-const getFontName = (fontFamily: string) => {
-  if (!fontFamily) {
-    console.warn('[dom-export] Given font-family value is invalid');
-    return [];
-  }
-  const fonts = fontFamily.split(',');
-  return fonts.map(font =>
-    font.trim().toLowerCase().replace(REGEXP_QUOTE_FONT_FAMILY, ''),
-  );
-};
-
 const getUsedFontFamiliesRecursively = <T extends Element>(
   acc: string[],
   fontsMap: FontsMap,
@@ -302,25 +290,9 @@ export function getUsedFontFamiliesByNode<T extends Element>(
       getStylesheetFontValues(styleRule);
 
     const family = getFontName(fontFamily)[0];
-    const weightOf = (weight: string) =>
-      weight === 'bold'
-        ? 700
-        : !weight || weight === 'normal'
-          ? 400
-          : Number(weight);
-    const [minimum, maximum = minimum] = (fontWeight || '400')
-      .split(/\s+/)
-      .map(weightOf);
-    const used = fontFamilies.some(id => {
-      const prefix = `${family}-`;
-      if (!id.startsWith(prefix)) return false;
-      const [weight, style] = id.slice(prefix.length).split('-');
-      return (
-        weightOf(weight) >= minimum &&
-        weightOf(weight) <= maximum &&
-        (style || 'normal') === (fontStyle || 'normal')
-      );
-    });
+    const used = fontFamilies.some(id =>
+      matchesFontFace(id, {family, fontWeight, fontStyle}),
+    );
     if (
       !used &&
       !experimental_includeExternalFonts.some(font =>

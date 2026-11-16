@@ -270,10 +270,6 @@ export async function nodeToDataURL(
   const xmlns = 'http://www.w3.org/2000/svg';
   const svg = document.createElementNS(xmlns, 'svg');
   const foreignObject = document.createElementNS(xmlns, 'foreignObject');
-  // Chromium and Firefox lay out SVG images at DPR 1, where text can measure
-  // wider than on a high-DPR page and wrap inside the widths copied from it.
-  // In WebKit the same scale enlarges the output instead. The engine comes from
-  // the user agent: headless Chromium has no `window.chrome`.
   const layoutScale = isBlink || isFirefox ? window.devicePixelRatio || 1 : 1;
   node.style.zoom = `${(Number(node.style.zoom) || 1) * layoutScale}`;
 
