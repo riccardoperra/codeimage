@@ -1,3 +1,4 @@
+import {stripAnimateAids} from '../animation/aids';
 import type {Renderer} from '@takumi-rs/wasm';
 import interUrl from 'inter-ui/variable/InterVariable.woff2?url';
 import type {CustomFontConfiguration} from '../configuration/font';
@@ -263,6 +264,7 @@ function* cloneExportSteps(node: HTMLElement) {
     }
     yield;
   }
+  stripAnimateAids(clone);
   const html = document.documentElement.cloneNode(false);
   const body = document.body.cloneNode(false);
   if (!(html instanceof HTMLElement) || !(body instanceof HTMLElement))

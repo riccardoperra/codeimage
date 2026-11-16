@@ -1,3 +1,5 @@
+import {getEditorStore} from '@codeimage/store/editor';
+import {scriptLinesExtension} from './plugins/scriptLines';
 import {SUPPORTED_LANGUAGES} from '@codeimage/config';
 import {useI18n} from '@codeimage/locale';
 import type {AppLocaleEntries} from '../../i18n';
@@ -250,6 +252,18 @@ export default function CustomEditor(props: VoidProps<CustomEditorProps>) {
     );
   });
   createExtension(() => EditorState.readOnly.of(props.readOnly));
+  createExtension(() => {
+    const {animation} = getEditorStore();
+    if (props.readOnly || !animation.open()) return [];
+    const selected = animation.selection();
+    const selectedStep = animation
+      .settings()
+      .steps.find(
+        step => step.id === selected?.stepId && step.editorId === editor()?.id,
+      );
+    const step = selectedStep?.view;
+    return scriptLinesExtension(step?.kind === 'script' ? step.step : null);
+  });
 
   const reconfigureBaseSetup = createExtension(EDITOR_BASE_SETUP);
 
@@ -306,6 +320,17 @@ export default function CustomEditor(props: VoidProps<CustomEditorProps>) {
             changes: {from: 0, to: view.state.doc.length, insert: code},
             effects: replaceMarks.of(
               marksValue(EditorState.create({doc: code}).doc, {
+                ...(previous.script
+                  ? {
+                      script: {
+                        ...previous.script,
+                        lines: previous.script.lines.flatMap(rule => {
+                          const line = lines.get(rule.line);
+                          return line ? [{...rule, line}] : [];
+                        }),
+                      },
+                    }
+                  : {}),
                 focusedLines: previous.focusedLines.flatMap(
                   line => lines.get(line) ?? [],
                 ),
