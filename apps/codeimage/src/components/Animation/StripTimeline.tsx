@@ -107,6 +107,25 @@ export function StripTimeline(props: {model: TimelineModel}) {
         animation.actions.select({stepId: entry.segment.stepId, kind: 'hold'});
     }
   };
+  const ticks = createMemo(() => {
+    const duration = animation.durationMs();
+    const pxPerSecond = geometry().timeToX(1000) - geometry().timeToX(0);
+    if (duration <= 0 || pxPerSecond <= 0) return [];
+    const step =
+      [250, 500, 1000, 2000, 5000, 10000, 30000].find(
+        ms => (ms / 1000) * pxPerSecond >= 56,
+      ) ?? 60000;
+    const format = new Intl.NumberFormat(locale(), {maximumFractionDigits: 2});
+    const out: {x: number; label: string | null}[] = [];
+    for (let ms = 0; ms <= duration + 1; ms += step / 2) {
+      const major = Math.round(ms / (step / 2)) % 2 === 0;
+      out.push({
+        x: geometry().timeToX(ms),
+        label: major ? `${format.format(ms / 1000)} s` : null,
+      });
+    }
+    return out;
+  });
   const keyDown = (event: KeyboardEvent) => {
     const amount = event.shiftKey ? 100 : 1000 / animation.settings().fps;
     if (event.key === 'ArrowLeft')
@@ -196,6 +215,23 @@ export function StripTimeline(props: {model: TimelineModel}) {
             )}
           </For>
         </div>
+        <Show when={ticks().length}>
+          <div class={styles.ticks} aria-hidden="true" data-animation-ticks>
+            <For each={ticks()}>
+              {tick => (
+                <span
+                  class={styles.tick}
+                  data-major={tick.label ? '' : undefined}
+                  style={{transform: `translateX(${tick.x}px)`}}
+                >
+                  <Show when={tick.label}>
+                    <span class={styles.tickLabel}>{tick.label}</span>
+                  </Show>
+                </span>
+              )}
+            </For>
+          </div>
+        </Show>
       </div>
     </div>
   );

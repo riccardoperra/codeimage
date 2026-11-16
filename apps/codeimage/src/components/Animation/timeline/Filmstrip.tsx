@@ -258,7 +258,7 @@ export function Filmstrip(props: {model: TimelineModel}) {
                         <span class={styles.cardNumber}>
                           {(tab()?.steps.length ?? 0) + 1}
                         </span>
-                        {t('animation.timeline.addStep')}
+                        + {t('animation.timeline.ghostTitle')}
                       </span>
                       <span class={styles.ghostHint}>
                         {t('animation.timeline.scriptHint')}

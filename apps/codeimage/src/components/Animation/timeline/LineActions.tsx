@@ -3,7 +3,7 @@ import {useI18n} from '@codeimage/locale';
 import {getEditorStore} from '@codeimage/store/editor';
 import {SvgIcon} from '@codeimage/ui';
 import {Tooltip} from '@codeui/kit';
-import {createSignal, For, onCleanup, onMount, type JSX} from 'solid-js';
+import {createSignal, For, onCleanup, onMount, Show, type JSX} from 'solid-js';
 import {
   applyLineAction,
   lineActionState,
@@ -77,9 +77,40 @@ export function LineActions(props: {editorId: string; step: number}) {
           to: String(last),
         });
   };
+  const summary = () => {
+    const value = lines();
+    if (value.length !== 1) return '';
+    const line = store.editor.state.editors
+      .find(tab => tab.id === props.editorId)
+      ?.marks.script?.lines.find(line => line.line === value[0]);
+    if (!line) return '';
+    const from = line.enter ?? 1;
+    return [
+      line.leave !== undefined
+        ? t('animation.timeline.lineVisibleRange', {
+            from: String(from),
+            to: String(line.leave - 1),
+          })
+        : from > 1
+          ? t('animation.timeline.lineVisibleFrom', {n: String(from)})
+          : '',
+      line.focus?.length
+        ? t('animation.timeline.lineFocusIn', {steps: line.focus.join(', ')})
+        : '',
+    ]
+      .filter(Boolean)
+      .join(' · ');
+  };
   return (
     <div class={styles.group} data-script-controls>
-      <span class={styles.muted}>{range()}</span>
+      <span class={styles.muted}>
+        {lines().length
+          ? t('animation.timeline.lineInStep', {
+              lines: range(),
+              step: String(props.step),
+            })
+          : range()}
+      </span>
       <div
         class={styles.segmented}
         role="group"
@@ -127,6 +158,11 @@ export function LineActions(props: {editorId: string; step: number}) {
           }}
         </For>
       </div>
+      <Show when={summary()}>
+        <span class={styles.muted} data-script-line-summary>
+          {summary()}
+        </span>
+      </Show>
     </div>
   );
 }

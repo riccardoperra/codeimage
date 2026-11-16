@@ -1,24 +1,7 @@
 import type {Range} from '@codemirror/state';
-import {Decoration, EditorView, WidgetType} from '@codemirror/view';
+import {Decoration, EditorView} from '@codemirror/view';
 import {lineMarksField, readMarks} from '../lineMarks/state';
 import * as styles from './scriptLines.css';
-
-class Badge extends WidgetType {
-  constructor(readonly text: string) {
-    super();
-  }
-  eq(other: Badge) {
-    return other.text === this.text;
-  }
-  toDOM() {
-    const span = document.createElement('span');
-    span.className = styles.badge;
-    span.textContent = this.text;
-    span.dataset.animateAid = 'badge';
-    span.setAttribute('aria-hidden', 'true');
-    return span;
-  }
-}
 
 export function scriptLinesExtension(step: number | null) {
   return EditorView.decorations.of(view => {
@@ -49,20 +32,6 @@ export function scriptLinesExtension(step: number | null) {
               'data-animate-aid-classes': classes.join(' '),
             },
           }).range(line.from),
-        );
-      const text = [
-        value.leave !== undefined
-          ? `${value.enter ?? 1}–${value.leave - 1}`
-          : (value.enter ?? 1) > 1
-            ? `${value.enter}→`
-            : '',
-        value.focus?.length ? `●${value.focus.join(',')}` : '',
-      ]
-        .filter(Boolean)
-        .join(' ');
-      if (text)
-        ranges.push(
-          Decoration.widget({widget: new Badge(text), side: 1}).range(line.to),
         );
     }
     return Decoration.set(ranges, true);

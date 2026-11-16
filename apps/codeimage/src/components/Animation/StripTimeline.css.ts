@@ -76,7 +76,7 @@ export const segment = style({
     '&:focus-visible': {outline: `2px solid ${c.primary}`, outlineOffset: -2},
   },
 });
-globalStyle(`${root}[data-overview]`, {position: 'relative', height: 40});
+globalStyle(`${root}[data-overview]`, {position: 'relative', height: 58});
 globalStyle(`${root}[data-overview] ${ruler}`, {
   position: 'absolute',
   inset: '0 4px',
@@ -114,3 +114,39 @@ export const viewWindow = style({
   background: `color-mix(in srgb, ${c.primary} 10%, transparent)`,
   pointerEvents: 'none',
 });
+
+export const ticks = style({
+  position: 'relative',
+  height: 18,
+  marginTop: 6,
+  pointerEvents: 'none',
+});
+export const tick = style({
+  position: 'absolute',
+  left: 0,
+  top: 0,
+  width: 1,
+  height: 5,
+  selectors: {
+    '&::before': {
+      content: '""',
+      position: 'absolute',
+      inset: '0 0 2px',
+      background: c.baseText,
+      opacity: 0.25,
+    },
+    '&[data-major]::before': {bottom: 0, opacity: 0.45},
+  },
+});
+export const tickLabel = style({
+  position: 'absolute',
+  top: 6,
+  left: 0,
+  transform: 'translateX(-50%)',
+  fontSize: 10,
+  lineHeight: '12px',
+  whiteSpace: 'nowrap',
+  color: c.descriptionTextColor,
+  fontVariantNumeric: 'tabular-nums',
+});
+globalStyle(`${tick}:first-child ${tickLabel}`, {transform: 'none'});

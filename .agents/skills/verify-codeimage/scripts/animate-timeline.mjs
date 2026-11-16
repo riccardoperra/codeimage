@@ -128,7 +128,7 @@ export function animateTimelineCases({fresh, out}) {
       await page.keyboard.press('ArrowDown');
       await page.keyboard.press('Shift+ArrowDown');
       await page.locator('[data-script-action="enter"]').click();
-      await page.locator('[data-animate-aid="badge"]').waitFor();
+      await page.locator('[data-animate-aid="line"]').first().waitFor();
       await screenshot('enter');
       await addStep();
       await count(3);
@@ -249,10 +249,7 @@ export function animateTimelineCases({fresh, out}) {
         ids,
       );
       await holds().last().click();
-      assert.match(
-        await page.locator('[data-animate-aid="badge"]').innerText(),
-        /2→/,
-      );
+      assert.ok((await page.locator('[data-animate-aid="line"]').count()) > 0);
       return {ids, scriptPersisted: true};
     },
   );

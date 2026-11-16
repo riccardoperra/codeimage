@@ -299,7 +299,7 @@ export function Outline(props: {model: TimelineModel}) {
                     data-add-script-step={editorId}
                     onClick={() => actions.addStep(editorId)}
                   >
-                    {t('animation.timeline.addStep')}
+                    + {t('animation.timeline.ghostTitle')}
                   </button>
                   <Show when={single() && first()}>
                     {step => (
