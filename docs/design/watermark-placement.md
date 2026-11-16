@@ -87,7 +87,7 @@ The journey drives window styles and code through the UI, records live/export ge
 
 Generate the CLI parity documents with `pnpm exec tsx scripts/parity/watermark-cases.mjs`.
 After `pnpm libs:build`, compare their actual web downloads and CLI PNGs with
-`P10_WEB_OUT=/tmp/codeimage-cli-watermark/parity pnpm exec tsx scripts/parity/watermark-cli-vs-web.ts /tmp/codeimage-cli-watermark/cases/*.json`.
+`P10_WEB_OUT=/tmp/codeimage-cli-watermark/parity pnpm exec tsx scripts/parity/watermark-cli-vs-web/index.ts /tmp/codeimage-cli-watermark/cases/*.json`.
 The documents cover all seven window types, four padding values, hidden and transparent frames, header off, signatures, fonts, tabs and portrait output.
 CLI width is a minimum, so the width-minimum case verifies content expansion rather than forced wrapping.
 

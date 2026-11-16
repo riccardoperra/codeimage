@@ -28,7 +28,7 @@ On 2026-11-15 A1 split in two. The core moved to #734 on `main`, and this PR kee
 
 ## Live
 
-`pnpm exec tsx scripts/parity/animation-endpoints.ts` runs lanes 2 to 10 at scale 2. For each case it renders the transition at its first and last frame with Takumi and compares them with the static export of the step it leaves and the step it reaches. The `reference` check compares the script's static path for step one with `renderSnapshot` and is 0.000% in every case. `frames` is the frame size at the start, the middle, and the end.
+`pnpm exec tsx scripts/parity/animation-endpoints/index.ts` runs lanes 2 to 10 at scale 2. For each case it renders the transition at its first and last frame with Takumi and compares them with the static export of the step it leaves and the step it reaches. The `reference` check compares the script's static path for step one with `renderSnapshot` and is 0.000% in every case. `frames` is the frame size at the start, the middle, and the end.
 
 The script also checks the layout. It measures the hold scene and the transition frame next to it with Takumi `measure()`, at the start and at the end. Every box from the page down to the code box and the gutter box must keep its place within 0.5 px, and every character that the hold shows within 0.15 px. Takumi places a line by its border box and its text runs from its content box, so the script measures each hold once more with an empty inline block first in every line and gutter element, and counts each character from there. A layer that moves as a whole fails, as [Fix round 3](#fix-round-3) shows.
 

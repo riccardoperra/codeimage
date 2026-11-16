@@ -7,7 +7,7 @@ import {parseArgs} from 'node:util';
 import {PNG} from 'pngjs';
 import {renderSnapshot} from '../../packages/render/dist/index.mjs';
 import {serveFixtureImages} from './lib';
-import {matrix} from './takumi-cells';
+import {matrix} from './takumi-cells/index';
 
 const {values: args} = parseArgs({
   options: {out: {type: 'string', default: 'dist/takumi-cross-os'}},

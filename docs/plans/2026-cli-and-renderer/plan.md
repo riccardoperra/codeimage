@@ -213,7 +213,7 @@ Each live lane runs in its own git worktree at the PR head. There is no `control
 - [ ] Create `apps/codeimage/src/render/entry-server.tsx`.
 - [ ] Edit `apps/codeimage/vite.config.ts` to add an SSR build of that entry.
 - [ ] Create `packages/render/src/document.ts`, `packages/render/src/render.ts`, and `packages/render/package.json`.
-- [ ] Create `scripts/parity/takumi-vs-chrome.ts`.
+- [ ] Create `scripts/parity/takumi-vs-chrome/index.ts`.
 
 **Build.**
 
@@ -222,7 +222,7 @@ Each live lane runs in its own git worktree at the PR head. There is no `control
 - [ ] Collect CSS from the vanilla-extract output file of the SSR build and from the theme's `StyleModule.getRules()`.
 - [ ] Rasterize with `Renderer` from `@takumi-rs/core`. Register the web fonts listed in `apps/codeimage/src/core/configuration/font.ts` from bundled files.
 - [ ] Export `renderSnapshot(doc): Promise<Uint8Array | string>` from `@codeimage/render`. PNG, JPEG, and WebP return bytes. SVG returns a string.
-- [ ] Make `scripts/parity/takumi-vs-chrome.ts` render each matrix cell's HTML in Chrome and in Takumi and report the pixel diff per cell. Add it to `.github/workflows/main.yml`.
+- [ ] Make `scripts/parity/takumi-vs-chrome/index.ts` render each matrix cell's HTML in Chrome and in Takumi and report the pixel diff per cell. Add it to `.github/workflows/main.yml`.
 
 **You see.**
 
@@ -232,7 +232,7 @@ Each live lane runs in its own git worktree at the PR head. There is no `control
 **Verify, unit.** Tests alone are not sufficient verification. A PR is verified only when its unit, live, and perf boxes are all checked.
 
 - [ ] `packages/render/src/document.test.ts` covers a valid snapshot, a missing editor, and an unknown `$version`. Run `pnpm --filter=@codeimage/render test`.
-- [ ] Run `tsx scripts/parity/takumi-vs-chrome.ts` and attach the table.
+- [ ] Run `tsx scripts/parity/takumi-vs-chrome/index.ts` and attach the table.
 
 **Verify, live.** Tests alone are not sufficient verification. A PR is verified only when its unit, live, and perf boxes are all checked. Ten lanes on `claude-sonnet-5-5` at the PR head, per the boot recipe.
 
@@ -743,7 +743,7 @@ Each live lane runs in its own git worktree at the PR head. There is no `control
 
 **Verify, live.** Tests alone are not sufficient verification. A PR is verified only when its unit, live, and perf boxes are all checked. Ten lanes on `claude-sonnet-5-5` at the PR head, per the boot recipe.
 
-- [ ] Lane 1. Regression lane against trunk. Rerun `scripts/parity/takumi-vs-chrome.ts` with every font taken from the cache. Save `p11-parity.txt`. Pass when every cell matches the P10 result.
+- [ ] Lane 1. Regression lane against trunk. Rerun `scripts/parity/takumi-vs-chrome/index.ts` with every font taken from the cache. Save `p11-parity.txt`. Pass when every cell matches the P10 result.
 - [ ] Lane 2. A fresh cache in a new `HOME`. Render with each code font once. Save `p11-fonts.png`. Pass when each output uses the named font and the cache holds only the files those renders needed.
 - [ ] Lane 3. A snippet with emoji, Chinese and Korean text. Save `p11-fallbacks.png`. Pass when it matches the P10 render of the same snippet within 0.5%.
 - [ ] Lane 4. Network off. Run the default render, then `--font fira-code --offline` on an empty cache. Save `p11-offline.txt`. Pass when the first succeeds and the second fails with the install hint.

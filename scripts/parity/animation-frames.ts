@@ -1,3 +1,4 @@
+import assert from 'node:assert/strict';
 import {execFile} from 'node:child_process';
 import {mkdir, mkdtemp, readFile, rm, writeFile} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
@@ -21,13 +22,12 @@ interface Patch {
   x: number;
   y: number;
   durationMs: number;
-  // Over: alpha-blend onto the canvas. Source: replace the rectangle.
+
   blend: 'over' | 'source';
-  // What happens to the rectangle after the frame is shown.
+
   dispose: 'none' | 'background' | 'previous';
 }
 
-// The APNG and WebP rules for building each full frame from patches.
 function compose(width: number, height: number, patches: Patch[]): Animation {
   let canvas = Buffer.alloc(width * height * 4);
   let startMs = 0;
@@ -81,14 +81,12 @@ function chunk(type: string, data: Buffer) {
   return Buffer.concat([head, data, crc]);
 }
 
-// Rebuilds each APNG frame as a still PNG with its own IHDR, so pngjs decodes
-// it.
 function decodeApng(bytes: Buffer): Animation {
   const signature = bytes.subarray(0, 8);
   let ihdr = Buffer.alloc(0);
   const shared: Buffer[] = [];
   const frames: {control: Buffer; data: Buffer[]}[] = [];
-  for (let offset = 8; offset < bytes.length; ) {
+  for (let offset = 8; offset < bytes.length;) {
     const length = bytes.readUInt32BE(offset);
     const type = bytes.toString('ascii', offset + 4, offset + 8);
     const data = bytes.subarray(offset + 8, offset + 8 + length);
@@ -96,8 +94,11 @@ function decodeApng(bytes: Buffer): Animation {
     if (type === 'IHDR') ihdr = Buffer.from(data);
     else if (type === 'fcTL') frames.push({control: data, data: []});
     else if (type === 'IDAT') frames.at(-1)?.data.push(data);
-    else if (type === 'fdAT') frames.at(-1)!.data.push(data.subarray(4));
-    else if (!['acTL', 'IEND'].includes(type) && !frames.length) {
+    else if (type === 'fdAT') {
+      const frame = frames.at(-1);
+      assert.ok(frame);
+      frame.data.push(data.subarray(4));
+    } else if (!['acTL', 'IEND'].includes(type) && !frames.length) {
       shared.push(chunk(type, data));
     }
   }
@@ -133,8 +134,11 @@ function decodeApng(bytes: Buffer): Animation {
 function readPam(bytes: Buffer) {
   const end = bytes.indexOf('ENDHDR\n') + 'ENDHDR\n'.length;
   const header = bytes.toString('ascii', 0, end);
-  const field = (name: string) =>
-    Number(new RegExp(`${name} (\\d+)`).exec(header)![1]);
+  const field = (name: string) => {
+    const match = new RegExp(`${name} (\\d+)`).exec(header);
+    assert.ok(match);
+    return Number(match[1]);
+  };
   return {
     width: field('WIDTH'),
     height: field('HEIGHT'),
@@ -142,10 +146,10 @@ function readPam(bytes: Buffer) {
   };
 }
 
-// libwebp's webpmux lists and extracts the frames, and dwebp decodes them.
 async function decodeWebp(path: string, scratch: string): Promise<Animation> {
   const {stdout} = await run('webpmux', ['-info', path]);
-  const canvas = /Canvas size: (\d+) x (\d+)/.exec(stdout)!;
+  const canvas = /Canvas size: (\d+) x (\d+)/.exec(stdout);
+  assert.ok(canvas, 'libwebp reported a canvas size');
   const rows = [
     ...stdout.matchAll(
       /^\s*(\d+):\s+(\d+)\s+(\d+)\s+(?:yes|no)\s+(\d+)\s+(\d+)\s+(\d+)\s+(none|background)\s+(yes|no)/gm,
@@ -178,7 +182,6 @@ export async function decodeAnimation(path: string): Promise<Animation> {
       return await decodeWebp(path, scratch);
     }
     if (bytes.toString('ascii', 0, 3) === 'GIF') {
-      // gif2webp keeps every GIF frame losslessly, with its disposal.
       const webp = join(scratch, 'animation.webp');
       await run('gif2webp', [path, '-o', webp]);
       return await decodeWebp(webp, scratch);
@@ -238,7 +241,7 @@ async function main() {
   }
 }
 
-if (process.argv[1] && /animation-frames\.ts$/.test(process.argv[1])) {
+if (process.argv[1] && process.argv[1].endsWith('animation-frames.ts')) {
   main().catch(error => {
     console.error(error);
     process.exitCode = 1;

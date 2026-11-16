@@ -9,17 +9,12 @@ import {PNG} from 'pngjs';
 export const PIXELMATCH_THRESHOLD = 0.1;
 export const MAX_DIFF_PERCENT = 0.5;
 
-// Chrome at a real device scale, like a HiDPI screen. An emulated
-// deviceScaleFactor snaps text baselines to whole CSS pixels instead. Open
-// pages with `viewport: null`, since Playwright's default viewport emulates a
-// scale of 1 again.
 export function launchChrome(scale: number) {
   return chromium.launch({
     args: [
       `--force-device-scale-factor=${scale}`,
       '--window-size=4000,4000',
-      // Linux hinting snaps glyph advances to device pixels instead of using
-      // the fractional font metrics Takumi and macOS Chrome use.
+
       '--font-render-hinting=none',
     ],
   });
@@ -78,8 +73,6 @@ export async function diffPng(
   return (pixels / (base.width * base.height)) * 100;
 }
 
-// Solid 192px PNGs on a local port, light when the path says so. Both the
-// renderer and a web page (CORS) can load them, so no cell needs the network.
 export async function serveFixtureImages() {
   const fixture = new PNG({width: 192, height: 192});
   const bytes = (light: boolean) => {
@@ -106,4 +99,10 @@ export async function serveFixtureImages() {
         server.close(error => (error ? reject(error) : resolve())),
       ),
   };
+}
+
+export function last<T>(items: T[]): T {
+  const item = items.at(-1);
+  if (item === undefined) throw new Error('Expected a nonempty list');
+  return item;
 }

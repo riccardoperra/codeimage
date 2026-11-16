@@ -21,7 +21,7 @@ Run the policy, native geometry and renderer tests with `pnpm --filter=@codeimag
 Run CLI tests with `pnpm --filter=@codeimage/cli test`.
 
 Generate documents with `pnpm exec tsx scripts/parity/watermark-cases.mjs`.
-Run `P10_WEB_OUT=/tmp/codeimage-cli-watermark/parity pnpm exec tsx scripts/parity/watermark-cli-vs-web.ts /tmp/codeimage-cli-watermark/cases/*.json`.
+Run `P10_WEB_OUT=/tmp/codeimage-cli-watermark/parity pnpm exec tsx scripts/parity/watermark-cli-vs-web/index.ts /tmp/codeimage-cli-watermark/cases/*.json`.
 The runner compares policy slots and writes actual web and CLI PNGs. It reports full-image pixel drift separately. Equal slots do not establish pixel parity.
 
 The CLI's width is a minimum. Long lines expand the window rather than wrap. The browser journey from main separately exercised wrapped text, live controls, social output and per-tab ZIP exports.

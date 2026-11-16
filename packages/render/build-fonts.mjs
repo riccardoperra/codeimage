@@ -70,10 +70,6 @@ const FONT_SOURCES = {
   ui: [packageFont('inter-ui', 'variable/InterVariable.woff2', 'LICENSE.txt')],
 };
 
-// Families for glyphs the app fonts lack, in the order Takumi tries them. The
-// renderer bundles them instead of reading host fonts, so every machine draws
-// the same image. Twemoji (OFL font, CC-BY 4.0 art) draws emoji and flags. Noto
-// Sans SC (Chinese, kana) and Noto Sans KR (Hangul) are OFL variable fonts.
 const FALLBACK_FONTS = [
   {
     family: 'Twemoji',
@@ -148,7 +144,6 @@ export function coverage(bytes, declared) {
   return ranges;
 }
 
-// This main commit contains the exact app-hosted variable fonts and signature Inter.
 export const APP_FONTS_COMMIT = 'dffa7f6c3de707c8829f7501e4d2dc36de96705f';
 
 export async function buildFonts(supportedFonts, fontsDir) {
@@ -216,11 +211,7 @@ export async function buildFonts(supportedFonts, fontsDir) {
       for (const face of faces) {
         const bytes = await readFile(face.path);
         const file = basename(face.path);
-        const url = bundled
-          ? null
-          : source.pkg
-            ? `https://cdn.jsdelivr.net/npm/${source.pkg}@${version}/${face.file}`
-            : `https://raw.githubusercontent.com/riccardoperra/codeimage/${APP_FONTS_COMMIT}/apps/codeimage/public/assets/fonts/${encodeURI(face.file)}`;
+        const url = bundled ? null : remoteFontUrl(source, version, face.file);
         font.files.push({
           file,
           bytes: bytes.length,
@@ -243,4 +234,10 @@ export async function buildFonts(supportedFonts, fontsDir) {
   const parsed = fontManifestSchema.parse(manifest);
   await writeFile(join(fontsDir, 'manifest.json'), JSON.stringify(parsed));
   return parsed;
+}
+
+function remoteFontUrl(source, version, file) {
+  return source.pkg
+    ? `https://cdn.jsdelivr.net/npm/${source.pkg}@${version}/${file}`
+    : `https://raw.githubusercontent.com/riccardoperra/codeimage/${APP_FONTS_COMMIT}/apps/codeimage/public/assets/fonts/${encodeURI(file)}`;
 }

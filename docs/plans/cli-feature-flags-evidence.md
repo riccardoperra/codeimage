@@ -24,7 +24,7 @@ pnpm typecheck
 Run the live verifier in a tmux pane after the build.
 
 ```sh
-node packages/cli/scripts/verify-feature-flags.mjs /tmp/swarm-cli-flags
+node .agents/skills/verify-codeimage/scripts/cli/feature-flags/index.mjs /tmp/swarm-cli-flags
 ```
 
 The script invokes the built CLI, creates its own synthetic inputs, asserts
@@ -75,7 +75,7 @@ Reproduce this run in tmux after the build with:
 
 ```sh
 tmux new-session -s cli704-focus
-node packages/cli/scripts/verify-feature-flags.mjs /tmp/cli-704-focus-ranges
+node .agents/skills/verify-codeimage/scripts/cli/feature-flags/index.mjs /tmp/cli-704-focus-ranges
 ```
 
 ## Plan coverage

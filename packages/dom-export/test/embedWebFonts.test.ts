@@ -42,7 +42,7 @@ describe('embedWebFonts', () => {
       documentEl.styleSheets as unknown as CSSStyleSheet[],
       {},
     );
-    // happy-dom drops variable ranges, which Chrome exposes on the descriptor.
+
     const face = cssRules.find(rule => rule.style.fontFamily === 'Signature');
     if (!face) throw new Error('Missing signature face');
     vi.spyOn(face.style, 'fontWeight', 'get').mockReturnValue('100 900');
