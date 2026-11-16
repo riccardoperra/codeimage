@@ -1,3 +1,4 @@
+import {remapAnimationStep} from './project.model.js';
 import {randomUUID} from 'node:crypto';
 import {
   parseAnimationSettings,
@@ -147,10 +148,9 @@ export async function updateProject(
         id,
         animation: changes.animation && {
           ...changes.animation,
-          steps: changes.animation.steps.map(step => ({
-            ...step,
-            editorId: tabIds.get(step.editorId) ?? step.editorId,
-          })),
+          steps: changes.animation.steps.map(step =>
+            remapAnimationStep(step, tabIds),
+          ),
         },
         editorTabs: {
           deleteMany: {

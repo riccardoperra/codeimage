@@ -7,7 +7,11 @@ const clamp = (value: number, min: number, max: number) =>
 export function timelineGeometry(
   segments: readonly AnimationSegment[],
   viewportWidth: number,
-  options: {labels: boolean; minWidth: number} = {labels: true, minWidth: 8},
+  options: {
+    labels: boolean;
+    minWidth: number;
+    between?: (segment: AnimationSegment) => boolean;
+  } = {labels: true, minWidth: 8},
 ) {
   const durationMs = segments.reduce(
     (total, segment) => total + segment.durationMs,
@@ -15,12 +19,14 @@ export function timelineGeometry(
   );
   const width = Math.max(0, viewportWidth);
   const dense = width <= segments.length * options.minWidth;
+  const between = segments.map(segment => !!options.between?.(segment));
+  const extraGaps = between.filter(Boolean).length * 4;
   const gap = Math.min(
     TIMELINE_GAP,
     Math.max(0, width - segments.length * options.minWidth) /
-      Math.max(1, (segments.length - 1) * 2),
+      Math.max(1, (segments.length - 1 + extraGaps) * 2),
   );
-  const reservedGaps = Math.max(0, segments.length - 1) * gap;
+  const reservedGaps = (Math.max(0, segments.length - 1) + extraGaps) * gap;
   const minimum = dense
     ? (width / Math.max(1, segments.length)) * 0.8
     : options.minWidth;
@@ -28,7 +34,9 @@ export function timelineGeometry(
     (width - reservedGaps - segments.length * minimum) /
     Math.max(1, durationMs);
   let x = 0;
-  const entries = segments.map(segment => {
+  const entries = segments.map((segment, index) => {
+    const spaced = between[index] ? gap * 2 : 0;
+    x += spaced;
     const width = minimum + segment.durationMs * scale;
     const label = !options.labels
       ? 'none'
@@ -38,8 +46,8 @@ export function timelineGeometry(
             width >= String(segment.index + 1).length * 7 + 8
           ? 'number'
           : 'none';
-    const entry = {segment, x, width, label};
-    x += width + gap;
+    const entry = {segment, x, width, label, spaced};
+    x += width + gap + spaced;
     return entry;
   });
   const timeToX = (ms: number) => {

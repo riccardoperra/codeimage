@@ -59,7 +59,7 @@ export function compileScene(
   typewriter = false,
 ): {html: string; css: string; activeRanges: [number, number][]} {
   const {charWidth, lineHeight} = metrics;
-  const {from, to} = scene;
+  const {from, to, leaveEnd = LEAVE_END, enterStart = ENTER_START} = scene;
   const keyframes: string[] = [];
   let count = 0;
   let moving = false;
@@ -86,7 +86,7 @@ export function compileScene(
           .map(({item}, order) => [item, order] as const)
       : [];
     const typedOrder = new Map<T, number>(typing);
-    const slot = (1 - ENTER_START) / Math.max(1, typing.length);
+    const slot = (1 - enterStart) / Math.max(1, typing.length);
     const pose = (cell: Cell, box: StepBox): Pose => ({
       ...layer.place(cell, box),
       opacity: box.dimmed.has(cell.line) ? DIM_OPACITY : 1,
@@ -112,7 +112,7 @@ export function compileScene(
         if (motion.kind === 'leave') {
           leaving = true;
           const start = pose(motion.from, from);
-          const fade = `0%{opacity:${start.opacity}}${percent(LEAVE_END)}{opacity:0}100%{opacity:0}`;
+          const fade = `0%{opacity:${start.opacity}}${percent(leaveEnd)}{opacity:0}100%{opacity:0}`;
           return layer.element(item, `${at(start)};${animate(fade)}`);
         }
         const end = pose(motion.to, to);
@@ -120,7 +120,7 @@ export function compileScene(
           entering = true;
           const order = typedOrder.get(item);
           const start =
-            order === undefined ? ENTER_START : ENTER_START + order * slot;
+            order === undefined ? enterStart : enterStart + order * slot;
           const shown =
             order === undefined
               ? ''
@@ -190,10 +190,10 @@ export function compileScene(
     ? [[0, timing.transitionMs]]
     : [];
   if (!moving) {
-    if (leaving) activeRanges.push([0, timing.transitionMs * LEAVE_END]);
+    if (leaving) activeRanges.push([0, timing.transitionMs * leaveEnd]);
     if (entering)
       activeRanges.push([
-        timing.transitionMs * ENTER_START,
+        timing.transitionMs * enterStart,
         timing.transitionMs,
       ]);
   }

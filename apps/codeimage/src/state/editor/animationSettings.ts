@@ -3,7 +3,9 @@ import type {
   AnimationSettings,
   AnimationStepSettings,
   NonEmpty,
+  StepView,
 } from '@core/animation/model';
+import type {EditorState} from './model';
 import {transitionHalfMs} from '@core/animation/timeline';
 
 export const ANIMATION_DEFAULTS = {
@@ -42,6 +44,23 @@ const isRecord = (value: unknown): value is Record<string, unknown> =>
 const finite = (value: unknown): value is number =>
   typeof value === 'number' && Number.isFinite(value);
 
+function parseView(value: unknown): StepView | undefined {
+  if (!isRecord(value)) return;
+  if (value.kind === 'tab') return {kind: 'tab'};
+  if (
+    value.kind === 'diff' &&
+    (value.side === 'before' || value.side === 'after')
+  )
+    return {kind: 'diff', side: value.side};
+  if (
+    value.kind === 'script' &&
+    typeof value.step === 'number' &&
+    Number.isInteger(value.step) &&
+    value.step >= 1
+  )
+    return {kind: 'script', step: value.step};
+}
+
 export function parseDraft(value: unknown): AnimationDraft {
   if (!isRecord(value)) return EMPTY_DRAFT;
   const used = new Set<string>();
@@ -66,6 +85,7 @@ export function parseDraft(value: unknown): AnimationDraft {
         {
           id,
           editorId: step.editorId,
+          ...(parseView(step.view) ? {view: parseView(step.view)} : {}),
           holdMs: finite(step.holdMs)
             ? clampDuration(step.holdMs, DURATION_LIMITS.holdMs)
             : ANIMATION_DEFAULTS.holdMs,
@@ -113,19 +133,55 @@ export function parseDraft(value: unknown): AnimationDraft {
   };
 }
 
-export const seedSteps = (editorIds: readonly string[]) =>
-  editorIds.map(editorId => ({
-    id: editorId,
-    editorId,
-    holdMs: ANIMATION_DEFAULTS.holdMs,
-  }));
+type AnimationTab = Pick<EditorState, 'id' | 'marks'>;
+export function deriveSteps(
+  tabs: readonly AnimationTab[],
+): AnimationStepSettings[] {
+  return tabs.flatMap((tab): AnimationStepSettings[] => {
+    const script = tab.marks.script;
+    if (script)
+      return script.steps.map((id, index) => ({
+        id,
+        editorId: tab.id,
+        view: {kind: 'script', step: index + 1} satisfies StepView,
+        holdMs: ANIMATION_DEFAULTS.holdMs,
+      }));
+    if (
+      tab.marks.lines.some(
+        mark => mark.kind === 'added' || mark.kind === 'removed',
+      )
+    )
+      return (['before', 'after'] as const).map(side => ({
+        id: `${tab.id}:${side}`,
+        editorId: tab.id,
+        view: {kind: 'diff', side} satisfies StepView,
+        holdMs: ANIMATION_DEFAULTS.holdMs,
+      }));
+    return [
+      {
+        id: tab.id,
+        editorId: tab.id,
+        view: {kind: 'tab'} satisfies StepView,
+        holdMs: ANIMATION_DEFAULTS.holdMs,
+      },
+    ];
+  });
+}
 export function reconcileSteps(
   draft: AnimationDraft,
-  editorIds: NonEmpty<string>,
+  tabs: NonEmpty<AnimationTab>,
 ): AnimationSettings {
-  const tabs = new Set(editorIds);
-  const kept = draft.steps.filter(step => tabs.has(step.editorId));
-  const [first = seedSteps([editorIds[0]])[0], ...rest] = kept;
+  const timings = new Map(draft.steps.map(step => [step.id, step]));
+  const [first, ...rest] = deriveSteps(tabs).map(step => {
+    const saved = timings.get(step.id);
+    return saved
+      ? {
+          ...step,
+          holdMs: saved.holdMs,
+          ...(saved.transition ? {transition: saved.transition} : {}),
+        }
+      : step;
+  });
   return {
     ...draft,
     steps: [
@@ -142,8 +198,8 @@ export function reconcileSteps(
 }
 export const parseAnimationSettings = (
   value: unknown,
-  editorIds: NonEmpty<string>,
-) => reconcileSteps(parseDraft(value), editorIds);
+  tabs: NonEmpty<AnimationTab>,
+) => reconcileSteps(parseDraft(value), tabs);
 export const transitionOf = (
   settings: AnimationSettings,
   step: AnimationStepSettings,

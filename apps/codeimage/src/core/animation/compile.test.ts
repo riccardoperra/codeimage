@@ -355,3 +355,39 @@ test('without the typewriter, entering tokens fade in together', () => {
   );
   assert.equal(at('a', 850).opacity, at('b', 850).opacity);
 });
+
+test('same-source entering and leaving rows overlap with no empty middle', () => {
+  const input = scene(
+    [
+      {
+        kind: 'leave',
+        key: 'old',
+        text: 'old',
+        classes: '',
+        from: {line: 0, col: 0},
+      },
+      {
+        kind: 'enter',
+        key: 'new',
+        text: 'new',
+        classes: '',
+        to: {line: 0, col: 0},
+      },
+    ],
+    {leaveEnd: 0.5, enterStart: 0.4},
+  );
+  const output = play(input);
+  for (let time = 0; time <= 1000; time += 10) {
+    const before = output.at('old', time).opacity;
+    const after = output.at('new', time).opacity;
+    assert.ok(before > 0 || after > 0, `empty at ${time}`);
+    assert.ok(before < 1 || after < 1);
+  }
+  assert.deepEqual(
+    compileScene(input, metrics, timing, 'ranges').activeRanges,
+    [
+      [0, 500],
+      [400, 1000],
+    ],
+  );
+});

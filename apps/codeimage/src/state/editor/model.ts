@@ -21,6 +21,8 @@ export const MAX_EDITOR_TABS = 6;
 
 export type LineMark = TabMarks['lines'][number];
 export type TabMarks = ApiTabMarks;
+export type TabScript = NonNullable<TabMarks['script']>;
+export type ScriptLine = TabScript['lines'][number];
 
 export interface EditorState {
   id: string;

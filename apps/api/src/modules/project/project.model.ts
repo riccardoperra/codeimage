@@ -248,7 +248,7 @@ export function draftFromClone(
       ...animation,
       steps: animation.steps.map(step => ({
         ...step,
-        editorId: tabIds.get(step.editorId) ?? step.editorId,
+        ...remapAnimationStep(step, tabIds),
       })),
     },
   };
@@ -325,6 +325,21 @@ export function readFrameExportProperties(
   };
 }
 
+export function remapAnimationStep(
+  step: AnimationSettings['steps'][number],
+  tabIds: ReadonlyMap<string, string>,
+): AnimationSettings['steps'][number] {
+  const editorId = tabIds.get(step.editorId) ?? step.editorId;
+  const id =
+    step.view?.kind !== 'script' && step.id === step.editorId
+      ? editorId
+      : step.view?.kind === 'diff' &&
+          step.id === `${step.editorId}:${step.view.side}`
+        ? `${editorId}:${step.view.side}`
+        : step.id;
+  return {...step, editorId, ...(id === undefined ? {} : {id})};
+}
+
 // A timeline of 0 ms has no frame to render, so it is no animation.
 export function parseAnimationSettings(
   value: unknown,
@@ -342,9 +357,24 @@ export function parseAnimationSettings(
 }
 
 export function parseTabMarks(value: unknown): TabMarks {
-  return Value.Check(TabMarksSchema, value)
-    ? value
-    : {lines: [], focusedLines: []};
+  if (!Value.Check(TabMarksSchema, value)) return {lines: [], focusedLines: []};
+  const script = value.script;
+  if (script) {
+    const seen = new Set<number>();
+    const valid = script.lines.every(line => {
+      if (seen.has(line.line)) return false;
+      seen.add(line.line);
+      return (
+        (line.enter ?? 1) <= script.steps.length &&
+        (line.leave === undefined ||
+          ((line.enter ?? 1) < line.leave &&
+            line.leave <= script.steps.length)) &&
+        (line.focus ?? []).every(step => step <= script.steps.length)
+      );
+    });
+    if (!valid) return {lines: value.lines, focusedLines: value.focusedLines};
+  }
+  return value;
 }
 
 export function readTerminalSurface(

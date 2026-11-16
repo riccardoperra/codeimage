@@ -57,6 +57,32 @@ export const FrameExportProperties = {
   signature: Type.Optional(Nullable(FrameSignatureSchema)),
 };
 
+export const TabScriptSchema = Type.Object({
+  steps: Type.Array(Type.String({minLength: 1, maxLength: 64}), {
+    minItems: 2,
+    uniqueItems: true,
+  }),
+  lines: Type.Array(
+    Type.Object({
+      line: Type.Integer({minimum: 1}),
+      enter: Type.Optional(Type.Integer({minimum: 1})),
+      leave: Type.Optional(Type.Integer({minimum: 2})),
+      focus: Type.Optional(
+        Type.Array(Type.Integer({minimum: 1}), {uniqueItems: true}),
+      ),
+    }),
+  ),
+});
+
+export const StepViewSchema = Type.Union([
+  Type.Object({kind: Type.Literal('tab')}),
+  Type.Object({
+    kind: Type.Literal('diff'),
+    side: Type.Union([Type.Literal('before'), Type.Literal('after')]),
+  }),
+  Type.Object({kind: Type.Literal('script'), step: Type.Integer({minimum: 1})}),
+]);
+
 export const TabMarksSchema = Type.Object({
   lines: Type.Array(
     Type.Object({
@@ -69,6 +95,7 @@ export const TabMarksSchema = Type.Object({
     }),
   ),
   focusedLines: Type.Array(Type.Integer({minimum: 1})),
+  script: Type.Optional(TabScriptSchema),
 });
 
 export type TabMarks = Static<typeof TabMarksSchema>;
@@ -98,6 +125,7 @@ export const AnimationSettingsSchema = Type.Object({
         }),
       ),
       editorId: Type.String(),
+      view: Type.Optional(StepViewSchema),
       holdMs: Type.Integer({minimum: 0}),
     }),
     {minItems: 1},

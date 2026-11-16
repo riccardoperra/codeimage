@@ -4,6 +4,7 @@ import {EditorConfigStore} from '@codeimage/store/editor/config.store';
 import {provideAppState} from '@codeimage/store/index';
 import {
   createEditorId,
+  createRandomId,
   createUniqueId,
 } from '@codeimage/store/plugins/unique-id';
 import type {PresetData} from '@codeimage/store/presets/types';
@@ -190,6 +191,14 @@ export function createEditorsStore() {
       ...(editorState ?? {}),
       id,
     };
+    if (editor.marks.script)
+      editor.marks = {
+        ...editor.marks,
+        script: {
+          ...editor.marks.script,
+          steps: editor.marks.script.steps.map(() => createRandomId()),
+        },
+      };
     setEditors(editors => [...editors, editor]);
     if (active) store.set('activeEditorId', id);
     store.dispatch(editorUpdateCommand, void 0);
