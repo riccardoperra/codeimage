@@ -3,7 +3,7 @@ import {Renderer} from '@takumi-rs/core';
 import {PNG} from 'pngjs';
 import {describe, expect, it, vi} from 'vitest';
 import type {SnapshotInput} from './document';
-import type {SnapshotMarkup} from './render';
+import type {SnapshotMarkup} from './renderTypes';
 import {createRenderer, renderSnapshot, snapshotMarkup} from './render';
 import {sampleDocument} from './sample';
 import {positionWatermark} from './watermarkGeometry';

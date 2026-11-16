@@ -7,7 +7,8 @@ import type {
 import {readFile} from 'node:fs/promises';
 import {createHash} from 'node:crypto';
 import {resolve} from 'node:path';
-import {createFontStore, FontFileError} from './fontCache';
+import {createFontStore} from './fontCache';
+import {FontFileError} from './fontCacheTypes';
 
 import {findFont} from './fontManifest';
 import {Renderer} from '@takumi-rs/core';

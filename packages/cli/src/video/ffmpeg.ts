@@ -10,8 +10,6 @@ import {UsageError} from '../errors';
 import {trackEncoder, trackPartial} from './lifecycle';
 import {FFMPEG_HELP} from './ffmpegHelp';
 import {ffmpegArgs, padFrame} from './ffmpegFrames';
-export {ffmpegArgs, padFrame} from './ffmpegFrames';
-export {resolveFfmpeg} from './ffmpegSetup';
 export async function exportMp4({
   animation,
   ffmpeg,

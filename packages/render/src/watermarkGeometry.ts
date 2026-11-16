@@ -1,20 +1,11 @@
+import {has, element, children, fragment} from './htmlTree';
+import type {Element, Node} from './htmlTree';
 import {watermarkProbes} from './watermarkProbes';
 import type {Kind} from './watermarkProbes';
-import {parse, parseFragment, serialize} from 'parse5';
-import type {DefaultTreeAdapterMap} from 'parse5';
+import {parse, serialize} from 'parse5';
 import type {MeasuredNode} from '@takumi-rs/core';
 import {placeWatermark, WATERMARK} from './watermark';
 import type {Rect} from './watermark';
-
-type Element = DefaultTreeAdapterMap['element'];
-type Node = DefaultTreeAdapterMap['node'];
-const attr = (el: Element, name: string) =>
-  el.attrs.find(a => a.name === name)?.value;
-const has = (el: Element, name: string) => attr(el, name) !== undefined;
-const element = (node: Node): node is Element => 'tagName' in node;
-const children = (node: Node): Node[] =>
-  'childNodes' in node ? node.childNodes : [];
-const fragment = (html: string) => parseFragment(html).childNodes;
 
 function rect(
   node: MeasuredNode,

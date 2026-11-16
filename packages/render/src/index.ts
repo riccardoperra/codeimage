@@ -1,10 +1,19 @@
 export {
   ANIMATION_DEFAULTS,
   ANIMATION_FPS,
+  parseEasing,
+  parseAnimationSettings,
+} from './animationSettings';
+export type {
+  AnimationEasing,
+  AnimationHeader,
+  AnimationStepSettings,
+  AnimationSettings,
+} from './animationSettings';
+export {animationFps} from './renderAnimation';
+export {
   animationDocumentSchema,
   parseAnimationDocument,
-  parseAnimationSettings,
-  parseEasing,
   parseSnapshotDocument,
   SUPPORTED_SNAPSHOT_MAJOR,
   projectSnapshotSchema,
@@ -12,17 +21,12 @@ export {
 } from './document';
 export type {
   AnimationDocument,
-  AnimationEasing,
-  AnimationHeader,
   AnimationInput,
-  AnimationSettings,
-  AnimationStepSettings,
   ProjectSnapshot,
   SnapshotDocument,
   SnapshotInput,
 } from './document';
 export {
-  animationFps,
   createRenderer,
   annotateCode,
   renderAnimation,
@@ -37,14 +41,15 @@ export type {
   AnnotatedCode,
   SnapshotFont,
   SnapshotMarkup,
-} from './render';
+} from './renderTypes';
 
-export {openFontCache, FontUnavailableError, FontFileError} from './fontCache';
+export {openFontCache} from './fontCache';
+export {FontUnavailableError, FontFileError} from './fontCacheTypes';
 export type {
   FontCacheOptions,
   FontEvent,
   FontStatus,
   FontCache,
-} from './fontCache';
-export type {RendererOptions} from './render';
+} from './fontCacheTypes';
+export type {RendererOptions} from './renderTypes';
 export {resolveFontId} from './fontManifest';

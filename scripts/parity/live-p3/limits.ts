@@ -3,7 +3,7 @@ import {writeFile} from 'node:fs/promises';
 import {join} from 'node:path';
 import {PNG} from 'pngjs';
 import {lane, png, snapshot, save, sheet, out, lastInkRow} from './helpers';
-export async function lane6() {
+export async function scale() {
   return await lane('8 scale', async () => {
     const sizes = [];
     const images = [];
@@ -22,7 +22,7 @@ export async function lane6() {
     };
   });
 }
-export async function lane7() {
+export async function badVersion() {
   return await lane('9 bad version', async () => {
     const message = await renderSnapshot(snapshot({}, {$version: 999})).then(
       () => 'rendered',
@@ -32,7 +32,7 @@ export async function lane7() {
     return {pass: message.includes('999'), message};
   });
 }
-export async function lane8() {
+export async function hugeDocument() {
   return await lane('10 huge', async () => {
     const code = Array.from(
       {length: 1000},

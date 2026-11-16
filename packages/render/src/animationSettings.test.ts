@@ -1,6 +1,6 @@
 import {fileURLToPath} from 'node:url';
 import {describe, expect, it} from 'vitest';
-import {parseAnimationSettings} from './document';
+import {parseAnimationSettings} from './animationSettings';
 
 const EDITOR = fileURLToPath(
   new URL(
@@ -8,9 +8,7 @@ const EDITOR = fileURLToPath(
     import.meta.url,
   ),
 );
-const {parseDraft, reconcileSteps, seedSteps} = (await import(
-  /* @vite-ignore */ EDITOR
-)) as {
+const {parseDraft, reconcileSteps, seedSteps} = (await import(EDITOR)) as {
   parseDraft(value: unknown): {steps: readonly unknown[]};
   seedSteps(editorIds: string[]): unknown[];
   reconcileSteps(draft: unknown, editorIds: readonly string[]): unknown;

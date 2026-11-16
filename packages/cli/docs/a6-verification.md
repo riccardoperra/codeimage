@@ -125,9 +125,9 @@ incoming CLI tokens remain visible, within the bound in these samples.
 These runs do not verify production API or OAuth.
 
 Each case folder contains project.json, both MP4s, decoded frame pairs,
-difference PNGs, ffprobe metadata.json, result.json, and a web screenshot.
+difference PNGs, ffprobe metadata.json, web-cli-mp4.json, and a web screenshot.
 `compare.mjs` in the evidence directory uses the comparison section from the
-checked-in `.agents/skills/verify-codeimage/scripts/web-mp4/index.mjs`. The browser journey can
+checked-in `.agents/skills/verify-codeimage/scripts/web-mp4/compare.mjs`. The browser journey can
 also be replayed as an audit case through the skill-owned launch and doctor:
 
 ```sh

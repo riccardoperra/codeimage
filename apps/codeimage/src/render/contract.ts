@@ -48,7 +48,6 @@ export type AnimationEasing =
 export interface AnimationStep {
   editorId: string;
   holdMs: number;
-
   transition?: {ms: number; easing: AnimationEasing};
 }
 
@@ -57,16 +56,13 @@ export interface AnimationTiming {
   transitionMs: number;
   easing: AnimationEasing;
   fps: number;
-
   header?: {mode: 'tab' | 'title' | 'tabs'; title: string};
 }
 
 export interface AnimationScene {
   html: string;
   durationMs: number;
-
   kind: 'hold' | 'transition';
-
   step: number;
 }
 
@@ -77,11 +73,9 @@ export interface AnimationStepFrame extends ComposedFrame {
 export interface AnimationScenes {
   scenes: AnimationScene[];
   steps: AnimationStepFrame[];
-
   css: string[];
   images: ImageBytes[];
   fontFamily: string;
-
   width: number;
   height: number;
 }
@@ -89,7 +83,6 @@ export interface AnimationScenes {
 export interface RenderEntry<Snapshot, Annotation> {
   SUPPORTED_FONT_IDS: string[];
   SUPPORTED_THEME_IDS: string[];
-
   composeFrame(
     snapshot: Snapshot,
     host: FrameHost,

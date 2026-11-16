@@ -24,7 +24,7 @@ The synchronous renderer accepts a preloaded language from `loadLanguage(languag
 
 ## Takumi across operating systems
 
-The `Takumi snapshots` jobs render the shared `takumi-cells.ts` matrix on Linux, macOS, and Windows. Each runner downloads the same Linux-built `libs-dist` artifact and loads its local native Takumi binary from `node_modules`. These jobs need no browser or app environment file.
+The `Takumi snapshots` jobs render the shared `takumi-cells/index.ts` matrix on Linux, macOS, and Windows. Each runner downloads the same Linux-built `libs-dist` artifact and loads its local native Takumi binary from `node_modules`. These jobs need no browser or app environment file.
 
 After installing dependencies and building the libraries, render one set from the repository root:
 

@@ -62,7 +62,6 @@ export function AnimationStage(props: {
       aria-label={t('animation.previewLabel')}
       hidden={!props.visible}
       style={{zoom: zoom()}}
-
       on:keydown={onKeyDown}
     >
       <Show when={props.plan} keyed>

@@ -6,7 +6,7 @@ import type * as FsPromises from 'node:fs/promises';
 import type * as ChildProcesses from 'node:child_process';
 import {createUi} from '../ui';
 import {describeError} from '../errors';
-import {resolveFfmpeg} from './ffmpeg';
+import {resolveFfmpeg} from './ffmpegSetup';
 
 const state = vi.hoisted(() => ({
   confirm: vi.fn(),

@@ -12,11 +12,11 @@ import {positionWatermark} from '../../../packages/render/src/watermarkGeometry'
 import {watermarkScenes} from '../../../packages/render/src/animationWatermark';
 import {type Entry, type Document} from './types';
 import {inCssPixels} from './layout-checks';
-export const dist = new URL('../../../packages/render/dist/', import.meta.url);
-export const require = createRequire(
+const dist = new URL('../../../packages/render/dist/', import.meta.url);
+const require = createRequire(
   new URL('../../../packages/render/package.json', import.meta.url),
 );
-export const {Renderer} = require('@takumi-rs/core');
+const {Renderer} = require('@takumi-rs/core');
 export async function createWebHost() {
   const entry = (await import(
     new URL('ssr/entry-server.js', dist).href

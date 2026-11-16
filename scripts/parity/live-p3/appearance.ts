@@ -6,7 +6,7 @@ import {PNG} from 'pngjs';
 import pixelmatch from 'pixelmatch';
 import {PIXELMATCH_THRESHOLD} from '../lib';
 import {lane, png, snapshot, save, sheet, pixel} from './helpers';
-export async function lane0() {
+export async function themes() {
   return await lane('2 themes', async () => {
     const themes = await supportedThemeIds();
     const images = [];
@@ -21,7 +21,7 @@ export async function lane0() {
     };
   });
 }
-export async function lane1() {
+export async function backgroundImage() {
   return await lane('3 background image', async () => {
     const tile = new PNG({width: 64, height: 64});
     for (let y = 0; y < 64; y++) {
@@ -50,7 +50,7 @@ export async function lane1() {
     };
   });
 }
-export async function lane2() {
+export async function emojiAndCjk() {
   return await lane('4 emoji and CJK', async () => {
     const text = (code: string) =>
       png(snapshot({editor: {code}, terminal: {showWatermark: false}}));

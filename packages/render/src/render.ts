@@ -6,17 +6,8 @@ import type {
   RendererOptions,
   SnapshotMarkup,
 } from './renderTypes';
-export type {
-  AnnotatedCode,
-  SnapshotFont,
-  SnapshotMarkup,
-  RendererOptions,
-  AnimationFrame,
-  RawAnimation,
-} from './renderTypes';
 import {getRuntime, createRendererRuntime} from './renderRuntime';
 import {createAnimationRenderer} from './renderAnimation';
-export {animationFps} from './renderAnimation';
 export async function annotateCode(
   code: string,
   languageId: string,

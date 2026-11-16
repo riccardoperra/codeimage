@@ -969,7 +969,9 @@ export async function audit({page, context, base, out, server}) {
   });
   await feature('web-mp4', async () => {
     const {verifyWebMp4} = await import('./web-mp4/index.mjs');
-    return verifyWebMp4({page, base, out});
+    return fresh({name: 'web-mp4', layout: 'inspector'}, ({page}) =>
+      verifyWebMp4({page, base, out}),
+    );
   });
   await feature('animation-gif-estimates', mp4.gifEstimates);
   await feature('animation-gif', mp4.gifLayouts);

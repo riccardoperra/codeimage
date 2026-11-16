@@ -14,14 +14,6 @@ import type {
   FontStatus,
   FontCache,
 } from './fontCacheTypes';
-export {cacheRoot} from './fontCacheStorage';
-export {FontUnavailableError, FontFileError} from './fontCacheTypes';
-export type {
-  FontCacheOptions,
-  FontEvent,
-  FontStatus,
-  FontCache,
-} from './fontCacheTypes';
 export function createFontStore(
   options: FontCacheOptions & {
     catalog?: FontManifest;

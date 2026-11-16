@@ -23,8 +23,6 @@ globalFontFace(
  * from its width; previews outside a frame draw it at 1.
  */
 export const signatureScale = createVar();
-// Exported as a string: a .css.ts file may not export functions in the
-// Node renderer's emitCss build.
 export const scale = fallbackVar(signatureScale, '1');
 /** A length that grows with the frame. */
 const px = (value: number) => `calc(${value}px * ${scale})`;

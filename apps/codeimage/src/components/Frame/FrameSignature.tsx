@@ -27,7 +27,6 @@ export {
   signatureScale,
 } from './signatureLayout';
 
-/** A length that grows with the frame, as in the signature styles. */
 const scaledPx = (value: number) => `calc(${value}px * ${styles.scale})`;
 
 export function PlatformIcon(props: {

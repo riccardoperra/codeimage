@@ -17,7 +17,6 @@ import {
   toneSampleMarkup,
 } from '../components/Frame/signatureTone';
 import {getEditorStore} from '@codeimage/store/editor';
-import type {PersistedFrameState as FrameAppearance} from '@codeimage/store/frame/model';
 import type {CustomTheme} from '@codeimage/highlight';
 import type {Language} from '@codemirror/language';
 
@@ -53,7 +52,7 @@ export const NO_MARKS = {lines: [], focusedLines: []};
 export interface LoadedFrame {
   theme: CustomTheme;
   fontName: string;
-  appearance: FrameAppearance;
+  appearance: PersistedFrameState;
   media: FrameMedia;
   images: ImageBytes[];
   painted: boolean;
@@ -122,16 +121,12 @@ export async function loadFrame(
 }
 
 export interface Pass {
-  appearance: FrameAppearance;
-
+  appearance: PersistedFrameState;
   editorId: string;
   language: Language | null;
   placement?: FittedPlacement;
-
   editor?: RenderSnapshot['editor'];
-
   code?: () => JSX.Element;
-
   animation?: StepOptions;
 }
 

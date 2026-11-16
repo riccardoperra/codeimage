@@ -8,7 +8,7 @@ import {checkGeometry} from './geometry';
 import {checkEndpoints} from './endpoints';
 import {checkEncoded} from './encoded';
 import {reportCase} from './report';
-export const {values: args} = parseArgs({
+const {values: args} = parseArgs({
   options: {
     out: {type: 'string', default: '/tmp/codeimage-parity/animation'},
     case: {type: 'string', multiple: true},
@@ -19,7 +19,6 @@ export const {values: args} = parseArgs({
     shift: {type: 'string'},
   },
 });
-export const out = args.out;
 export async function main() {
   const web = await createWebHost();
   const cases = createCases(Number(args.scale));

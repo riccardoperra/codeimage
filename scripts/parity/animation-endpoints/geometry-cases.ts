@@ -1,4 +1,4 @@
-import {type Pair} from './cases';
+import {type Pair} from './types';
 import {type Case} from './types';
 import {
   SHORT,

@@ -19,7 +19,7 @@ import {
   diffPercent,
   pixel,
 } from './helpers';
-export async function lane3() {
+export async function svg() {
   return await lane('5 svg', async () => {
     const document = snapshot({}, {format: 'svg'});
     const svg = (await renderSnapshot(document)) as string;
@@ -62,7 +62,7 @@ export async function lane3() {
     };
   });
 }
-export async function lane4() {
+export async function opacityAndRadius() {
   return await lane('6 opacity 50, radius 0', async () => {
     const image = await png(
       snapshot({frame: {opacity: 50, radius: 0}, terminal: {opacity: 50}}),
@@ -75,7 +75,7 @@ export async function lane4() {
     };
   });
 }
-export async function lane5() {
+export async function fonts() {
   return await lane('7 fonts', async () => {
     const fontIds = await supportedFontIds();
     const images = [];

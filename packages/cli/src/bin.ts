@@ -90,7 +90,8 @@ async function main() {
     const started = performance.now();
     if (args.mp4 && args.animation) {
       const {document} = planAnimation(output.snapshot, args.animation, preset);
-      const {exportMp4, resolveFfmpeg} = await import('./video/ffmpeg');
+      const {exportMp4} = await import('./video/ffmpeg');
+      const {resolveFfmpeg} = await import('./video/ffmpegSetup');
       const ffmpeg = await resolveFfmpeg({
         path: args.ffmpeg,
         prompts: ui.prompts,

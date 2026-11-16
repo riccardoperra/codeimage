@@ -74,8 +74,6 @@ export function PreviewFrame(props: VoidProps<PreviewFrameProps>) {
     ({languageId, tabName}) => loadLanguage(languageId, tabName),
     {initialValue: null},
   );
-  // FrameView takes a loaded theme. A Suspense still creates its children
-  // while it shows its fallback, so the frame below waits for the theme.
   const {theme} = useFrameCodeStyle();
   const filterHotKey = () =>
     editor.state.options.focused || isKeyOwnedByFocus();

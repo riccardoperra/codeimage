@@ -14,7 +14,9 @@ import {parseArgs} from '../args';
 import {buildSnapshot} from '../snapshot';
 import {planAnimation} from '../flags/animate';
 import {decodeApng} from '../../../render/src/test-utils';
-import {exportMp4, ffmpegArgs, padFrame, resolveFfmpeg} from './ffmpeg';
+import {exportMp4} from './ffmpeg';
+import {ffmpegArgs, padFrame} from './ffmpegFrames';
+import {resolveFfmpeg} from './ffmpegSetup';
 
 let folder: string;
 beforeEach(async () => {

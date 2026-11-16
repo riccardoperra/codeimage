@@ -17,7 +17,8 @@ import {join, resolve} from 'node:path';
 import {promisify} from 'node:util';
 import {afterEach, beforeEach, describe, expect, it} from 'vitest';
 import type {CatalogFont, FontManifest} from './fontManifest';
-import {cacheRoot, createFontStore} from './fontCache';
+import {createFontStore} from './fontCache';
+import {cacheRoot} from './fontCacheStorage';
 
 const data = Buffer.from('verified test font bytes');
 const sha256 = createHash('sha256').update(data).digest('hex');

@@ -48,3 +48,19 @@ export const settings: Settings = {
 
 export const frameTimeMs = (index: number, fps: number) =>
   Math.floor((index * 1000) / fps);
+
+export type PairTab = {code: string; marks?: unknown; lineNumberStart?: number};
+export type PairOverrides = {
+  options?: Partial<SnapshotInput['editor']['options']>;
+  terminal?: Record<string, unknown>;
+  frame?: Record<string, unknown>;
+  width?: number;
+  languageId?: string;
+  tabNames?: [string, string];
+};
+
+export type Pair = (
+  from: PairTab,
+  to: PairTab,
+  overrides?: PairOverrides,
+) => SnapshotInput;

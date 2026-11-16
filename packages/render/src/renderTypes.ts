@@ -1,4 +1,4 @@
-import type {FontCacheOptions} from './fontCache';
+import type {FontCacheOptions} from './fontCacheTypes';
 
 import type {ImageSource} from '@takumi-rs/core';
 import type {ProjectSnapshot, SnapshotDocument} from './document';

@@ -1,8 +1,9 @@
+import type {Pair, PairTab, PairOverrides} from './types';
 import type {SnapshotInput} from '../../../packages/render/dist/index.mjs';
 import {standardCases} from './standard-cases';
 import {geometryCases} from './geometry-cases';
 import {textCases} from './text-cases';
-export function createPair(scale: number) {
+export function createPair(scale: number): Pair {
   const BASE: SnapshotInput = {
     $version: '1.10.0',
     $snippetId: null,
@@ -40,21 +41,15 @@ export function createPair(scale: number) {
     },
   };
 
-  type Tab = {code: string; marks?: unknown; lineNumberStart?: number};
-  type Overrides = {
-    options?: Partial<SnapshotInput['editor']['options']>;
-    terminal?: Record<string, unknown>;
-    frame?: Record<string, unknown>;
-    width?: number;
-    languageId?: string;
-    tabNames?: [string, string];
-  };
-
-  function pair(from: Tab, to: Tab, overrides: Overrides = {}): SnapshotInput {
+  function pair(
+    from: PairTab,
+    to: PairTab,
+    overrides: PairOverrides = {},
+  ): SnapshotInput {
     const tab = (
       id: string,
       tabName: string,
-      {code, marks, lineNumberStart}: Tab,
+      {code, marks, lineNumberStart}: PairTab,
     ) => ({
       id,
       code,
@@ -79,7 +74,6 @@ export function createPair(scale: number) {
   }
   return pair;
 }
-export type Pair = ReturnType<typeof createPair>;
 export function createCases(scale: number) {
   const pair = createPair(scale);
   return [...standardCases(pair), ...geometryCases(pair), ...textCases(pair)];

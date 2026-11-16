@@ -11,15 +11,11 @@ import type {
   FrameHost,
   FrameMarkup,
 } from '../../../apps/codeimage/src/render/contract';
+import {animationFps} from './renderAnimation';
 import {watermarkScenes} from './animationWatermark';
 import type {AnimationInput} from './document';
 import {parseSnapshotDocument, type SnapshotDocument} from './document';
-import {
-  animationFps,
-  renderAnimation,
-  renderSnapshot,
-  snapshotMarkup,
-} from './render';
+import {renderAnimation, renderSnapshot, snapshotMarkup} from './render';
 import {sampleDocument} from './sample';
 import {
   decode,

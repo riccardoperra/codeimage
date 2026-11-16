@@ -5,7 +5,7 @@ Renders a saved CodeImage project to PNG, JPEG, WebP, or SVG in Node, with no br
 ```ts
 import {renderSnapshot} from '@codeimage/render';
 
-const png = await renderSnapshot(project); // Uint8Array, or a string for SVG
+const png = await renderSnapshot(project);
 ```
 
 `project` is the `ProjectEditorPersistedState` the app stores, plus optional `format` (default `png`), `scale` (default 2) and `width` in CSS pixels. As in the web export, the frame is never narrower than its longest line, so `width` is a minimum and code never wraps. Without `width` the frame is as wide as its content. `snapshotDocumentSchema` is the shared zod 4 schema; it accepts any version in the supported major and keeps unknown fields.
@@ -15,7 +15,7 @@ const png = await renderSnapshot(project); // Uint8Array, or a string for SVG
 ```ts
 import {renderAnimation} from '@codeimage/render';
 
-const webp = await renderAnimation({...project, format: 'webp'}); // Uint8Array
+const webp = await renderAnimation({...project, format: 'webp'});
 ```
 
 `renderAnimation` plays the `animation` the project stores, as the editor's Animate panel saves it: each step holds its tab for `holdMs`, and the transition into a step lasts that step's own `transition.ms` with its `transition.easing`, else the animation's `transitionMs` and `easing`. An easing is `smooth`, `snappy`, `strong`, `linear`, or a `cubic-bezier()`. `header.mode` shows the active tab (`tab`), every tab (`tabs`), or only `header.title` (`title`) in every frame. A project without steps plays every tab in order with 800 ms holds, 700 ms transitions, the `smooth` easing, and 30 fps. `format` is `webp` (default), `gif`, or `apng`, and `scale` and `width` work as for a still image. `parseAnimationSettings` reads the settings as the editor reads them: it clamps durations to the editor's limits, falls back to the defaults for invalid values, and drops a step whose tab is gone. `src/animationSettings.test.ts` checks it against the editor's own parser.
@@ -55,7 +55,6 @@ const renderer = createRenderer({
 });
 const png = await renderer.render(project);
 const markup = await renderer.markup(project);
-// markup.fonts contains verified data buffers, including required fallbacks.
 const cache = openFontCache();
 await cache.install(['fira-code']);
 const inventory = await cache.list();

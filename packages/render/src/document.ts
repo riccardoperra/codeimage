@@ -1,16 +1,4 @@
 import {parseAnimationSettings} from './animationSettings';
-export {
-  ANIMATION_DEFAULTS,
-  ANIMATION_FPS,
-  parseEasing,
-  parseAnimationSettings,
-} from './animationSettings';
-export type {
-  AnimationEasing,
-  AnimationHeader,
-  AnimationStepSettings,
-  AnimationSettings,
-} from './animationSettings';
 import {parseSignature} from '../../../apps/codeimage/src/state/frame/model';
 import {
   parseSurface,
