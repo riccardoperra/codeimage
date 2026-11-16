@@ -104,3 +104,7 @@ Each slice: typecheck (`pnpm libs:build` first), `vitest run` in `apps/codeimage
 3. **Script editing.** Script lines in the line-marks field (map through edits, saved with marks, decision 3 inheritance), script actions (add/remove step with stable ids, line enter/leave/focus from the selection), edit aids as decorations with `data-animate-aid`, stripped in `cloneExportNode`/`cloneAnimationNode` and in the measurement.
 4. **Timeline and bar.** Everything in decision 7, i18n, removal of the old UI. Phone: List layout and the bottom-sheet details where the prototype used them.
 5. **Verification.** New audit cases in the `verify-codeimage` skill (not `verify-*.mjs` in source folders): open Animate on 1/2/3 tabs, add a script step, remove a middle step (selection follows the id), chip popover opens and returns focus, Done leaves Animate, export a script animation and check no aid is in the frames, reload keeps scripts. Record results in `docs/plans/animate-tabs-timeline-verification.md`.
+
+## Deviations
+
+- Slice 2: the retained Takumi parity runner cannot execute on this main baseline because `packages/render/dist/index.mjs` and the render package are absent. The direct Node 24 invocation reaches that missing module; the tsx invocation additionally fails on top-level await in CommonJS. Engine behavior is covered by the app unit suite; Takumi parity remains unverified.

@@ -114,9 +114,55 @@ const recolor = (before: Token, token: Token) =>
     : {...token, fromClasses: before.classes};
 
 export function pairSteps(
+  from: TokenLine[] | Step,
+  to: TokenLine[] | Step,
+  widths = NO_WIDTHS,
+): TokenTransition[] {
+  if (
+    !Array.isArray(from) &&
+    !Array.isArray(to) &&
+    from.source !== undefined &&
+    from.source === to.source &&
+    from.rows &&
+    to.rows
+  ) {
+    const targets = new Map(to.rows.map((line, row) => [line, row]));
+    const sourceRows = new Set(from.rows);
+    const pairRow = (
+      sourceLine: number,
+      fromRow: number | undefined,
+      toRow: number | undefined,
+    ) =>
+      pairSteps(
+        fromRow === undefined ? [] : [from.lines[fromRow]],
+        toRow === undefined ? [] : [to.lines[toRow]],
+        widths,
+      ).map(token => ({
+        ...token,
+        key: `row:${sourceLine}:${token.key}`,
+        ...('from' in token ? {from: {...token.from, line: fromRow!}} : {}),
+        ...('to' in token ? {to: {...token.to, line: toRow!}} : {}),
+      }));
+    return [
+      ...from.rows.flatMap((line, row) =>
+        pairRow(line, row, targets.get(line)),
+      ),
+      ...to.rows.flatMap((line, row) =>
+        sourceRows.has(line) ? [] : pairRow(line, undefined, row),
+      ),
+    ];
+  }
+  return pairCode(
+    Array.isArray(from) ? from : from.lines,
+    Array.isArray(to) ? to : to.lines,
+    widths,
+  );
+}
+
+function pairCode(
   from: TokenLine[],
   to: TokenLine[],
-  widths = NO_WIDTHS,
+  widths: GlyphWidths,
 ): TokenTransition[] {
   const keyed = (lines: TokenLine[], salt: string) => {
     const tokens = codeTokens(lines, widths);
@@ -255,7 +301,13 @@ export function pairScene(
   widths = NO_WIDTHS,
 ): Scene {
   return {
-    code: pairSteps(from.lines, to.lines, widths),
+    code: pairSteps(from, to, widths),
+    ...(from.source !== undefined &&
+    from.source === to.source &&
+    from.rows &&
+    to.rows
+      ? {leaveEnd: 0.5, enterStart: 0.4}
+      : {}),
     gutter: lineNumbers ? pairGutters(from, to) : null,
     marks: pairMarks(from, to),
     from: stepBox(from, widths),

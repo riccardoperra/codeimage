@@ -278,3 +278,45 @@ test('focus dims every row outside the focused lines, marked or not', async () =
   assert.deepEqual([...scene.from.dimmed], [0, 2]);
   assert.deepEqual([...scene.to.dimmed], []);
 });
+
+test('script block swaps never pair tokens across source lines', async () => {
+  const from = await step('const total = oldValue;\nreturn total;', {
+    source: 'tab',
+    rows: [1, 3],
+  });
+  const to = await step('const total = newValue;\nreturn total;', {
+    source: 'tab',
+    rows: [2, 3],
+  });
+  const scene = pairScene(from, to, false);
+  const moves = scene.code.filter(token => token.kind === 'move');
+  assert.ok(moves.length > 0);
+  assert.ok(moves.every(token => token.from.line === 1 && token.to.line === 1));
+  assert.equal(scene.leaveEnd, 0.5);
+  assert.equal(scene.enterStart, 0.4);
+  assert.ok(
+    scene.code.some(token => token.kind === 'leave' && token.text === 'const'),
+  );
+  assert.ok(
+    scene.code.some(token => token.kind === 'enter' && token.text === 'const'),
+  );
+});
+
+test('kept source lines move as whole rows and changed lines match only within that row', async () => {
+  const from = await step('const a = 1;\nreturn a;', {
+    source: 'tab',
+    rows: [1, 3],
+  });
+  const to = await step('inserted();\nconst b = 1;\nreturn a;', {
+    source: 'tab',
+    rows: [2, 1, 3],
+  });
+  const scene = pairScene(from, to, false);
+  assert.ok(
+    scene.code
+      .filter(token => token.kind === 'move' && token.from.line === 0)
+      .every(token => token.kind === 'move' && token.to.line === 1),
+  );
+  const other = pairScene(from, {...to, source: 'other'}, false);
+  assert.equal(other.leaveEnd, undefined);
+});

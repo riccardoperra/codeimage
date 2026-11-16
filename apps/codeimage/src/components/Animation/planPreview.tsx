@@ -32,7 +32,7 @@ import {getFrameState} from '@codeimage/store/editor/frame';
 export type PreviewTab = Pick<
   EditorState,
   'id' | 'code' | 'languageId' | 'lineNumberStart' | 'marks'
-> & {tabName: string | null};
+> & {tabName: string | null; rows?: number[]};
 
 export interface CodeStyle {
   theme: CustomTheme;
@@ -232,6 +232,8 @@ export async function measurePreview(
 
   const step = (index: number) => ({
     lines: tokenizeCode(tabs[index].code, languages[index], style.theme),
+    rows: tabs[index].rows,
+    source: tabs[index].id,
     marks: tabs[index].marks,
     lineNumberStart: tabs[index].lineNumberStart,
     layout: measurements[index].layout,
