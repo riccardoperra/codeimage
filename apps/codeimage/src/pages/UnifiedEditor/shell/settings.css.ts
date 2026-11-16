@@ -371,6 +371,117 @@ export const rowControl = style({
   },
 });
 
+export const progress = style({width: '120px', accentColor: c.primary});
+
+export const progressValue = style({
+  display: 'flex',
+  alignItems: 'center',
+  gap: themeVars.spacing['2'],
+  color: c.descriptionTextColor,
+  fontSize: themeVars.fontSize.xs,
+  fontVariantNumeric: 'tabular-nums',
+});
+
+// Under the model row's description: Chrome's requirements and the Chrome
+// pages to copy.
+export const modelDetails = style({
+  display: 'flex',
+  flexDirection: 'column',
+  gap: themeVars.spacing['3'],
+  marginTop: themeVars.spacing['2'],
+  color: c.descriptionTextColor,
+  fontSize: themeVars.fontSize.xs,
+  lineHeight: 1.4,
+});
+// A tall row keeps its button by the title.
+globalStyle(`${row}:has(${modelDetails})`, {alignItems: 'flex-start'});
+
+export const requirements = style({
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '6px',
+  margin: 0,
+  padding: 0,
+  listStyle: 'none',
+});
+
+export const requirement = style({
+  display: 'flex',
+  alignItems: 'flex-start',
+  gap: themeVars.spacing['2'],
+});
+
+export const requirementMark = style({
+  display: 'inline-flex',
+  flex: 'none',
+  alignItems: 'center',
+  justifyContent: 'center',
+  width: '16px',
+  height: '16px',
+  borderRadius: '50%',
+  fontSize: '10px',
+  fontWeight: themeVars.fontWeight.semibold,
+  background: c.input.backgroundColor,
+  selectors: {
+    [`${requirement}[data-status=met] &`]: {
+      background: c.primary,
+      color: 'white',
+    },
+    [`${requirement}[data-status=unmet] &`]: {
+      background: themeVars.backgroundColor.red['500'],
+      color: 'white',
+    },
+  },
+});
+
+export const requirementNote = style({
+  display: 'block',
+  opacity: 0.8,
+});
+
+globalStyle(`${requirement}[data-status=met] > span:last-child`, {
+  color: c.baseText,
+});
+
+export const addresses = style({
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '6px',
+});
+
+export const address = style({
+  display: 'flex',
+  flexWrap: 'wrap',
+  alignItems: 'center',
+  gap: '6px',
+});
+
+export const addressCode = style({
+  padding: '2px 6px',
+  borderRadius: '6px',
+  background: c.input.backgroundColor,
+  color: c.baseText,
+  fontFamily: 'ui-monospace, monospace',
+  userSelect: 'all',
+});
+
+export const copyAddress = style({
+  padding: '2px 8px',
+  border: 'none',
+  borderRadius: '6px',
+  background: 'transparent',
+  color: c.primary,
+  font: 'inherit',
+  fontWeight: themeVars.fontWeight.medium,
+  cursor: 'pointer',
+  ':focus-visible': focusRing,
+  '@media': {
+    [finePointer]: {
+      selectors: {'&:hover': {background: c.input.backgroundColor}},
+    },
+  },
+});
+
 // The picture of an archive row, before its text. On a phone it gets
 // smaller and the button goes under the text, so the text keeps its width.
 export const rowPicture = style({
@@ -568,6 +679,20 @@ export const wireCanvas = style({fill: 'currentColor', opacity: 0.08});
 export const wireFrame = style({fill: 'currentColor', opacity: 0.28});
 export const wireControl = style({fill: c.primary});
 export const wireControlSoft = style({fill: c.primary, opacity: 0.45});
+
+/* The colour mode orbs. Their fills are fixed; only the rim and stars follow the theme. */
+export const orb = style({display: 'block', overflow: 'visible'});
+export const orbRim = style({
+  stroke: 'currentColor',
+  strokeOpacity: 0.18,
+  strokeWidth: 1,
+});
+export const orbStars = style({fill: 'currentColor', opacity: 0.45});
+export const orbSeam = style({
+  stroke: '#ffffff',
+  strokeOpacity: 0.35,
+  strokeWidth: 0.75,
+});
 
 // A row of an Aa list: the mark and a line of text.
 export const listRow = style({

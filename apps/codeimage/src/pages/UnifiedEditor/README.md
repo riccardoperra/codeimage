@@ -90,7 +90,7 @@ A resize observer hides the trigger if it would overlap the frame or extend beyo
 The keyboard shortcut and command-menu entry still open help when the trigger is hidden.
 Phones keep their existing help trigger, placement, and dialog.
 
-`CanvasToolbar.tsx` contains Format code and Copy image on desktop in all three layouts.
+`CanvasToolbar.tsx` contains Format code, Copy image and, with the Local AI experiment, Ask AI on desktop in all three layouts. Ask AI turns the toolbar into the Local AI bar.
 Shortcut help has its own trigger. Randomize stays in the command menu and its shortcut, without a button.
 
 `shell/Header.tsx` contains the logo, account controls, Share, and Export.

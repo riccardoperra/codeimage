@@ -243,6 +243,14 @@ export async function audit({page, context, base, out, server}) {
     const {verifyExportScreen} = await import('./frame-regressions.mjs');
     return verifyExportScreen({fresh, out});
   });
+  await feature('agent-tools', async () => {
+    const {verifyAgentTools} = await import('./agent-tools.mjs');
+    return verifyAgentTools({fresh, out});
+  });
+  await feature('local-ai', async () => {
+    const {verifyLocalAi} = await import('./local-ai.mjs');
+    return verifyLocalAi({fresh, out});
+  });
   await feature('retired-classic-route', () =>
     fresh(
       {
@@ -554,6 +562,89 @@ export async function audit({page, context, base, out, server}) {
           path: resolve(out, 'whats-new-line-marks-dot.png'),
         });
         return {before, after};
+      },
+    ),
+  );
+  // The current release is major, so a fresh profile gets the Showcase
+  // sheet. Minimize turns it into the Nudge card, which steps through the
+  // highlights, and a dismissal survives a reload.
+  await feature('whats-new-nudge', () =>
+    fresh(
+      {
+        name: 'whats-new-nudge',
+        layout: 'inspector',
+        viewport: {width: 1440, height: 900},
+      },
+      async ({page}) => {
+        const ready = () =>
+          page.locator('.cm-content[contenteditable="true"]').waitFor();
+        await page.goto(base, {waitUntil: 'domcontentloaded'});
+        await ready();
+        const sheet = page.locator('[data-whats-new="showcase"]');
+        await sheet.waitFor({timeout: 15000});
+        await page
+          .getByRole('button', {name: "Minimize what's new", exact: true})
+          .click();
+        await sheet.waitFor({state: 'hidden'});
+        const nudge = page.locator('[data-whats-new="nudge"]');
+        await nudge.waitFor();
+        await page.screenshot({
+          path: resolve(out, 'whats-new-nudge-collapsed.png'),
+        });
+        await nudge.getByRole('button', {name: 'See', exact: true}).click();
+        const step = n =>
+          nudge
+            .getByRole('img', {name: new RegExp(`^Step ${n} of \\d+$`)})
+            .waitFor();
+        await step(1);
+        await nudge.getByRole('button', {name: 'Next', exact: true}).click();
+        await step(2);
+        await page.screenshot({path: resolve(out, 'whats-new-nudge.png')});
+        await nudge
+          .getByRole('button', {name: "Dismiss what's new", exact: true})
+          .click();
+        await nudge.waitFor({state: 'hidden'});
+        // The dismissal is an IndexedDB write. Reload only once it landed.
+        // waitForFunction would pass at once on a promise, so poll here.
+        const dismissed = () =>
+          page.evaluate(
+            () =>
+              new Promise(done => {
+                const open = indexedDB.open('keyval-store');
+                open.onerror = () => done([]);
+                open.onsuccess = () => {
+                  const db = open.result;
+                  const read = db
+                    .transaction('keyval')
+                    .objectStore('keyval')
+                    .get('whats-new');
+                  read.onsuccess = () => {
+                    db.close();
+                    done(read.result?.dismissed ?? []);
+                  };
+                  read.onerror = () => {
+                    db.close();
+                    done([]);
+                  };
+                };
+              }),
+          );
+        const until = Date.now() + 5000;
+        while ((await dismissed()).length === 0) {
+          assert.ok(Date.now() < until, 'the dismissal reaches IndexedDB');
+          await page.waitForTimeout(100);
+        }
+        await page.reload({waitUntil: 'domcontentloaded'});
+        await ready();
+        // The announcement arrives about 700 ms after the editor settles.
+        await page.waitForTimeout(3000);
+        assert.equal(
+          await page
+            .locator('[data-whats-new="showcase"], [data-whats-new="nudge"]')
+            .count(),
+          0,
+          'a dismissed announcement stays away after a reload',
+        );
       },
     ),
   );

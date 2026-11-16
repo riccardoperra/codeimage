@@ -13,6 +13,8 @@ import sidebarLocale from './sidebar';
 import {uiLocale} from './ui';
 import {bottomBar} from './bottombar';
 import {exportTabs} from './exportTabs';
+import {localAi} from './localAi';
+import {agentActivity} from './agentActivity';
 
 export const locale = {
   it: {
@@ -96,6 +98,8 @@ export const locale = {
     ...signatures.it,
     ...exportTabs.it,
     ...rendering.it,
+    ...localAi.it,
+    ...agentActivity.it,
     ...altText.it,
     ...lineMarksLocale.it,
     ...editorLocale.it,
@@ -182,6 +186,8 @@ export const locale = {
     ...signatures.en,
     ...exportTabs.en,
     ...rendering.en,
+    ...localAi.en,
+    ...agentActivity.en,
     ...altText.en,
     ...lineMarksLocale.en,
     ...editorLocale.en,
@@ -269,6 +275,8 @@ export const locale = {
     ...signatures.de,
     ...exportTabs.de,
     ...rendering.de,
+    ...localAi.de,
+    ...agentActivity.de,
     ...altText.de,
     ...lineMarksLocale.de,
     ...editorLocale.de,
@@ -355,6 +363,8 @@ export const locale = {
     ...signatures.es,
     ...exportTabs.es,
     ...rendering.es,
+    ...localAi.es,
+    ...agentActivity.es,
     ...altText.es,
     ...lineMarksLocale.es,
     ...editorLocale.es,

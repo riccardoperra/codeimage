@@ -13,7 +13,17 @@ import {RadioGroup} from '@kobalte/core/radio-group';
 import {useNavigate} from '@solidjs/router';
 import {SegmentedField} from '@ui/SegmentedField/SegmentedField';
 import type {Component, JSX} from 'solid-js';
-import {createMemo, For, Match, Show, Switch} from 'solid-js';
+import {
+  createMemo,
+  createResource,
+  createSignal,
+  For,
+  Match,
+  onCleanup,
+  onMount,
+  Show,
+  Switch,
+} from 'solid-js';
 import {Dynamic} from 'solid-js/web';
 import {illustrations} from '../../../components/WhatsNew/illustrations';
 import {
@@ -32,6 +42,8 @@ import {ThemeSwatch} from '../ThemeSwatch';
 import {
   AboutIcon,
   AppearanceIcon,
+  CheckIcon,
+  CloseIcon,
   ExperimentsIcon,
   ExportIcon,
   ExternalIcon,
@@ -41,14 +53,24 @@ import {
 } from './icons';
 import type {ThemeCardsId} from './preferences';
 import {
+  COLOUR_MODES,
   DEFAULT_CARDS,
   DEFAULT_LAYOUT,
   EXPORT_STYLES,
   LAYOUTS,
+  LOCAL_AI_PROVIDERS,
   preferences,
   THEME_CARDS,
 } from './preferences';
-import {LayoutPreview} from './previews';
+import type {ModelState} from '../local-ai/language-model';
+import {languageModel} from '../local-ai/providers';
+import type {Requirement, RequirementStatus} from '../local-ai/requirements';
+import {
+  checkRequirements,
+  MEMORY_CAP,
+  readEnvironment,
+} from '../local-ai/requirements';
+import {ColourModeOrb, LayoutPreview} from './previews';
 import type {SectionId} from './settings-state';
 import {SECTIONS, settings} from './settings-state';
 import * as styles from './settings.css';
@@ -63,6 +85,8 @@ export interface SettingRow {
   /** A small picture before the text, as the archive's rows have. */
   readonly picture?: () => JSX.Element;
   readonly description: () => string;
+  /** More than a line can say, under the description. Search reads only the description. */
+  readonly details?: () => JSX.Element;
   /** Beside the text, or under it for a `wide` row. */
   readonly control: () => JSX.Element;
   /** The control takes the island's width, as the cards with a preview do. */
@@ -204,6 +228,252 @@ function LanguageChoice() {
   );
 }
 
+type Translate = ReturnType<typeof useI18n<AppLocaleEntries>>[0];
+
+/** Where the on-device model stands, in words. */
+function modelStatus(t: Translate) {
+  const state = languageModel.state();
+  switch (state.kind) {
+    case 'available':
+      return t('localAi.modelReady');
+    case 'downloadable':
+      return t('localAi.modelDownloadable');
+    case 'downloading':
+      return state.loaded === undefined
+        ? t('localAi.modelNoProgress')
+        : t('localAi.modelDownloading');
+    case 'failed':
+      return t('localAi.modelFailed', {message: state.error});
+    default:
+      return t('localAi.modelUnavailable');
+  }
+}
+
+/** What the on-device model needs next: a download, its progress, or nothing. */
+function ModelControl() {
+  const [t] = useI18n<AppLocaleEntries>();
+  // Each visit to Experiments asks Chrome again, so the row is never stale.
+  onMount(() => void languageModel.refresh());
+  const downloading = () => {
+    const state = languageModel.state();
+    return state.kind === 'downloading' ? state : undefined;
+  };
+  const download = (label: string) => (
+    <Button
+      size="sm"
+      theme="secondary"
+      onClick={() => void languageModel.download()}
+    >
+      {label}
+    </Button>
+  );
+  return (
+    <Switch>
+      <Match when={languageModel.state().kind === 'downloadable'}>
+        {download(t('localAi.download'))}
+      </Match>
+      <Match when={languageModel.state().kind === 'failed'}>
+        {download(t('localAi.retry'))}
+      </Match>
+      <Match when={languageModel.state().kind === 'unavailable'}>
+        <Button
+          size="sm"
+          theme="secondary"
+          onClick={() => void languageModel.refresh()}
+        >
+          {t('localAi.checkAgain')}
+        </Button>
+      </Match>
+      <Match when={downloading()}>
+        {state => (
+          <>
+            <Show
+              when={state().loaded === undefined && !languageModel.requesting()}
+            >
+              {download(t('localAi.restartDownload'))}
+            </Show>
+            <Show
+              when={state().loaded}
+              fallback={
+                <progress
+                  class={styles.progress}
+                  aria-label={t('localAi.modelDownloading')}
+                />
+              }
+            >
+              {loaded => (
+                <span class={styles.progressValue}>
+                  <progress
+                    class={styles.progress}
+                    aria-label={t('localAi.modelDownloading')}
+                    value={loaded()}
+                    max={1}
+                  />
+                  {Math.round(loaded() * 100)}%
+                </span>
+              )}
+            </Show>
+          </>
+        )}
+      </Match>
+    </Switch>
+  );
+}
+
+/** What this device shows for a requirement, or where to look when the page cannot tell. */
+function requirementNote(t: Translate, requirement: Requirement) {
+  switch (requirement.id) {
+    case 'browser':
+      return requirement.version === undefined
+        ? t('localAi.unknown.browser')
+        : t('localAi.found.browser', {version: String(requirement.version)});
+    case 'os':
+      return requirement.system ?? t('localAi.unknown.os');
+    case 'cpu':
+      return requirement.cores === undefined
+        ? t('localAi.unknown.cpu')
+        : t('localAi.found.cpu', {cores: String(requirement.cores)});
+    case 'memory':
+      return requirement.gb !== undefined && requirement.gb < MEMORY_CAP
+        ? t('localAi.found.memory', {gb: String(requirement.gb)})
+        : t('localAi.unknown.memory');
+    case 'disk':
+      return t('localAi.unknown.disk');
+    case 'setting':
+      return t('localAi.unknown.setting');
+  }
+}
+
+const MARKS: Record<RequirementStatus, () => JSX.Element> = {
+  met: () => <CheckIcon size={12} />,
+  unmet: () => <CloseIcon size={12} />,
+  unknown: () => <>?</>,
+};
+
+// Chrome does not let a page open chrome:// addresses, so the user copies them.
+const SETTINGS_ADDRESS = {
+  address: 'chrome://settings/ai',
+  hint: 'localAi.settingsAddress',
+} as const;
+const INTERNALS_ADDRESS = {
+  address: 'chrome://on-device-internals',
+  hint: 'localAi.internalsAddress',
+} as const;
+// Chrome often reports no progress, and its internals page shows the download.
+const DOWNLOAD_ADDRESS = {
+  address: 'chrome://on-device-internals',
+  hint: 'localAi.downloadAddress',
+} as const;
+
+/** The Chrome pages worth opening in each state of the model. */
+function chromeAddresses(state: ModelState) {
+  switch (state.kind) {
+    case 'unavailable':
+    case 'downloadable':
+    case 'failed':
+      return [SETTINGS_ADDRESS, INTERNALS_ADDRESS];
+    case 'downloading':
+      return state.loaded === undefined ? [DOWNLOAD_ADDRESS] : [];
+    default:
+      return [];
+  }
+}
+
+function CopyAddress(props: {address: string}) {
+  const [t] = useI18n<AppLocaleEntries>();
+  const [copied, setCopied] = createSignal(false);
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  onCleanup(() => clearTimeout(timer));
+  const copy = async () => {
+    // When the clipboard refuses, the address stays selectable by hand.
+    await navigator.clipboard.writeText(props.address).catch(() => {});
+    setCopied(true);
+    clearTimeout(timer);
+    timer = setTimeout(() => setCopied(false), 2000);
+  };
+  return (
+    <button
+      type="button"
+      class={styles.copyAddress}
+      aria-label={
+        copied()
+          ? undefined
+          : t('localAi.copyAddress', {address: props.address})
+      }
+      onClick={() => void copy()}
+    >
+      <span aria-live="polite">
+        {copied() ? t('localAi.copied') : t('localAi.copy')}
+      </span>
+    </button>
+  );
+}
+
+/**
+ * Chrome's requirements for its model, checked where the page can read them,
+ * and the Chrome pages that say the rest. The requirements show until the
+ * model is on its way.
+ */
+function ModelRequirements() {
+  const [t] = useI18n<AppLocaleEntries>();
+  const [environment] = createResource(readEnvironment);
+  const needed = () =>
+    ['unavailable', 'downloadable', 'failed'].includes(
+      languageModel.state().kind,
+    );
+  const addresses = createMemo(() => chromeAddresses(languageModel.state()));
+  return (
+    <Show when={addresses().length > 0}>
+      <div class={styles.modelDetails}>
+        <Show when={needed() && environment()}>
+          {env => (
+            <ul
+              class={styles.requirements}
+              aria-label={t('localAi.requirementsTitle')}
+            >
+              <For each={checkRequirements(env())}>
+                {requirement => (
+                  <li
+                    class={styles.requirement}
+                    data-requirement={requirement.id}
+                    data-status={requirement.status}
+                  >
+                    <span
+                      class={styles.requirementMark}
+                      role="img"
+                      aria-label={t(`localAi.status.${requirement.status}`)}
+                    >
+                      {MARKS[requirement.status]()}
+                    </span>
+                    <span>
+                      {t(`localAi.requirement.${requirement.id}`)}
+                      <span class={styles.requirementNote}>
+                        {requirementNote(t, requirement)}
+                      </span>
+                    </span>
+                  </li>
+                )}
+              </For>
+            </ul>
+          )}
+        </Show>
+        <div class={styles.addresses}>
+          <For each={addresses()}>
+            {entry => (
+              <div class={styles.address} data-address={entry.address}>
+                <code class={styles.addressCode}>{entry.address}</code>
+                <CopyAddress address={entry.address} />
+                <span>{t(entry.hint)}</span>
+              </div>
+            )}
+          </For>
+          <span>{t('localAi.pasteHint')}</span>
+        </div>
+      </div>
+    </Show>
+  );
+}
+
 /**
  * Every setting of the editor, as data: the dialog draws the sections, and
  * its search reads the same rows. Call it inside a component, since the rows
@@ -260,15 +530,19 @@ export function createSettingSections(model: EditorControlsModel) {
             id: 'colour-mode' as const,
             title: t('editor.colourMode'),
             description: () => t('editor.colourModeHint'),
+            wide: true,
             control: () => (
-              <Segmented
+              <ChoiceCards
+                label={t('editor.colourMode')}
+                options={COLOUR_MODES.map(option => ({
+                  ...option,
+                  name: t(option.name),
+                  hint: t(option.hint),
+                }))}
                 value={ui.get.themeMode}
+                default={'dark'}
                 onChange={ui.setThemeMode}
-                items={[
-                  {label: t('editor.dark'), value: 'dark'},
-                  {label: t('editor.light'), value: 'light'},
-                  {label: t('editor.system'), value: 'system'},
-                ]}
+                preview={option => <ColourModeOrb mode={option.id} />}
               />
             ),
           },
@@ -320,6 +594,9 @@ export function createSettingSections(model: EditorControlsModel) {
     ]),
   } satisfies SettingSection;
 
+  const supported = createMemo(
+    () => languageModel.state().kind !== 'unsupported',
+  );
   const experiments = {
     id: 'experiments' as const,
     get name() {
@@ -347,6 +624,60 @@ export function createSettingSections(model: EditorControlsModel) {
       </Button>
     ),
     groups: createMemo(() => [
+      ...(!supported()
+        ? []
+        : [
+            {
+              title: t('localAi.experiment'),
+              rows: [
+                {
+                  id: 'local-ai' as const,
+                  title: t('localAi.experiment'),
+                  description: () => t('localAi.experimentHint'),
+                  small: true,
+                  control: () => (
+                    <SwitchField
+                      id="settings-local-ai"
+                      label={t('localAi.experimentSwitch')}
+                      checked={
+                        preferences.localAi() &&
+                        languageModel.state().kind === 'available'
+                      }
+                      disabled={languageModel.state().kind !== 'available'}
+                      onChange={preferences.setLocalAi}
+                    />
+                  ),
+                },
+                {
+                  id: 'local-ai-provider' as const,
+                  title: t('localAi.provider'),
+                  description: () => t('localAi.providerHint'),
+                  small: true,
+                  control: () => (
+                    <Segmented
+                      value={preferences.localAiProvider()}
+                      onChange={id => {
+                        preferences.setLocalAiProvider(id);
+                        void languageModel.refresh();
+                      }}
+                      items={LOCAL_AI_PROVIDERS.map(provider => ({
+                        label: t(provider.name),
+                        value: provider.id,
+                      }))}
+                    />
+                  ),
+                },
+                {
+                  id: 'local-ai-model' as const,
+                  title: t('localAi.model'),
+                  description: () => modelStatus(t),
+                  details: () => <ModelRequirements />,
+                  small: true,
+                  control: () => <ModelControl />,
+                },
+              ],
+            },
+          ]),
       {
         title: t('rendering.engine'),
         rows: [

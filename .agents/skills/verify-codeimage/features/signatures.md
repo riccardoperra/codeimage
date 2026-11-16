@@ -12,7 +12,7 @@ Open Frame then Signature (`#signature-options`); after creation the canvas sign
 
 ## Driving it with Playwright
 
-Audit opens `[data-control-overlay="signature"]`, fills @handle or profile link, chooses Saved signatures → Save as new → group Signature name → its textbox → Save. Assert `[data-frame-signature]` contains the handle; export PNG. Reload same context, open Saved signatures and apply named menuitem to prove persistence. Card exposes display name/avatar. Choose Initials for local proof.
+The `signatures` case clicks `#signature-options` (the open overlay is `[data-control-overlay="signature"]`), fills @handle or profile link, chooses Saved signatures → Save as new → group Signature name → its textbox → Save. Assert `[data-frame-signature]` contains the handle; export PNG. Reload same context, open Saved signatures and apply named menuitem to prove persistence. Card exposes display name/avatar. Choose Initials for local proof.
 
 Source: `pages/UnifiedEditor/controls/SignatureFields.tsx`, `controls/SavedSignatures.tsx`, `state/signatures/bridge.ts`.
 

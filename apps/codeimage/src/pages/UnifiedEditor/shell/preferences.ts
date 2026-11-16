@@ -33,6 +33,15 @@ export const THEME_CARDS = [
 
 export type ThemeCardsId = (typeof THEME_CARDS)[number]['id'];
 
+/** The colour modes of the app, each drawn as an orb in the settings. */
+export const COLOUR_MODES = [
+  {id: 'dark', name: 'editor.dark', hint: 'editor.darkHint'},
+  {id: 'light', name: 'editor.light', hint: 'editor.lightHint'},
+  {id: 'system', name: 'editor.system', hint: 'editor.systemHint'},
+] as const;
+
+export type ColourModeId = (typeof COLOUR_MODES)[number]['id'];
+
 /** How Export offers a one-off format and scale: a menu under the button, or a dialog. */
 export const EXPORT_STYLES = [
   {id: 'panel', name: 'editor.exportStylePanel'},
@@ -41,11 +50,22 @@ export const EXPORT_STYLES = [
 
 export type ExportStyleId = (typeof EXPORT_STYLES)[number]['id'];
 
+/** How local AI gets tool calls from the model. */
+export const LOCAL_AI_PROVIDERS = [
+  {id: 'auto', name: 'localAi.providerAuto'},
+  {id: 'native', name: 'localAi.providerNative'},
+  {id: 'structured', name: 'localAi.providerStructured'},
+] as const;
+
+export type LocalAiProviderId = (typeof LOCAL_AI_PROVIDERS)[number]['id'];
+
 interface Stored {
   layout?: LayoutId;
   inspectorSide?: InspectorSide;
   themeCards?: ThemeCardsId;
   exportStyle?: ExportStyleId;
+  localAi?: boolean;
+  localAiProvider?: LocalAiProviderId;
 }
 
 const STORAGE_KEY = 'codeimage:editor-settings';
@@ -61,16 +81,22 @@ const isCards = (value: unknown): value is ThemeCardsId =>
   THEME_CARDS.some(cards => cards.id === value);
 const isExportStyle = (value: unknown): value is ExportStyleId =>
   EXPORT_STYLES.some(style => style.id === value);
+const isLocalAiProvider = (value: unknown): value is LocalAiProviderId =>
+  LOCAL_AI_PROVIDERS.some(provider => provider.id === value);
 
 // Storage is outside the program: read it as unknown and keep what is valid.
 function readStored(): Stored {
   try {
     const raw: unknown = JSON.parse(localStorage.getItem(STORAGE_KEY) ?? '{}');
     if (typeof raw !== 'object' || raw === null) return {};
-    const {layout, inspectorSide, themeCards, exportStyle} = raw as Record<
-      string,
-      unknown
-    >;
+    const {
+      layout,
+      inspectorSide,
+      themeCards,
+      exportStyle,
+      localAi,
+      localAiProvider,
+    } = raw as Record<string, unknown>;
     return {
       layout: isLayout(layout) ? layout : undefined,
       inspectorSide:
@@ -79,6 +105,10 @@ function readStored(): Stored {
           : undefined,
       themeCards: isCards(themeCards) ? themeCards : undefined,
       exportStyle: isExportStyle(exportStyle) ? exportStyle : undefined,
+      localAi: typeof localAi === 'boolean' ? localAi : undefined,
+      localAiProvider: isLocalAiProvider(localAiProvider)
+        ? localAiProvider
+        : undefined,
     };
   } catch {
     return {};
@@ -96,6 +126,11 @@ const [inspectorSide, setSide] = createSignal<InspectorSide>(
 
 const [exportStyle, setExportStyleId] = createSignal<ExportStyleId>(
   stored.exportStyle ?? DEFAULT_EXPORT_STYLE,
+);
+
+const [localAi, setLocalAiOn] = createSignal(stored.localAi ?? false);
+const [localAiProvider, setProvider] = createSignal<LocalAiProviderId>(
+  stored.localAiProvider ?? 'auto',
 );
 
 setThemeStyle(stored.themeCards ?? DEFAULT_CARDS);
@@ -139,12 +174,28 @@ export const preferences = {
     setThemeStyle(id);
     save({themeCards: id});
   },
-  /** True while a layout or a theme card style that is not the default is on. */
+  /** Whether the command menu offers the on-device model, an experiment. */
+  localAi,
+  setLocalAi: (on: boolean) => {
+    setLocalAiOn(on);
+    save({localAi: on});
+  },
+  localAiProvider,
+  setLocalAiProvider: (id: LocalAiProviderId) => {
+    setProvider(id);
+    save({localAiProvider: id});
+  },
+  /** True while a layout, a theme card style or local AI that is not the default is on. */
   experimenting: () =>
-    layout() !== DEFAULT_LAYOUT || themeStyle() !== DEFAULT_CARDS,
-  /** Turns every experiment off: back to the default layout and theme cards. */
+    layout() !== DEFAULT_LAYOUT ||
+    themeStyle() !== DEFAULT_CARDS ||
+    localAi() ||
+    localAiProvider() !== 'auto',
+  /** Turns every experiment off: back to the default layout and theme cards, without local AI. */
   restoreDefaults: () => {
     preferences.setLayout(DEFAULT_LAYOUT);
     preferences.setThemeCards(DEFAULT_CARDS);
+    preferences.setLocalAi(false);
+    preferences.setLocalAiProvider('auto');
   },
 };
