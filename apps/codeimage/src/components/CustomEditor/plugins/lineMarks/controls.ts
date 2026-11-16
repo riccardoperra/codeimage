@@ -4,6 +4,7 @@ import type {
   BlockInfo,
   DecorationSet,
   KeyBinding,
+  Rect,
   Tooltip,
   TooltipView,
 } from '@codemirror/view';
@@ -160,7 +161,7 @@ export const selectionBar = StateField.define<SelectionBar>({
 });
 
 function popupSpace(area: HTMLElement | null | undefined) {
-  return (view: EditorView) => {
+  return (view: EditorView): Rect => {
     const {innerWidth, innerHeight} = view.dom.ownerDocument.defaultView!;
     const box = area?.isConnected
       ? area.getBoundingClientRect()
@@ -221,11 +222,19 @@ function selectionToolbar(labels: LineMarkLabels): Extension {
   ];
 }
 
+export const popupArea = Facet.define<
+  (view: EditorView) => Rect,
+  (view: EditorView) => Rect
+>({
+  combine: values => values[0] ?? popupSpace(undefined),
+});
+
 export function popupTooltips(parent: HTMLElement | undefined): Extension {
-  return tooltips({
-    parent: parent ?? document.body,
-    tooltipSpace: popupSpace(parent?.parentElement),
-  });
+  const space = popupSpace(parent?.parentElement);
+  return [
+    tooltips({parent: parent ?? document.body, tooltipSpace: space}),
+    popupArea.of(space),
+  ];
 }
 
 class PreviewClass extends GutterMarker {

@@ -14,11 +14,13 @@ import {
   ViewPlugin,
   type Tooltip,
   type BlockInfo,
+  type Rect,
 } from '@codemirror/view';
 import type {LineMarkLabels} from './controls';
 import {
   lineAtHeight,
   markCommands,
+  popupArea,
   selectedLines,
   selectionFocus,
   shortcutKeys,
@@ -227,12 +229,33 @@ export function lineMarkGutter(
   mountNews?: (host: HTMLElement) => () => void,
 ): Extension {
   const slots = new WeakMap<EditorView, Map<number, HTMLElement>>();
+  const offscreen = {left: -10000, right: -10000, top: -10000, bottom: -10000};
   const rectFor = (view: EditorView, line: number) => {
     const slot = slots.get(view)?.get(line);
     const rect = slot?.isConnected ? slot.getBoundingClientRect() : undefined;
     if (rect) return rect;
-    const coords = view.coordsAtPos(view.state.doc.line(line).from);
-    return coords ?? {left: -10000, right: -10000, top: -10000, bottom: -10000};
+    return view.coordsAtPos(view.state.doc.line(line).from) ?? offscreen;
+  };
+  const lineShown = (view: EditorView, line: number) => {
+    const from = view.state.doc.line(line).from;
+    return view.visibleRanges.some(
+      range => range.from <= from && from <= range.to,
+    );
+  };
+  const besideLine = (view: EditorView, line: number, width: number): Rect => {
+    const rect = rectFor(view, line);
+    const middle = (rect.top + rect.bottom) / 2;
+    const space = view.state.facet(popupArea)(view);
+    if (
+      !lineShown(view, line) ||
+      middle < space.top ||
+      middle > space.bottom ||
+      rect.right < space.left ||
+      rect.right - width > space.right
+    )
+      return offscreen;
+    const top = Math.min(Math.max(middle - 12, space.top), space.bottom - 24);
+    return {left: rect.right - width, right: rect.right, top, bottom: top};
   };
   class Marker extends GutterMarker {
     constructor(
@@ -337,11 +360,7 @@ export function lineMarkGutter(
         dom,
         overlap: true,
         resize: false,
-        getCoords: () => {
-          const rect = rectFor(view, this.line);
-          const top = (rect.top + rect.bottom - 24) / 2;
-          return {left: rect.right - 20, right: rect.right, top, bottom: top};
-        },
+        getCoords: () => besideLine(view, this.line, 20),
         mount: () => {
           if (!this.keyboardFocus || this.open) return;
           queueMicrotask(() => {
@@ -388,6 +407,7 @@ export function lineMarkGutter(
           : markers.map(marker => ({
               pos: state.doc.line(marker.line).from,
               strictSide: true,
+              clip: false,
               create: view => marker.control(view),
             })),
       };
@@ -411,6 +431,7 @@ export function lineMarkGutter(
           ? {
               pos: tr.state.doc.line(marker.line).from,
               strictSide: true,
+              clip: false,
               create: (view: EditorView) => marker.control(view),
             }
           : value.tooltips[index];
@@ -427,14 +448,12 @@ export function lineMarkGutter(
     return {
       dom,
       overlap: true,
-      getCoords: () => {
-        const line = view.state.doc.lineAt(
-          view.state.selection.main.head,
-        ).number;
-        const rect = rectFor(view, line);
-        const top = (rect.top + rect.bottom - 24) / 2;
-        return {left: rect.right - 46, right: rect.right, top, bottom: top};
-      },
+      getCoords: () =>
+        besideLine(
+          view,
+          view.state.doc.lineAt(view.state.selection.main.head).number,
+          46,
+        ),
       destroy: () => dispose?.(),
     };
   };
@@ -446,7 +465,7 @@ export function lineMarkGutter(
       const pos = tr.state.doc.lineAt(tr.state.selection.main.head).from;
       return value?.pos === pos
         ? value
-        : {pos, strictSide: true, create: createNews};
+        : {pos, strictSide: true, clip: false, create: createNews};
     },
     provide: field => showTooltip.from(field),
   });
@@ -458,6 +477,7 @@ export function lineMarkGutter(
       if (open === tr.startState.field(gutterState).open) return value;
       return {
         pos: tr.state.doc.line(open.line).from,
+        clip: false,
         create: view => {
           const {line, keyboard} = open;
           const doc = view.dom.ownerDocument;
@@ -596,12 +616,19 @@ export function lineMarkGutter(
             offset: {x: 0, y: 4},
             getCoords: () => {
               const rect = rectFor(view, line);
-              return {
-                left: rect.right - 20,
-                right: rect.right,
-                top: rect.top,
-                bottom: rect.bottom,
-              };
+              const space = view.state.facet(popupArea)(view);
+              return lineShown(view, line) &&
+                rect.bottom > space.top &&
+                rect.top < space.bottom &&
+                rect.right >= space.left &&
+                rect.right - 20 <= space.right
+                ? {
+                    left: rect.right - 20,
+                    right: rect.right,
+                    top: rect.top,
+                    bottom: rect.bottom,
+                  }
+                : offscreen;
             },
             mount: () => {
               doc.addEventListener('pointerdown', outside);
