@@ -19,7 +19,7 @@ import {PresetSwitcher} from '../../localized/PresetSwitcher';
 import type {VariantProps} from '../../contract';
 import {SignatureRow} from '../../controls/ControlOverlay';
 import {ControlRow} from '../../controls/ControlRow';
-import type {Control, ControlId} from '../../model';
+import type {Control, ControlId, EditorControlsModel} from '../../model';
 import type {IconComponent} from './icons';
 import {
   CodeIcon,
@@ -28,14 +28,13 @@ import {
   ThemesIcon,
   WindowIcon,
 } from './icons';
-import * as styles from './studio.css';
+import * as styles from './panels.css';
 import {ThemesPanel} from './ThemesPanel';
 import {controlsIn} from './places';
 
 export type PanelId = 'themes' | 'frame' | 'window' | 'code' | 'presets';
 
 export interface PanelProps extends VariantProps {
-  readonly close: () => void;
   /** Kit control size: larger on touch layouts. */
   readonly size: Accessor<'sm' | 'md'>;
   readonly phone: Accessor<boolean>;
@@ -47,8 +46,8 @@ export interface Panel {
   readonly Icon: IconComponent;
   /** The theme gallery needs room for three columns of roomy cards. */
   readonly wide?: boolean;
-  /** The presets switcher draws its own title row. */
-  readonly ownHeader?: boolean;
+  /** The current value, shown beside the title of a closed accordion section. */
+  readonly summary?: (model: EditorControlsModel) => string;
   /** Phone sheets open at the short stop unless browsing needs the tall one. */
   readonly sheet?: 'tall';
   readonly Body: Component<PanelProps>;
@@ -56,7 +55,12 @@ export interface Panel {
 
 function Row(props: {control: Control; size: Accessor<'sm' | 'md'>}) {
   return (
-    <ControlRow control={props.control} prefix="studio" size={props.size()} />
+    <ControlRow
+      control={props.control}
+      prefix="sidebar"
+      size={props.size()}
+      listClass={styles.selectPortal}
+    />
   );
 }
 
@@ -126,11 +130,11 @@ function FontRows(props: PanelProps) {
 
   return (
     <>
-      <PanelRow for="studio-font-source" label={t('editor.source')}>
+      <PanelRow for="sidebar-font-source" label={t('editor.source')}>
         <TwoColumnPanelRow>
           <SegmentedField<FontSource>
             adapt
-            id="studio-font-source"
+            id="sidebar-font-source"
             size={props.size()}
             value={source()}
             onChange={setSource}
@@ -199,11 +203,21 @@ function CodePanel(props: PanelProps) {
   );
 }
 
-function PresetsPanel(props: PanelProps) {
+function PresetsPanel() {
   return (
     <div class={styles.presetsHost}>
-      <PresetSwitcher orientation="vertical" onClose={props.close} />
+      <PresetSwitcher orientation="vertical" />
     </div>
+  );
+}
+
+/** The label of a select's or a segmented control's current option. */
+function optionLabel(model: EditorControlsModel, id: ControlId) {
+  const control = model.control(id);
+  if (control?.kind !== 'select' && control?.kind !== 'segmented') return '';
+  return (
+    control.options().find(option => option.key === control.value())?.label ??
+    ''
   );
 }
 
@@ -214,16 +228,41 @@ export const PANELS: readonly Panel[] = [
     Icon: ThemesIcon,
     wide: true,
     sheet: 'tall',
+    summary: model => model.themes().find(theme => theme.active())?.name ?? '',
     Body: ThemesPanel,
   },
-  {id: 'frame', label: 'frame.frame', Icon: FrameIcon, Body: FramePanel},
-  {id: 'window', label: 'frame.terminal', Icon: WindowIcon, Body: WindowPanel},
-  {id: 'code', label: 'editor.code', Icon: CodeIcon, Body: CodePanel},
+  {
+    id: 'frame',
+    label: 'frame.frame',
+    Icon: FrameIcon,
+    summary: model => optionLabel(model, 'frame.padding'),
+    Body: FramePanel,
+  },
+  {
+    id: 'window',
+    label: 'frame.terminal',
+    Icon: WindowIcon,
+    // The style is what changes the window most, while it has a title bar.
+    summary: model =>
+      optionLabel(
+        model,
+        model.control('window.style')?.visible()
+          ? 'window.style'
+          : 'window.shadow',
+      ),
+    Body: WindowPanel,
+  },
+  {
+    id: 'code',
+    label: 'editor.code',
+    Icon: CodeIcon,
+    summary: model => optionLabel(model, 'editor.language'),
+    Body: CodePanel,
+  },
   {
     id: 'presets',
     label: 'editor.presets',
     Icon: PresetsIcon,
-    ownHeader: true,
     Body: PresetsPanel,
   },
 ];

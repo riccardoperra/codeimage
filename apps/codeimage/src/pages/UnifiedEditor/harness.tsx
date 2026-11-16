@@ -51,20 +51,21 @@ function Editor() {
   let page!: HTMLDivElement;
 
   const side = () =>
-    preferences.layout() === 'inspector'
-      ? preferences.inspectorSide()
-      : undefined;
+    preferences.layout() === 'sidebar' ? preferences.panelSide() : undefined;
+  const nav = () =>
+    preferences.layout() === 'sidebar' ? preferences.panelNav() : undefined;
 
-  // The Inspector reads its side from the layout root. The attribute goes on
-  // the page below and on the root element the layout renders into it, the
-  // one after the header.
+  // The sidebar's accordion reads its side from the layout root. The
+  // attribute goes on the page below and on the root element the layout
+  // renders into it, the one after the header.
   createEffect(() => {
     const value = side();
     preferences.layout();
+    preferences.panelNav();
     const root = page.querySelector(':scope > header + *');
     if (!(root instanceof HTMLElement)) return;
-    if (value) root.dataset.inspectorSide = value;
-    else delete root.dataset.inspectorSide;
+    if (value) root.dataset.panelSide = value;
+    else delete root.dataset.panelSide;
   });
 
   return (
@@ -91,7 +92,8 @@ function Editor() {
         ref={page}
         data-layout={preferences.layout()}
         data-page-state={pageState().kind}
-        data-inspector-side={side()}
+        data-panel-side={side()}
+        data-panel-nav={nav()}
       >
         <Show when={layouts[preferences.layout()]} keyed>
           {layout => {
@@ -156,8 +158,9 @@ function Editor() {
 }
 
 /**
- * The editor in the layout the user chose. The layout, Inspector side and
- * theme cards are settings, changed in the settings dialog and command menu.
+ * The editor in the layout the user chose. The layout, the sidebar's
+ * navigation and side, and the theme cards are settings, changed in the
+ * settings dialog and command menu.
  */
 export function UnifiedEditor(): JSX.Element {
   return (

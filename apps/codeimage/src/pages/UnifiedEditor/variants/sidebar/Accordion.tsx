@@ -1,7 +1,5 @@
 import {getEditorStore} from '@codeimage/store/editor';
 import {useI18n} from '@codeimage/locale';
-import {getFrameState} from '@codeimage/store/editor/frame';
-import {displayHandle} from '@codeimage/store/frame/signature';
 import {signatureEditor} from '@codeimage/store/frame/signatureEditor';
 import {Button} from '@codeui/kit';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
@@ -14,46 +12,21 @@ import {
   onCleanup,
   onMount,
 } from 'solid-js';
-import type {ParentProps} from 'solid-js';
+import type {JSX, ParentProps} from 'solid-js';
+import {Dynamic} from 'solid-js/web';
 import type {AppLocaleEntries} from '../../../../i18n';
 import {EditingControls} from '../../EditingControls';
-import type {VariantMeta, VariantProps} from '../../contract';
-import {controlOverlay, SignatureRow} from '../../controls/ControlOverlay';
+import type {VariantProps} from '../../contract';
+import {controlOverlay} from '../../controls/ControlOverlay';
 import {CanvasToolbar} from '../../controls/CanvasToolbar';
 import {keepMarkToolbarAboveSelection} from '../../controls/mark-toolbar';
 import {ShortcutHelp} from '../../controls/ShortcutHelp';
-import type {Control, ControlId, SectionId} from '../../model';
-import {ControlRow} from './controls';
-import * as styles from './inspector.css';
+import type {ControlId} from '../../model';
+import * as styles from './accordion.css';
 import {createOverlayPlacement} from './overlays';
-
-export const meta: VariantMeta = {
-  name: 'editor.inspector',
-  axis: 'Everything in one panel',
-};
-
-// What a section shows first; the rest follow in the model's order.
-const primaryControls: Record<SectionId, readonly ControlId[]> = {
-  frame: ['frame.padding', 'frame.visible', 'frame.background'],
-  signature: ['signature.saved', 'signature.handle', 'signature.style'],
-  window: [
-    'window.header',
-    'window.style',
-    'window.shadow',
-    'window.watermark',
-  ],
-  editor: ['editor.language', 'editor.lineNumbers'],
-  font: ['font.family', 'font.weight'],
-};
-type PanelId = SectionId | 'themes';
-
-function sectionControls(id: SectionId, controls: readonly Control[]) {
-  const primary = primaryControls[id];
-  return [
-    ...primary.flatMap(controlId => controls.filter(c => c.id === controlId)),
-    ...controls.filter(c => !primary.includes(c.id)),
-  ];
-}
+import {PANELS} from './panels';
+import type {PanelId} from './panels';
+import {PLACES} from './places';
 
 // Solid routes delegated events from a portal to its owner, so the Escape that
 // closes an overlay would also reach the section around its trigger.
@@ -88,6 +61,7 @@ function Section(
   props: ParentProps<{
     id: string;
     title: string;
+    icon: JSX.Element;
     summary?: string;
     open: boolean;
     onOpenChange: (open: boolean) => void;
@@ -97,7 +71,7 @@ function Section(
 ) {
   let trigger: HTMLButtonElement | undefined;
   const [measured, setMeasured] = createSignal(0);
-  const header = `inspector-section-${props.id}`;
+  const header = `sidebar-section-${props.id}`;
   return (
     <section
       class={styles.section}
@@ -122,14 +96,13 @@ function Section(
           trigger = element;
         }}
       >
-        <span class={styles.sectionName}>
-          <span class={styles.chevron} aria-hidden="true">
-            ›
-          </span>
-          {props.title}
-        </span>
+        <span class={styles.sectionIcon}>{props.icon}</span>
+        <span class={styles.sectionName}>{props.title}</span>
         <span class={styles.summary} title={props.summary}>
           {props.summary}
+        </span>
+        <span class={styles.chevron} aria-hidden="true">
+          ›
         </span>
       </button>
       <div
@@ -161,16 +134,8 @@ function Section(
   );
 }
 
-function summary(control: Control | undefined): string {
-  if (control?.kind === 'select' || control?.kind === 'segmented')
-    return (
-      control.options().find(option => option.key === control.value())?.label ??
-      ''
-    );
-  return '';
-}
-
-export default function Inspector(props: VariantProps) {
+/** The sidebar as one panel of sections, one open at a time. */
+export function Accordion(props: VariantProps) {
   keepMarkToolbarAboveSelection();
   const [t] = useI18n<AppLocaleEntries>();
   // One section at a time. All may be closed, which leaves the summaries.
@@ -231,11 +196,9 @@ export default function Inspector(props: VariantProps) {
     media.addEventListener('change', update);
     onCleanup(() => media.removeEventListener('change', update));
   });
+  const size = () => (mobile() ? 'md' : 'sm');
   const toggleSection = (id: PanelId, open: boolean) =>
     setOpenSection(current => (open ? id : current === id ? null : current));
-  const selectedTheme = () =>
-    props.model.themes().find(theme => theme.active()) ??
-    props.model.themes()[0];
   const openQuickControl = (id: PanelId, controlId?: ControlId) => {
     setSheet('tall');
     toggleSection(id, true);
@@ -252,42 +215,19 @@ export default function Inspector(props: VariantProps) {
   onMount(() => {
     onCleanup(
       props.model.controls.register(id => {
-        if (id.startsWith('signature.')) {
+        const place = PLACES[id];
+        if (place.group === 'signature') {
           setSheet('tall');
-          toggleSection('frame', true);
+          toggleSection(place.panel, true);
           controlOverlay.open('signature');
           return;
         }
-        const section = props.model.sections.find(section =>
-          section.controls.some(control => control.id === id),
-        );
-        if (section) openQuickControl(section.id, id);
+        openQuickControl(place.panel, id);
       }),
     );
   });
   // A click on the signature in the canvas opens its section at the handle.
   onCleanup(signatureEditor.register(() => controlOverlay.open('signature')));
-  const signatureSummary = () => {
-    const signature = getFrameState().store.signature;
-    if (!signature) return t('signature.off');
-    return `${displayHandle(signature)} · ${summary(props.model.control('signature.style'))}`;
-  };
-  const summaries: Record<SectionId, () => string> = {
-    frame: () =>
-      t('editor.paddingSummary', {
-        value: summary(props.model.control('frame.padding')),
-      }),
-    signature: () => signatureSummary(),
-    // The style is what changes the window most, while it has a title bar.
-    window: () => {
-      const style = props.model.control('window.style');
-      return summary(
-        style?.visible() ? style : props.model.control('window.shadow'),
-      );
-    },
-    editor: () => summary(props.model.control('editor.language')),
-    font: () => summary(props.model.control('font.weight')),
-  };
   return (
     <div
       class={styles.root}
@@ -442,7 +382,7 @@ export default function Inspector(props: VariantProps) {
                 theme="secondary"
                 size="sm"
                 variant="ghost"
-                onClick={() => openQuickControl('editor', 'editor.language')}
+                onClick={() => openQuickControl('code', 'editor.language')}
               >
                 {t('frame.language')}
               </Button>
@@ -462,45 +402,35 @@ export default function Inspector(props: VariantProps) {
                 handle?.focus();
               }}
             >
-              <Section
-                id="themes"
-                title={t('frame.theme')}
-                summary={selectedTheme()?.name}
-                open={openSection() === 'themes'}
-                onOpenChange={open => toggleSection('themes', open)}
-                height={fill()}
-              >
-                <div class={styles.themes}>
-                  <props.ThemePicker size={mobile() ? 'md' : 'sm'} />
-                </div>
-              </Section>
-              <For
-                each={props.model.sections.filter(
-                  section => section.id !== 'signature',
-                )}
-              >
-                {section => (
-                  <Section
-                    id={section.id}
-                    title={
-                      section.id === 'editor'
-                        ? t('editor.code')
-                        : section.id === 'window'
-                          ? t('frame.terminal')
-                          : section.label()
-                    }
-                    summary={summaries[section.id]()}
-                    open={openSection() === section.id}
-                    onOpenChange={open => toggleSection(section.id, open)}
-                  >
-                    <For each={sectionControls(section.id, section.controls)}>
-                      {control => <ControlRow control={control} />}
-                    </For>
-                    <Show when={section.id === 'frame'}>
-                      <SignatureRow />
-                    </Show>
-                  </Section>
-                )}
+              <For each={PANELS}>
+                {panel => {
+                  const body = (
+                    <Dynamic
+                      component={panel.Body}
+                      model={props.model}
+                      pageState={props.pageState}
+                      stage={props.stage}
+                      ThemePicker={props.ThemePicker}
+                      size={size}
+                      phone={mobile}
+                    />
+                  );
+                  return (
+                    <Section
+                      id={panel.id}
+                      title={t(panel.label)}
+                      icon={<panel.Icon size={18} />}
+                      summary={panel.summary?.(props.model)}
+                      open={openSection() === panel.id}
+                      onOpenChange={open => toggleSection(panel.id, open)}
+                      height={panel.wide ? fill() : undefined}
+                    >
+                      <Show when={panel.wide} fallback={body}>
+                        <div class={styles.themes}>{body}</div>
+                      </Show>
+                    </Section>
+                  );
+                }}
               </For>
             </div>
           </aside>

@@ -103,7 +103,7 @@ export async function verifyAgentTools({fresh, out}) {
       );
       assert.equal(await editor().innerText(), 'const agent = 42;');
       assert.match(
-        await page.locator('#inspector-editor-language-trigger').innerText(),
+        await page.locator('#sidebar-editor-language-trigger').innerText(),
         /Python/,
       );
 

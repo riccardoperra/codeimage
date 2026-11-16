@@ -22,7 +22,13 @@ import {
   ShareIcon,
   StackIcon,
 } from './icons';
-import {COLOUR_MODES, LAYOUTS, preferences, THEME_CARDS} from './preferences';
+import {
+  COLOUR_MODES,
+  LAYOUTS,
+  PANEL_NAVS,
+  preferences,
+  THEME_CARDS,
+} from './preferences';
 import {SECTIONS, settings} from './settings-state';
 import type {SectionId} from './settings-state';
 
@@ -153,7 +159,7 @@ export function exportCommands(exporter: Exporter): Command[] {
 }
 
 /**
- * The settings as commands, so that the layout, the Inspector's side, the
+ * The settings as commands, so that the layout, the sidebar's navigation and side, the
  * theme cards and the colour mode can change from the command menu. `extra`
  * are the entries of the old menu at the top left that need the page to run.
  */
@@ -200,14 +206,23 @@ export function settingsCommands(extra: readonly Command[]): Command[] {
       current: entry.id === layout,
       run: () => preferences.setLayout(entry.id),
     })),
-    ...(layout === 'inspector'
-      ? sides.map((side): Command => ({
-          ...choice(t('editor.panelSide'), side.name),
-          id: `inspector-side=${side.id}`,
-          label: t('editor.sideCommand', {value: side.name}),
-          current: side.id === preferences.inspectorSide(),
-          run: () => preferences.setInspectorSide(side.id),
-        }))
+    ...(layout === 'sidebar'
+      ? [
+          ...PANEL_NAVS.map((nav): Command => ({
+            ...choice(t('editor.panelNav'), t(nav.name)),
+            id: `panel-nav=${nav.id}`,
+            label: t('editor.navCommand', {value: t(nav.name)}),
+            current: nav.id === preferences.panelNav(),
+            run: () => preferences.setPanelNav(nav.id),
+          })),
+          ...sides.map((side): Command => ({
+            ...choice(t('editor.panelSide'), side.name),
+            id: `panel-side=${side.id}`,
+            label: t('editor.sideCommand', {value: side.name}),
+            current: side.id === preferences.panelSide(),
+            run: () => preferences.setPanelSide(side.id),
+          })),
+        ]
       : []),
     ...THEME_CARDS.map((cards): Command => ({
       ...choice(t('editor.themeCards'), t(cards.name)),

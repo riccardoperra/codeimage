@@ -10,7 +10,7 @@ import * as styles from './controls.css';
 export type FieldSize = 'sm' | 'md';
 export type ChoiceControl = SegmentedControl | SelectControl;
 
-/** `inspector-frame-padding` for the frame padding of Inspector. */
+/** `sidebar-frame-padding` for the frame padding of the Sidebar. */
 export const fieldId = (prefix: string, id: ControlId) =>
   `${prefix}-${id.replace('.', '-')}`;
 
