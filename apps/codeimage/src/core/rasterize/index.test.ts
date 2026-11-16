@@ -71,3 +71,26 @@ it('names the unavailable code font and its failure reason in the fallback notif
   );
   expect(mocks.fallback).toHaveBeenCalledOnce();
 });
+
+it('hides the Animate edit aids while either renderer reads the frame', async () => {
+  const {animateAidsHidden} = await import('../animation/aids');
+  const seen: boolean[] = [];
+  const record = async () => {
+    seen.push(animateAidsHidden());
+    return new Blob(['image'], {type: 'image/png'});
+  };
+  mocks.fallback.mockImplementationOnce(record);
+  mocks.takumi.mockImplementationOnce(record);
+  const {createRasterizer} = await import('./index');
+  const options = {
+    format: 'png',
+    pixelRatio: 2,
+    quality: 1,
+    codeFont: {id: 'test', name: 'Test Mono', type: 'web', types: []},
+  } as const;
+  const node = document.createElement('div');
+  await createRasterizer('dom-export', 'blob')(node, options);
+  await createRasterizer('takumi', 'blob')(node, options);
+  expect(seen).toEqual([true, true]);
+  expect(animateAidsHidden()).toBe(false);
+});

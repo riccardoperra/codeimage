@@ -9,6 +9,22 @@ import {z} from 'zod';
 
 export const SUPPORTED_SNAPSHOT_MAJOR = 1;
 
+const step = z.number().int().positive();
+const scriptSchema = z
+  .object({
+    steps: z.array(z.string().min(1).max(64)).min(2),
+    lines: z.array(
+      z.object({
+        line: step,
+        enter: step.optional(),
+        leave: step.min(2).optional(),
+        focus: z.array(step).optional(),
+      }),
+    ),
+  })
+  .optional()
+  .catch(undefined);
+
 const versionSchema = z
   .string({
     error: issue =>
@@ -79,6 +95,7 @@ export const projectSnapshotSchema = z.looseObject({
                 }),
               ),
               focusedLines: z.array(z.number().int().positive()).default([]),
+              script: scriptSchema,
             })
             .optional(),
         }),
@@ -107,10 +124,7 @@ export const animationDocumentSchema = projectSnapshotSchema
     const [first, ...rest] = document.editor.editors;
     return {
       ...document,
-      animation: parseAnimationSettings(document.animation, [
-        first.id,
-        ...rest.map(({id}) => id),
-      ]),
+      animation: parseAnimationSettings(document.animation, [first, ...rest]),
     };
   });
 

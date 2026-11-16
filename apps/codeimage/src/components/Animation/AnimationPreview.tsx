@@ -1,4 +1,6 @@
 import {AnimationStage} from './AnimationStage';
+import {AnimateModeBadge} from './AnimateModeBadge';
+import {projectStep} from '@core/animation/project';
 import {Portal} from 'solid-js/web';
 import {useI18n} from '@codeimage/locale';
 import {getExportCanvasStore} from '@codeimage/store/canvas';
@@ -6,7 +8,6 @@ import {getEditorStore} from '@codeimage/store/editor';
 import {getFrameState} from '@codeimage/store/editor/frame';
 import {getTerminalState} from '@codeimage/store/editor/terminal';
 import {toast} from '@codeimage/ui';
-
 import type {ParentProps} from 'solid-js';
 import {
   createEffect,
@@ -17,7 +18,6 @@ import {
   Show,
 } from 'solid-js';
 import type {AppLocaleEntries} from '../../i18n';
-
 import {useFrameCodeStyle} from '../Frame/PreviewFrame';
 import * as styles from './AnimationPreview.css';
 import {PreviewPill} from './PreviewPill';
@@ -53,16 +53,15 @@ export function AnimationPreview(
   // inputs keep the last plan, and closing the panel drops it.
   const request = createMemo<PreviewRequest | undefined>(previous => {
     if (!animation.open()) return undefined;
-    if (!previewing() || animation.resizing()) return previous;
+    if (!previewing()) return previous;
     const settings = animation.settings();
     const [first, ...rest] = settings.steps.map((step): PreviewTab => {
       const tab = editor.state.editors.find(({id}) => id === step.editorId)!;
       return {
         id: tab.id,
-        code: tab.code,
+        ...projectStep({code: tab.code, marks: tab.marks}, step.view),
         languageId: tab.languageId,
         lineNumberStart: tab.lineNumberStart,
-        marks: tab.marks,
         tabName: tab.tab.tabName,
       };
     });
@@ -99,7 +98,6 @@ export function AnimationPreview(
       measurePreview(owner, tabs, style, settings.header, undefined, scope),
   );
   const planned = createMemo<PreviewPlan | undefined>(previous => {
-    if (animation.resizing()) return previous;
     const current = snapshot();
     return current
       ? planPreviewTimeline(current.settings, current.measured)
@@ -139,6 +137,13 @@ export function AnimationPreview(
       >
         {props.children}
       </div>
+      <Show when={animation.open() && props.pillHost} keyed>
+        {host => (
+          <Portal mount={host}>
+            <AnimateModeBadge />
+          </Portal>
+        )}
+      </Show>
       <Show when={ready() && props.pillHost} keyed>
         {host => (
           <Portal mount={host}>

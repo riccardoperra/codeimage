@@ -1,13 +1,18 @@
+import Fastify from 'fastify';
+import {Type} from '@sinclair/typebox';
 import {Value} from '@sinclair/typebox/value';
 import {expect, test} from 'vitest';
 import {
   type AnimationSettings,
+  AnimationSettingsSchema,
+  TabMarksSchema,
   ProjectUpdateRequestSchema,
 } from '../../../../src/modules/project/project.contract.js';
 import {
   changesFromUpdateBody,
   draftFromClone,
   parseAnimationSettings,
+  remapAnimationStep,
   type Project,
 } from '../../../../src/modules/project/project.model.js';
 import {asUserId} from '../../../../src/shared/principal.js';
@@ -174,4 +179,85 @@ test('new timing, ids, repeated tabs and headers survive boundary parsing', () =
   };
   expect(parseAnimationSettings(next)).toEqual(next);
   expect(parseAnimationSettings({...next, steps: [next.steps[0]]})).toBeNull();
+});
+
+test('tab and diff timing ids follow assigned tab ids while script ids remain stable', () => {
+  const ids = new Map([['local', 'stored']]);
+  expect(
+    remapAnimationStep({id: 'local', editorId: 'local', holdMs: 800}, ids).id,
+  ).toBe('stored');
+  expect(
+    remapAnimationStep(
+      {
+        id: 'local:after',
+        editorId: 'local',
+        view: {kind: 'diff', side: 'after'},
+        holdMs: 800,
+      },
+      ids,
+    ).id,
+  ).toBe('stored:after');
+  expect(
+    remapAnimationStep(
+      {
+        id: 'local',
+        editorId: 'local',
+        view: {kind: 'script', step: 1},
+        holdMs: 800,
+      },
+      ids,
+    ),
+  ).toEqual({
+    id: 'local',
+    editorId: 'stored',
+    view: {kind: 'script', step: 1},
+    holdMs: 800,
+  });
+});
+
+test('Fastify response serialization keeps script ranges and step views', async t => {
+  const app = Fastify();
+  t.onTestFinished(() => app.close());
+  const snapshot = {
+    marks: {
+      lines: [],
+      focusedLines: [],
+      script: {
+        steps: ['one', 'two'],
+        lines: [
+          {line: 1, enter: 2},
+          {line: 2, leave: 2},
+          {line: 3, focus: [2]},
+        ],
+      },
+    },
+    animation: {
+      ...animation,
+      steps: [
+        {
+          id: 'two',
+          editorId: 'a',
+          holdMs: 800,
+          view: {kind: 'script', step: 2},
+        },
+      ],
+    },
+  };
+  app.get(
+    '/',
+    {
+      schema: {
+        response: {
+          200: Type.Object({
+            marks: TabMarksSchema,
+            animation: AnimationSettingsSchema,
+          }),
+        },
+      },
+    },
+    async () => snapshot,
+  );
+  const response = await app.inject('/');
+  expect(response.statusCode).toBe(200);
+  expect(response.json()).toEqual(snapshot);
 });
