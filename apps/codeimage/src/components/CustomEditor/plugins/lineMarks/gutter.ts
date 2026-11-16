@@ -156,6 +156,36 @@ export function gutterMarkLeave(
   return false;
 }
 
+const entries = new WeakMap<
+  EditorView,
+  {element: HTMLElement; passing: boolean}
+>();
+
+export function attachLineMarkEntry(view: EditorView, element: HTMLElement) {
+  const entry = {element, passing: false};
+  entries.set(view, entry);
+  const focus = () => {
+    if (entry.passing || view.state.readOnly) return;
+    const ui = view.state.field(gutterState, false);
+    if (!ui) return;
+    if (ui.focused === ui.tabStop)
+      view.dispatch({effects: gutterAction.of({kind: 'focus', line: null})});
+    view.dispatch({
+      effects: gutterAction.of({kind: 'focus', line: ui.tabStop}),
+    });
+  };
+  const blur = () => {
+    entry.passing = false;
+  };
+  element.addEventListener('focus', focus);
+  element.addEventListener('blur', blur);
+  return () => {
+    element.removeEventListener('focus', focus);
+    element.removeEventListener('blur', blur);
+    if (entries.get(view) === entry) entries.delete(view);
+  };
+}
+
 function keyDown(view: EditorView, event: KeyboardEvent, line: number) {
   const moveFocus = (line: number) => {
     const target = Math.min(Math.max(line, 1), view.state.doc.lines);
@@ -168,7 +198,16 @@ function keyDown(view: EditorView, event: KeyboardEvent, line: number) {
       ],
     });
   };
-  if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+  if (event.key === 'Tab') {
+    const entry = entries.get(view);
+    if (!event.shiftKey) {
+      event.preventDefault();
+      view.focus();
+    } else if (entry) {
+      entry.passing = true;
+      entry.element.focus({preventScroll: true});
+    }
+  } else if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
     event.preventDefault();
     moveFocus(line + (event.key === 'ArrowDown' ? 1 : -1));
   } else if (event.key === 'Home' || event.key === 'End') {
@@ -202,7 +241,6 @@ export function lineMarkGutter(
       readonly focused: boolean,
       readonly hovered: boolean,
       readonly active: boolean,
-      readonly tabStop: boolean,
       readonly keyboardFocus: boolean,
       readonly open: boolean,
       readonly news: boolean,
@@ -216,7 +254,6 @@ export function lineMarkGutter(
         this.focused === other.focused &&
         this.hovered === other.hovered &&
         this.active === other.active &&
-        this.tabStop === other.tabStop &&
         this.keyboardFocus === other.keyboardFocus &&
         this.open === other.open &&
         this.news === other.news
@@ -233,7 +270,7 @@ export function lineMarkGutter(
     control(view: EditorView) {
       const button = view.dom.ownerDocument.createElement('button');
       button.type = 'button';
-      button.tabIndex = this.tabStop ? 0 : -1;
+      button.tabIndex = -1;
       button.className = 'cm-lineMarkMarker';
       button.dataset.markLine = String(this.line);
       button.setAttribute('aria-haspopup', 'menu');
@@ -319,9 +356,7 @@ export function lineMarkGutter(
   const markersFor = (state: EditorState) => {
     const ui = state.field(gutterState);
     const cursor = state.doc.lineAt(state.selection.main.head).number;
-    return [
-      ...new Set([cursor, ui.hovered, ui.focused, ui.open?.line, ui.tabStop]),
-    ]
+    return [...new Set([cursor, ui.hovered, ui.focused, ui.open?.line])]
       .filter(
         (line): line is number =>
           line != null && line >= 1 && line <= state.doc.lines,
@@ -334,7 +369,6 @@ export function lineMarkGutter(
           mark.focused,
           line === ui.hovered,
           line === ui.active,
-          line === ui.tabStop,
           line === ui.focused,
           line === ui.open?.line,
           ui.news && line === cursor,
@@ -655,7 +689,6 @@ export function lineMarkGutter(
             new Marker(
               number,
               undefined,
-              false,
               false,
               false,
               false,

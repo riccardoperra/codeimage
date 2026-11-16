@@ -89,6 +89,7 @@ function toolbarView(labels: LineMarkLabels) {
     const button = (label: string, title: string, run: () => void) => {
       const element = dom.appendChild(document.createElement('button'));
       element.type = 'button';
+      element.tabIndex = -1;
       element.textContent = label;
       element.title = title;
       element.onclick = () => {
@@ -158,9 +159,19 @@ export const selectionBar = StateField.define<SelectionBar>({
     showTooltip.compute([field], state => state.field(field).tooltip),
 });
 
-function toolbarSpace(view: EditorView) {
-  const {innerWidth, innerHeight} = view.dom.ownerDocument.defaultView!;
-  return {left: 8, top: 8, right: innerWidth - 8, bottom: innerHeight - 8};
+function popupSpace(area: HTMLElement | null | undefined) {
+  return (view: EditorView) => {
+    const {innerWidth, innerHeight} = view.dom.ownerDocument.defaultView!;
+    const box = area?.isConnected
+      ? area.getBoundingClientRect()
+      : {left: 0, top: 0, right: innerWidth, bottom: innerHeight};
+    return {
+      left: Math.max(box.left, 0) + 8,
+      top: Math.max(box.top, 0) + 8,
+      right: Math.min(box.right, innerWidth) - 8,
+      bottom: Math.min(box.bottom, innerHeight) - 8,
+    };
+  };
 }
 
 function selectionToolbar(labels: LineMarkLabels): Extension {
@@ -207,8 +218,14 @@ function selectionToolbar(labels: LineMarkLabels): Extension {
           view.dispatch({effects: pointerSelecting.of(true)});
       },
     }),
-    tooltips({parent: document.body, tooltipSpace: toolbarSpace}),
   ];
+}
+
+export function popupTooltips(parent: HTMLElement | undefined): Extension {
+  return tooltips({
+    parent: parent ?? document.body,
+    tooltipSpace: popupSpace(parent?.parentElement),
+  });
 }
 
 class PreviewClass extends GutterMarker {

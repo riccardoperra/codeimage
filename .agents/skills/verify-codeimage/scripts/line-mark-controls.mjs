@@ -109,7 +109,7 @@ export async function verifyLineMarkControls({page, editor, section, out}) {
     hidden: !!element.closest('[aria-hidden=true]'),
     tabIndex: element.tabIndex,
   }));
-  assert.deepEqual(aria, {hidden: false, tabIndex: 0});
+  assert.deepEqual(aria, {hidden: false, tabIndex: -1});
   assert.equal(
     await page
       .locator('.cm-editor:has(.cm-content[contenteditable=true]) .cm-gutters')
@@ -118,10 +118,10 @@ export async function verifyLineMarkControls({page, editor, section, out}) {
   );
   assert.equal(
     await page.locator('.cm-lineMarkMarker[tabindex="0"]').count(),
-    1,
+    0,
   );
-  await page.keyboard.press('Tab');
   await page.keyboard.press('Shift+Tab');
+  await page.keyboard.press('Tab');
   await focusedMarker(1);
   await editor.click();
   await editor.press('ControlOrMeta+Home');

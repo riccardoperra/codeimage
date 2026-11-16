@@ -36,16 +36,27 @@ import {
   createEffect,
   createMemo,
   createResource,
+  createSignal,
   getOwner,
   on,
+  onCleanup,
+  Show,
   untrack,
 } from 'solid-js';
 import {baseEditorTheme} from './editorTheme';
 import {createTabIcon} from '../../hooks/use-tab-icon';
 import {mapLines} from '../../core/diff/mapLines';
 import {lineMarksExtension} from './plugins/lineMarks';
-import {gutterMarkPointerDown} from './plugins/lineMarks/controls';
-import {gutterMarkHover, gutterMarkLeave} from './plugins/lineMarks/gutter';
+import {
+  gutterMarkPointerDown,
+  popupTooltips,
+} from './plugins/lineMarks/controls';
+import {
+  attachLineMarkEntry,
+  gutterMarkHover,
+  gutterMarkLeave,
+} from './plugins/lineMarks/gutter';
+import {useEditorPopupHost} from './popupHost';
 import {
   lineMarksField,
   readMarks,
@@ -74,6 +85,15 @@ const EDITOR_BASE_SETUP: Extension = [
   ]),
 ];
 
+const entryStyle = {
+  position: 'absolute',
+  width: '1px',
+  height: '1px',
+  overflow: 'hidden',
+  'clip-path': 'inset(50%)',
+  'white-space': 'nowrap',
+} as const;
+
 interface CustomEditorProps {
   readOnly: boolean;
   onEditorViewChange?: (view: EditorView | undefined) => void;
@@ -84,6 +104,8 @@ export default function CustomEditor(props: VoidProps<CustomEditorProps>) {
   const {themeArray: themes} = getThemeStore();
   const [t] = useI18n<AppLocaleEntries>();
   const owner = getOwner();
+  const popupHost = useEditorPopupHost();
+  const [entry, setEntry] = createSignal<HTMLElement>();
   const languages = SUPPORTED_LANGUAGES;
   const {
     state: editorState,
@@ -125,6 +147,11 @@ export default function CustomEditor(props: VoidProps<CustomEditorProps>) {
   });
 
   createEffect(() => props.onEditorViewChange?.(editorView()));
+  createEffect(() => {
+    const view = editorView();
+    const element = entry();
+    if (view && element) onCleanup(attachLineMarkEntry(view, element));
+  });
 
   const [currentLanguage] = createResource(selectedLanguage, ({plugin}) =>
     plugin(),
@@ -255,6 +282,7 @@ export default function CustomEditor(props: VoidProps<CustomEditorProps>) {
     );
   });
   createExtension(() => EditorState.readOnly.of(props.readOnly));
+  createExtension(() => (props.readOnly ? [] : popupTooltips(popupHost())));
 
   const reconfigureBaseSetup = createExtension(EDITOR_BASE_SETUP);
 
@@ -354,6 +382,9 @@ export default function CustomEditor(props: VoidProps<CustomEditorProps>) {
 
   return (
     <code class={`language-${selectedLanguage()?.id ?? 'default'}`}>
+      <Show when={!props.readOnly}>
+        <span ref={setEntry} tabIndex={0} style={entryStyle} />
+      </Show>
       <div ref={setRef} />
     </code>
   );
