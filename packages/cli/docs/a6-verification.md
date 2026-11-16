@@ -85,9 +85,22 @@ web export screenshot is `a6-review-web-vs-cli.png` in that directory.
 
 ## Performance
 
-The new-base probe is pending the load-below-8 guard. No old-base number is
-claimed as a new-base pass. Its live log is
-`/tmp/codeimage-a6-realigned/perf.log`.
+The e6741ee9 probe passes both numeric gates. Ten interleaved WebP pairs are
+byte-identical, and all ten cached MP4 exports have 180 frames at 1920x1080.
+Every timed process starts with load below 8, ranging from 7.219 to 7.941.
+The machine also runs other programs, so these remain shared-host timings.
+
+| Metric            |     Base |       A6 | Rule                 | Result       |
+| ----------------- | -------: | -------: | -------------------- | ------------ |
+| WebP median       | 0.8839 s | 0.8927 s | A6/base at most 1.05 | Pass, 1.0099 |
+| Cached MP4 median |      n/a | 2.2377 s | At most 6 s          | Pass         |
+
+MP4 runs range from 1.8635 to 4.2556 s. Raw measurements,
+load at every start, and byte counts are in
+`/tmp/codeimage-a6-realigned/perf/results.json`; the transcript is
+`/tmp/codeimage-a6-realigned/perf.log`. The V8/native profile from the prior
+run showed waiting for native rendering and the pipe. No source-level
+speedup is claimed from this comparison.
 
 The replay command is:
 
