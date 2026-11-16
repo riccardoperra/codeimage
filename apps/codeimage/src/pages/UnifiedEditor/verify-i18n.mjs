@@ -88,9 +88,9 @@ async function settings(page) {
   await page.locator('[data-settings-section=general]').click();
 }
 async function closeStudioPanel(page, name) {
-  if (!(await page.locator('#studio-panel').isVisible())) return;
+  if (!(await page.locator('#sidebar-panel').isVisible())) return;
   await page.getByRole('button', {name, exact: true}).click();
-  await page.locator('#studio-panel').waitFor({state: 'hidden'});
+  await page.locator('#sidebar-panel').waitFor({state: 'hidden'});
 }
 async function expandInspector(page, messages) {
   const expand = page.getByRole('button', {

@@ -826,7 +826,7 @@ export async function audit({page, context, base, out, server}) {
         .getByRole('button', {name: 'Restore defaults', exact: true})
         .click();
       assert.equal(
-        await page.getByRole('radio', {name: /^Inspector /}).isChecked(),
+        await page.getByRole('radio', {name: /^Sidebar /}).isChecked(),
         true,
       );
       assert.equal(
@@ -924,8 +924,8 @@ export async function audit({page, context, base, out, server}) {
   });
   await feature('editor-options', async () => {
     await editor().fill('const unchanged = 1;');
-    await section('editor');
-    const language = page.locator('#inspector-editor-language-trigger');
+    await section('code');
+    const language = page.locator('#sidebar-editor-language-trigger');
     await language.click();
     await page.getByRole('option', {name: 'Python', exact: true}).click();
     assert.match(await language.innerText(), /Python/);

@@ -16,17 +16,18 @@ A rule here is a decision the maintainer made while reviewing a working build. C
 
 ## Layouts
 
-The editor has three layouts. A layout decides where the canvas, the controls and the theme picker sit. It does not render the header, the settings or the command menu.
+The editor has two layouts. A layout decides where the canvas, the controls and the theme picker sit. It does not render the header, the settings or the command menu.
 
-| Layout    | Status     | Shape                                                                             |
-| --------- | ---------- | --------------------------------------------------------------------------------- |
-| Inspector | Default    | One panel beside the canvas, on the right or the left. A bottom sheet on a phone. |
-| Dock      | Experiment | A floating bar over the canvas. It takes no layout space.                         |
-| Studio    | Experiment | A rail of tools with one panel open at a time.                                    |
+| Layout  | Status     | Shape                                                                                |
+| ------- | ---------- | ------------------------------------------------------------------------------------ |
+| Sidebar | Default    | The sections beside the canvas, on the right or the left, as an Accordion or a Rail. |
+| Dock    | Experiment | A floating bar over the canvas. It takes no layout space.                            |
+
+The Sidebar's navigation is a preference in Settings, Appearance. The Accordion is one panel with one section open at a time; it is the default. The Rail is a column of icons with one panel per section; it was the Studio layout. Inspector and Studio became one layout because both showed one section at a time, and their contents had drifted apart: different groups, control order, font picker, and presets only in Studio. Both navigations now render the same sections from `variants/sidebar/panels.tsx`, so a change to a section reaches both.
 
 - A read-only snippet is a page mode. A layout draws no container for controls it does not show, so the canvas takes the space. Controls that open during editing must leave the frame still.
-- Inspector is the default because it is the closest to what users know, and every option is one click away.
-- In Inspector, one section is open at a time. Several open sections made the panel scroll further with each click.
+- The Sidebar is the default because it is the closest to what users know, and every option is one click away.
+- In the Accordion, one section is open at a time. Several open sections made the panel scroll further with each click.
 - Dock floats over the canvas. Its menus open as overlays above it. An earlier build gave the dock its own row, and the canvas shrank each time a menu opened.
 - A layout that is not the default lives under Settings, Experiments. It moves out of Experiments only by replacing the default.
 
@@ -136,7 +137,7 @@ The What's new surfaces keep their own table of durations in `components/WhatsNe
 ## Styling
 
 - Styles are vanilla-extract `.css.ts` files with tokens from `@codeimage/ui` (`themeVars`). Plain CSS files are not accepted, even for an experiment.
-- Read state from data attributes on the page root, such as `data-layout` and `data-inspector-side`, not from generated class names.
+- Read state from data attributes on the page root, such as `data-layout`, `data-panel-nav` and `data-panel-side`, not from generated class names.
 - Use `zoom` to fit the frame, not `transform`. A transformed ancestor misplaces CodeMirror's tooltips.
 
 ## Text and languages
@@ -159,9 +160,9 @@ The What's new surfaces keep their own table of durations in `components/WhatsNe
 node .agents/skills/verify-codeimage/scripts/capture-design.mjs http://localhost:4343
 ```
 
-| Inspector, the default                                      | Dock                                              | Studio                                                       |
+| Sidebar Accordion, the default                                     | Dock                                              | Sidebar Rail                                                 |
 | ----------------------------------------------------------- | ------------------------------------------------- | ------------------------------------------------------------ |
-| ![Inspector](docs/design/screenshots/01-inspector-1440.png) | ![Dock](docs/design/screenshots/09-dock-1440.png) | ![Studio](docs/design/screenshots/12-studio-themes-1440.png) |
+| ![Sidebar Accordion](docs/design/screenshots/01-inspector-1440.png) | ![Dock](docs/design/screenshots/09-dock-1440.png) | ![Sidebar Rail](docs/design/screenshots/12-studio-themes-1440.png) |
 
 The audit that started this work is in [`docs/design/ui-audit.md`](docs/design/ui-audit.md).
 

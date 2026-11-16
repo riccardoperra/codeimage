@@ -54,6 +54,7 @@ import {
 import type {ThemeCardsId} from './preferences';
 import {
   COLOUR_MODES,
+  PANEL_NAVS,
   DEFAULT_CARDS,
   DEFAULT_LAYOUT,
   EXPORT_STYLES,
@@ -70,7 +71,7 @@ import {
   MEMORY_CAP,
   readEnvironment,
 } from '../local-ai/requirements';
-import {ColourModeOrb, LayoutPreview} from './previews';
+import {ColourModeOrb, LayoutPreview, NavPreview} from './previews';
 import type {SectionId} from './settings-state';
 import {SECTIONS, settings} from './settings-state';
 import * as styles from './settings.css';
@@ -549,19 +550,44 @@ export function createSettingSections(model: EditorControlsModel) {
         ],
       },
       {
-        title: t('editor.inspector'),
+        title: t('editor.sidebar'),
         rows: [
+          {
+            id: 'panel-nav' as const,
+            title: t('editor.panelNav'),
+            description: () =>
+              preferences.layout() === 'sidebar'
+                ? t('editor.panelNavHint')
+                : t('editor.panelInactiveHint'),
+            wide: true,
+            control: () => (
+              <ChoiceCards
+                label={t('editor.panelNav')}
+                options={PANEL_NAVS.map(option => ({
+                  ...option,
+                  name: t(option.name),
+                  hint: t(option.hint),
+                }))}
+                value={preferences.panelNav()}
+                default={'accordion'}
+                onChange={preferences.setPanelNav}
+                preview={option => (
+                  <NavPreview nav={option.id} side={preferences.panelSide()} />
+                )}
+              />
+            ),
+          },
           {
             id: 'panel-side' as const,
             title: t('editor.panelSide'),
             description: () =>
-              preferences.layout() === 'inspector'
+              preferences.layout() === 'sidebar'
                 ? t('editor.panelSideHint')
-                : t('editor.panelSideInactiveHint'),
+                : t('editor.panelInactiveHint'),
             control: () => (
               <Segmented
-                value={preferences.inspectorSide()}
-                onChange={preferences.setInspectorSide}
+                value={preferences.panelSide()}
+                onChange={preferences.setPanelSide}
                 items={[
                   {label: t('signature.left'), value: 'left'},
                   {label: t('signature.right'), value: 'right'},
@@ -722,7 +748,8 @@ export function createSettingSections(model: EditorControlsModel) {
                 preview={option => (
                   <LayoutPreview
                     layout={option.id}
-                    side={preferences.inspectorSide()}
+                    nav={preferences.panelNav()}
+                    side={preferences.panelSide()}
                   />
                 )}
               />

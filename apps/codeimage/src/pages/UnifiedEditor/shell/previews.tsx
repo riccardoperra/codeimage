@@ -1,6 +1,6 @@
 import type {JSX} from 'solid-js';
 import {createUniqueId, Match, Switch} from 'solid-js';
-import type {ColourModeId, InspectorSide, LayoutId} from './preferences';
+import type {ColourModeId, LayoutId, PanelNav, PanelSide} from './preferences';
 import * as styles from './settings.css';
 
 function Wire(props: {children: JSX.Element}) {
@@ -17,17 +17,22 @@ function Wire(props: {children: JSX.Element}) {
   );
 }
 
-/** A wireframe of one layout: where the controls sit around the canvas. */
-export function LayoutPreview(props: {layout: LayoutId; side: InspectorSide}) {
+/** The sidebar drawn on the right; the left side is its mirror image. */
+function Mirror(props: {side: PanelSide; children: JSX.Element}) {
   return (
-    <Switch>
-      <Match when={props.layout === 'inspector'}>
-        <Wire>
-          <g
-            transform={
-              props.side === 'left' ? 'translate(104) scale(-1 1)' : ''
-            }
-          >
+    <g transform={props.side === 'left' ? 'translate(104) scale(-1 1)' : ''}>
+      {props.children}
+    </g>
+  );
+}
+
+/** A wireframe of the sidebar's navigation: an accordion, or a rail with its panel. */
+export function NavPreview(props: {nav: PanelNav; side: PanelSide}) {
+  return (
+    <Wire>
+      <Mirror side={props.side}>
+        <Switch>
+          <Match when={props.nav === 'accordion'}>
             <rect
               class={styles.wireCanvas}
               x="2"
@@ -45,15 +50,104 @@ export function LayoutPreview(props: {layout: LayoutId; side: InspectorSide}) {
               rx="3"
             />
             <rect
-              class={styles.wireControl}
+              class={styles.wireControlSoft}
               x="74"
               y="4"
               width="28"
               height="52"
               rx="5"
             />
-          </g>
-        </Wire>
+            <rect
+              class={styles.wireControl}
+              x="77"
+              y="8"
+              width="22"
+              height="4"
+              rx="2"
+            />
+            <rect
+              class={styles.wireCanvas}
+              x="77"
+              y="15"
+              width="22"
+              height="22"
+              rx="2"
+            />
+            <rect
+              class={styles.wireControl}
+              x="77"
+              y="41"
+              width="22"
+              height="3"
+              rx="1.5"
+            />
+            <rect
+              class={styles.wireControl}
+              x="77"
+              y="46"
+              width="22"
+              height="3"
+              rx="1.5"
+            />
+            <rect
+              class={styles.wireControl}
+              x="77"
+              y="51"
+              width="22"
+              height="2"
+              rx="1"
+            />
+          </Match>
+          <Match when={props.nav === 'rail'}>
+            <rect
+              class={styles.wireCanvas}
+              x="2"
+              y="4"
+              width="57"
+              height="52"
+              rx="5"
+            />
+            <rect
+              class={styles.wireFrame}
+              x="14"
+              y="18"
+              width="32"
+              height="24"
+              rx="3"
+            />
+            <rect
+              class={styles.wireControlSoft}
+              x="63"
+              y="4"
+              width="26"
+              height="52"
+              rx="5"
+            />
+            <rect
+              class={styles.wireControl}
+              x="93"
+              y="4"
+              width="9"
+              height="52"
+              rx="4.5"
+            />
+          </Match>
+        </Switch>
+      </Mirror>
+    </Wire>
+  );
+}
+
+/** A wireframe of one layout: where the controls sit around the canvas. */
+export function LayoutPreview(props: {
+  layout: LayoutId;
+  nav: PanelNav;
+  side: PanelSide;
+}) {
+  return (
+    <Switch>
+      <Match when={props.layout === 'sidebar'}>
+        <NavPreview nav={props.nav} side={props.side} />
       </Match>
       <Match when={props.layout === 'dock'}>
         <Wire>
@@ -80,42 +174,6 @@ export function LayoutPreview(props: {layout: LayoutId; side: InspectorSide}) {
             width="60"
             height="9"
             rx="4.5"
-          />
-        </Wire>
-      </Match>
-      <Match when={props.layout === 'studio'}>
-        <Wire>
-          <rect
-            class={styles.wireControl}
-            x="2"
-            y="4"
-            width="9"
-            height="52"
-            rx="4.5"
-          />
-          <rect
-            class={styles.wireControlSoft}
-            x="15"
-            y="4"
-            width="26"
-            height="52"
-            rx="5"
-          />
-          <rect
-            class={styles.wireCanvas}
-            x="45"
-            y="4"
-            width="57"
-            height="52"
-            rx="5"
-          />
-          <rect
-            class={styles.wireFrame}
-            x="58"
-            y="18"
-            width="32"
-            height="24"
-            rx="3"
           />
         </Wire>
       </Match>
