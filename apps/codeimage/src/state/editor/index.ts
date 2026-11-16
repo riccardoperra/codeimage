@@ -20,8 +20,12 @@ export function createEditorStore() {
     on(resource, async resource => {
       if (resource) {
         untrackCommand(() => {
-          terminal.setState('background', resource.properties.terminal.main);
-          terminal.setState('textColor', resource.properties.terminal.text);
+          if (!terminal.state.background) {
+            terminal.setState('background', resource.properties.terminal.main);
+          }
+          if (!terminal.state.textColor) {
+            terminal.setState('textColor', resource.properties.terminal.text);
+          }
           if (frame.store.background === null) {
             frame.setBackground(resource.properties.previewBackground);
           }

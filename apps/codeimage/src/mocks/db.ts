@@ -34,6 +34,7 @@ export const db = factory({
     ),
     terminal: {
       id: String,
+      background: String,
       textColor: String,
       accentVisible: Boolean,
       type: String,
