@@ -1,74 +1,97 @@
 # A5 GIF export verification
 
-Base: `8cfd752600889215480db124b2b2626e801e4f2a` from `origin/main`. Branch: `feat/animate-gif-export`.
+## Source and environment
 
-## Design
+PR #781, branch `feat/animate-gif-export`. Review fixes start at `8f906a80c20f5a7f8360880d63d5dac78d8337ce`. The original main base is `8cfd752600889215480db124b2b2626e801e4f2a`.
 
-`core/video/formats.ts` owns MP4 and GIF configuration, encoder creation, support checks, fps choices, size estimates, extensions, and MIME types. The existing `AnimationJob` and typed worker protocol carry either config. Scene capture, fonts, raw Takumi RGBA rendering, progress, cancellation, opaque backgrounds, and scale remain shared.
+Verified on 2026-11-16 with Node 24.14.0, pnpm 12.18.0, branded Chrome 157.0.8103.78, and an Apple M3 with eight logical cores. The browser helper owns each Vite process, temporary Chrome user-data directory and port. It uses the existing MSW and mock-auth boundary. Production authentication and database persistence were not exercised.
 
-GIF uses gifenc 1.0.3 under MIT. The worker samples up to sixteen frame times and at most 262,144 pixels per sample, then streams the clip through one global palette. An exact RGB cache maps every colour consistently across the clip. There is no dithering or per-frame palette. Identical indexed frames merge into longer holds. Full opaque frames use disposal 1. Long holds split at GIF's unsigned 16-bit centisecond limit.
+## Implementation after review
 
-GIF defaults to 25 fps and offers 50 fps. A selected 60 fps plays at 50, with a localized note. The timeline also samples window motion at the actual output rate. Export-only 25 fps does not alter the saved animation schema. MP4 remains the initial format; an unsupported MP4 configuration selects GIF and disables MP4 with its reason.
+`core/video/formats.ts` owns MP4 and GIF configuration, frame rates, support checks, encoders, MIME types and estimates. Scene capture, fonts, Takumi RGBA rendering, opaque backgrounds, scale, secrets review and errors use the shared export pipeline.
 
-The estimate is pixels × estimated distinct frames × 0.043 bytes. Holds count once. Above 8 MB, the dialog suggests MP4. The estimate is a heuristic, not a size guarantee. The requested 0.043 coefficient underestimates this twelve-line fixture by roughly one third. Its measured compression is about 0.067 bytes per pixel per distinct frame; the UI retains the chosen bakeoff coefficient.
+GIF uses gifenc 1.0.3 under MIT, one global palette, stable exact-RGB indexing, full opaque frames and disposal 1. Consecutive identical indexed frames merge. Holds beyond the unsigned 16-bit centisecond delay limit split into multiple frames.
 
-## Commits
+Palette sampling now takes one midpoint from every visible scene. This covers every hold and both halves of each transition, including a short step late in a long clip. Sample count is bounded by scene count rather than clip length. Each sample has at most 262,144 pixels; all samples together have at most 4,194,304 pixels. The worker retains no full clip of raw frames.
 
-- `9a436013`: format table, GIF encoder, typed job, worker integration, and unit tests.
-- `eb0ad10a`: format controls, translations, and shared planner fps type.
-- `2116dce7`: sample window motion at the encoded GIF frame rate.
-- `e93c3ca1`: share the decoder inside the app's test utilities and fix the spacing token.
-- `42884b52`: preserve #762's bakeoff and add Chrome audit journeys.
-- `60a75436`: assert fps selections, reopen Animate after layout reload, retain 40 px format rows, and capture format before preparation.
-- `ea499c67`: isolate saved-snippet lanes without changing their assertions.
+The worker yields a macrotask before each palette sample and every three export frames. The frame label counts only the normal export pass. Format changes preserve a compatible fps selection and otherwise select its nearest option through the same persistence helper. Export-only 25 fps remains outside the saved animation schema. MP4 24 → GIF 25 → MP4 24 and 50 fps in both directions pass through the visible controls. A 60 fps GIF selection still plays at 50 with its localized note.
 
-This verification record is committed after the checks finish. Every commit includes the requested co-author trailer.
+The German note uses Bilder/s, matching the selector. The format radio uses UI opacity, border-width and spacing tokens.
 
-## Local checks
+## Size model and measured errors
 
-Node 24.14.0, pnpm 12.18.0, branded Chrome 157.0.8103.78, Apple M3 with eight logical cores and 16 GB RAM. Vite uses the MSW and mock-auth boundary. Production authentication and API persistence are outside this check.
+The previous total-pixels × distinct-frames × 0.043 model is replaced. The estimate separates text edges, window chrome and the background:
 
-- Frozen install passes. The lockfile adds eight gifenc lines.
-- Library build, app type check, production build, and formatting pass.
-- App tests pass: 56 files, 391 tests. GIF tests cover the format table, exact-colour stability, global palettes, disposal, merged holds, long delays, fps mapping, estimates, fallback selection, and GIF job MIME type.
-- PNG from pinned main and this implementation has identical dimensions, 1836×801, and zero differing RGBA channels out of 5,882,544. The full audit also compares live frames with PNGs in all layouts.
-- All 39 Chrome audit journeys are verified. The full invocation passed 37 journeys, including every GIF, MP4, image, and Animate journey. Chrome exited with code 0 during saved-snippet navigation without a page error, and did so again in two fresh multi-lane attempts. Dashboard persistence passed separately. All six navigation lanes passed in fresh Chrome processes. This is full journey coverage, not a clean single-process full-audit exit. The cause of Chrome's exit remains unconfirmed.
-- `/tmp/codeimage-a5-audit-summary.json` preserves the 39 final results, their evidence paths, and the interrupted full invocation's status. `/tmp/codeimage-a5-gif-measured/audit.json` contains every accepted timing sample. Final-source GIFs are byte-identical to the measured files at both rates.
-- Screenshots and raw/GIF contact sheets were inspected. Owned Vite and Chrome instances are closed after each helper run.
+```text
+text = mean non-whitespace glyph area × 0.2 × pixelRatio^1.2
+chrome = 2500 × pixelRatio^1.2
+backdrop = visible ? outputPixels^0.65 × 3.1 : sqrt(outputPixels) × 2
+estimatedBytes = 800 + (text + chrome + backdrop) × frameBudget × 1.2
+```
 
-## Three-second clip
+Glyph area uses the measured character width and line height. The final multiplier reserves 20% headroom. These coefficients were calibrated against the real downloads below. The reported error band describes these fixtures, not arbitrary code, fonts, photos or themes.
 
-The timing fixture has three twelve-line steps, three 600 ms holds, and two 600 ms transitions. Both rates use the same 1132×1014 current frame at 2× in Studio. Five completed exports per rate include an initial pair and four alternating repeat pairs. Every accepted sample checks the worker's actual fps, decoded delays, and output bytes.
+`gifFrameBudget` follows the worker's global frame clock, avoiding independent rounding of half-transitions. It counts a visible hold once and collapses fade pauses using metadata from the compiler that emits those keyframes. A unit test compares its hold count against the real GIF encoder. Quantization can merge additional transition poses, so the remaining transition budget is deliberately conservative. For example, the short fixture budgets 23 frames and encodes 20, the twelve-line fixture budgets and encodes 33, and the long twelve-step fixture budgets 342 and encodes 331. The UI does not present the budget as an exact encoded frame count.
 
-| Rate   | GIF size | Encoded frames | Export wall median | Wall range   | Worker median | Raw-render median |
-| ------ | -------- | -------------- | ------------------ | ------------ | ------------- | ----------------- |
-| 25 fps | 2.54 MB  | 33             | 6.34 s             | 5.33–9.60 s  | 5.50 s        | 4.43 s            |
-| 50 fps | 4.85 MB  | 63             | 11.50 s            | 7.68–14.16 s | 10.89 s       | 8.87 s            |
+Each row is a completed UI export and decoded download. MB means 1,000,000 bytes. Three-step clips use 600 ms holds and transitions unless specified. Long fixtures cycle three twelve-line tabs through the requested number of steps, with 600 ms holds and 1200 ms transitions. The palette fixture uses four tabs and the exact 8700/700/800/200/300/200/800 ms segment durations from the finding.
 
-Times are diagnostics from the traced development app, including preparation, screenshots, and download completion. They are not a production speed comparison. Raw Takumi rendering, including the sixteen palette samples, accounts for about 80% of worker elapsed time. Rendering runs sequentially in one worker. System load varied from 7.27 to 18.23 on eight cores, with roughly 11 GB of swap in use during the broader run. The wide ranges limit timing precision. No Long Tasks entries of at least 50 ms were observed during these ten measured exports.
+| Fixture                                   | Estimate MB | Actual MB |  Error | MP4 suggestion |
+| ----------------------------------------- | ----------: | --------: | -----: | :------------: |
+| 3 lines, 25 fps, 1×                       |       0.400 |     0.366 |  +9.3% |       No       |
+| 3 lines, 25 fps, 2×                       |       0.955 |     0.845 | +13.0% |       No       |
+| 3 lines, hidden frame, 25 fps, 2×         |       0.452 |     0.394 | +14.6% |       No       |
+| 12 lines, 25 fps, 1×                      |       1.171 |     1.058 | +10.7% |       No       |
+| 12 lines, 25 fps, 2×                      |       2.762 |     2.557 |  +8.0% |       No       |
+| 12 steps, 1200 ms transitions, 25 fps, 1× |      12.124 |    10.661 | +13.7% |      Yes       |
+| 9 steps, 1200 ms transitions, 25 fps, 1×  |       8.827 |     7.739 | +14.1% |      Yes       |
+| 10 steps, 1200 ms transitions, 25 fps, 1× |       9.925 |     8.678 | +14.4% |      Yes       |
+| 12 lines, 50 fps, 2×                      |       5.272 |     4.722 | +11.6% |       No       |
+| Short third pink hold, 25 fps, 2×         |       0.870 |     0.722 | +20.4% |       No       |
 
-The decoder from #762 compares every displayed GIF frame with the captured worker job re-rendered by Takumi WASM. The 25 fps fidelity sample is 1184×1014 in Inspector; the 50 fps sample is 1132×1014 in Studio. Mean absolute RGB channel error is 0.349 and 0.352 levels out of 255. Worst channel error is 18 and 24, below the bakeoff bound of 65. Both have zero pixels off by more than 48 levels, zero holes, zero ghosts, zero unchanged-pixel flicker, no local palettes, and exactly 3000 ms of decoded delays. Holds reduce 75 sampled frames to 33 GIF frames, and 150 to 63. The expand/shrink fallback fixture also passes, with mean error 0.458 and worst error 15.
+Across all ten downloads, the measured error band is +8.0% to +20.4%. The 9-step threshold fixture is 7.739 MB with an 8.827 MB estimate, and the 10-step fixture is 8.678 MB with a 9.925 MB estimate. Both show the suggestion, as does the 10.661 MB twelve-step fixture.
+
+The recommendation appears at an estimate of at least 8,000,000 bytes. The audit asserts that every measured download at or above 8 MB showed it before encoding. The model errs high near the threshold. The exact output size remains available after encoding.
+
+## Verifier findings
+
+1. Palette omission: fixed with scene-based sampling and a unit regression for the unique pink third hold. The Chrome fixture contains 9,472 exact pink pixels across the compared frames. Their maximum channel error is zero. Whole-clip worst error is 23, mean channel error is 0.535, and no pixels differ by more than 48 levels. Decoded delay is exactly 11,720 ms after rounding to the output frame clock. There are no local palettes, holes, ghosts or unchanged-pixel flicker.
+2. Size estimate: replaced with the content and background model above, a global-clock frame budget and compiler fade-pause metadata. Measurements and threshold assertions are recorded above.
+3. Cancel: fixed by macrotask yields. A real worker replay acknowledged Cancel in 73.5 ms after an encoding progress message. The UI cancellation case also produced no download and left the editor usable. This is one responsiveness observation, not a throughput benchmark.
+4. Fps reset: fixed by nearest valid rate selection and shared persistence. Chrome verifies the 24 and 50 fps round trips.
+5. Progress: palette renders no longer contribute. The audit checks every total against the worker's normal frame count and checks the initial zero and final completion.
+6. MP4 audit: `choose()` clicks an explicit option, waits for the trigger's confirmed value and waits for export readiness. The 1080p60 case asserts decoded dimensions of 1920×1080 and 60/1 fps, independently of the captured job.
+7. Localization and tokens: German units aligned and available UI tokens applied.
+
+The vertical seam in the first hold after reload predates this change and also occurs on main's MP4 path. It remains outside this PR's fix scope.
+
+## Checks and evidence
+
+- Frozen install and `pnpm libs:build` pass. `pnpm-lock.yaml` is unchanged by these fixes.
+- App unit tests pass: 56 files, 400 tests.
+- App typecheck, lint and production build pass. Lint has existing warnings outside the changed files; the build retains its existing chunk-size and dynamic-import warnings.
+- Formatting uses oxfmt.
+- The eight-fixture GIF matrix passes in `/tmp/codeimage-a5-fixes-matrix-final` on port 4853. Threshold exports use `/tmp/codeimage-a5-fixes-threshold-final` on port 4855.
+- All seven requested GIF and MP4 audit cases pass. Results are in `/tmp/codeimage-a5-fixes-audit-final` on port 4854. The selected cases are GIF layouts, GIF fallback, MP4 layouts, errors, compositing, modes and static PNG parity.
+- `/tmp/codeimage-a5-fixes-measurements.json` combines the exact byte counts. `/tmp/codeimage-a5-fixes-source.patch` identifies the uncommitted source exercised by the final runs, whose doctor files record the parent HEAD.
+- Raw-versus-GIF contact sheets and completed-dialog screenshots were inspected. The helper closes its owned browser contexts and server and retains downloaded files, JSON, screenshots and traces.
+
+Calibration iterations are excluded from the final measurements. One early fixture attempted twelve distinct tabs and correctly hit the editor's six-tab limit; the supported twelve-step fixture now adds existing tabs through the Steps menu. A subsequent calibration run overlapped source edits and was stopped by closing only its owned Chrome process. Final runs use the completed implementation.
 
 ## Reproduce
 
 ```sh
-pnpm install --frozen-lockfile
-pnpm libs:build
+fnm exec --using=v24.14.0 pnpm install --frozen-lockfile
+fnm exec --using=v24.14.0 pnpm libs:build
 fnm exec --using=v24.14.0 pnpm --filter @codeimage/app test
-VERIFY_AUDIT=1 VERIFY_BROWSER_CHANNEL=chrome fnm exec --using=v24.14.0 node .agents/skills/verify-codeimage/scripts/verify.mjs
-VERIFY_AUDIT=1 VERIFY_CASES=animation-gif VERIFY_GIF_RUNS=5 VERIFY_BROWSER_CHANNEL=chrome fnm exec --using=v24.14.0 node .agents/skills/verify-codeimage/scripts/verify.mjs
+fnm exec --using=v24.14.0 pnpm --filter @codeimage/app typecheck
+fnm exec --using=v24.14.0 pnpm --filter @codeimage/app lint
+fnm exec --using=v24.14.0 pnpm --filter @codeimage/app build
+VERIFY_PORT=4853 VERIFY_AUDIT=1 VERIFY_CASES=animation-gif-estimates VERIFY_BROWSER_CHANNEL=chrome ARTIFACT_DIR=/tmp/codeimage-a5-fixes-matrix fnm exec --using=v24.14.0 node .agents/skills/verify-codeimage/scripts/verify.mjs
+VERIFY_PORT=4854 VERIFY_AUDIT=1 VERIFY_CASES=animation-gif,animation-gif-fallback,animation-mp4,animation-mp4-errors,animation-mp4-compositing,animation-mp4-modes,animation-mp4-parity VERIFY_BROWSER_CHANNEL=chrome ARTIFACT_DIR=/tmp/codeimage-a5-fixes-audits fnm exec --using=v24.14.0 node .agents/skills/verify-codeimage/scripts/verify.mjs
 ```
 
-The feature map in `.agents/skills/verify-codeimage/features/export.md` describes selectors and tolerances. Per-run media, traces, JSON, and the source patch stay outside the repository under `/tmp/codeimage-a5-*`.
+`VERIFY_GIF_FIXTURES` selects comma-separated measurement fixture names for isolated retries. The default measurement case includes the threshold fixtures too. Each invocation gets a fresh temporary Chrome profile. Retry an interrupted browser batch once in a new invocation with a unique port and artifact directory.
 
-## Isolate a saved-snippet lane
+## Remaining verification limits
 
-The existing snippet matrix accepts `VERIFY_SNIPPET_LAYOUT=inspector|dock|studio` and `VERIFY_SNIPPET_WIDTH=1440|390`. Without these selectors it runs all six combinations. A selected lane is partial coverage. Count the navigation journey as complete only after all six matrix records pass. The flags change isolation, not the scenario's assertions.
-
-```sh
-VERIFY_AUDIT=1 VERIFY_CASES=snippet-navigation VERIFY_SNIPPET_LAYOUT=dock VERIFY_SNIPPET_WIDTH=390 VERIFY_BROWSER_CHANNEL=chrome fnm exec --using=v24.14.0 node .agents/skills/verify-codeimage/scripts/verify.mjs
-```
-
-## Remaining platform checks
-
-Chrome is verified. Firefox, WebKit, real Safari, and native file sharing are not run. The full encoder bakeoff from #762 is preserved in `scripts/parity/animation-gif.ts`; it needs `packages/render` from #726 and its built SSR assets, which main does not contain. The web audit has no such dependency. Riccardo can close #762 after reviewing this implementation. Operator visual review remains pending for the draft PR. A continuous single-process full Chrome run remains limited by the unexplained clean browser exits; all individual journeys have passed.
+Firefox, WebKit, real Safari, native sharing and operator visual review remain unverified. This pass reruns the requested GIF and MP4 cases, not every unrelated app journey. The earlier implementation's 39-journey verification and pinned-main PNG comparison remain in this file's history at `8f906a80`. The preserved #762 encoder bakeoff still needs `packages/render` from #726; the web audit has no such dependency. The PR remains a draft and has not been merged.
