@@ -8,6 +8,7 @@ import {
   warmAnimationEncoder,
 } from '../core/video/formats';
 import {paletteFrameIndices, palettePixels} from '../core/gif/encode';
+import {clipFrameCount, frameTimeMs} from '../core/animation/clock';
 import type {
   AnimationEvent,
   AnimationFailure,
@@ -43,7 +44,7 @@ async function exportAnimation(job: AnimationExport) {
       (sum, scene) => sum + scene.durationMs,
       0,
     );
-    const total = Math.ceil((durationMs * job.config.fps) / 1000);
+    const total = clipFrameCount(durationMs, job.config.fps);
     const options = {
       width: job.config.width,
       height: job.config.height,
@@ -53,7 +54,7 @@ async function exportAnimation(job: AnimationExport) {
     };
     let renderMs = 0;
     const render = async (index: number) => {
-      const timeMs = Math.floor((index * 1000) / job.config.fps);
+      const timeMs = frameTimeMs(index, job.config.fps);
       let sceneIndex = 0;
       let sceneStart = 0;
       while (

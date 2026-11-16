@@ -13,6 +13,7 @@ import type {
 } from '@core/animation/model';
 import {
   planTimeline,
+  timelineSize,
   type StepLayout,
   type Timeline,
   type TimelineStep,
@@ -200,9 +201,7 @@ export async function measurePreview(
   let measurements = await measureLayouts();
   if (getFrameState().store.signature)
     measurements = await measureLayouts(
-      Math.round(
-        Math.max(...measurements.map(({layout}) => layout.size.width)),
-      ),
+      timelineSize(measurements.map(({layout}) => layout)).width,
     );
 
   const step = (index: number) => ({

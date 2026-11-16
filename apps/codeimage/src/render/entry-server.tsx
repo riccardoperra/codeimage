@@ -41,12 +41,14 @@ import {getEditorStore} from '@codeimage/store/editor';
 import type {PersistedFrameState as FrameAppearance} from '@codeimage/store/frame/model';
 import type {CustomTheme} from '@codeimage/highlight';
 import type {Language} from '@codemirror/language';
+import {clipFrameCount} from '@core/animation/clock';
 import {easingOf} from '@core/animation/easing';
 import {measureCode} from '@core/animation/measure';
 import type {AnimationHeader} from '@core/animation/model';
 import {
   frameRules,
   planTimeline,
+  timelineSize,
   type FrameSelectors,
   type StepLayout,
   type TimelineStep,
@@ -59,6 +61,10 @@ import type {JSX} from 'solid-js';
 import {renderToStringAsync} from 'solid-js/web';
 import {StateProvider} from 'statebuilder';
 import AnimatedCodeView from '../components/CustomEditor/AnimatedCodeView';
+import {
+  AnimationCanvas,
+  animationMatte,
+} from '../components/Animation/AnimationCanvas';
 import {staticThemeCss} from '../components/CustomEditor/staticTheme';
 import * as styles from '../components/Frame/Frame.css';
 
@@ -218,8 +224,15 @@ interface Pass {
   editor?: RenderSnapshot['editor'];
   // Replaces the active tab's static code, as a transition scene does.
   code?: () => JSX.Element;
-  // The header of an animation, in its holds and its transitions.
+  // An animation step, in its holds and its transitions.
+  animation?: StepOptions;
+}
+
+// A step of an animation sizes its frame from its own code, as the web export
+// does, and its signature from the clip's canvas width.
+interface StepOptions {
   header?: AnimationHeader;
+  signatureWidth?: number;
 }
 
 // Serializes one FrameView of the snapshot, the frame every export draws.
@@ -252,7 +265,9 @@ function renderBody(
           media={media}
           windowPlacement={pass.placement}
           showOnlyActiveTab={false}
-          header={pass.header}
+          header={pass.animation?.header}
+          natural={!!pass.animation}
+          signatureWidth={pass.animation?.signatureWidth}
           code={pass.code?.()}
         />
       );
@@ -295,7 +310,7 @@ async function composeStep(
   host: FrameHost,
   editorId: string,
   language: Language | null,
-  header?: AnimationHeader,
+  animation?: StepOptions,
 ): Promise<ComposedStep> {
   const {frame} = snapshot;
   const {appearance, painted} = loaded;
@@ -306,7 +321,7 @@ async function composeStep(
       editorId,
       language,
       placement,
-      header,
+      animation,
     });
   const watermarkFrame = (width: number) => ({
     painted,
@@ -332,7 +347,10 @@ async function composeStep(
       target.resolution,
       frame.padding,
       frame.signature,
-      frameSignatureScale({width: snapshot.width ?? 0}, target),
+      frameSignatureScale({width: snapshot.width ?? 0}, target, {
+        natural: !!animation,
+        signatureWidth: animation?.signatureWidth,
+      }),
     );
     const placement = fittedPlacement(viewport, {
       width: Math.round(window.width),
@@ -363,7 +381,9 @@ async function composeStep(
     css: [...markup.css, frameSizeCss()],
   });
   const size = {
-    width: Math.max(snapshot.width ?? 0, natural.width),
+    width: animation
+      ? natural.width
+      : Math.max(snapshot.width ?? 0, natural.width),
     height: natural.height,
   };
   return {
@@ -392,6 +412,21 @@ export async function composeFrame(
   ]);
   const step = await composeStep(snapshot, loaded, host, tab.id, language);
   return step.frame;
+}
+
+// The canvas every scene of a clip draws its frame on, around FRAME_SLOT.
+const FRAME_SLOT = 'codeimage-animation-frame';
+async function canvasMarkup(
+  props: Omit<Parameters<typeof AnimationCanvas>[0], 'children'>,
+): Promise<[string, string]> {
+  const html = await renderToStringAsync(
+    () => <AnimationCanvas {...props}>{FRAME_SLOT}</AnimationCanvas>,
+    SSR_OPTIONS,
+  );
+  const [start, end, ...rest] = html.split(FRAME_SLOT);
+  if (end === undefined || rest.length)
+    throw new Error('The animation canvas lost its frame');
+  return [start, end];
 }
 
 // Every scene shares one stylesheet, so each scene's frame rules name it.
@@ -452,24 +487,30 @@ export async function renderAnimationScenes(
   );
 
   // A step list may come back to a tab, which then composes once.
-  const composed = new Map<string, Promise<ComposedStep>>();
-  const steps: ComposedStep[] = [];
-  for (const [index, tab] of tabs.entries()) {
-    if (!composed.has(tab.id)) {
-      composed.set(
-        tab.id,
-        composeStep(
-          snapshot,
-          loaded,
-          host,
+  const composeSteps = async (signatureWidth?: number) => {
+    const composed = new Map<string, Promise<ComposedStep>>();
+    const steps: ComposedStep[] = [];
+    for (const [index, tab] of tabs.entries()) {
+      if (!composed.has(tab.id)) {
+        composed.set(
           tab.id,
-          languages[index],
-          timing.header,
-        ),
-      );
+          composeStep(snapshot, loaded, host, tab.id, languages[index], {
+            header: timing.header,
+            signatureWidth,
+          }),
+        );
+      }
+      steps.push(await composed.get(tab.id)!);
     }
-    steps.push(await composed.get(tab.id)!);
-  }
+    return steps;
+  };
+  // As in the web export, the signature takes the scale of the clip's canvas
+  // in every step, so the steps compose again at that width.
+  let steps = await composeSteps();
+  const signatureWidth = snapshot.frame.signature
+    ? timelineSize(steps.map(({layout}) => layout)).width
+    : undefined;
+  if (signatureWidth !== undefined) steps = await composeSteps(signatureWidth);
 
   // A step's own transition leads into it, as in the editor.
   const timelineStep = (index: number): TimelineStep => {
@@ -501,11 +542,22 @@ export async function renderAnimationScenes(
     },
   );
 
+  // Every scene draws on one canvas, which paints the frame background once.
+  // A hidden frame leaves the matte, the solid colour the web export defaults
+  // to, so no scene keeps a transparent margin.
+  const [canvasStart, canvasEnd] = await canvasMarkup({
+    width: timeline.width,
+    height: timeline.height,
+    matte: animationMatte(theme),
+    frame: appearance,
+    image: loaded.media.backgroundImage,
+  });
   const css = [
     staticThemeCss(theme),
     EXPORT_EXCLUDE_CSS,
     // The page clips its overflow, so it must span the whole video.
     `[data-animation-scene]{width:${timeline.width}px;height:${timeline.height}px}`,
+    '[data-animation-scene] [data-watermark-background]{display:none!important}',
     timeline.css,
   ];
   const scenes: AnimationScenes['scenes'] = [];
@@ -527,7 +579,7 @@ export async function renderAnimationScenes(
         editorId: tab.id,
         language: languages[scene.step],
         placement: step.placement,
-        header: timing.header,
+        animation: {header: timing.header, signatureWidth},
         code: () => (
           <AnimatedCodeView
             html={scene.code}
@@ -544,12 +596,23 @@ export async function renderAnimationScenes(
       if (scene.frame.kind === 'window') css.push(keepPadding(selectors));
     }
     scenes.push({
-      html: page(`<div data-animation-scene="${index}">${body}</div>`),
+      html: page(
+        `<div data-animation-scene="${index}">${canvasStart}${body}${canvasEnd}</div>`,
+      ),
       durationMs: scene.durationMs,
       kind: scene.kind,
       step: scene.step,
     });
   }
+  // The web export shows its last frame for a whole frame too, where Takumi
+  // would cut it at the end of the clip. Whole milliseconds keep the frame
+  // count.
+  const clipMs = scenes.reduce((sum, scene) => sum + scene.durationMs, 0);
+  const last = scenes.at(-1);
+  if (last)
+    last.durationMs +=
+      Math.floor((clipFrameCount(clipMs, timing.fps) * 1000) / timing.fps) -
+      clipMs;
 
   return {
     scenes,
