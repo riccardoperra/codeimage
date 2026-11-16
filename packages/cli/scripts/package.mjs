@@ -25,6 +25,7 @@ await Promise.all([
 ]);
 await cp(new URL('dist', root), new URL('publish/dist', root), {
   recursive: true,
+  filter: source => !source.endsWith('.map'),
 });
 await writeFile(
   new URL('publish/package.json', root),
