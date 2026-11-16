@@ -59,10 +59,12 @@ two snapshots failed because the browser produced no screenshot frames.
 Playwright used a fresh owned Chrome profile and removed it afterward.
 
 The initial default Current frame comparison failed before pixel comparison:
-web output is 592x284, CLI output is 546x290. The web measurement uses the live
+web output is 592x284, CLI output is 546x284. The web measurement uses the live
 editor canvas width; that width is absent from the persisted JSON. Native
 rendering sizes each step from its content. The Square fixture makes the
-output size part of the saved project. This does not fix or hide the Current
+output size part of the saved project. The unmodified base APNG is also
+545x283, matching the CLI MP4 content before even-size padding. This
+demonstrates that the size mismatch predates A6. This does not fix or hide the Current
 frame mismatch. Small inherited header-colour and watermark-placement
 visual differences also remain visible in the captured frames, within the
 stated pixel tolerance. No pixel-identical web/CLI claim is made.
