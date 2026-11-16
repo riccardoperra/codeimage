@@ -13,19 +13,6 @@ export const ruler = style({
   touchAction: 'none',
   outlineOffset: 2,
 });
-export const tick = style({
-  position: 'absolute',
-  left: position,
-  fontSize: 10,
-  opacity: 0.65,
-  fontVariantNumeric: 'tabular-nums',
-  transform: 'translateX(-50%)',
-  whiteSpace: 'nowrap',
-  selectors: {
-    '&[data-alignment="start"]': {transform: 'none', paddingLeft: 6},
-    '&[data-alignment="end"]': {transform: 'translateX(-100%)'},
-  },
-});
 export const playhead = style({
   position: 'absolute',
   left: position,
@@ -89,18 +76,6 @@ export const segment = style({
     '&:focus-visible': {outline: `2px solid ${c.primary}`, outlineOffset: -2},
   },
 });
-export const label = style({overflow: 'hidden', textOverflow: 'ellipsis'});
-export const handle = style({
-  position: 'absolute',
-  right: 0,
-  top: 0,
-  bottom: 0,
-  width: 8,
-  cursor: 'ew-resize',
-  touchAction: 'none',
-});
-
-// The overview keeps the strip geometry inside a 40px scrub target.
 globalStyle(`${root}[data-overview]`, {position: 'relative', height: 40});
 globalStyle(`${root}[data-overview] ${ruler}`, {
   position: 'absolute',
@@ -110,3 +85,32 @@ globalStyle(`${root}[data-overview] ${ruler}`, {
 });
 globalStyle(`${root}[data-overview] ${track}`, {height: 12, marginTop: 14});
 globalStyle(`${root}[data-overview] ${playhead}`, {top: 8, bottom: 8});
+globalStyle(`${root}[data-overview] ${ruler}[data-over-window]`, {
+  cursor: 'grab',
+});
+globalStyle(`${root}[data-overview] ${ruler}:active[data-over-window]`, {
+  cursor: 'grabbing',
+});
+globalStyle(`${root}[data-overview] ${segment}::before`, {
+  content: '""',
+  position: 'absolute',
+  inset: 0,
+  background: c.primary,
+  opacity: 0,
+  transition: 'opacity 120ms ease',
+});
+globalStyle(`${root}[data-overview] ${segment}[data-linked]::before`, {
+  opacity: 0.55,
+});
+
+export const viewWindow = style({
+  position: 'absolute',
+  left: 0,
+  top: 6,
+  bottom: 6,
+  boxSizing: 'border-box',
+  borderRadius: themeVars.borderRadius.md,
+  boxShadow: `inset 0 0 0 1.5px color-mix(in srgb, ${c.primary} 70%, transparent)`,
+  background: `color-mix(in srgb, ${c.primary} 10%, transparent)`,
+  pointerEvents: 'none',
+});

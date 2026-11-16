@@ -1,3 +1,4 @@
+import {AnimateModeBadge} from './AnimateModeBadge';
 import {projectStep} from '@core/animation/project';
 import {Portal} from 'solid-js/web';
 import {useI18n} from '@codeimage/locale';
@@ -149,6 +150,13 @@ export function AnimationPreview(
       >
         {props.children}
       </div>
+      <Show when={animation.open() && props.pillHost} keyed>
+        {host => (
+          <Portal mount={host}>
+            <AnimateModeBadge />
+          </Portal>
+        )}
+      </Show>
       <Show when={ready() && props.pillHost} keyed>
         {host => (
           <Portal mount={host}>
@@ -216,9 +224,7 @@ function AnimationStage(props: {
           ? Math.min(640, target()!.resolution[0]) / target()!.resolution[0]
           : undefined,
       }}
-      // The app's hotkeys listen on the body, which a key reaches before
-      // Solid's delegated handlers run. A native listener stops it first.
-      on:keydown={onKeyDown}
+      onKeyDown={onKeyDown}
     >
       <Show when={props.plan} keyed>
         {plan => <AnimationScenes plan={plan} visible={props.visible} />}

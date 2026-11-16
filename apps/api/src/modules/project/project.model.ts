@@ -332,7 +332,7 @@ export function remapAnimationStep(
 ): AnimationSettings['steps'][number] {
   const editorId = tabIds.get(step.editorId) ?? step.editorId;
   const id =
-    step.id === step.editorId
+    step.view?.kind !== 'script' && step.id === step.editorId
       ? editorId
       : step.view?.kind === 'diff' &&
           step.id === `${step.editorId}:${step.view.side}`

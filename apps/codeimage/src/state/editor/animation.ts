@@ -1,4 +1,3 @@
-import {createRandomId} from '../plugins/unique-id';
 import type {
   AnimationSettings,
   AnimationHeader,
@@ -19,7 +18,6 @@ import {
 } from 'solid-js';
 import type {createEditorsStore} from './editor';
 import {
-  ANIMATION_DEFAULTS,
   DURATION_LIMITS,
   EMPTY_DRAFT,
   clampDuration,
@@ -113,8 +111,12 @@ export function createAnimationStore(
     >;
     actions: Pick<
       ReturnType<typeof createEditorsStore>['actions'],
-      'setActiveEditorId' | 'addEditor'
-    >;
+      'setActiveEditorId' | 'addEditor' | 'removeEditor'
+    > & {
+      setEditors: (
+        tabs: ReturnType<typeof createEditorsStore>['state']['editors'],
+      ) => void;
+    };
     computed: Pick<
       ReturnType<typeof createEditorsStore>['computed'],
       'canAddEditor'
@@ -122,10 +124,6 @@ export function createAnimationStore(
   },
 ) {
   const owner = getOwner();
-  const editorIds = createMemo(() => {
-    const [first, ...rest] = editor.state.editors;
-    return [first.id, ...rest.map(tab => tab.id)] as const;
-  });
   const [draft, setDraft] = createSignal<AnimationDraft>(EMPTY_DRAFT);
   const tabs = createMemo(() => {
     const [first, ...rest] = editor.state.editors;
@@ -327,64 +325,25 @@ export function createAnimationStore(
       setHoldMs,
       setTransition,
       editStep,
-      addStep(editorId: string) {
-        if (!editorIds().includes(editorId)) return;
-        const id = createRandomId();
-        update(settings => ({
-          ...settings,
-          steps: [
-            ...settings.steps,
-            {id, editorId, holdMs: ANIMATION_DEFAULTS.holdMs},
-          ],
-        }));
-        select({stepId: id, kind: 'hold'});
+      addTab() {
+        if (!editor.computed.canAddEditor()) return;
+        editor.actions.addEditor(null, true);
+        const tab = editor.state.editors.at(-1)!;
+        const step = settings().steps.find(step => step.editorId === tab.id);
+        if (step) select({stepId: step.id, kind: 'hold'});
       },
-      duplicateAsNext(stepId: string) {
-        const index = settings().steps.findIndex(step => step.id === stepId);
-        const step = settings().steps[index];
-        const tab = editor.state.editors.find(tab => tab.id === step?.editorId);
-        if (!tab || !editor.computed.canAddEditor()) return;
-        batch(() => {
-          editor.actions.addEditor(
-            {
-              ...tab,
-              marks: {
-                lines: tab.marks.lines.map(mark => ({...mark})),
-                focusedLines: [...tab.marks.focusedLines],
-              },
-            },
-            true,
-          );
-          const editorId = editor.state.editors.at(-1)!.id;
-          const id = createRandomId();
-          update(settings => {
-            const steps = [...settings.steps];
-            steps.splice(index + 1, 0, {id, editorId, holdMs: step.holdMs});
-            return {...settings, steps};
-          });
-          select({stepId: id, kind: 'hold'});
-          editStep(index + 1);
-        });
+      closeTab(editorId: string) {
+        edit();
+        editor.actions.removeEditor(editorId);
       },
-      removeStep(stepId: string) {
-        if (settings().steps.length === 1) return;
-        batch(() => {
-          if (selection()?.stepId === stepId) setSelection(null);
-          update(settings => ({
-            ...settings,
-            steps: settings.steps.filter(step => step.id !== stepId),
-          }));
-        });
-      },
-      moveStep(stepId: string, direction: -1 | 1) {
-        const index = settings().steps.findIndex(step => step.id === stepId);
-        const to = index + direction;
-        if (index < 0 || to < 0 || to >= settings().steps.length) return;
-        update(settings => {
-          const steps = [...settings.steps];
-          [steps[index], steps[to]] = [steps[to], steps[index]];
-          return {...settings, steps};
-        });
+      moveTab(editorId: string, to: number) {
+        const tabs = [...editor.state.editors];
+        const index = tabs.findIndex(tab => tab.id === editorId);
+        if (index < 0 || to < 0 || to >= tabs.length || to === index) return;
+        const [tab] = tabs.splice(index, 1);
+        tabs.splice(to, 0, tab);
+        edit();
+        editor.actions.setEditors(tabs);
       },
       applyToAll(stepId: string) {
         const step = settings().steps.find(step => step.id === stepId);

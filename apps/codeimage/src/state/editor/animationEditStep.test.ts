@@ -38,7 +38,12 @@ test('edit step waits for a reused view to synchronize and preserves read-only c
       activeEditorView: () => view,
       activeEditorViewTabId: viewId,
       computed: {canAddEditor: () => false},
-      actions: {setActiveEditorId: setId, addEditor: () => undefined},
+      actions: {
+        setActiveEditorId: setId,
+        addEditor: () => undefined,
+        removeEditor: () => undefined,
+        setEditors: () => undefined,
+      },
     });
     animation.actions.setOpen(true);
     return {animation, setViewId, dispose};

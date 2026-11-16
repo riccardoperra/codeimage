@@ -1,13 +1,7 @@
 import {useI18n} from '@codeimage/locale';
-import {getEditorStore} from '@codeimage/store/editor';
-import {
-  DURATION_LIMITS,
-  transitionOf,
-} from '@codeimage/store/editor/animationSettings';
 import {Button, icons, TextField} from '@codeui/kit';
-import {createEffect, createMemo, createSignal, Show, untrack} from 'solid-js';
+import {createEffect, createSignal, untrack} from 'solid-js';
 import type {AppLocaleEntries} from '../../i18n';
-import {EasingField} from './EasingField';
 import * as styles from './AnimatePanel.css';
 export function DurationInput(props: {
   id: string;
@@ -110,106 +104,6 @@ export function DurationInput(props: {
           </Button>
         </div>
       </div>
-    </div>
-  );
-}
-export function SegmentDetails() {
-  const {animation, editor} = getEditorStore();
-  const [t] = useI18n<AppLocaleEntries>();
-  const segment = () =>
-    animation
-      .segments()
-      .find(
-        segment =>
-          segment.stepId === animation.selection()?.stepId &&
-          segment.kind === animation.selection()?.kind,
-      );
-  const limits = createMemo(() =>
-    segment()?.kind === 'hold'
-      ? DURATION_LIMITS.holdMs
-      : DURATION_LIMITS.transitionMs,
-  );
-  const name = () => {
-    const value = segment();
-    return value
-      ? editor.state.editors.find(
-          tab => tab.id === animation.settings().steps[value.index].editorId,
-        )?.tab.tabName || t('animation.untitledTab')
-      : '';
-  };
-  const label = () => {
-    const value = segment();
-    return value?.kind === 'hold'
-      ? t('animation.stepName', {n: String(value.index + 1), tab: name()})
-      : t('animation.betweenSteps', {
-          from: String(value?.index ?? 0),
-          to: String((value?.index ?? 0) + 1),
-        });
-  };
-  const commit = (ms: number) => {
-    const value = segment();
-    if (!value) return;
-    if (value.kind === 'hold') animation.actions.setHoldMs(value.stepId, ms);
-    else animation.actions.setTransition(value.stepId, {ms});
-  };
-  const apply = () => {
-    if (allMatch()) return;
-    const value = segment();
-    if (value) animation.actions.applyToAll(value.stepId);
-  };
-  const allMatch = () => {
-    const value = segment();
-    if (!value) return true;
-    const settings = animation.settings();
-    const transition = transitionOf(settings, settings.steps[value.index]);
-    return (
-      settings.transitionMs === transition.ms &&
-      settings.easing === transition.easing &&
-      settings.steps.slice(1).every(step => {
-        const other = transitionOf(settings, step);
-        return other.ms === transition.ms && other.easing === transition.easing;
-      })
-    );
-  };
-  return (
-    <div class={styles.details}>
-      <Show
-        when={segment()}
-        fallback={<p class={styles.hint}>{t('animation.selectHint')}</p>}
-      >
-        <span>{label()}</span>
-        <DurationInput
-          id="animationDuration"
-          field={segment()?.kind === 'hold' ? 'hold' : 'transition'}
-          label={
-            segment()?.kind === 'hold'
-              ? t('animation.hold')
-              : t('animation.transition')
-          }
-          value={segment()?.durationMs ?? 0}
-          limits={limits()}
-          commit={commit}
-        />
-        <Show
-          when={segment()?.kind === 'transition' && segment()?.stepId}
-          keyed
-        >
-          {stepId => (
-            <>
-              <EasingField stepId={stepId} />
-              <Button
-                size="xs"
-                theme="secondary"
-                aria-disabled={allMatch()}
-                data-disabled={allMatch() ? '' : undefined}
-                onClick={apply}
-              >
-                {t('animation.applyAll')}
-              </Button>
-            </>
-          )}
-        </Show>
-      </Show>
     </div>
   );
 }

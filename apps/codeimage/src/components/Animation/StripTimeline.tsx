@@ -1,143 +1,21 @@
-import {easingOf} from '@core/animation/easing';
-import {transitionOf} from '@codeimage/store/editor/animationSettings';
-import {EasingCurve} from './EasingCurve';
 import {useI18n} from '@codeimage/locale';
 import {getEditorStore} from '@codeimage/store/editor';
-import {
-  DURATION_LIMITS,
-  type AnimationSegment,
-} from '@codeimage/store/editor/animationSettings';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 import {createResizeObserver} from '@solid-primitives/resize-observer';
-import {
-  createEffect,
-  createMemo,
-  createSignal,
-  For,
-  onMount,
-  Show,
-} from 'solid-js';
-import {timelineGeometry, type TimelineGeometry} from './timelineGeometry';
+import {createMemo, createSignal, For, onMount, Show, untrack} from 'solid-js';
+import {timelineGeometry} from './timelineGeometry';
 import type {AppLocaleEntries} from '../../i18n';
-import {createSegmentResize} from './createSegmentResize';
-import {formatDuration, formatSeconds} from './format';
+import {formatSeconds} from './format';
+import {createMinimap} from './timeline/minimap';
+import type {TimelineModel} from './timeline/model';
 import * as styles from './StripTimeline.css';
-function Segment(props: {
-  segment: AnimationSegment;
-  geometry: TimelineGeometry['entries'][number];
-  resize: (event: PointerEvent, segment: AnimationSegment) => void;
-  tabStop: boolean;
-  navigate: (event: KeyboardEvent) => void;
-}) {
-  const {animation, editor} = getEditorStore();
-  const [t, {locale}] = useI18n<AppLocaleEntries>();
-  const segment = () => props.segment;
-  const name = () =>
-    editor.state.editors.find(
-      tab => tab.id === animation.settings().steps[segment().index].editorId,
-    )?.tab.tabName || t('animation.untitledTab');
-  const label = () =>
-    segment().kind === 'hold'
-      ? t('animation.stepName', {n: String(segment().index + 1), tab: name()})
-      : t('animation.betweenSteps', {
-          from: String(segment().index),
-          to: String(segment().index + 1),
-        });
-  const select = () =>
-    animation.actions.select({stepId: segment().stepId, kind: segment().kind});
-  const selected = () =>
-    animation.selection()?.stepId === segment().stepId &&
-    animation.selection()?.kind === segment().kind;
-  const current = () =>
-    animation.playback().state !== 'editing' &&
-    animation.playhead() >= segment().startMs &&
-    animation.playhead() < segment().startMs + segment().durationMs;
-  const limits = () =>
-    segment().kind === 'hold'
-      ? DURATION_LIMITS.holdMs
-      : DURATION_LIMITS.transitionMs;
-  const keyDown = (event: KeyboardEvent) => {
-    if (['ArrowUp', 'ArrowDown', 'Home', 'End'].includes(event.key)) {
-      props.navigate(event);
-      return;
-    }
-    if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
-    event.preventDefault();
-    event.stopPropagation();
-    const ms =
-      segment().durationMs +
-      (event.key === 'ArrowLeft' ? -1 : 1) * (event.altKey ? 10 : 100);
-    if (segment().kind === 'hold')
-      animation.actions.setHoldMs(segment().stepId, ms);
-    else animation.actions.setTransition(segment().stepId, {ms});
-  };
-  const resize = (event: PointerEvent) => props.resize(event, segment());
-  return (
-    <button
-      type="button"
-      role="slider"
-      tabIndex={props.tabStop ? 0 : -1}
-      aria-valuemin={limits().min}
-      aria-valuemax={limits().max}
-      aria-valuenow={segment().durationMs}
-      aria-valuetext={formatDuration(segment().durationMs, locale())}
-      on:keydown={keyDown}
-      class={styles.segment}
-      data-animation-segment
-      data-step-id={segment().stepId}
-      data-kind={segment().kind}
-      data-selected={selected() ? '' : undefined}
-      data-current={current() ? '' : undefined}
-      aria-label={label()}
-      title={`${label()} · ${formatDuration(segment().durationMs, locale())}`}
-      style={assignInlineVars({
-        [styles.segmentWidth]: `${props.geometry.width}px`,
-      })}
-      onClick={select}
-      onFocus={select}
-    >
-      <Show
-        when={
-          segment().kind === 'transition' && props.geometry.label === 'full'
-        }
-      >
-        <EasingCurve
-          easing={easingOf(
-            transitionOf(
-              animation.settings(),
-              animation.settings().steps[segment().index],
-            ).easing,
-          )}
-          glyph
-        />
-      </Show>
-      <Show when={props.geometry.label !== 'none'}>
-        <span class={styles.label} data-segment-label={props.geometry.label}>
-          {segment().kind === 'hold'
-            ? props.geometry.label === 'full' &&
-              props.geometry.width >= name().length * 6.4 + 28
-              ? `${segment().index + 1} · ${name()}`
-              : String(segment().index + 1)
-            : formatDuration(segment().durationMs, locale())}
-        </span>
-      </Show>
-      <span
-        class={styles.handle}
-        data-segment-resize
-        aria-hidden="true"
-        onPointerDown={resize}
-      />
-    </button>
-  );
-}
-export function StripTimeline(props: {
-  overview?: boolean;
-  onDensityChange: (dense: boolean) => void;
-}) {
+
+const PLAYHEAD_GRAB = 8;
+const DRAG_SLOP = 4;
+export function StripTimeline(props: {model: TimelineModel}) {
   const {animation} = getEditorStore();
   const [t, {locale}] = useI18n<AppLocaleEntries>();
   let ruler!: HTMLDivElement;
-  let track!: HTMLDivElement;
   let scroller!: HTMLDivElement;
   const [width, setWidth] = createSignal(0);
   const measure = () => setWidth(scroller.clientWidth - 8);
@@ -148,94 +26,86 @@ export function StripTimeline(props: {
   const axis = animation.durationMs;
   const geometry = createMemo(() =>
     timelineGeometry(animation.segments(), width(), {
-      labels: !props.overview,
+      labels: false,
       minWidth: 8,
+      between: segment =>
+        segment.kind === 'transition' &&
+        (props.model.stepOf(segment.stepId)?.sub ?? 1) <= 1,
     }),
   );
-  createEffect(() => {
-    if (width() > 0) props.onDensityChange(geometry().dense);
-  });
-  const keys = createMemo(() =>
-    animation.segments().map(segment => `${segment.kind}:${segment.stepId}`),
-  );
-  const tabStop = () => {
-    const selected = animation.selection();
-    const key = selected && `${selected.kind}:${selected.stepId}`;
-    return key && keys().includes(key) ? key : keys()[0];
-  };
-  const navigate = (event: KeyboardEvent) => {
-    const segments = [
-      ...track.querySelectorAll<HTMLElement>('[data-animation-segment]'),
-    ];
-    if (!(event.currentTarget instanceof HTMLElement)) return;
-    const index = segments.indexOf(event.currentTarget);
-    const next =
-      event.key === 'Home'
-        ? 0
-        : event.key === 'End'
-          ? segments.length - 1
-          : Math.max(
-              0,
-              Math.min(
-                segments.length - 1,
-                index + (event.key === 'ArrowUp' ? -1 : 1),
-              ),
-            );
-    event.preventDefault();
-    event.stopPropagation();
-    segments[next]?.focus();
-  };
-  const resize = createSegmentResize({
-    total: animation.durationMs,
-    geometry,
-    limits: segment =>
-      segment.kind === 'hold'
-        ? DURATION_LIMITS.holdMs
-        : DURATION_LIMITS.transitionMs,
-    begin: () => animation.actions.setResizing(true),
-    end: () => {
-      animation.actions.setResizing(false);
-    },
-    update: (segment, ms, commit) => {
-      if (segment.kind === 'hold')
-        animation.actions.setHoldMs(segment.stepId, ms, {commit});
-      else animation.actions.setTransition(segment.stepId, {ms}, {commit});
-    },
-  });
-  const ticks = createMemo(() => {
-    const count = Math.max(1, width() / 64);
-    const step =
-      [500, 1000, 2000, 5000, 10000, 30000, 60000, 120000, 300000].find(
-        ms => axis() / ms <= count,
-      ) ?? axis();
-    return geometry().ticks(step);
-  });
+  const minimap = untrack(() => createMinimap(props.model, geometry));
   const at = (event: PointerEvent) => {
     const box = ruler.getBoundingClientRect();
     return geometry().xToTime(event.clientX - box.left);
   };
+  const xOf = (event: PointerEvent) =>
+    event.clientX - ruler.getBoundingClientRect().left;
+  const grabsWindow = (x: number) => {
+    const view = minimap?.view();
+    return (
+      !!view &&
+      x >= view.x &&
+      x <= view.x + view.width &&
+      Math.abs(x - geometry().timeToX(animation.playhead())) > PLAYHEAD_GRAB
+    );
+  };
+  let pan: {
+    startX: number;
+    moved: boolean;
+    move?: (dx: number) => void;
+  } | null = null;
+  const [overWindow, setOverWindow] = createSignal(false);
   const pointerDown = (event: PointerEvent) => {
     event.preventDefault();
     ruler.focus();
     ruler.setPointerCapture(event.pointerId);
+    if (grabsWindow(xOf(event))) {
+      pan = {startX: event.clientX, moved: false, move: minimap?.pan()};
+      return;
+    }
     animation.actions.scrub(at(event));
   };
+  const hover = (event: PointerEvent) => {
+    if (!props.model || event.pointerType !== 'mouse') return;
+    const x = xOf(event);
+    setOverWindow(grabsWindow(x));
+    const entry = geometry().entries.find(
+      entry => x < entry.x + entry.width + geometry().gap,
+    );
+    props.model.setHover(
+      entry ? {stepId: entry.segment.stepId, from: 'strip'} : null,
+    );
+  };
+  const pointerLeave = () => {
+    setOverWindow(false);
+    if (props.model?.hover()?.from === 'strip') props.model.setHover(null);
+  };
   const pointerMove = (event: PointerEvent) => {
-    if (ruler.hasPointerCapture(event.pointerId))
-      animation.actions.scrub(at(event));
+    if (!ruler.hasPointerCapture(event.pointerId)) return hover(event);
+    if (pan) {
+      const dx = event.clientX - pan.startX;
+      if (!pan.moved && Math.abs(dx) < DRAG_SLOP) return;
+      pan.moved = true;
+      pan.move?.(dx);
+      return;
+    }
+    animation.actions.scrub(at(event));
   };
   const pointerUp = (event: PointerEvent) => {
     if (!ruler.hasPointerCapture(event.pointerId)) return;
+    const panned = pan?.moved;
+    pan = null;
+    ruler.releasePointerCapture(event.pointerId);
+    if (panned) return;
     animation.actions.seek(at(event));
-    if (props.overview) {
-      const x = event.clientX - ruler.getBoundingClientRect().left;
+    {
+      const x = xOf(event);
       const entry =
         geometry().entries.find(entry => x < entry.x + entry.width) ??
         geometry().entries.at(-1);
       if (entry)
         animation.actions.select({stepId: entry.segment.stepId, kind: 'hold'});
     }
-    ruler.releasePointerCapture(event.pointerId);
   };
   const keyDown = (event: KeyboardEvent) => {
     const amount = event.shiftKey ? 100 : 1000 / animation.settings().fps;
@@ -255,7 +125,7 @@ export function StripTimeline(props: {
       class={styles.root}
       ref={scroller}
       data-animation-scroller
-      data-overview={props.overview ? '' : undefined}
+      data-overview
       style={{visibility: width() > 0 ? undefined : 'hidden'}}
     >
       <div class={styles.axis} style={{width: `${geometry().width}px`}}>
@@ -273,23 +143,22 @@ export function StripTimeline(props: {
           onPointerMove={pointerMove}
           onPointerUp={pointerUp}
           onPointerCancel={pointerUp}
-          on:keydown={keyDown}
+          onPointerLeave={pointerLeave}
+          onKeyDown={keyDown}
+          data-over-window={overWindow() ? '' : undefined}
         >
-          <Show when={!props.overview}>
-            <For each={ticks()}>
-              {tick => (
-                <span
-                  class={styles.tick}
-                  data-animation-tick={tick.ms}
-                  data-alignment={tick.alignment}
-                  style={assignInlineVars({
-                    [styles.position]: `${tick.x}px`,
-                  })}
-                >
-                  {formatSeconds(tick.ms, locale())}
-                </span>
-              )}
-            </For>
+          <Show when={minimap?.view()}>
+            {view => (
+              <span
+                class={styles.viewWindow}
+                data-minimap-window
+                aria-hidden="true"
+                style={{
+                  width: `${view().width}px`,
+                  transform: `translateX(${view().x}px)`,
+                }}
+              />
+            )}
           </Show>
           <span
             class={styles.playhead}
@@ -301,55 +170,31 @@ export function StripTimeline(props: {
         </div>
         <div
           class={styles.track}
-          ref={track}
           data-animation-track
           data-axis-ms={axis()}
           style={{gap: `${geometry().gap}px`}}
         >
-          <Show
-            when={props.overview}
-            fallback={
-              <For each={keys()}>
-                {key => (
-                  <Show
-                    when={animation
-                      .segments()
-                      .find(
-                        segment => `${segment.kind}:${segment.stepId}` === key,
-                      )}
-                  >
-                    {segment => (
-                      <Segment
-                        segment={segment()}
-                        geometry={geometry().entries.find(
-                          entry =>
-                            `${entry.segment.kind}:${entry.segment.stepId}` ===
-                            key,
-                        )!}
-                        resize={resize}
-                        tabStop={key === tabStop()}
-                        navigate={navigate}
-                      />
-                    )}
-                  </Show>
-                )}
-              </For>
-            }
-          >
-            <For each={geometry().entries}>
-              {entry => (
-                <span
-                  class={styles.segment}
-                  data-overview-segment
-                  data-kind={entry.segment.kind}
-                  data-step-id={entry.segment.stepId}
-                  style={assignInlineVars({
+          <For each={geometry().entries}>
+            {entry => (
+              <span
+                class={styles.segment}
+                data-overview-segment
+                data-kind={entry.segment.kind}
+                data-step-id={entry.segment.stepId}
+                data-linked={
+                  props.model?.linked(entry.segment.stepId) ? '' : undefined
+                }
+                style={{
+                  ...assignInlineVars({
                     [styles.segmentWidth]: `${entry.width}px`,
-                  })}
-                />
-              )}
-            </For>
-          </Show>
+                  }),
+                  'margin-inline': entry.spaced
+                    ? `${entry.spaced}px`
+                    : undefined,
+                }}
+              />
+            )}
+          </For>
         </div>
       </div>
     </div>

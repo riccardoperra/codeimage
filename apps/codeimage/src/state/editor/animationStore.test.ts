@@ -35,6 +35,12 @@ test('tabs always derive steps and timing updates persist independently of selec
       computed: {canAddEditor: () => state.editors.length < 6},
       actions: {
         setActiveEditorId: setActive,
+        removeEditor: id => {
+          setTabs(tabs => tabs.filter(tab => tab.id !== id));
+        },
+        setEditors: value => {
+          if (Array.isArray(value)) setTabs(value);
+        },
         addEditor: value => {
           setTabs([...state.editors, {...tab('copy'), ...value, id: 'copy'}]);
         },
@@ -67,7 +73,12 @@ test('tabs always derive steps and timing updates persist independently of selec
     assert.ok(animation.settings().steps.every(s => !s.transition));
     animation.actions.setHeader({mode: 'title', title: ' hello '});
     assert.equal(animation.settings().header.title, 'hello');
-    setTabs([state.editors[2], state.editors[0]]);
+    animation.actions.moveTab('c', 0);
+    assert.deepEqual(
+      animation.settings().steps.map(step => step.id),
+      ['c', 'a', 'b'],
+    );
+    animation.actions.closeTab('b');
     assert.deepEqual(
       animation.settings().steps.map(step => step.id),
       ['c', 'a'],

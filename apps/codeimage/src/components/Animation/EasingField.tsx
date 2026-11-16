@@ -16,11 +16,20 @@ import {
 } from '@core/animation/easing';
 import type {EasingName} from '@core/animation/model';
 import {SegmentedField} from '@ui/SegmentedField/SegmentedField';
-import {createEffect, createSignal, on, Show} from 'solid-js';
+import {createEffect, createSignal, on, Show, type JSX} from 'solid-js';
 import type {AppLocaleEntries} from '../../i18n';
 import {EasingCurve} from './EasingCurve';
 import * as styles from './easing.css';
-export function EasingField(props: {stepId: string; modal?: boolean}) {
+
+export function EasingField(props: {
+  stepId: string;
+  modal?: boolean;
+  anchor?: HTMLElement;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+  header?: JSX.Element;
+  class?: string;
+}) {
   const {animation} = getEditorStore();
   const [t] = useI18n<AppLocaleEntries>();
   const step = () =>
@@ -38,7 +47,12 @@ export function EasingField(props: {stepId: string; modal?: boolean}) {
   const [choice, setChoice] = createSignal<EasingName | 'custom'>(preset());
   const [text, setText] = createSignal('');
   const [invalid, setInvalid] = createSignal(false);
-  const [open, setOpen] = createSignal(false);
+  const [ownOpen, setOwnOpen] = createSignal(false);
+  const open = () => props.open ?? ownOpen();
+  const setOpen = (value: boolean) => {
+    setOwnOpen(value);
+    props.onOpenChange?.(value);
+  };
   let content: HTMLDivElement | undefined;
   createEffect(
     on(value, () => {
@@ -114,27 +128,35 @@ export function EasingField(props: {stepId: string; modal?: boolean}) {
     <Popover
       open={open()}
       onOpenChange={openChange}
-      placement="top-end"
-      slide
-      overflowPadding={8}
+      placement={props.anchor ? 'top' : 'top-end'}
+      anchorRef={() => props.anchor}
       modal={props.modal}
     >
-      <PopoverTrigger
-        as={Button}
-        size="xs"
-        theme="secondary"
-        aria-label={t('animation.easing.label')}
-        data-easing-trigger
-      >
-        <EasingCurve easing={easingOf(value())} glyph />
-        {t(`animation.easing.${preset()}`)}
-      </PopoverTrigger>
+      <Show when={!props.anchor}>
+        <PopoverTrigger
+          as={Button}
+          size="xs"
+          theme="secondary"
+          aria-label={t('animation.easing.label')}
+          data-easing-trigger
+        >
+          <EasingCurve easing={easingOf(value())} glyph />
+          {t(`animation.easing.${preset()}`)}
+        </PopoverTrigger>
+      </Show>
       <PopoverContent
-        title={t('animation.easing.label')}
-        class={styles.content}
+        aria-label={t('animation.easing.label')}
+        title={props.anchor ? undefined : t('animation.easing.label')}
+        class={`${styles.content} ${props.class ?? ''}`}
         ref={content}
         onOpenAutoFocus={autofocus}
+        onCloseAutoFocus={(event: Event) => {
+          if (!props.anchor) return;
+          event.preventDefault();
+          props.anchor.focus({preventScroll: true});
+        }}
       >
+        {props.header}
         <SegmentedField
           size="xs"
           adapt
