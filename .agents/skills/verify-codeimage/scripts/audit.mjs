@@ -175,10 +175,11 @@ export async function audit({page, context, base, out, server}) {
         }),
     );
   }
-  async function fresh({name, layout, viewport, initialize}, run) {
+  async function fresh({name, layout, viewport, initialize, hasTouch}, run) {
     const previous = {page, context};
     context = await createMockContext(context.browser(), base, {
       viewport,
+      hasTouch,
       locale: 'en-US',
       colorScheme: 'dark',
       permissions: ['clipboard-read', 'clipboard-write'],
@@ -412,6 +413,25 @@ export async function audit({page, context, base, out, server}) {
     await search.press('Enter');
     await search.waitFor({state: 'hidden'});
   });
+  await feature('line-mark-controls-phone', () =>
+    fresh(
+      {
+        name: 'line-mark-controls-phone',
+        layout: 'inspector',
+        viewport: {width: 390, height: 844},
+        hasTouch: true,
+      },
+      async ({page, doctor, editor}) => {
+        await doctor();
+        const {verifyLineMarkTouch} = await import('./line-mark-controls.mjs');
+        return verifyLineMarkTouch({page, editor: editor(), out});
+      },
+    ),
+  );
+  await feature('line-mark-controls', async () => {
+    const {verifyLineMarkControls} = await import('./line-mark-controls.mjs');
+    return verifyLineMarkControls({page, editor: editor(), section, out});
+  });
   await feature('line-marks', async () => {
     await editor().fill('const marked = 1;\nconst other = 2;');
     await editor().press('ControlOrMeta+Home');
@@ -560,6 +580,37 @@ export async function audit({page, context, base, out, server}) {
         assert.notEqual(after.cellLeft, before.cellLeft);
         assert.deepEqual([after.offsetX, after.offsetY], [-46, 0]);
         assert.ok(after.ownsItsPoint, 'the dot covers nothing but itself');
+        await badge.getByRole('button').click();
+        const coachmark = page.getByRole('dialog', {
+          name: 'Line marks',
+          exact: true,
+        });
+        await coachmark.waitFor();
+        const row = await page
+          .locator('.cm-content[contenteditable="true"] .cm-line')
+          .first()
+          .boundingBox();
+        const point = {x: row.x + row.width - 2, y: row.y + 2};
+        await page.mouse.move(point.x, point.y);
+        assert.ok(
+          await page.evaluate(
+            point =>
+              document
+                .elementFromPoint(point.x, point.y)
+                ?.closest('.cm-content'),
+            point,
+          ),
+          'the pointer reaches the editor beside the coachmark',
+        );
+        assert.equal(
+          await coachmark.isVisible(),
+          true,
+          'hovering the editor preserves the coachmark',
+        );
+        await coachmark
+          .getByRole('button', {name: 'Got it', exact: true})
+          .click();
+        await coachmark.waitFor({state: 'hidden'});
         await page.screenshot({
           path: resolve(out, 'whats-new-line-marks-dot.png'),
         });

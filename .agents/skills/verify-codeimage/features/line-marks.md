@@ -21,3 +21,7 @@ Run `annotations` to paste a real `[!code ++]` comment, assert the annotation di
 ## Gotchas
 
 Use real clipboard input, not synthetic ClipboardEvent or store setters. Read clipboard permissions failures as failures. Audit covers highlight/clear and diff import, not every mark kind; the separate annotations journey now covers annotation conversion. It invokes the toast Undo action; restoration of the full prior document/tab state needs a separate assertion before claiming Undo coverage.
+
+Run `line-mark-controls` for mouse and keyboard gutter menus, menu arrow keys, Escape focus return, marker arrow/Home/End navigation and Tab reachability, side-panel scrolling with an open menu, selection-toolbar blur/refocus, and gutter range drags past both ends of the editor. It checks that the gutter remains aria-hidden while the marker buttons remain accessible through CodeMirror tooltips. Run `line-mark-controls-phone` for a fresh 390px touch context, minimum marker target size, menu containment, Added/Focus actions and absence of sticky hover. Both use real pointer/keyboard input with the owned MSW server.
+
+`whats-new-line-marks-dot` checks the badge follows a canvas side change and that its coachmark survives a marker redraw while the pointer enters the editor. The native tooltip placement is invalidated by the page's layout changes and FitFrame's resize observer; the badge has no polling loop.
