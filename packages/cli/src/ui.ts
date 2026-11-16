@@ -120,6 +120,7 @@ export function createUi(quiet = false) {
       else if (mode !== 'quiet') warn(`repairing cached font ${event.fontId}`);
     },
     rendered(result: {path: string; bytes: number; ms: number}) {
+      if (result.path !== '-') process.stdout.write(`${result.path}\n`);
       success(
         `${result.path === '-' ? 'stdout' : result.path} · ${result.bytes} B · ${Math.round(result.ms)} ms`,
       );
