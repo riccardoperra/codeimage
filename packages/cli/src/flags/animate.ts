@@ -109,12 +109,14 @@ export function parseAnimation(values: FlagValues): AnimationArgs | undefined {
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === 'object' && value !== null;
 
-// The settings as the editor saved them, from a preset whose steps give their
-// hold and transition to the input files in order.
+// The settings as the editor saved them: a project input's own, or a
+// preset's, whose steps give their hold and transition to the input files in
+// order.
 function storedAnimation(
   snapshot: SnapshotDocument,
   preset?: Preset,
 ): unknown {
+  if ('animation' in snapshot) return snapshot.animation;
   const stored = isRecord(preset?.animation) ? preset.animation : {};
   const steps = Array.isArray(stored.steps) ? stored.steps : [];
   return {

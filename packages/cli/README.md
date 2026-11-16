@@ -171,6 +171,18 @@ another rate, the command names the rate it used on stderr. Each GIF frame has i
 shows bands and a small detail can change color between frames. WebP and
 animated PNG keep every pixel.
 
+A project the web app saved plays as the editor's export does when it is the
+only input:
+
+```sh
+codeimage project.json --animate -o demo.gif
+```
+
+It keeps its tabs, frame, and terminal, and its `animation`: the steps in their
+order, each step's hold and the transition that leads into it, the easing, the
+fps, and the header mode (active tab, every tab, or a title). `--preset`,
+`--theme`, `--lines`, and `--lang` do not combine with a project input.
+
 A preset can hold an `animation` section in the same shape. Its steps give
 their hold and transition to the input files in order, and its header applies
 to every frame. Values out of range are clamped and invalid ones fall back to

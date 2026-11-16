@@ -184,6 +184,61 @@ describe('animate flag', () => {
     });
   });
 
+  it('plays a saved project input with its own steps, timing and header', async () => {
+    const project = {
+      $snippetId: null,
+      $version: '1.10.0',
+      ...presetWith(undefined),
+      editor: {
+        options: presetWith(undefined).editor,
+        editors: ['one', 'two', 'three'].map(id => ({
+          id,
+          code: `const ${id} = 1;`,
+          tabName: `${id}.ts`,
+          languageId: 'typescript',
+          lineNumberStart: 1,
+        })),
+      },
+      animation: {
+        steps: [
+          {id: 'x', editorId: 'three', holdMs: 400},
+          {
+            id: 'y',
+            editorId: 'one',
+            holdMs: 600,
+            transition: {ms: 1100, easing: 'strong'},
+          },
+        ],
+        transitionMs: 700,
+        easing: 'snappy',
+        fps: 24,
+        header: {mode: 'tabs', title: ''},
+      },
+    };
+    const files = [{name: 'project.json', code: JSON.stringify(project)}];
+    const {document, notes} = await plan(['-o', 'demo.gif'], files);
+    expect(document.editor.editors.map(tab => tab.id)).toEqual([
+      'one',
+      'two',
+      'three',
+    ]);
+    expect(document.frame.background).toBe('#ff0000');
+    expect(document.animation).toEqual(project.animation);
+    expect(notes).toEqual([
+      'GIF supports 50 or 25 fps, so this one plays at 25 instead of 24',
+    ]);
+    await expect(plan(['--theme', 'dracula'], files)).rejects.toThrow(
+      '--theme: a project input keeps its own settings',
+    );
+    const plain = await plan([], [files[0], inputs[0]]);
+    expect(plain.document.editor.editors[0].code).toBe(files[0].code);
+  });
+
+  it('keeps a still export working with invalid animation settings', () => {
+    const preset = presetWith({steps: [], transitionMs: 1});
+    expect(() => parsePreset(JSON.stringify(preset))).not.toThrow();
+  });
+
   it.each([
     [['-o', 'demo.webp'], 'webp', 'demo.webp'],
     [['-o', 'demo.gif'], 'gif', 'demo.gif'],
