@@ -1,6 +1,7 @@
 {
   "extends": ["../../.oxlintrc.json"],
   "rules": {
+    "codeimage/no-global-key-listener": "error",
     "no-restricted-imports": [
       "error",
       {

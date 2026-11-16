@@ -745,6 +745,7 @@
   },
   "apps/codeimage/src/pages/UnifiedEditor/command-menu/CommandMenu.tsx": {
     "codeimage(no-comments)": 15,
+    "codeimage(no-global-key-listener)": 1,
     "eslint(max-lines)": 411,
     "eslint(max-lines-per-function)": 1,
     "eslint(no-restricted-imports)": 1,
@@ -793,6 +794,7 @@
     "eslint(no-restricted-imports)": 1
   },
   "apps/codeimage/src/pages/UnifiedEditor/controls/ShortcutHelp.tsx": {
+    "codeimage(no-global-key-listener)": 1,
     "eslint(max-lines-per-function)": 1,
     "solid(reactivity)": 1
   },
@@ -1166,6 +1168,7 @@
   },
   "apps/codeimage/src/pages/UnifiedEditor/verify-review.mjs": {
     "codeimage(no-comments)": 6,
+    "codeimage(no-global-key-listener)": 1,
     "eslint(max-depth)": 12,
     "eslint(max-lines)": 658,
     "eslint(no-console)": 3,
