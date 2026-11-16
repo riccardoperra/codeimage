@@ -401,6 +401,7 @@ export function animationGifCases({
       await page
         .getByRole('option', {name: fixture.target, exact: true})
         .click();
+      await page.keyboard.press('Escape');
     }
     if (fixture.solid) {
       await page
