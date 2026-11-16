@@ -1,15 +1,22 @@
+import {
+  parseAnimationSettings,
+  parseTabMarks,
+  remapAnimationStep,
+} from './project.model.animation.js';
+export {
+  parseAnimationSettings,
+  parseTabMarks,
+  remapAnimationStep,
+} from './project.model.animation.js';
 import {randomUUID} from 'node:crypto';
 import type {Static} from '@sinclair/typebox';
-import {Value} from '@sinclair/typebox/value';
 import {
-  AnimationSettingsSchema,
   type AnimationSettings,
   ExportTargetSchema,
   type FrameSignatureSchema,
   SignaturePlatformSchema,
   SignaturePositionSchema,
   SignatureStyleSchema,
-  TabMarksSchema,
   type TabMarks,
 } from './project.contract.js';
 import {defineErrors} from '../../shared/errors.js';
@@ -323,58 +330,6 @@ export function readFrameExportProperties(
       )?.const ?? null,
     signature: readFrameSignature(frame),
   };
-}
-
-export function remapAnimationStep(
-  step: AnimationSettings['steps'][number],
-  tabIds: ReadonlyMap<string, string>,
-): AnimationSettings['steps'][number] {
-  const editorId = tabIds.get(step.editorId) ?? step.editorId;
-  const id =
-    step.view?.kind !== 'script' && step.id === step.editorId
-      ? editorId
-      : step.view?.kind === 'diff' &&
-          step.id === `${step.editorId}:${step.view.side}`
-        ? `${editorId}:${step.view.side}`
-        : step.id;
-  return {...step, editorId, ...(id === undefined ? {} : {id})};
-}
-
-// A timeline of 0 ms has no frame to render, so it is no animation.
-export function parseAnimationSettings(
-  value: unknown,
-): AnimationSettings | null {
-  if (!Value.Check(AnimationSettingsSchema, value)) return null;
-  const {steps, transitionMs} = value;
-  const totalMs = steps.reduce(
-    (total, step, index) =>
-      total +
-      step.holdMs +
-      (index === 0 ? 0 : (step.transition?.ms ?? transitionMs)),
-    0,
-  );
-  return totalMs > 0 ? value : null;
-}
-
-export function parseTabMarks(value: unknown): TabMarks {
-  if (!Value.Check(TabMarksSchema, value)) return {lines: [], focusedLines: []};
-  const script = value.script;
-  if (script) {
-    const seen = new Set<number>();
-    const valid = script.lines.every(line => {
-      if (seen.has(line.line)) return false;
-      seen.add(line.line);
-      return (
-        (line.enter ?? 1) <= script.steps.length &&
-        (line.leave === undefined ||
-          ((line.enter ?? 1) < line.leave &&
-            line.leave <= script.steps.length)) &&
-        (line.focus ?? []).every(step => step <= script.steps.length)
-      );
-    });
-    if (!valid) return {lines: value.lines, focusedLines: value.focusedLines};
-  }
-  return value;
 }
 
 export function readTerminalSurface(
