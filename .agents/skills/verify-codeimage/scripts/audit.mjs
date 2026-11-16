@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import assert from 'node:assert/strict';
+import {verifyKeyboardScroll} from './keyboard-scroll.mjs';
 import {createMockContext} from './mock-context.mjs';
 import {animationMp4Cases} from './animation-mp4.mjs';
 import {auditSnippets} from './snippets.mjs';
@@ -235,6 +236,7 @@ export async function audit({page, context, base, out, server}) {
       ({page, context} = previous);
     }
   }
+  await feature('keyboard-scroll', () => verifyKeyboardScroll({fresh, out}));
   await feature('frame-cold-start', async () => {
     const {verifyColdStart} = await import('./frame-regressions.mjs');
     return verifyColdStart({fresh, out});
@@ -1014,6 +1016,8 @@ export async function audit({page, context, base, out, server}) {
   await feature('animation-mp4-compositing', mp4.compositing);
   await feature('animation-mp4-modes', mp4.modes);
   await feature('animation-mp4-parity', mp4.parity);
+  await feature('animation-mp4-step-size', mp4.stepSizeMp4);
+  await feature('animation-gif-step-size', mp4.stepSizeGif);
   await feature('animate', async () => {
     // The Editor window names its Add tab button; the default one does not.
     await windowStyle('Editor');

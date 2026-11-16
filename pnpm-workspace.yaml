@@ -21,6 +21,7 @@ allowBuilds:
 
 patchedDependencies:
   '@codeui/kit': patches/@codeui__kit.patch
+  '@kobalte/utils@0.9.1': patches/@kobalte__utils@0.9.1.patch
   '@motionone/solid': patches/@motionone__solid.patch
   solid-headless: patches/solid-headless.patch
   tinykeys: patches/tinykeys.patch

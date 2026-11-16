@@ -275,6 +275,7 @@ overrides:
 
 patchedDependencies:
   '@codeui/kit': 327124a76affdf8a15e8f8482a05089d0900daa777402d696103afc7e091a449
+  '@kobalte/utils@0.9.1': 6e7a9a5bdba28f32e8d76d57db8a9741000004d16d1e50392be5e0efe1550d81
   '@motionone/solid': 13f53ad17e8f69f172b2cdc5369102b180a81b8181044aeb4f77dc9f3a31b944
   solid-headless: b49786ed140172dc3b664c30dae5e1b5bdb8b42e4a6e5c24cc54f663cffbd394
   tinykeys: de39c49788d8fa66291f7838d8c6dfb4d10c77c603a670bd5d4b4a20ac253888
@@ -566,7 +567,7 @@ importers:
         version: 0.13.11(solid-js@1.9.12)
       '@kobalte/utils':
         specifier: ^0.9.1
-        version: 0.9.1(solid-js@1.9.12)
+        version: 0.9.1(patch_hash=6e7a9a5bdba28f32e8d76d57db8a9741000004d16d1e50392be5e0efe1550d81)(solid-js@1.9.12)
       '@kobalte/vanilla-extract':
         specifier: ^0.5.0
         version: 0.5.0(@vanilla-extract/css@1.20.0)
@@ -1104,7 +1105,7 @@ importers:
         version: 0.13.11(solid-js@1.9.12)
       '@kobalte/utils':
         specifier: ^0.9.1
-        version: 0.9.1(solid-js@1.9.12)
+        version: 0.9.1(patch_hash=6e7a9a5bdba28f32e8d76d57db8a9741000004d16d1e50392be5e0efe1550d81)(solid-js@1.9.12)
       '@lezer/highlight':
         specifier: catalog:next
         version: 1.2.3
@@ -13251,7 +13252,7 @@ snapshots:
   '@codeui/kit@0.1.5(patch_hash=327124a76affdf8a15e8f8482a05089d0900daa777402d696103afc7e091a449)(@types/node@25.9.9)(jiti@2.6.1)(lightningcss@1.33.0)(sass@1.98.0)(solid-js@1.9.12)(supports-color@10.2.2)(terser@5.46.1)(tsx@4.23.15)(vite@8.3.8(@types/node@25.9.9)(esbuild@0.28.2)(jiti@2.6.1)(sass@1.98.0)(terser@5.46.1)(tsx@4.23.15)(yaml@2.9.1))(yaml@2.9.1)':
     dependencies:
       '@kobalte/core': 0.13.11(solid-js@1.9.12)
-      '@kobalte/utils': 0.9.1(solid-js@1.9.12)
+      '@kobalte/utils': 0.9.1(patch_hash=6e7a9a5bdba28f32e8d76d57db8a9741000004d16d1e50392be5e0efe1550d81)(solid-js@1.9.12)
       '@kobalte/vanilla-extract': 0.5.0(@vanilla-extract/css@1.20.0)
       '@maskito/core': 3.11.1
       '@maskito/kit': 3.11.1(@maskito/core@3.11.1)
@@ -14224,14 +14225,14 @@ snapshots:
       '@floating-ui/dom': 1.7.6
       '@internationalized/date': 3.12.0
       '@internationalized/number': 3.6.5
-      '@kobalte/utils': 0.9.1(solid-js@1.9.12)
+      '@kobalte/utils': 0.9.1(patch_hash=6e7a9a5bdba28f32e8d76d57db8a9741000004d16d1e50392be5e0efe1550d81)(solid-js@1.9.12)
       '@solid-primitives/props': 3.2.3(solid-js@1.9.12)
       '@solid-primitives/resize-observer': 2.1.5(solid-js@1.9.12)
       solid-js: 1.9.12
       solid-presence: 0.1.8(solid-js@1.9.12)
       solid-prevent-scroll: 0.1.10(solid-js@1.9.12)
 
-  '@kobalte/utils@0.9.1(solid-js@1.9.12)':
+  '@kobalte/utils@0.9.1(patch_hash=6e7a9a5bdba28f32e8d76d57db8a9741000004d16d1e50392be5e0efe1550d81)(solid-js@1.9.12)':
     dependencies:
       '@solid-primitives/event-listener': 2.4.5(solid-js@1.9.12)
       '@solid-primitives/keyed': 1.2.0(solid-js@1.9.12)

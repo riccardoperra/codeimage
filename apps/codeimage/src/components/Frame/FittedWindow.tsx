@@ -6,11 +6,18 @@ import {
   onCleanup,
   untrack,
   type ParentProps,
+  type JSX,
 } from 'solid-js';
 import type {WatermarkScope} from '../../core/watermark/scope';
 import {WatermarkContext} from '../../core/watermark/scope';
 
 export const FITTED_WINDOW_MIN_WIDTH = 480;
+
+export const naturalWindowStyle = {
+  display: 'block',
+  width: 'max-content',
+  'min-width': `${FITTED_WINDOW_MIN_WIDTH}px`,
+} satisfies JSX.CSSProperties;
 
 export interface Size {
   width: number;
@@ -53,6 +60,7 @@ export function fittedPlacement(
 export function FittedWindow(
   props: ParentProps<{
     active: boolean;
+    natural?: boolean;
     watermark: WatermarkScope;
     placement?: FittedPlacement;
   }>,
@@ -134,7 +142,9 @@ export function FittedWindow(
                 'min-width': `${FITTED_WINDOW_MIN_WIDTH}px`,
                 'transform-origin': '0 0',
               }
-            : {display: 'contents', transform: 'none'}
+            : props.natural
+              ? {...naturalWindowStyle, transform: 'none'}
+              : {display: 'contents', transform: 'none'}
         }
       >
         <WatermarkContext.Provider value={watermark}>

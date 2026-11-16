@@ -4,7 +4,7 @@ import type {CustomTheme} from '@codeimage/highlight';
 import type {FrameState} from '@codeimage/store/frame/model';
 import type {FittedPlacement} from './FittedWindow';
 import {frameBottomPadding} from './signatureLayout';
-import {FittedWindow} from './FittedWindow';
+import {FittedWindow, naturalWindowStyle} from './FittedWindow';
 import {FrameSignature, framePadding, signatureScale} from './FrameSignature';
 import {isAssetUrl} from '@codeimage/store/assets/assetIds';
 import type {FrameMedia} from './frameMedia';
@@ -49,6 +49,8 @@ export interface FrameViewProps {
   // Sizes the frame from its code, as the static export of one animation
   // step, instead of from the editor frame on screen.
   natural?: boolean;
+  // The fixed animation canvas width, shared by all of its steps.
+  signatureWidth?: number;
 }
 
 export function FrameView(props: VoidProps<FrameViewProps>) {
@@ -62,7 +64,11 @@ export function FrameView(props: VoidProps<FrameViewProps>) {
           ] satisfies [number, number],
         }
       : getExportTarget(frame.exportTarget);
-  const scale = () => frameSignatureScale(frame, target());
+  const scale = () =>
+    frameSignatureScale(frame, target(), {
+      natural: props.natural,
+      signatureWidth: props.signatureWidth,
+    });
   const terminal = getTerminalState().state;
   const editor = getRootEditorStore();
   const tab = () => props.tab ?? getActiveEditorStore().editor();
@@ -192,6 +198,7 @@ export function FrameView(props: VoidProps<FrameViewProps>) {
           fallback={
             <FittedWindow
               active={!!target()}
+              natural={props.natural}
               watermark={watermark}
               placement={props.windowPlacement}
             >
@@ -199,7 +206,10 @@ export function FrameView(props: VoidProps<FrameViewProps>) {
             </FittedWindow>
           }
         >
-          <div data-animation-window style={{display: 'contents'}}>
+          <div
+            data-animation-window
+            style={props.natural ? naturalWindowStyle : {display: 'contents'}}
+          >
             <WatermarkContext.Provider value={watermark}>
               {terminalView()}
             </WatermarkContext.Provider>
@@ -217,13 +227,20 @@ export function FrameView(props: VoidProps<FrameViewProps>) {
   );
 }
 
+// An animation sizes the signature for its whole canvas, and a natural frame
+// without one for no frame at all, as the base size.
 export function frameSignatureScale(
   frame: Pick<FrameState, 'width'>,
   target:
     | Pick<NonNullable<ReturnType<typeof getExportTarget>>, 'resolution'>
     | undefined,
+  options: {natural?: boolean; signatureWidth?: number} = {},
 ): number {
-  return signatureScale(target?.resolution[0] ?? frame.width);
+  return signatureScale(
+    options.signatureWidth ??
+      target?.resolution[0] ??
+      (options.natural ? 0 : frame.width),
+  );
 }
 
 export function targetViewport(

@@ -1,0 +1,42 @@
+diff --git a/dist/index.cjs b/dist/index.cjs
+index 448eaa2d02a217c009672cc2030bc10041b178bb..15964005fa93c8b039f0d07d19882cd6e8ee45ee 100644
+--- a/dist/index.cjs
++++ b/dist/index.cjs
+@@ -762,14 +762,14 @@ function scrollIntoViewport(targetElement, opts) {
+         targetElement.scrollIntoView?.({ block: "nearest" });
+       }
+     } else {
+-      let scrollParent = getScrollParent(targetElement);
++      let scrollParent = getScrollParent(targetElement.parentElement);
+       while (targetElement && scrollParent && targetElement !== root && scrollParent !== root) {
+         scrollIntoView(
+           scrollParent,
+           targetElement
+         );
+         targetElement = scrollParent;
+-        scrollParent = getScrollParent(targetElement);
++        scrollParent = getScrollParent(targetElement.parentElement);
+       }
+     }
+   }
+diff --git a/dist/index.js b/dist/index.js
+index 669bd3bf44fcd88f374046b5ecab5a204253d7fb..56540c2aa2a3cfa404202469dfe393f1b56531a2 100644
+--- a/dist/index.js
++++ b/dist/index.js
+@@ -760,14 +760,14 @@ function scrollIntoViewport(targetElement, opts) {
+         targetElement.scrollIntoView?.({ block: "nearest" });
+       }
+     } else {
+-      let scrollParent = getScrollParent(targetElement);
++      let scrollParent = getScrollParent(targetElement.parentElement);
+       while (targetElement && scrollParent && targetElement !== root && scrollParent !== root) {
+         scrollIntoView(
+           scrollParent,
+           targetElement
+         );
+         targetElement = scrollParent;
+-        scrollParent = getScrollParent(targetElement);
++        scrollParent = getScrollParent(targetElement.parentElement);
+       }
+     }
+   }

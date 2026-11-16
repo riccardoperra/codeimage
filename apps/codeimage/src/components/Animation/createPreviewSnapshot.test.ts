@@ -63,6 +63,7 @@ const measured = (request: PreviewRequest): PreviewMeasurement => {
     steps: [step(), ...request.tabs.slice(1).map(step)],
     metrics: {charWidth: 8, lineHeight: 16},
     widths: new Map(),
+    windowAreas: request.tabs.map(() => 0),
     lineNumbers: false,
   };
 };
