@@ -1027,6 +1027,170 @@ export async function audit({page, context, base, out, server}) {
   await feature('animate-focus', timeline.transition);
   await feature('animate-geometry', timeline.tabs);
   await feature('animate-followups', timeline.script);
+  await feature('spoiler', async () => {
+    await page.evaluate(
+      () =>
+        new Promise(resolve => {
+          const request = indexedDB.open('keyval-store');
+          request.onsuccess = () => {
+            const transaction = request.result.transaction(
+              'keyval',
+              'readwrite',
+            );
+            transaction.objectStore('keyval').delete('document');
+            transaction.oncomplete = () => {
+              request.result.close();
+              resolve();
+            };
+          };
+        }),
+    );
+    await doctor('/', 'editor', 'inspector');
+    await windowStyle('Editor');
+    const secret = 'sk-live-123';
+    const code = `const token = "${secret}";\nconst other = 1;`;
+    await editor().fill(code);
+    await editor().press('ControlOrMeta+Home');
+    for (let i = 0; i < 15; i++) await editor().press('ArrowRight');
+    for (let i = 0; i < secret.length; i++)
+      await editor().press('Shift+ArrowRight');
+    const toggle = page.locator('.cm-lineMarkToolbar [data-spoiler-toggle]');
+    await toggle.waitFor();
+    await toggle.click();
+    assert.equal(await toggle.getAttribute('aria-pressed'), 'true');
+    const edit = page.locator(
+      '.cm-content[contenteditable="true"] .cm-spoilerEdit',
+    );
+    assert.equal(
+      (await edit.allInnerTexts()).join(''),
+      secret,
+      'the author still reads the hidden value',
+    );
+    await editor().press('End');
+    await page.waitForTimeout(400);
+    await shot('spoiler-editor');
+    const copy = page.locator('[data-static-code-view]').first();
+    await copy.waitFor({state: 'attached'});
+    const copyText = await copy.evaluate(element => element.textContent);
+    assert.ok(!copyText.includes(secret), 'the export copy hides the value');
+    assert.ok(
+      copyText.includes('const token = "'),
+      'the rest of the line stays',
+    );
+    assert.ok(
+      (await copy.locator('.cm-spoiler').count()) > 0,
+      'the export copy draws the particles',
+    );
+    const downloading = page.waitForEvent('download');
+    await page.locator('[data-export-image]').click();
+    const png = resolve(out, 'spoiler-download.png');
+    await (await downloading).saveAs(png);
+    const saved = () =>
+      page.evaluate(
+        () =>
+          new Promise(resolve => {
+            const request = indexedDB.open('keyval-store');
+            request.onsuccess = () => {
+              const read = request.result
+                .transaction('keyval')
+                .objectStore('keyval')
+                .get('document');
+              read.onsuccess = () => {
+                request.result.close();
+                resolve(JSON.stringify(read.result ?? {}));
+              };
+            };
+          }),
+      );
+    for (let i = 0; i < 50 && !(await saved()).includes('"spoilers"'); i++)
+      await page.waitForTimeout(100);
+    assert.ok((await saved()).includes('"spoilers"'), 'the spoiler is saved');
+    await page
+      .locator('[data-window-tabs]')
+      .filter({has: page.getByRole('button', {name: 'Add tab', exact: true})})
+      .first()
+      .getByRole('button', {name: 'Add tab', exact: true})
+      .click();
+    await editor().fill(code);
+    await page.locator('[data-animate-toggle]').click();
+    const panel = page.locator('[data-animate-panel]');
+    await panel.waitFor();
+    const ruler = page.getByRole('slider', {name: 'Playhead', exact: true});
+    await ruler.focus();
+    await ruler.press('Home');
+    const total = Number(await ruler.getAttribute('aria-valuemax'));
+    const seek = async ms => {
+      while (Number(await ruler.getAttribute('aria-valuenow')) < ms)
+        await ruler.press('Shift+ArrowRight');
+      await page.waitForTimeout(150);
+    };
+    const stage = page.locator('[data-animation-stage]:visible');
+    const stageText = () =>
+      stage.evaluate(element => {
+        const scene = [
+          ...element.querySelectorAll('[data-animation-scene]'),
+        ].find(scene => getComputedStyle(scene).display !== 'none');
+        return {
+          text: scene.textContent,
+          spoilers: scene.querySelectorAll('.cm-spoiler').length,
+        };
+      });
+    const frames = {};
+    for (const ms of [300, Math.round(total / 2), total - 100]) {
+      await seek(ms);
+      await stage.screenshot({path: resolve(out, `spoiler-stage-${ms}.png`)});
+      frames[ms] = await stageText();
+    }
+    assert.ok(
+      !frames[300].text.includes(secret) && frames[300].spoilers > 0,
+      'the first hold keeps the value hidden',
+    );
+    assert.ok(
+      frames[total - 100].text.includes(secret),
+      'the last step reveals it',
+    );
+    await page.evaluate(() => {
+      const send = Worker.prototype.postMessage;
+      Worker.prototype.postMessage = function (message, ...options) {
+        if (message?.kind === 'export') window.__spoilerJob = message.job;
+        return send.call(this, message, ...options);
+      };
+    });
+    await page.locator('[data-export-menu]').click();
+    const item = page.locator('[data-export-action="animation"]');
+    if (await item.isVisible()) await item.click();
+    const dialog = page.locator('[data-animation-export]');
+    await page.waitForFunction(
+      () =>
+        [...document.querySelectorAll('[data-animation-export] button')].some(
+          button => button.textContent === 'Export MP4' && !button.disabled,
+        ),
+      undefined,
+      {timeout: 60000},
+    );
+    const video = page.waitForEvent('download', {timeout: 180000});
+    await dialog.getByRole('button', {name: 'Export MP4', exact: true}).click();
+    const file = resolve(out, 'spoiler.mp4');
+    await (await video).saveAs(file);
+    const job = await page.evaluate(() => window.__spoilerJob);
+    const first = job.scenes[0].html;
+    assert.ok(!first.includes(secret), 'the exported hold hides the value');
+    const {execFileSync} = await import('node:child_process');
+    for (const at of [0.3, 0.6, total / 2000, (total - 100) / 1000])
+      execFileSync('ffmpeg', [
+        '-v',
+        'error',
+        '-y',
+        '-ss',
+        at.toFixed(2),
+        '-i',
+        file,
+        '-frames:v',
+        '1',
+        resolve(out, `spoiler-export-${at.toFixed(2)}.png`),
+      ]);
+    return {frames, scenes: job.scenes.length};
+  });
   await feature('animate-typewriter', async () => {
     await page.evaluate(
       () =>

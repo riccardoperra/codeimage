@@ -19,7 +19,14 @@ import {
 } from '@codemirror/view';
 import {isApple} from '../../../../core/constants/platform';
 import type {MarkKind} from './state';
-import {hasMark, markLines, readMarks, toggleMark} from './state';
+import {
+  hasMark,
+  hasSpoiler,
+  markLines,
+  readMarks,
+  toggleMark,
+  toggleSpoiler,
+} from './state';
 
 export interface LineMarkLabels {
   toolbar: string;
@@ -29,6 +36,8 @@ export interface LineMarkLabels {
   clear: string;
   focus: string;
   focusHint: string;
+  spoiler: string;
+  spoilerHint: string;
   removeMark: string;
   unmarked: string;
   line: (line: number) => string;
@@ -65,11 +74,16 @@ export function selectedLines(state: EditorState): number[] {
   return [...lines];
 }
 
-export const lineMarkKeymap: KeyBinding[] = markCommands.map(({key, kind}) => ({
-  key,
-  run: view => toggleMark(view, selectedLines(view.state), kind),
-  preventDefault: true,
-}));
+export const SPOILER_KEY = 'Mod-Alt-5';
+
+export const lineMarkKeymap: KeyBinding[] = [
+  {key: SPOILER_KEY, run: view => toggleSpoiler(view)},
+  ...markCommands.map(({key, kind}): KeyBinding => ({
+    key,
+    run: view => toggleMark(view, selectedLines(view.state), kind),
+    preventDefault: true,
+  })),
+];
 
 const pointerSelecting = StateEffect.define<boolean>();
 
@@ -110,6 +124,17 @@ function toolbarView(labels: LineMarkLabels) {
       );
       if (command.kind) toggles.push([element, command.kind]);
     }
+    const spoilerKeys = shortcutKeys(SPOILER_KEY);
+    const spoiler = button(
+      labels.spoiler,
+      `${labels.spoilerHint} (${spoilerKeys.join(isApple ? '' : '+')})`,
+      () => toggleSpoiler(view),
+    );
+    spoiler.dataset.spoilerToggle = '';
+    spoiler.setAttribute(
+      'aria-keyshortcuts',
+      `${isApple ? 'Meta' : 'Control'}+Alt+5`,
+    );
     const sync = () => {
       dom.style.visibility = view.hasFocus ? '' : 'hidden';
       const marks = readMarks(view.state);
@@ -119,6 +144,7 @@ function toolbarView(labels: LineMarkLabels) {
           'aria-pressed',
           String(lines.every(line => hasMark(marks, line, kind))),
         );
+      spoiler.setAttribute('aria-pressed', String(hasSpoiler(view.state)));
     };
     sync();
     return {dom, offset: {x: 0, y: 4}, update: sync};

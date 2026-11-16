@@ -96,6 +96,15 @@ export const TabMarksSchema = Type.Object({
   ),
   focusedLines: Type.Array(Type.Integer({minimum: 1})),
   script: Type.Optional(TabScriptSchema),
+  spoilers: Type.Optional(
+    Type.Array(
+      Type.Object({
+        line: Type.Integer({minimum: 1}),
+        from: Type.Integer({minimum: 0}),
+        to: Type.Integer({minimum: 1}),
+      }),
+    ),
+  ),
 });
 
 export type TabMarks = Static<typeof TabMarksSchema>;

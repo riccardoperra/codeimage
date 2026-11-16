@@ -100,3 +100,47 @@
   background-position: center 0.7em;
   background-repeat: no-repeat;
 }
+
+.cm-spoiler,
+.cm-spoilerEdit {
+  --codeimage-spoiler-duration: 3s;
+  background-image:
+    radial-gradient(circle, currentColor 0.5px, transparent 0.9px),
+    radial-gradient(circle, currentColor 0.45px, transparent 0.85px),
+    radial-gradient(circle, currentColor 0.6px, transparent 1px),
+    radial-gradient(circle, currentColor 0.4px, transparent 0.8px);
+  background-size:
+    5px 7px,
+    7px 3px,
+    11px 5px,
+    3px 11px;
+  background-position:
+    0 0,
+    2px 1px,
+    5px 3px,
+    1px 6px;
+  border-radius: 3px;
+  animation: codeimage-spoiler-drift var(--codeimage-spoiler-duration) linear
+    infinite;
+}
+
+.cm-spoilerEdit {
+  opacity: 0.55;
+}
+
+@keyframes codeimage-spoiler-drift {
+  to {
+    background-position:
+      5px 7px,
+      -5px 4px,
+      16px -2px,
+      -2px -5px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cm-spoiler,
+  .cm-spoilerEdit {
+    animation: none;
+  }
+}

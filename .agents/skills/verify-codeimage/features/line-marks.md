@@ -21,3 +21,9 @@ Run `annotations` to paste a real `[!code ++]` comment, assert the annotation di
 ## Gotchas
 
 Use real clipboard input, not synthetic ClipboardEvent or store setters. Read clipboard permissions failures as failures. Audit covers highlight/clear and diff import, not every mark kind; the separate annotations journey now covers annotation conversion. It invokes the toast Undo action; restoration of the full prior document/tab state needs a separate assertion before claiming Undo coverage.
+
+## Spoiler
+
+A spoiler hides any part of a line, or a range across lines, behind drifting particles. Select text and press the toolbar's `Spoiler` button (`[data-spoiler-toggle]`, `aria-pressed`) or Mod+Alt+5; pressing it again on a covered selection removes only that part. The editor draws `.cm-spoilerEdit` at reduced opacity so the author can still read and edit the value. Ranges are saved per line as `marks.spoilers: [{line, from, to}]` (0-based UTF-16 columns), follow edits and undo with the other marks, and map through script/diff projections. `StaticCodeView` and the animation compiler replace the hidden characters with spaces of the same width and draw `.cm-spoiler` boxes instead, so the value never reaches the export DOM, the PNG or the video job. A step whose tab shows the same code without the spoiler reveals it: the particles fade out by 60% while the text enters from 30%.
+
+Audit `spoiler` resets the saved document, selects only `sk-live-123` inside a string with the keyboard, toggles the spoiler, checks the editor still shows the value and the export copy does not, downloads `spoiler-download.png`, waits for `"spoilers"` in the IndexedDB document, adds a second tab with the same code, seeks the Animate `Playhead` to the first hold, the middle and the end (`spoiler-stage-<ms>.png`), asserts the hold hides and the end reveals the value, exports an MP4, checks the first job scene has no secret text, and extracts frames as `spoiler-export-<s>.png`.

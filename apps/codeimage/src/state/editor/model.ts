@@ -23,6 +23,7 @@ export type LineMark = TabMarks['lines'][number];
 export type TabMarks = ApiTabMarks;
 export type TabScript = NonNullable<TabMarks['script']>;
 export type ScriptLine = TabScript['lines'][number];
+export type Spoiler = NonNullable<TabMarks['spoilers']>[number];
 
 export interface EditorState {
   id: string;

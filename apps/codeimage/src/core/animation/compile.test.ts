@@ -391,3 +391,29 @@ test('same-source entering and leaving rows overlap with no empty middle', () =>
     ],
   );
 });
+
+test('a spoiler box covers its cells and stays put while kept', () => {
+  const {html, css} = compileScene(
+    scene([], {
+      spoilers: [
+        {
+          kind: 'move',
+          key: 's',
+          classes: 'tok-string',
+          columns: 4,
+          from: {line: 1, col: 2},
+          to: {line: 1, col: 2},
+        },
+      ],
+    }),
+    metrics,
+    timing,
+    'a',
+  );
+  const box = descendants(parseHtml(html)).find(element =>
+    element.attributes.class?.includes('cm-spoiler'),
+  );
+  assert.ok(box, 'the spoiler draws its particles');
+  const outer = styleAt(box.parent!, css, 500);
+  assert.deepEqual([outer.width, outer.left, outer.top], [40, 20, 20]);
+});

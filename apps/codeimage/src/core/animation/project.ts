@@ -42,6 +42,14 @@ export function projectStep<T extends Pick<EditorState, 'code' | 'marks'>>(
             return line && range.focus?.includes(view.step) ? [line] : [];
           })
         : tab.marks.focusedLines.flatMap(line => mapped.get(line) ?? []),
+    ...(tab.marks.spoilers
+      ? {
+          spoilers: tab.marks.spoilers.flatMap(spoiler => {
+            const line = mapped.get(spoiler.line);
+            return line ? [{...spoiler, line}] : [];
+          }),
+        }
+      : {}),
   };
   return {
     ...tab,

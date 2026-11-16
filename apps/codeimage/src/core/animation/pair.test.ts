@@ -350,3 +350,35 @@ test('kept source lines move as whole rows and changed lines match only within t
   const other = pairScene(from, {...to, source: 'other'}, false);
   assert.equal(other.leaveEnd, undefined);
 });
+
+test('a spoiler hides its text from the scene and reveals it in the next step', async () => {
+  const code = 'const token = "sk-live-123";';
+  const hidden = await step(code, {
+    marks: {
+      lines: [],
+      focusedLines: [],
+      spoilers: [{line: 1, from: 15, to: 26}],
+    },
+  });
+  const shown = await step(code);
+  const kept = pairScene(hidden, hidden, false);
+  assert.ok(
+    !kept.code.some(token => token.text.includes('sk-live')),
+    'a hidden value is never a token',
+  );
+  assert.deepEqual(
+    kept.spoilers?.map(box => [box.kind, box.columns]),
+    [['move', 11]],
+  );
+  const revealed = pairScene(hidden, shown, false);
+  assert.deepEqual(
+    revealed.spoilers?.map(box => box.kind),
+    ['leave'],
+  );
+  assert.ok(
+    revealed.code.some(
+      token => token.kind === 'enter' && token.text.includes('sk-live'),
+    ),
+    'the value enters where the spoiler leaves',
+  );
+});

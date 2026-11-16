@@ -5,6 +5,7 @@ import type {
   Point,
   Scene,
   SceneTiming,
+  SpoilerTransition,
   StepBox,
   TokenTransition,
   Transition,
@@ -162,6 +163,11 @@ export function compileScene(
     },
     typewriter,
   );
+  const spoilers = compileLayer(scene.spoilers ?? [], {
+    place: cell => ({x: cell.col * charWidth, y: cell.line * lineHeight}),
+    element: (box: SpoilerTransition, style) =>
+      `<span aria-hidden="true" style="position:absolute;width:${px(box.columns * charWidth)};height:${px(lineHeight)};${style}"><span class="${escapeAttribute(`${box.classes} cm-spoiler`.trim())}" style="display:block;width:100%;height:100%"></span></span>`,
+  });
   const bands = (attributes: (mark: MarkTransition['mark']) => string) =>
     compileLayer(scene.marks, {
       place: cell => ({x: 0, y: cell.line * lineHeight}),
@@ -184,12 +190,11 @@ export function compileScene(
     gutter === null
       ? ''
       : `<div class="cm-gutters" aria-hidden="true"><div class="cm-gutter cm-lineNumbers"><div class="cm-gutterElement" style="grid-row:1">${bands(mark => `class="cm-gutterElement cm-lineMark-${mark}"`)}<div style="${sizedBox(`${name}-gutter`, gutter.fromColumns, gutter.toColumns)}">${numbers}</div></div></div></div>`,
-    `<div class="cm-content cm-lineWrapping"><div class="cm-line" style="position:relative"><div style="position:absolute;left:0;top:0;right:0;bottom:0">${bands(mark => `data-mark="${mark}"`)}</div><div style="${sizedBox(`${name}-box`, from.columns, to.columns)}">${code}</div></div></div>`,
+    `<div class="cm-content cm-lineWrapping"><div class="cm-line" style="position:relative"><div style="position:absolute;left:0;top:0;right:0;bottom:0">${bands(mark => `data-mark="${mark}"`)}</div><div style="${sizedBox(`${name}-box`, from.columns, to.columns)}">${spoilers}${code}</div></div></div>`,
   ].join('');
-  const activeRanges: [number, number][] = moving
-    ? [[0, timing.transitionMs]]
-    : [];
-  if (!moving) {
+  const activeRanges: [number, number][] =
+    moving || scene.spoilers?.length ? [[0, timing.transitionMs]] : [];
+  if (!activeRanges.length) {
     if (leaving) activeRanges.push([0, timing.transitionMs * leaveEnd]);
     if (entering)
       activeRanges.push([

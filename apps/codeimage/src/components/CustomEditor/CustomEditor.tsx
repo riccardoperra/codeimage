@@ -241,6 +241,8 @@ export default function CustomEditor(props: VoidProps<CustomEditorProps>) {
         clear: t('lineMarks.clear'),
         focus: t('lineMarks.focus'),
         focusHint: t('lineMarks.focusHint'),
+        spoiler: t('lineMarks.spoiler'),
+        spoilerHint: t('lineMarks.spoilerHint'),
         removeMark: t('lineMarks.removeMark'),
         unmarked: t('lineMarks.unmarked'),
         line: line => t('lineMarks.line', {line: String(line + offset)}),
@@ -302,6 +304,13 @@ export default function CustomEditor(props: VoidProps<CustomEditorProps>) {
                     kind: mark.kind,
                   })),
                   focusedLines: [...tab.marks.focusedLines],
+                  ...(tab.marks.spoilers
+                    ? {
+                        spoilers: tab.marks.spoilers.map(spoiler => ({
+                          ...spoiler,
+                        })),
+                      }
+                    : {}),
                 }
               : null,
         };

@@ -1,3 +1,4 @@
+import {spoilersByLine} from '@core/snapshot/spoilers';
 import {invertedEffects, isolateHistory} from '@codemirror/commands';
 import type {ChangeDesc, Extension, Text} from '@codemirror/state';
 import {
@@ -18,12 +19,32 @@ import type {
   LineMark,
   TabMarks,
   ScriptLine,
+  Spoiler,
 } from '../../../../state/editor/model';
 
 interface MarkState {
   decorations: DecorationSet;
   focused: DecorationSet;
+  spoilers?: DecorationSet;
   script?: {steps: string[]; lines: DecorationSet};
+}
+
+const spoilerMark = Decoration.mark({
+  class: 'cm-spoilerEdit',
+  inclusiveStart: false,
+  inclusiveEnd: false,
+});
+
+function spoilerSet(doc: Text, marks: TabMarks): DecorationSet {
+  return Decoration.set(
+    (marks.spoilers ?? []).flatMap(({line, from, to}) => {
+      if (line < 1 || line > doc.lines) return [];
+      const {from: start, length} = doc.line(line);
+      const [a, b] = [Math.min(from, length), Math.min(to, length)];
+      return a < b ? [spoilerMark.range(start + a, start + b)] : [];
+    }),
+    true,
+  );
 }
 
 const decorations = {
@@ -60,6 +81,7 @@ export const replaceMarks = StateEffect.define<MarkState>({
     ...value,
     decorations: mapDecorations(value.decorations, changes),
     focused: mapDecorations(value.focused, changes),
+    spoilers: value.spoilers?.map(changes),
     script: value.script && {
       ...value.script,
       lines: mapDecorations(value.script.lines, changes),
@@ -70,6 +92,7 @@ export const replaceMarks = StateEffect.define<MarkState>({
 export function marksValue(doc: Text, marks: TabMarks): MarkState {
   const byLine = new Map(marks.lines.map(mark => [mark.line, mark.kind]));
   return {
+    spoilers: spoilerSet(doc, marks),
     ...(marks.script
       ? {
           script: {
@@ -142,6 +165,7 @@ export const lineMarksField = StateField.define<MarkState>({
       value = {
         decorations: map(value.decorations),
         focused: map(value.focused),
+        spoilers: value.spoilers?.map(tr.changes),
         script: value.script && {
           ...value.script,
           lines: map(value.script.lines),
@@ -188,6 +212,10 @@ export const lineMarksField = StateField.define<MarkState>({
   provide: field => [
     EditorView.decorations.from(field, value => value.decorations),
     EditorView.decorations.from(field, value => value.focused),
+    EditorView.decorations.from(
+      field,
+      value => value.spoilers ?? Decoration.none,
+    ),
     EditorView.editorAttributes.from(field, value => {
       let diff = false;
       for (let cursor = value.decorations.iter(); cursor.value; cursor.next()) {
@@ -249,9 +277,30 @@ export function readMarks(state: EditorView['state']): TabMarks {
       )
         lines.push({...rule, line: state.doc.lineAt(cursor.from).number});
     }
+  const spoilers: Spoiler[] = [];
+  value.spoilers?.between(0, state.doc.length, (from, to) => {
+    for (let pos = from; pos < to;) {
+      const line = state.doc.lineAt(pos);
+      const end = Math.min(to, line.to);
+      if (end > pos)
+        spoilers.push({
+          line: line.number,
+          from: pos - line.from,
+          to: end - line.from,
+        });
+      pos = line.to + 1;
+    }
+  });
   return {
     lines: [...byLine.values()],
     focusedLines,
+    ...(spoilers.length
+      ? {
+          spoilers: [...spoilersByLine(spoilers)].flatMap(([line, ranges]) =>
+            ranges.map(([from, to]) => ({line, from, to})),
+          ),
+        }
+      : {}),
     ...(script ? {script: {steps: [...script.steps], lines}} : {}),
   };
 }
@@ -339,3 +388,58 @@ export const lineMarksHistory: Extension = invertedEffects.of(tr => {
   }
   return [];
 });
+
+function selectionRanges(state: EditorView['state']) {
+  return state.selection.ranges.filter(range => !range.empty);
+}
+
+export function hasSpoiler(state: EditorView['state']) {
+  const spoilers = state.field(lineMarksField).spoilers;
+  const ranges = selectionRanges(state);
+  if (!spoilers || !ranges.length) return false;
+  return ranges.every(range => {
+    let covered = range.from;
+    spoilers.between(range.from, range.to, (from, to) => {
+      if (from <= covered) covered = Math.max(covered, to);
+    });
+    return covered >= range.to;
+  });
+}
+
+export function toggleSpoiler(view: EditorView) {
+  if (view.state.readOnly) return false;
+  const ranges = selectionRanges(view.state);
+  if (!ranges.length) return false;
+  const value = view.state.field(lineMarksField);
+  let pieces: [number, number][] = [];
+  value.spoilers?.between(0, view.state.doc.length, (from, to) => {
+    pieces.push([from, to]);
+  });
+  if (hasSpoiler(view.state)) {
+    for (const range of ranges)
+      pieces = pieces.flatMap(([from, to]): [number, number][] =>
+        to <= range.from || from >= range.to
+          ? [[from, to]]
+          : [
+              ...(from < range.from
+                ? [[from, range.from] as [number, number]]
+                : []),
+              ...(to > range.to ? [[range.to, to] as [number, number]] : []),
+            ],
+      );
+  } else {
+    pieces.push(...ranges.map(({from, to}): [number, number] => [from, to]));
+  }
+  const spoilers = Decoration.set(
+    pieces.map(([from, to]) => spoilerMark.range(from, to)),
+    true,
+  );
+  view.dispatch({
+    effects: replaceMarks.of({...value, spoilers}),
+    annotations: [
+      isolateHistory.of('full'),
+      Transaction.userEvent.of('input.line-marks'),
+    ],
+  });
+  return true;
+}

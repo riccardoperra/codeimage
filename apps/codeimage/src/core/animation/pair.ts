@@ -1,3 +1,4 @@
+import {maskLines} from '@core/snapshot/spoilers';
 import type {TokenLine} from '@core/snapshot/tokenize';
 import {syncTokenKeys, toKeyedTokens} from '@shikijs/magic-move/core';
 import type {
@@ -7,6 +8,8 @@ import type {
   Mark,
   MarkTransition,
   Scene,
+  SpoilerBox,
+  SpoilerTransition,
   Step,
   StepBox,
   Token,
@@ -309,22 +312,52 @@ export function typeEntering(
   });
 }
 
+function maskStep(step: Step, widths: GlyphWidths) {
+  const {lines, runs} = maskLines(step.lines, step.marks.spoilers);
+  const boxes = runs.flatMap((line, row) =>
+    line.map((run, index): Placed<SpoilerBox> => {
+      const text = lineText(lines[row]);
+      const col = columnsAfter(0, text.slice(0, run.from), widths);
+      return {
+        item: {
+          key: `spoiler:${step.rows?.[row] ?? row}:${index}`,
+          classes: run.classes,
+          columns:
+            columnsAfter(col, text.slice(run.from, run.to), widths) - col,
+        },
+        cell: {line: row, col},
+      };
+    }),
+  );
+  return {step: {...step, lines}, boxes};
+}
+
+function timingOf(from: Step, to: Step, spoilers: SpoilerTransition[]) {
+  const sameSource =
+    from.source !== undefined &&
+    from.source === to.source &&
+    from.rows &&
+    to.rows;
+  if (spoilers.some(box => box.kind === 'leave'))
+    return {leaveEnd: 0.6, enterStart: 0.3};
+  return sameSource ? {leaveEnd: 0.5, enterStart: 0.4} : {};
+}
+
 export function pairScene(
-  from: Step,
-  to: Step,
+  source: Step,
+  target: Step,
   lineNumbers: boolean,
   widths = NO_WIDTHS,
   typewriter = false,
 ): Scene {
+  const masked = [maskStep(source, widths), maskStep(target, widths)];
+  const [from, to] = masked.map(value => value.step);
   const code = pairSteps(from, to, widths);
+  const spoilers = pairPlaced(masked[0].boxes, masked[1].boxes, after);
   return {
     code: typewriter ? typeEntering(code, widths) : code,
-    ...(from.source !== undefined &&
-    from.source === to.source &&
-    from.rows &&
-    to.rows
-      ? {leaveEnd: 0.5, enterStart: 0.4}
-      : {}),
+    ...(spoilers.length ? {spoilers} : {}),
+    ...timingOf(from, to, spoilers),
     gutter: lineNumbers ? pairGutters(from, to) : null,
     marks: pairMarks(from, to),
     from: stepBox(from, widths),

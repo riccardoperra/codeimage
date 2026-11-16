@@ -1,6 +1,7 @@
 import type {CustomTheme} from '@codeimage/highlight';
 import type {TabMarks} from '@codeimage/store/editor/model';
 import type {Language} from '@codemirror/language';
+import {maskLines} from '@core/snapshot/spoilers';
 import {tokenizeCode} from '@core/snapshot/tokenize';
 import {createEffect, createMemo, For, on, Show} from 'solid-js';
 import {isServer} from 'solid-js/web';
@@ -24,8 +25,12 @@ export interface StaticCodeViewProps {
 }
 
 export default function StaticCodeView(props: StaticCodeViewProps) {
-  const lines = createMemo(() =>
-    tokenizeCode(props.code, props.language, props.theme),
+  const lines = createMemo(
+    () =>
+      maskLines(
+        tokenizeCode(props.code, props.language, props.theme),
+        props.marks.spoilers,
+      ).lines,
   );
   const visibleLines = () =>
     lines().slice(0, props.lineLimit ?? lines().length);
