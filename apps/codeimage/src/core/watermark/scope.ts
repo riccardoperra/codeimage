@@ -1,3 +1,4 @@
+import {EditorSelection} from '@codemirror/state';
 import type {EditorView} from '@codemirror/view';
 import type {Rect} from './placement';
 import type {Accessor} from 'solid-js';
@@ -57,22 +58,38 @@ export function codeRects(
       staticRects,
     );
   const {view} = source;
-  return view.viewportLineBlocks.flatMap(block => {
+  const rects: Rect[] = [];
+  const push = (from: number, to: number) => {
+    const start = view.coordsAtPos(from, 1);
+    const end = view.coordsAtPos(to, -1);
+    if (!start || !end) return false;
+    if (end.top >= start.bottom) return false;
+    rects.push({
+      x: Math.min(start.left, end.left),
+      y: start.top,
+      width: Math.abs(end.left - start.left),
+      height: start.bottom - start.top,
+    });
+    return true;
+  };
+  for (const block of view.viewportLineBlocks) {
     const line = view.state.doc.lineAt(block.from);
-    const first = line.text.search(/\S/u);
-    if (first < 0) return [];
-    const start = view.coordsAtPos(Math.max(block.from, line.from + first), 1);
-    const end = view.coordsAtPos(Math.min(block.to, line.to), -1);
-    if (!start || !end) return [];
-    return [
-      {
-        x: Math.min(start.left, end.left),
-        y: start.top,
-        width: Math.abs(end.left - start.left),
-        height: end.bottom - start.top,
-      },
-    ];
-  });
+    for (const word of line.text.matchAll(/\S+/gu)) {
+      const from = line.from + word.index;
+      const to = from + word[0].length;
+      if (push(from, to)) continue;
+      for (let pos = from; pos < to;) {
+        const row = view.moveToLineBoundary(
+          EditorSelection.cursor(pos, 1),
+          true,
+        ).head;
+        const next = Math.min(to, row > pos ? row : to);
+        push(pos, next);
+        pos = next;
+      }
+    }
+  }
+  return rects;
 }
 
 export function createWatermarkScope(): WatermarkScope {

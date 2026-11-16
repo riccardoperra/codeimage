@@ -1,7 +1,7 @@
 // @vitest-environment happy-dom
 import type * as solid from 'solid-js';
 import {EditorView} from '@codemirror/view';
-import {EditorState} from '@codemirror/state';
+import {EditorSelection, EditorState} from '@codemirror/state';
 import {lineAtHeight} from '../../components/CustomEditor/plugins/lineMarks/controls';
 import {createRoot} from 'solid-js';
 import {expect, it, vi} from 'vitest';
@@ -122,7 +122,7 @@ it('keeps measuring after an editor with a queued request is removed', async () 
 
 it('measures live text through CodeMirror coordinates and leaves static markup to its reader', () => {
   const view = new EditorView({
-    state: EditorState.create({doc: '  word\n   \nlast'}),
+    state: EditorState.create({doc: '  word  \n   \nlast one'}),
     parent: document.body,
   });
   const coordinates = vi.spyOn(view, 'coordsAtPos').mockImplementation(pos => ({
@@ -135,7 +135,8 @@ it('measures live text through CodeMirror coordinates and leaves static markup t
   try {
     expect(codeRects({kind: 'codemirror', view}, staticRects)).toEqual([
       {x: 20, y: 0, width: 40, height: 20},
-      {x: 110, y: 0, width: 40, height: 20},
+      {x: 130, y: 0, width: 40, height: 20},
+      {x: 180, y: 0, width: 30, height: 20},
     ]);
     expect(staticRects).not.toHaveBeenCalled();
     coordinates.mockRestore();
@@ -145,6 +146,28 @@ it('measures live text through CodeMirror coordinates and leaves static markup t
       {x: 1, y: 2, width: 3, height: 4},
     ]);
     expect(staticRects).toHaveBeenCalledOnce();
+  } finally {
+    view.destroy();
+  }
+});
+
+it('splits a live word that wraps onto the next row', () => {
+  const view = new EditorView({doc: 'abcdefgh', parent: document.body});
+  const row = (pos: number, side = 1) =>
+    pos > 4 || (pos === 4 && side > 0) ? 1 : 0;
+  vi.spyOn(view, 'coordsAtPos').mockImplementation((pos, side) => {
+    const left = (pos - row(pos, side) * 4) * 10;
+    const top = row(pos, side) * 20;
+    return {left, right: left, top, bottom: top + 20};
+  });
+  vi.spyOn(view, 'moveToLineBoundary').mockImplementation(start =>
+    EditorSelection.cursor(start.head < 4 ? 4 : 8),
+  );
+  try {
+    expect(codeRects({kind: 'codemirror', view}, () => [])).toEqual([
+      {x: 0, y: 0, width: 40, height: 20},
+      {x: 0, y: 20, width: 40, height: 20},
+    ]);
   } finally {
     view.destroy();
   }
