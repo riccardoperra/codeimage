@@ -1,7 +1,8 @@
+import {BarSettings} from './BarSettings';
 import {getEditorStore} from '@codeimage/store/editor';
 import {useI18n} from '@codeimage/locale';
 import {signatureEditor} from '@codeimage/store/frame/signatureEditor';
-import {Button, IconButton} from '@codeui/kit';
+import {Button} from '@codeui/kit';
 import {Popover} from '@kobalte/core/popover';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 import {
@@ -27,9 +28,6 @@ import {fieldId, SegmentedChoice, SelectChoice} from '../../controls/fields';
 import {CanvasToolbar} from '../../controls/CanvasToolbar';
 import {ShortcutHelp} from '../../controls/ShortcutHelp';
 import type {ControlId} from '../../model';
-import {SettingsIcon} from '../../shell/icons';
-import {settings} from '../../shell/settings-state';
-import {claimHeaderActions} from '../../shell/header-actions';
 import {themeStyle} from '../../theme-styles/style';
 import {ThemeSwatch} from '../../ThemeSwatch';
 import {
@@ -188,28 +186,6 @@ function DockItem(props: DockItemProps & {host: DockItemHost}) {
         </Popover.Portal>
       </Popover>
     </Show>
-  );
-}
-
-/** The settings entry in the floating bar, beside Search. */
-function BarSettings() {
-  const [t] = useI18n<AppLocaleEntries>();
-  claimHeaderActions(['commands', 'settings']);
-  return (
-    <IconButton
-      class={styles.item}
-      theme={'secondary'}
-      variant={'ghost'}
-      size={'sm'}
-      aria-label={t('editor.settings')}
-      title={t('editor.settings')}
-      aria-haspopup="dialog"
-      aria-expanded={settings.isOpen()}
-      data-settings-trigger
-      onClick={() => settings.open()}
-    >
-      <SettingsIcon size={16} />
-    </IconButton>
   );
 }
 

@@ -4,32 +4,11 @@ import type {AppLocaleEntries} from '../../i18n';
 import {getRootEditorStore} from '@codeimage/store/editor';
 import {getActiveEditorStore} from '@codeimage/store/editor/activeEditor';
 import {getThemeStore} from '@codeimage/store/theme/theme.store';
-import {
-  autocompletion,
-  closeBrackets,
-  closeBracketsKeymap,
-  completionKeymap,
-} from '@codemirror/autocomplete';
-import {
-  defaultKeymap,
-  history,
-  historyKeymap,
-  indentWithTab,
-  isolateHistory,
-} from '@codemirror/commands';
-import {bracketMatching, indentOnInput} from '@codemirror/language';
 import type {Extension} from '@codemirror/state';
 import {EditorState, Transaction} from '@codemirror/state';
-import {
-  crosshairCursor,
-  drawSelection,
-  dropCursor,
-  EditorView,
-  highlightSpecialChars,
-  keymap,
-  lineNumbers,
-  rectangularSelection,
-} from '@codemirror/view';
+import {isolateHistory} from '@codemirror/commands';
+import {EditorView, lineNumbers} from '@codemirror/view';
+import {EDITOR_BASE_SETUP} from './editorSetup';
 import {createCodeMirror, createEditorReadonly} from 'solid-codemirror';
 import type {VoidProps} from 'solid-js';
 import {
@@ -63,27 +42,6 @@ import {
   marksValue,
   replaceMarks,
 } from './plugins/lineMarks/state';
-
-const EDITOR_BASE_SETUP: Extension = [
-  highlightSpecialChars(),
-  drawSelection(),
-  dropCursor(),
-  EditorState.allowMultipleSelections.of(true),
-  indentOnInput(),
-  bracketMatching(),
-  closeBrackets(),
-  autocompletion(),
-  rectangularSelection(),
-  crosshairCursor(),
-  history(),
-  keymap.of([
-    ...closeBracketsKeymap,
-    ...defaultKeymap,
-    ...completionKeymap,
-    ...historyKeymap,
-    indentWithTab,
-  ]),
-];
 
 const entryStyle = {
   position: 'absolute',
