@@ -1,4 +1,5 @@
 import type {EditorView} from '@codemirror/view';
+import type {Rect} from './placement';
 import type {Accessor} from 'solid-js';
 import {
   createContext,
@@ -47,8 +48,31 @@ export function codeRoot(source: CodeSource) {
 }
 
 /** Code is measured line by line so full-width line boxes never count as text. */
-export function codeLines(source: CodeSource) {
-  return Array.from(codeRoot(source).querySelectorAll('.cm-line'));
+export function codeRects(
+  source: CodeSource,
+  staticRects: (line: Element) => Rect[],
+): Rect[] {
+  if (source.kind === 'static')
+    return Array.from(source.root.querySelectorAll('.cm-line')).flatMap(
+      staticRects,
+    );
+  const {view} = source;
+  return view.viewportLineBlocks.flatMap(block => {
+    const line = view.state.doc.lineAt(block.from);
+    const first = line.text.search(/\S/u);
+    if (first < 0) return [];
+    const start = view.coordsAtPos(Math.max(block.from, line.from + first), 1);
+    const end = view.coordsAtPos(Math.min(block.to, line.to), -1);
+    if (!start || !end) return [];
+    return [
+      {
+        x: Math.min(start.left, end.left),
+        y: start.top,
+        width: Math.abs(end.left - start.left),
+        height: end.bottom - start.top,
+      },
+    ];
+  });
 }
 
 export function createWatermarkScope(): WatermarkScope {

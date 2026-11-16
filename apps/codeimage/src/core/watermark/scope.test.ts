@@ -1,11 +1,13 @@
 // @vitest-environment happy-dom
 import type * as solid from 'solid-js';
-import type {EditorView} from '@codemirror/view';
+import {EditorView} from '@codemirror/view';
+import {EditorState} from '@codemirror/state';
 import {createRoot} from 'solid-js';
 import {expect, it, vi} from 'vitest';
 import type {WatermarkScope} from './scope';
 import {
   bindWatermarkExport,
+  codeRects,
   createWatermarkScope,
   prepareWatermark,
 } from './scope';
@@ -115,4 +117,34 @@ it('keeps measuring after an editor with a queued request is removed', async () 
   queued.write(queued.read());
   expect(events).toEqual(['read', 'write']);
   dispose();
+});
+
+it('measures live text through CodeMirror coordinates and leaves static markup to its reader', () => {
+  const view = new EditorView({
+    state: EditorState.create({doc: '  word\n   \nlast'}),
+    parent: document.body,
+  });
+  const coordinates = vi.spyOn(view, 'coordsAtPos').mockImplementation(pos => ({
+    left: pos * 10,
+    right: pos * 10,
+    top: 0,
+    bottom: 20,
+  }));
+  const staticRects = vi.fn(() => [{x: 1, y: 2, width: 3, height: 4}]);
+  try {
+    expect(codeRects({kind: 'codemirror', view}, staticRects)).toEqual([
+      {x: 20, y: 0, width: 40, height: 20},
+      {x: 110, y: 0, width: 40, height: 20},
+    ]);
+    expect(staticRects).not.toHaveBeenCalled();
+    coordinates.mockRestore();
+    const root = document.createElement('div');
+    root.innerHTML = '<div class="cm-line">static</div>';
+    expect(codeRects({kind: 'static', root}, staticRects)).toEqual([
+      {x: 1, y: 2, width: 3, height: 4},
+    ]);
+    expect(staticRects).toHaveBeenCalledOnce();
+  } finally {
+    view.destroy();
+  }
 });

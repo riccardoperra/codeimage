@@ -10,7 +10,7 @@ import {
 import {Portal} from 'solid-js/web';
 import type {JSX} from 'solid-js';
 import {
-  codeLines,
+  codeRects,
   codeRoot,
   useWatermarkScope,
 } from '../../core/watermark/scope';
@@ -126,7 +126,7 @@ function MountedWatermark(props: {darkMode: boolean}) {
                 frame.offsetWidth,
             }
           : null,
-      code: code ? codeLines(code).flatMap(textRects) : [],
+      code: code ? codeRects(code, textRects) : [],
       obstacles,
       gap: 4 * scale,
     });
