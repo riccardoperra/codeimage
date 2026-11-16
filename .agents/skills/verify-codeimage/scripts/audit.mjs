@@ -432,6 +432,41 @@ export async function audit({page, context, base, out, server}) {
     const {verifyLineMarkControls} = await import('./line-mark-controls.mjs');
     return verifyLineMarkControls({page, editor: editor(), section, out});
   });
+  await feature('line-mark-tab-order', async () => {
+    const {verifyLineMarkTabOrder} = await import('./line-mark-layering.mjs');
+    return verifyLineMarkTabOrder({page, editor: editor(), out});
+  });
+  await feature('line-mark-zoom', async () => {
+    const {verifyLineMarkZoom} = await import('./line-mark-layering.mjs');
+    return verifyLineMarkZoom({page, editor: editor(), section, out});
+  });
+  await feature('line-mark-export-clean', async () => {
+    const {verifyLineMarkExportClean} =
+      await import('./line-mark-layering.mjs');
+    return verifyLineMarkExportClean({
+      page,
+      editor: editor(),
+      section,
+      out,
+      download,
+    });
+  });
+  await feature('line-mark-rail-sheet-phone', () =>
+    fresh(
+      {
+        name: 'line-mark-rail-sheet-phone',
+        layout: 'studio',
+        viewport: {width: 390, height: 844},
+        hasTouch: true,
+      },
+      async ({page, doctor, editor}) => {
+        await doctor();
+        const {verifyLineMarkRailSheet} =
+          await import('./line-mark-layering.mjs');
+        return verifyLineMarkRailSheet({page, editor: editor(), out});
+      },
+    ),
+  );
   await feature('line-marks', async () => {
     await editor().fill('const marked = 1;\nconst other = 2;');
     await editor().press('ControlOrMeta+Home');
