@@ -20,6 +20,7 @@ export type AnimationSettings = {
   easing: EasingValue;
   fps: 24 | 30 | 50 | 60;
   header: AnimationHeader;
+  typewriter?: boolean;
 };
 
 export type EasingName = 'smooth' | 'snappy' | 'strong' | 'linear';
@@ -78,10 +79,20 @@ export type StepBox = {
 
 // Everything that changes between two steps. Each layer is placed inside its
 // own box of the static layout, so a cell maps to pixels without offsets.
+export type SpoilerBox = {
+  key: string;
+  classes: string;
+  columns: number;
+  seed: string;
+};
+
+export type SpoilerTransition = Transition<SpoilerBox>;
+
 export type Scene = {
   leaveEnd?: number;
   enterStart?: number;
   code: TokenTransition[];
+  spoilers?: SpoilerTransition[];
   // Null when line numbers are off.
   gutter: Gutter | null;
   marks: MarkTransition[];

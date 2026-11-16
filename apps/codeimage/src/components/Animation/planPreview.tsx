@@ -289,6 +289,7 @@ export function planPreviewTimeline(
         lineNumbers: measured.lineNumbers,
         metrics: measured.metrics,
         widths: measured.widths,
+        typewriter: settings.typewriter,
       },
     ),
     tabs: measured.tabs,

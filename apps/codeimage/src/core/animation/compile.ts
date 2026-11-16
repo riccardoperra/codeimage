@@ -1,3 +1,4 @@
+import {spoilerDotsHtml} from '@core/snapshot/spoilers';
 import type {
   Cell,
   CodeMetrics,
@@ -5,6 +6,7 @@ import type {
   Point,
   Scene,
   SceneTiming,
+  SpoilerTransition,
   StepBox,
   TokenTransition,
   Transition,
@@ -20,7 +22,7 @@ const ENTER_START = 0.7;
 const DIM_OPACITY = 0.35;
 
 const px = (value: number) => `${Number(value.toFixed(3))}px`;
-const percent = (ratio: number) => `${ratio * 100}%`;
+const percent = (ratio: number) => `${Number((ratio * 100).toFixed(4))}%`;
 
 const escapeHtml = (text: string) =>
   text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
@@ -56,6 +58,7 @@ export function compileScene(
   metrics: CodeMetrics,
   timing: SceneTiming,
   name: string,
+  typewriter = false,
 ): {html: string; css: string; activeRanges: [number, number][]} {
   const {charWidth, lineHeight} = metrics;
   const {from, to, leaveEnd = LEAVE_END, enterStart = ENTER_START} = scene;
@@ -73,7 +76,19 @@ export function compileScene(
   const compileLayer = <T extends Motion>(
     transitions: readonly T[],
     layer: Layer<T>,
+    typed = false,
   ) => {
+    const typing = typed
+      ? transitions
+          .flatMap(item => {
+            const motion: Motion = item;
+            return motion.kind === 'enter' ? [{item, to: motion.to}] : [];
+          })
+          .sort((a, b) => a.to.line - b.to.line || a.to.col - b.to.col)
+          .map(({item}, order) => [item, order] as const)
+      : [];
+    const typedOrder = new Map<T, number>(typing);
+    const slot = (1 - enterStart) / Math.max(1, typing.length);
     const pose = (cell: Cell, box: StepBox): Pose => ({
       ...layer.place(cell, box),
       opacity: box.dimmed.has(cell.line) ? DIM_OPACITY : 1,
@@ -105,7 +120,14 @@ export function compileScene(
         const end = pose(motion.to, to);
         if (motion.kind === 'enter') {
           entering = true;
-          const fade = `0%{opacity:0}${percent(enterStart)}{opacity:0}100%{opacity:${end.opacity}}`;
+          const order = typedOrder.get(item);
+          const start =
+            order === undefined ? enterStart : enterStart + order * slot;
+          const shown =
+            order === undefined
+              ? ''
+              : `${percent(start + slot)}{opacity:${end.opacity}}`;
+          const fade = `0%{opacity:0}${percent(start)}{opacity:0}${shown}100%{opacity:${end.opacity}}`;
           return layer.element(item, `${at(end)};${animate(fade)}`);
         }
         const start = pose(motion.from, from);
@@ -130,13 +152,22 @@ export function compileScene(
   const token = (token: TokenTransition, style: string) =>
     `<span class="${escapeAttribute(token.classes)}" style="position:absolute;white-space:pre;${style}">${escapeHtml(token.text)}</span>`;
 
-  const code = compileLayer(scene.code, {
+  const code = compileLayer(
+    scene.code,
+    {
+      place: cell => ({x: cell.col * charWidth, y: cell.line * lineHeight}),
+      element: token,
+      before: token =>
+        token.kind === 'move' && token.fromClasses !== undefined
+          ? {...token, classes: token.fromClasses}
+          : undefined,
+    },
+    typewriter,
+  );
+  const spoilers = compileLayer(scene.spoilers ?? [], {
     place: cell => ({x: cell.col * charWidth, y: cell.line * lineHeight}),
-    element: token,
-    before: token =>
-      token.kind === 'move' && token.fromClasses !== undefined
-        ? {...token, classes: token.fromClasses}
-        : undefined,
+    element: (box: SpoilerTransition, style) =>
+      `<span aria-hidden="true" style="position:absolute;width:${px(box.columns * charWidth)};height:${px(lineHeight)};${style}"><span class="${escapeAttribute(`${box.classes} cm-spoiler`.trim())}" style="display:block;position:relative;width:100%;height:100%">${spoilerDotsHtml(box.columns, box.seed)}</span></span>`,
   });
   const bands = (attributes: (mark: MarkTransition['mark']) => string) =>
     compileLayer(scene.marks, {
@@ -160,12 +191,11 @@ export function compileScene(
     gutter === null
       ? ''
       : `<div class="cm-gutters" aria-hidden="true"><div class="cm-gutter cm-lineNumbers"><div class="cm-gutterElement" style="grid-row:1">${bands(mark => `class="cm-gutterElement cm-lineMark-${mark}"`)}<div style="${sizedBox(`${name}-gutter`, gutter.fromColumns, gutter.toColumns)}">${numbers}</div></div></div></div>`,
-    `<div class="cm-content cm-lineWrapping"><div class="cm-line" style="position:relative"><div style="position:absolute;left:0;top:0;right:0;bottom:0">${bands(mark => `data-mark="${mark}"`)}</div><div style="${sizedBox(`${name}-box`, from.columns, to.columns)}">${code}</div></div></div>`,
+    `<div class="cm-content cm-lineWrapping"><div class="cm-line" style="position:relative"><div style="position:absolute;left:0;top:0;right:0;bottom:0">${bands(mark => `data-mark="${mark}"`)}</div><div style="${sizedBox(`${name}-box`, from.columns, to.columns)}">${spoilers}${code}</div></div></div>`,
   ].join('');
-  const activeRanges: [number, number][] = moving
-    ? [[0, timing.transitionMs]]
-    : [];
-  if (!moving) {
+  const activeRanges: [number, number][] =
+    moving || scene.spoilers?.length ? [[0, timing.transitionMs]] : [];
+  if (!activeRanges.length) {
     if (leaving) activeRanges.push([0, timing.transitionMs * leaveEnd]);
     if (entering)
       activeRanges.push([

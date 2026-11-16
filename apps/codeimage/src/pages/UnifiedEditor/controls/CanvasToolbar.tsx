@@ -17,6 +17,7 @@ import {
   reshapeSurface,
 } from '../../../components/Animation/BarMorph';
 import {HeaderField} from '../../../components/Animation/HeaderField';
+import {TypewriterToggle} from '../../../components/Animation/TypewriterToggle';
 import {
   BarTransport,
   transportInBar,
@@ -233,6 +234,7 @@ export function CanvasToolbar(props: {stage: Stage}) {
             data-bar-transport
           >
             <HeaderField />
+            <TypewriterToggle />
           </div>
         </Show>
       </div>

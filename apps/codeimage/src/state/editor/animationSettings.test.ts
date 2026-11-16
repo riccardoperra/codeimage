@@ -161,3 +161,10 @@ test('a missing or invalid hold defaults independently of a valid step id', () =
     ],
   );
 });
+
+test('the typewriter is kept only when it is on', () => {
+  const steps = [step('a')];
+  assert.equal(parseDraft({steps, typewriter: true}).typewriter, true);
+  assert.equal('typewriter' in parseDraft({steps, typewriter: false}), false);
+  assert.equal('typewriter' in parseDraft({steps, typewriter: 'yes'}), false);
+});

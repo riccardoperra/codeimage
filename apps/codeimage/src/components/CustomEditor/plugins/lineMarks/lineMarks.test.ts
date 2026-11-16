@@ -1,6 +1,10 @@
 import {history, redo, undo} from '@codemirror/commands';
 import type {Transaction} from '@codemirror/state';
-import {EditorState, type TransactionSpec} from '@codemirror/state';
+import {
+  EditorSelection,
+  EditorState,
+  type TransactionSpec,
+} from '@codemirror/state';
 import type {EditorView} from '@codemirror/view';
 import {describe, expect, it} from 'vitest';
 import {pasteAnnotations} from './paste';
@@ -12,6 +16,7 @@ import {
   readMarks,
   replaceMarks,
   toggleMark,
+  toggleSpoiler,
   unmarkLines,
 } from './state';
 
@@ -300,5 +305,60 @@ describe('script line ranges', () => {
     expect(
       readMarks(target.state).script?.lines.map(line => line.line),
     ).toEqual([2, 3]);
+  });
+});
+
+describe('spoilers', () => {
+  it('hides part of a line, follows edits, and toggles off inside the selection', () => {
+    const target = editor();
+    const view = target as unknown as EditorView;
+    const select = (from: number, to: number) =>
+      target.dispatch({selection: EditorSelection.single(from, to)});
+    select(5, 7);
+    toggleSpoiler(view);
+    expect(readMarks(target.state).spoilers).toEqual([
+      {line: 2, from: 1, to: 3},
+    ]);
+    target.dispatch({changes: {from: 0, insert: 'zero\n'}});
+    expect(readMarks(target.state).spoilers).toEqual([
+      {line: 3, from: 1, to: 3},
+    ]);
+    select(2, 16);
+    toggleSpoiler(view);
+    expect(readMarks(target.state).spoilers).toEqual([
+      {line: 1, from: 2, to: 4},
+      {line: 2, from: 0, to: 3},
+      {line: 3, from: 0, to: 3},
+      {line: 4, from: 0, to: 3},
+    ]);
+    select(11, 12);
+    toggleSpoiler(view);
+    expect(readMarks(target.state).spoilers).toEqual([
+      {line: 1, from: 2, to: 4},
+      {line: 2, from: 0, to: 3},
+      {line: 3, from: 0, to: 2},
+      {line: 4, from: 0, to: 3},
+    ]);
+    undo(target);
+    expect(readMarks(target.state).spoilers).toHaveLength(4);
+  });
+
+  it('round-trips through marksValue and drops ranges past the line end', () => {
+    const state = EditorState.create({
+      doc: 'abc\ndef',
+      extensions: [
+        lineMarksField.init(state =>
+          marksValue(state.doc, {
+            lines: [],
+            focusedLines: [],
+            spoilers: [
+              {line: 2, from: 1, to: 9},
+              {line: 7, from: 0, to: 1},
+            ],
+          }),
+        ),
+      ],
+    });
+    expect(readMarks(state).spoilers).toEqual([{line: 2, from: 1, to: 3}]);
   });
 });

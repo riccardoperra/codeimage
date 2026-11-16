@@ -5,6 +5,7 @@ import {Show} from 'solid-js';
 import type {AppLocaleEntries} from '../../i18n';
 import {CloseIcon} from '../Icons/CloseIcon';
 import {HeaderField} from './HeaderField';
+import {TypewriterToggle} from './TypewriterToggle';
 import {LayoutToggle} from './timeline/LayoutToggle';
 import {PauseIcon, PlayIcon, StopIcon} from './icons';
 import {formatSeconds} from './format';
@@ -84,6 +85,7 @@ export function TransportBar(props: {compact: boolean}) {
       <span class={styles.spacer} />
       <div class={styles.desktopHeader}>
         <HeaderField />
+        <TypewriterToggle />
       </div>
       <Show when={!props.compact}>
         <LayoutToggle />

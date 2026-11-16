@@ -356,6 +356,11 @@ export function createAnimationStore(
       setFps(fps: AnimationSettings['fps']) {
         update(settings => ({...settings, fps}));
       },
+      setTypewriter(typewriter: boolean) {
+        update(({typewriter: _, ...settings}) =>
+          typewriter ? {...settings, typewriter} : settings,
+        );
+      },
       setHeader(header: Partial<AnimationHeader>) {
         update(settings => ({
           ...settings,

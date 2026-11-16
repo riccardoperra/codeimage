@@ -3,7 +3,7 @@ import {draculaTheme} from '@codeimage/highlight/dracula';
 import {tokenize} from '@core/snapshot/tokenize';
 import {test} from 'vitest';
 import type {Scene, Step, TokenTransition} from './model';
-import {pairScene, pairSteps} from './pair';
+import {pairScene, pairSteps, typeEntering} from './pair';
 
 const SOURCE = `function add(a: number, b: number) {
   return a + b;
@@ -279,6 +279,36 @@ test('focus dims every row outside the focused lines, marked or not', async () =
   assert.deepEqual([...scene.to.dimmed], []);
 });
 
+test('typeEntering splits entering tokens into characters on their own cells', () => {
+  const typed = typeEntering(
+    [
+      {
+        kind: 'enter',
+        key: 'k',
+        text: 'a界b',
+        classes: 'c',
+        to: {line: 2, col: 3},
+      },
+      {
+        kind: 'leave',
+        key: 'l',
+        text: 'old',
+        classes: '',
+        from: {line: 0, col: 0},
+      },
+    ],
+    new Map([['界', 2]]),
+  );
+  assert.deepEqual(
+    typed.map(token =>
+      token.kind === 'enter'
+        ? [token.key, token.text, token.to.col]
+        : token.key,
+    ),
+    [['k#0', 'a', 3], ['k#1', '界', 4], ['k#2', 'b', 6], 'l'],
+  );
+});
+
 test('script block swaps never pair tokens across source lines', async () => {
   const from = await step('const total = oldValue;\nreturn total;', {
     source: 'tab',
@@ -319,4 +349,36 @@ test('kept source lines move as whole rows and changed lines match only within t
   );
   const other = pairScene(from, {...to, source: 'other'}, false);
   assert.equal(other.leaveEnd, undefined);
+});
+
+test('a spoiler hides its text from the scene and reveals it in the next step', async () => {
+  const code = 'const token = "sk-live-123";';
+  const hidden = await step(code, {
+    marks: {
+      lines: [],
+      focusedLines: [],
+      spoilers: [{line: 1, from: 15, to: 26}],
+    },
+  });
+  const shown = await step(code);
+  const kept = pairScene(hidden, hidden, false);
+  assert.ok(
+    !kept.code.some(token => token.text.includes('sk-live')),
+    'a hidden value is never a token',
+  );
+  assert.deepEqual(
+    kept.spoilers?.map(box => [box.kind, box.columns]),
+    [['move', 11]],
+  );
+  const revealed = pairScene(hidden, shown, false);
+  assert.deepEqual(
+    revealed.spoilers?.map(box => box.kind),
+    ['leave'],
+  );
+  assert.ok(
+    revealed.code.some(
+      token => token.kind === 'enter' && token.text.includes('sk-live'),
+    ),
+    'the value enters where the spoiler leaves',
+  );
 });

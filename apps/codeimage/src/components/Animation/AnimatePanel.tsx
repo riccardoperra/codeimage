@@ -4,6 +4,7 @@ import {Show, untrack} from 'solid-js';
 import type {AppLocaleEntries} from '../../i18n';
 import {TransportBar, transportInBar} from './TransportBar';
 import {HeaderField} from './HeaderField';
+import {TypewriterToggle} from './TypewriterToggle';
 import {curve, reduced, timelineFor, toggledByPointer} from './timeline/motion';
 import {Timeline} from './timeline/Timeline';
 import * as styles from './AnimatePanel.css';
@@ -65,6 +66,7 @@ export function AnimatePanel(props: {compact: boolean}) {
         <Timeline compact={props.compact} />
         <div class={styles.mobileHeader}>
           <HeaderField />
+          <TypewriterToggle />
         </div>
       </section>
     </Show>
