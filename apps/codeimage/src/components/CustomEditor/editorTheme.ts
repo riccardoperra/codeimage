@@ -30,3 +30,23 @@ export const baseEditorTheme = EditorView.theme({
     transform: 'translateY(-10%)',
   },
 });
+
+export function editorFontTheme(
+  fontName: string,
+  fontWeight: number,
+  enableLigatures: boolean,
+) {
+  const fontVariantLigatures = enableLigatures ? 'normal' : 'none';
+  return EditorView.theme({
+    '.cm-content *': {
+      fontFamily: `${fontName}, monospace`,
+      fontWeight,
+      fontVariantLigatures,
+    },
+    '.cm-gutters': {
+      fontFamily: `${fontName}, monospace`,
+      fontWeight: 400,
+      fontVariantLigatures,
+    },
+  });
+}

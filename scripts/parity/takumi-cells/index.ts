@@ -14,6 +14,13 @@ export async function matrix(fixtureUrl: string): Promise<Cell[]> {
       name: `vsCodeDarkTheme / ${type}`,
       document: snapshot('vsCodeDarkTheme', {terminal: {type}}),
     })),
+    ...[1, 3].map(scale => ({
+      name: `vsCodeDarkTheme / windows / scale ${scale}`,
+      document: {
+        ...snapshot('vsCodeDarkTheme', {terminal: {type: 'windows'}}),
+        scale,
+      },
+    })),
     {
       name: 'line numbers from 42',
       document: snapshot('dracula', {
@@ -113,4 +120,4 @@ export async function matrix(fixtureUrl: string): Promise<Cell[]> {
   ];
 }
 
-export {SCALE, MAX_MARKS_DIFF_PERCENT} from './snapshot';
+export {MAX_MARKS_DIFF_PERCENT} from './snapshot';

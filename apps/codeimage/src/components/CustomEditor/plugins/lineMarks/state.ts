@@ -1,3 +1,4 @@
+import {inheritScriptRanges} from '../scriptLines/map';
 import {invertedEffects, isolateHistory} from '@codemirror/commands';
 import type {ChangeDesc, Extension, Text} from '@codemirror/state';
 import {
@@ -14,11 +15,16 @@ import {
   GutterMarker,
   gutterLineClass,
 } from '@codemirror/view';
-import type {LineMark, TabMarks} from '../../../../state/editor/model';
+import type {
+  LineMark,
+  TabMarks,
+  ScriptLine,
+} from '../../../../state/editor/model';
 
 interface MarkState {
   decorations: DecorationSet;
   focused: DecorationSet;
+  script?: {steps: string[]; lines: DecorationSet};
 }
 
 const decorations = {
@@ -55,12 +61,33 @@ export const replaceMarks = StateEffect.define<MarkState>({
     ...value,
     decorations: mapDecorations(value.decorations, changes),
     focused: mapDecorations(value.focused, changes),
+    script: value.script && {
+      ...value.script,
+      lines: mapDecorations(value.script.lines, changes),
+    },
   }),
 });
 
 export function marksValue(doc: Text, marks: TabMarks): MarkState {
+  const script = marks.script;
   const byLine = new Map(marks.lines.map(mark => [mark.line, mark.kind]));
   return {
+    ...(script
+      ? {
+          script: {
+            steps: [...script.steps],
+            lines: Decoration.set(
+              Array.from({length: doc.lines}, (_, index) =>
+                Decoration.line({
+                  script: script.lines.find(
+                    line => line.line === index + 1,
+                  ) ?? {line: index + 1},
+                }).range(doc.line(index + 1).from),
+              ),
+            ),
+          },
+        }
+      : {}),
     focused: Decoration.set(
       [...new Set(marks.focusedLines)]
         .filter(line => line >= 1 && line <= doc.lines)
@@ -95,7 +122,8 @@ const gutterMarks = {
 
 export const lineMarksField = StateField.define<MarkState>({
   create: () => ({decorations: Decoration.none, focused: Decoration.none}),
-  update(value, tr) {
+  update(previousValue, tr) {
+    let value = previousValue;
     if (tr.docChanged) {
       const map = (decorations: DecorationSet) => {
         const mapped = mapDecorations(
@@ -117,6 +145,16 @@ export const lineMarksField = StateField.define<MarkState>({
       value = {
         decorations: map(value.decorations),
         focused: map(value.focused),
+        script: value.script && {
+          ...value.script,
+          lines: map(value.script.lines),
+        },
+      };
+    }
+    if (tr.docChanged && value.script) {
+      value = {
+        ...value,
+        script: inheritScriptRanges(value.script, tr.state.doc),
       };
     }
     for (const effect of tr.effects) {
@@ -176,7 +214,23 @@ export function readMarks(state: EditorView['state']): TabMarks {
   value.focused.between(0, state.doc.length, from => {
     focusedLines.push(state.doc.lineAt(from).number);
   });
-  return {lines: [...byLine.values()], focusedLines};
+  const script = value.script;
+  const lines: ScriptLine[] = [];
+  if (script)
+    for (let cursor = script.lines.iter(); cursor.value; cursor.next()) {
+      const rule: ScriptLine = cursor.value.spec.script;
+      if (
+        rule.enter !== undefined ||
+        rule.leave !== undefined ||
+        rule.focus?.length
+      )
+        lines.push({...rule, line: state.doc.lineAt(cursor.from).number});
+    }
+  return {
+    lines: [...byLine.values()],
+    focusedLines,
+    ...(script ? {script: {steps: [...script.steps], lines}} : {}),
+  };
 }
 
 export function setLineMarks(
@@ -220,6 +274,7 @@ export function markLines(
     }
   }
   setLineMarks(view, {
+    ...marks,
     focusedLines: [...focused],
     lines: [...updated.values()],
   });
@@ -231,6 +286,7 @@ export function unmarkLines(view: EditorView, lines: number[], kind: MarkKind) {
   const marks = readMarks(view.state);
   const removed = new Set(lines);
   setLineMarks(view, {
+    ...marks,
     lines: marks.lines.filter(
       mark => !removed.has(mark.line) || mark.kind !== kind,
     ),

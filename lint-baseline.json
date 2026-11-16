@@ -26,11 +26,10 @@
     "eslint(max-lines-per-function)": 2
   },
   ".agents/skills/verify-codeimage/scripts/audit.mjs": {
-    "codeimage(no-comments)": 18,
-    "eslint(max-depth)": 1,
-    "eslint(max-lines)": 2502,
-    "eslint(max-lines-per-function)": 9,
-    "eslint(no-param-reassign)": 6
+    "codeimage(no-comments)": 8,
+    "eslint(max-lines)": 1111,
+    "eslint(max-lines-per-function)": 2,
+    "eslint(no-param-reassign)": 4
   },
   ".agents/skills/verify-codeimage/scripts/capture-design.mjs": {
     "codeimage(no-comments)": 3
@@ -74,12 +73,12 @@
     "eslint(max-lines-per-function)": 1
   },
   "apps/api/src/modules/project/project.contract.ts": {
-    "codeimage(no-comments)": 6,
-    "eslint(max-lines)": 431
+    "codeimage(no-comments)": 4,
+    "eslint(max-lines)": 384
   },
   "apps/api/src/modules/project/project.model.ts": {
-    "codeimage(no-comments)": 6,
-    "eslint(max-lines)": 323
+    "codeimage(no-comments)": 5,
+    "eslint(max-lines)": 311
   },
   "apps/api/src/modules/project/project.repository.ts": {
     "codeimage(no-comments)": 2,
@@ -124,14 +123,9 @@
     "codeimage(no-comments)": 1
   },
   "apps/codeimage/src/components/Animation/AnimatePanel.css.ts": {
-    "codeimage(no-comments)": 1,
-    "codeimage(no-global-style)": 12
-  },
-  "apps/codeimage/src/components/Animation/AnimatePanel.tsx": {
-    "codeimage(no-comments)": 1
+    "codeimage(no-global-style)": 6
   },
   "apps/codeimage/src/components/Animation/AnimationPreview.css.ts": {
-    "codeimage(no-comments)": 2,
     "codeimage(no-global-style)": 1
   },
   "apps/codeimage/src/components/Animation/AnimationPreview.tsx": {
@@ -142,30 +136,11 @@
   "apps/codeimage/src/components/Animation/EasingCurve.tsx": {
     "typescript(no-non-null-assertion)": 2
   },
-  "apps/codeimage/src/components/Animation/EasingField.tsx": {
-    "typescript(no-non-null-assertion)": 1
-  },
   "apps/codeimage/src/components/Animation/HeaderField.tsx": {
     "codeimage(no-comments)": 3
   },
-  "apps/codeimage/src/components/Animation/PhoneSteps.css.ts": {
-    "codeimage(no-global-style)": 2
-  },
-  "apps/codeimage/src/components/Animation/PhoneSteps.tsx": {
-    "eslint(max-lines)": 338
-  },
-  "apps/codeimage/src/components/Animation/StepsMenu.tsx": {
-    "codeimage(no-comments)": 2
-  },
-  "apps/codeimage/src/components/Animation/StripTimeline.css.ts": {
-    "codeimage(no-comments)": 1,
-    "codeimage(no-global-style)": 4
-  },
   "apps/codeimage/src/components/Animation/StripTimeline.tsx": {
-    "eslint(max-lines)": 357,
-    "eslint(max-lines-per-function)": 1,
-    "eslint(no-nested-ternary)": 2,
-    "typescript(no-non-null-assertion)": 1
+    "eslint(max-lines-per-function)": 1
   },
   "apps/codeimage/src/components/Animation/TransportBar.tsx": {
     "codeimage(no-document-query)": 1
@@ -176,9 +151,6 @@
   },
   "apps/codeimage/src/components/Animation/createPreviewSnapshot.ts": {
     "typescript(no-non-null-assertion)": 1
-  },
-  "apps/codeimage/src/components/Animation/createSegmentResize.ts": {
-    "codeimage(no-comments)": 2
   },
   "apps/codeimage/src/components/Animation/easing.css.ts": {
     "codeimage(no-global-style)": 3
@@ -211,10 +183,8 @@
   "apps/codeimage/src/components/CustomEditor/CustomEditor.tsx": {
     "codeimage(no-comments)": 4,
     "eslint(complexity)": 1,
-    "eslint(max-lines)": 327,
-    "eslint(max-lines-per-function)": 1,
-    "eslint(no-extra-boolean-cast)": 1,
-    "eslint(no-restricted-imports)": 1
+    "eslint(max-lines)": 316,
+    "eslint(max-lines-per-function)": 1
   },
   "apps/codeimage/src/components/CustomEditor/CustomEditorPreview.tsx": {
     "codeimage(disable-directive-format)": 1,
@@ -250,7 +220,6 @@
   },
   "apps/codeimage/src/components/CustomEditor/plugins/lineMarks/state.ts": {
     "codeimage(no-comments)": 2,
-    "eslint(no-param-reassign)": 2,
     "eslint(no-restricted-imports)": 1
   },
   "apps/codeimage/src/components/CustomEditor/staticTheme.ts": {
@@ -796,9 +765,6 @@
   "apps/codeimage/src/pages/UnifiedEditor/contract.ts": {
     "codeimage(no-comments)": 3
   },
-  "apps/codeimage/src/pages/UnifiedEditor/controls/CanvasToolbar.tsx": {
-    "codeimage(no-comments)": 2
-  },
   "apps/codeimage/src/pages/UnifiedEditor/controls/ControlOverlay.tsx": {
     "codeimage(no-comments)": 2,
     "codeimage(no-document-query)": 1,
@@ -841,10 +807,6 @@
   },
   "apps/codeimage/src/pages/UnifiedEditor/controls/WindowStyleTiles.tsx": {
     "codeimage(no-comments)": 3
-  },
-  "apps/codeimage/src/pages/UnifiedEditor/controls/canvas-toolbar.css.ts": {
-    "codeimage(no-comments)": 2,
-    "codeimage(no-global-style)": 1
   },
   "apps/codeimage/src/pages/UnifiedEditor/controls/controls.css.ts": {
     "codeimage(no-comments)": 9,
@@ -895,7 +857,7 @@
   "apps/codeimage/src/pages/UnifiedEditor/local-ai/LocalAi.tsx": {
     "codeimage(no-comments)": 22,
     "codeimage(no-document-query)": 2,
-    "eslint(max-lines)": 416,
+    "eslint(max-lines)": 399,
     "solid(reactivity)": 3
   },
   "apps/codeimage/src/pages/UnifiedEditor/local-ai/agent.test.ts": {
@@ -1255,7 +1217,7 @@
   },
   "apps/codeimage/src/state/editor/animation.ts": {
     "codeimage(no-comments)": 3,
-    "eslint(max-lines)": 432,
+    "eslint(max-lines)": 384,
     "eslint(max-lines-per-function)": 1,
     "eslint(no-nested-ternary)": 1,
     "typescript(no-non-null-assertion)": 1

@@ -5,7 +5,7 @@ export function createDoctor({page, server, base}) {
     route = '/',
     expected = 'editor',
     layout,
-    target = page,
+    target = page(),
   ) {
     assert.equal(server.exitCode, null);
     assert.ok((await fetch(base)).ok);

@@ -192,6 +192,10 @@ describe('parseAnimationDocument', () => {
     editorId,
     holdMs,
   });
+  const tabStep = (editorId: string, holdMs: number) => ({
+    ...step(editorId, holdMs),
+    view: {kind: 'tab'},
+  });
   const header = {mode: 'tab', title: ''};
 
   it('makes every tab a step in tab order when the project stores no animation', () => {
@@ -207,15 +211,13 @@ describe('parseAnimationDocument', () => {
       },
     });
   });
-  it('keeps the steps, transitions, easing and header the editor saves', () => {
+  it('keeps the timing, transitions, easing and header the editor saves, in tab order', () => {
+    const transition = {ms: 1200, easing: 'cubic-bezier(0.1, 0.2, 0.3, 1)'};
     const stored = {
       steps: [
         step('c', 100),
-        {
-          ...step('a', 0, 'a-2'),
-          transition: {ms: 1200, easing: 'cubic-bezier(0.1, 0.2, 0.3, 1)'},
-        },
-        {...step('c', 250, 'c~2'), transition: {ms: 300, easing: 'strong'}},
+        {...step('a', 0), transition},
+        {...step('b', 250), transition: {ms: 300, easing: 'strong'}},
       ],
       transitionMs: 400,
       easing: 'snappy',
@@ -224,7 +226,14 @@ describe('parseAnimationDocument', () => {
     };
     expect(
       parseAnimationDocument({...project, animation: stored}).animation,
-    ).toEqual(stored);
+    ).toEqual({
+      ...stored,
+      steps: [
+        {...tabStep('a', 0), transition},
+        {...tabStep('b', 250), transition: {ms: 300, easing: 'strong'}},
+        tabStep('c', 100),
+      ],
+    });
   });
   it('reads a project saved before step ids and headers', () => {
     expect(
@@ -241,7 +250,7 @@ describe('parseAnimationDocument', () => {
         },
       }).animation,
     ).toEqual({
-      steps: [step('b', 100), step('b', 200, 'b~2')],
+      steps: [tabStep('a', 800), tabStep('b', 100), tabStep('c', 800)],
       transitionMs: 900,
       easing: 'linear',
       fps: 24,
@@ -266,6 +275,7 @@ describe('parseAnimationDocument', () => {
       [
         [101, undefined],
         [10_000, 100],
+        [800, undefined],
       ],
       5000,
     ]);
@@ -274,17 +284,46 @@ describe('parseAnimationDocument', () => {
     expect(
       parseAnimationDocument({
         ...project,
+        editor: {...project.editor, editors: [project.editor.editors[0]]},
         animation: {steps: [step('a', 0)]},
       }).animation.steps,
-    ).toEqual([step('a', 800)]);
+    ).toEqual([tabStep('a', 800)]);
   });
-  it('drops a step whose tab is gone', () => {
+  it('ignores a step whose tab is gone', () => {
     expect(
       parseAnimationDocument({
         ...project,
         animation: {steps: [step('a', 100), step('gone', 100)]},
       }).animation.steps,
-    ).toEqual([step('a', 100)]);
+    ).toEqual([tabStep('a', 100), tabStep('b', 800), tabStep('c', 800)]);
+  });
+  it('splits a diff tab and a tab script into the steps the editor shows', () => {
+    const [a, b, c] = project.editor.editors;
+    const steps = parseAnimationDocument({
+      ...project,
+      editor: {
+        ...project.editor,
+        editors: [
+          a,
+          {...b, marks: {lines: [{line: 1, kind: 'added'}], focusedLines: []}},
+          {
+            ...c,
+            marks: {
+              lines: [],
+              focusedLines: [],
+              script: {steps: ['one', 'two'], lines: [{line: 1, enter: 2}]},
+            },
+          },
+        ],
+      },
+    }).animation.steps;
+    expect(steps.map(({id, view}) => [id, view])).toEqual([
+      ['a', {kind: 'tab'}],
+      ['b:before', {kind: 'diff', side: 'before'}],
+      ['b:after', {kind: 'diff', side: 'after'}],
+      ['one', {kind: 'script', step: 1}],
+      ['two', {kind: 'script', step: 2}],
+    ]);
   });
   it.each([
     [{transitionMs: -1}, {transitionMs: 100}],

@@ -65,9 +65,27 @@ The browser imports only the pure `@codeimage/render/watermark` subpath. The pac
 
 A separate geometry package was considered. It would expose the same scene and function while adding another manifest and build unit. The pure subpath keeps one rule without that extra package. Its independent build entry must exist before the app SSR build, because that build itself imports the policy.
 
+An app-owned alternative would export layout trees through the host contract and add an SSR placement context and render pass. The pure subpath keeps that contract small and leaves Takumi measurement and final markup in the Node adapter.
+
 Animated capture requires an occupancy envelope for the complete animation and is not integrated here.
 
 ## Verification
+
+Install dependencies and build the libraries with Node 24:
+
+```sh
+fnm exec --using=v24.14.0 pnpm install --frozen-lockfile
+fnm exec --using=v24.14.0 pnpm libs:build
+```
+
+Run the policy, native geometry and renderer tests from `packages/render`, then run the CLI suite from the repository root:
+
+```sh
+cd packages/render
+fnm exec --using=v24.14.0 ./node_modules/.bin/vitest run src/watermark.test.ts src/watermarkGeometry.test.ts src/render.test.ts --pool threads --maxWorkers 1
+cd ../..
+fnm exec --using=v24.14.0 pnpm --filter=@codeimage/cli test
+```
 
 Run the focused browser journey with:
 
@@ -85,9 +103,13 @@ node .agents/skills/verify-codeimage/scripts/compare-watermark.mjs BEFORE_DIR AF
 
 The journey drives window styles and code through the UI, records live/export geometry, and downloads images. Its mock backend boundary is the same as the rest of the verification skill. Policy tests in `packages/render/src/watermark.test.ts` cover unchanged positioning, blocked controls, signature collision, unavailable frame space and scaling. Scope tests in `core/watermark/scope.test.ts` cover export preparation order, isolated previews, disposal, coalescing and a removed editor's queued request.
 
-Generate the CLI parity documents with `pnpm exec tsx scripts/parity/watermark-cases.mjs`.
-After `pnpm libs:build`, compare their actual web downloads and CLI PNGs with
-`P10_WEB_OUT=/tmp/codeimage-cli-watermark/parity pnpm exec tsx scripts/parity/watermark-cli-vs-web/index.ts /tmp/codeimage-cli-watermark/cases/*.json`.
+Generate the CLI parity documents, then compare their actual web downloads and CLI PNGs. Set `WATERMARK_OUT` to a directory for the generated documents and images:
+
+```sh
+fnm exec --using=v24.14.0 ./node_modules/.bin/tsx scripts/parity/watermark-cases.mjs "$WATERMARK_OUT/cases"
+P10_WEB_OUT="$WATERMARK_OUT/parity" fnm exec --using=v24.14.0 ./node_modules/.bin/tsx scripts/parity/watermark-cli-vs-web/index.ts "$WATERMARK_OUT"/cases/*.json
+```
+
 The documents cover all seven window types, four padding values, hidden and transparent frames, header off, signatures, fonts, tabs and portrait output.
 CLI width is a minimum, so the width-minimum case verifies content expansion rather than forced wrapping.
 

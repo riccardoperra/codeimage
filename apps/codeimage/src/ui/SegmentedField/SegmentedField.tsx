@@ -18,6 +18,7 @@ export interface SegmentedFieldItem<T> {
  */
 interface SegmentedFieldProps<T> {
   items: readonly SegmentedFieldItem<T>[];
+  itemClass?: string;
   value: T;
   onChange?: (value: T) => void;
   onEscape?: () => void;
@@ -62,7 +63,11 @@ export function SegmentedField<T>(props: SegmentedFieldProps<T>): JSX.Element {
     >
       <For each={props.items}>
         {(item, index) => (
-          <SegmentedControlItem value={index().toString()} {...escapeProps()}>
+          <SegmentedControlItem
+            class={props.itemClass}
+            value={index().toString()}
+            {...escapeProps()}
+          >
             {item.label}
           </SegmentedControlItem>
         )}

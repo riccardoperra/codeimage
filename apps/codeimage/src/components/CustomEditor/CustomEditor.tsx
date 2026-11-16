@@ -1,10 +1,11 @@
+import {createScriptAids} from './plugins/scriptLines/extension';
+import {trackSelection} from './plugins/selection';
 import {SUPPORTED_LANGUAGES} from '@codeimage/config';
 import {useI18n} from '@codeimage/locale';
 import type {AppLocaleEntries} from '../../i18n';
 import {getRootEditorStore} from '@codeimage/store/editor';
 import {getActiveEditorStore} from '@codeimage/store/editor/activeEditor';
 import {getThemeStore} from '@codeimage/store/theme/theme.store';
-import type {Extension} from '@codemirror/state';
 import {EditorState, Transaction} from '@codemirror/state';
 import {isolateHistory} from '@codemirror/commands';
 import {EditorView, lineNumbers} from '@codemirror/view';
@@ -22,9 +23,9 @@ import {
   Show,
   untrack,
 } from 'solid-js';
-import {baseEditorTheme} from './editorTheme';
+import {baseEditorTheme, editorFontTheme} from './editorTheme';
 import {createTabIcon} from '../../hooks/use-tab-icon';
-import {mapLines} from '../../core/diff/mapLines';
+import {formattedMarks} from './formattedMarks';
 import {lineMarksExtension} from './plugins/lineMarks';
 import {
   gutterMarkPointerDown,
@@ -139,28 +140,6 @@ export default function CustomEditor(props: VoidProps<CustomEditorProps>) {
       themes()[0](),
   );
 
-  const customFontExtension = (): Extension => {
-    const font = selectedFont();
-    const fontName = font.name,
-      fontWeight = editorState.options.fontWeight,
-      enableLigatures = editorState.options.enableLigatures;
-
-    const fontVariantLigatures = !!enableLigatures ? 'normal' : 'none';
-
-    return EditorView.theme({
-      '.cm-content *': {
-        fontFamily: `${fontName}, monospace`,
-        fontWeight: fontWeight,
-        fontVariantLigatures,
-      },
-      '.cm-gutters': {
-        fontFamily: `${fontName}, monospace`,
-        fontWeight: 400,
-        fontVariantLigatures,
-      },
-    });
-  };
-
   createEditorReadonly(editorView, () => props.readOnly);
   // Code that is not editable is not focusable either, and leaving the
   // animation preview returns the focus to it.
@@ -173,7 +152,13 @@ export default function CustomEditor(props: VoidProps<CustomEditorProps>) {
       'aria-label': 'codeimage-editor',
     }),
   );
-  createExtension(() => customFontExtension());
+  createExtension(() =>
+    editorFontTheme(
+      selectedFont().name,
+      editorState.options.fontWeight,
+      editorState.options.enableLigatures,
+    ),
+  );
   createExtension(() => {
     const language = currentLanguage();
     const extraLanguage = currentExtraLanguage();
@@ -241,6 +226,14 @@ export default function CustomEditor(props: VoidProps<CustomEditorProps>) {
   });
   createExtension(() => EditorState.readOnly.of(props.readOnly));
   createExtension(() => (props.readOnly ? [] : popupTooltips(popupHost())));
+  createExtension(
+    createScriptAids(
+      () => props.readOnly,
+      () => editor()?.id,
+    ),
+  );
+
+  createExtension(trackSelection);
 
   const reconfigureBaseSetup = createExtension(EDITOR_BASE_SETUP);
 
@@ -291,20 +284,14 @@ export default function CustomEditor(props: VoidProps<CustomEditorProps>) {
         }
         if (!changedTab && changedCode && !props.readOnly) {
           // Format rewrites the stored code; map marks by line and keep the step undoable.
-          const lines = mapLines(current, code);
           const previous = readMarks(view.state);
           view.dispatch({
             changes: {from: 0, to: view.state.doc.length, insert: code},
             effects: replaceMarks.of(
-              marksValue(EditorState.create({doc: code}).doc, {
-                focusedLines: previous.focusedLines.flatMap(
-                  line => lines.get(line) ?? [],
-                ),
-                lines: previous.lines.flatMap(mark => {
-                  const line = lines.get(mark.line);
-                  return line ? [{...mark, line}] : [];
-                }),
-              }),
+              marksValue(
+                EditorState.create({doc: code}).doc,
+                formattedMarks(previous, current, code),
+              ),
             ),
             annotations: isolateHistory.of('full'),
           });

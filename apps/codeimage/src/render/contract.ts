@@ -45,8 +45,14 @@ export type AnimationEasing =
   | 'linear'
   | `cubic-bezier(${string})`;
 
+export type AnimationStepView =
+  | {kind: 'tab'}
+  | {kind: 'diff'; side: 'before' | 'after'}
+  | {kind: 'script'; step: number};
+
 export interface AnimationStep {
   editorId: string;
+  view?: AnimationStepView;
   holdMs: number;
   transition?: {ms: number; easing: AnimationEasing};
 }

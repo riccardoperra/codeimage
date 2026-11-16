@@ -5,6 +5,7 @@ import {Show} from 'solid-js';
 import * as styles from './easing.css';
 export function EasingCurve(props: {
   easing: Easing;
+  class?: string;
   progress?: number | null;
   glyph?: boolean;
   label?: string;
@@ -19,7 +20,7 @@ export function EasingCurve(props: {
   return (
     <svg
       viewBox="0 0 100 100"
-      class={props.glyph ? styles.glyph : styles.curve}
+      class={`${props.glyph ? styles.glyph : styles.curve} ${props.class ?? ''}`}
       aria-hidden={props.label ? undefined : true}
       role={props.label ? 'img' : undefined}
       aria-label={props.label}

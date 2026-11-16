@@ -1,3 +1,5 @@
+import {projectStep} from '@core/animation/project';
+import type {AnimationStepSettings} from '@core/animation/model';
 import {getEditorStore} from '@codeimage/store/editor';
 import {getAssetsStore} from '@codeimage/store/assets/assets';
 import {getFrameState} from '@codeimage/store/editor/frame';
@@ -53,26 +55,24 @@ export function animationSnapshot() {
       ...animation.settings(),
       fps: ANIMATION_FORMATS[format].frameRate(fps),
     });
-    const tab = (editorId: string): PreviewTab => {
-      const value = editor.state.editors.find(tab => tab.id === editorId);
+    const tab = (step: AnimationStepSettings): PreviewTab => {
+      const value = editor.state.editors.find(tab => tab.id === step.editorId);
       if (!value) throw new Error('Animation step no longer exists');
       return {
         id: value.id,
-        code: value.code,
+        ...projectStep(
+          {code: value.code, marks: JSON.parse(JSON.stringify(value.marks))},
+          step.view,
+        ),
         languageId: value.languageId,
         lineNumberStart: value.lineNumberStart,
-        marks: structuredClone({
-          ...value.marks,
-          lines: value.marks.lines.map(mark => ({...mark})),
-          focusedLines: [...value.marks.focusedLines],
-        }),
         tabName: value.tab.tabName,
       };
     };
     const [first, ...rest] = settings.steps;
     const tabs: NonEmpty<PreviewTab> = [
-      tab(first.editorId),
-      ...rest.map(step => tab(step.editorId)),
+      tab(first),
+      ...rest.map(step => tab(step)),
     ];
     const codeStyle: CodeStyle = {
       theme: style.theme()!,

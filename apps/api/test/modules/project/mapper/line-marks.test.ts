@@ -75,3 +75,32 @@ test('round-trips every mark kind and additive focus through the persisted JSON 
   expect(restored).toEqual(snapshot);
   expect(Object.keys(restored)).toEqual(['lines', 'focusedLines']);
 });
+
+test('script ranges are validated and survive the JSON boundary', () => {
+  const script = {
+    steps: ['one', 'two', 'three'],
+    lines: [{line: 1, enter: 2, leave: 3, focus: [2]}],
+  };
+  const value = {...marks, script};
+  expect(parseTabMarks(JSON.parse(JSON.stringify(value)))).toEqual(value);
+  for (const lines of [
+    [{line: 1, enter: 2, leave: 2}],
+    [{line: 1, enter: 4}],
+    [{line: 1, leave: 4}],
+    [{line: 1, focus: [4]}],
+    [{line: 1}, {line: 1}],
+  ]) {
+    expect(parseTabMarks({...marks, script: {...script, lines}})).toEqual(
+      marks,
+    );
+  }
+  for (const invalid of [
+    {...script, steps: ['one']},
+    {...script, steps: ['one', 'one']},
+    {...script, lines: [{line: 1, enter: 1.5}]},
+  ]) {
+    expect(Value.Check(TabMarksSchema, {...marks, script: invalid})).toBe(
+      false,
+    );
+  }
+});

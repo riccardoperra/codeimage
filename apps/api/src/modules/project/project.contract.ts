@@ -1,3 +1,16 @@
+import {
+  AnimationSettingsSchema,
+  TabMarksSchema,
+} from './project.contract.animation.js';
+export {
+  TabScriptSchema,
+  StepViewSchema,
+  TabMarksSchema,
+  AnimationEasingSchema,
+  AnimationSettingsSchema,
+  type TabMarks,
+  type AnimationSettings,
+} from './project.contract.animation.js';
 import type {Static} from '@sinclair/typebox';
 import {Type} from '@sinclair/typebox';
 import {defineContract, enumLiteral, Nullable} from '../../shared/contract.js';
@@ -56,73 +69,6 @@ export const FrameExportProperties = {
   aspectRatio: Type.Optional(Type.Union([Type.Null(), Type.String()])),
   signature: Type.Optional(Nullable(FrameSignatureSchema)),
 };
-
-export const TabMarksSchema = Type.Object({
-  lines: Type.Array(
-    Type.Object({
-      line: Type.Integer({minimum: 1}),
-      kind: Type.Union([
-        Type.Literal('added'),
-        Type.Literal('removed'),
-        Type.Literal('highlight'),
-      ]),
-    }),
-  ),
-  focusedLines: Type.Array(Type.Integer({minimum: 1})),
-});
-
-export type TabMarks = Static<typeof TabMarksSchema>;
-
-// Steps name tabs by id. Takumi samples whole milliseconds, so durations are
-// integers.
-export const AnimationEasingSchema = Type.Union([
-  Type.Literal('smooth'),
-  Type.Literal('snappy'),
-  Type.Literal('strong'),
-  Type.Literal('linear'),
-  Type.String({
-    pattern:
-      '^cubic-bezier\\((?:0(?:\\.\\d{1,3})?|1(?:\\.0{1,3})?), (?:0(?:\\.\\d{1,3})?|1(?:\\.0{1,3})?), (?:0(?:\\.\\d{1,3})?|1(?:\\.0{1,3})?), (?:0(?:\\.\\d{1,3})?|1(?:\\.0{1,3})?)\\)$',
-    maxLength: 64,
-  }),
-]);
-
-export const AnimationSettingsSchema = Type.Object({
-  steps: Type.Array(
-    Type.Object({
-      id: Type.Optional(Type.String({minLength: 1, maxLength: 64})),
-      transition: Type.Optional(
-        Type.Object({
-          ms: Type.Integer({minimum: 1}),
-          easing: AnimationEasingSchema,
-        }),
-      ),
-      editorId: Type.String(),
-      holdMs: Type.Integer({minimum: 0}),
-    }),
-    {minItems: 1},
-  ),
-  transitionMs: Type.Integer({minimum: 1}),
-  easing: AnimationEasingSchema,
-  header: Type.Optional(
-    Type.Object({
-      mode: Type.Union([
-        Type.Literal('tab'),
-        Type.Literal('title'),
-        Type.Literal('tabs'),
-      ]),
-      title: Type.String({maxLength: 80}),
-    }),
-  ),
-  fps: Type.Union([
-    Type.Literal(24),
-    Type.Literal(30),
-    Type.Literal(50),
-    Type.Literal(60),
-  ]),
-});
-
-export type AnimationSettings = Static<typeof AnimationSettingsSchema>;
 
 export const BaseProjectResponseSchema = Type.Object(
   {

@@ -227,3 +227,78 @@ describe('line marks', () => {
     expect(readMarks(view.state).lines).toEqual([{line: 2, kind: 'highlight'}]);
   });
 });
+
+describe('script line ranges', () => {
+  const scripted = () => {
+    const target = editor();
+    target.dispatch({
+      effects: replaceMarks.of(
+        marksValue(target.state.doc, {
+          lines: [],
+          focusedLines: [],
+          script: {
+            steps: ['one', 'two', 'three'],
+            lines: [
+              {line: 2, enter: 2, leave: 3, focus: [2]},
+              {line: 3, enter: 2, leave: 3},
+            ],
+          },
+        }),
+      ),
+    });
+    return target;
+  };
+  it('inherits neighbouring visibility for inserted rows without inheriting focus and preserves undo', () => {
+    const target = scripted();
+    const original = readMarks(target.state).script;
+    target.dispatch({
+      changes: {from: target.state.doc.line(3).from, insert: 'new\n'},
+    });
+    expect(readMarks(target.state).script).toEqual({
+      steps: ['one', 'two', 'three'],
+      lines: [
+        {line: 2, enter: 2, leave: 3, focus: [2]},
+        {line: 3, enter: 2, leave: 3},
+        {line: 4, enter: 2, leave: 3},
+      ],
+    });
+    undo(target);
+    expect(readMarks(target.state).script).toEqual(original);
+    redo(target);
+    expect(readMarks(target.state).script?.lines).toHaveLength(3);
+  });
+  it('inherits below at the top and drops ranges of deleted lines', () => {
+    const target = scripted();
+    target.dispatch({
+      effects: replaceMarks.of(
+        marksValue(target.state.doc, {
+          lines: [],
+          focusedLines: [],
+          script: {steps: ['one', 'two'], lines: [{line: 1, enter: 2}]},
+        }),
+      ),
+    });
+    target.dispatch({changes: {from: 0, insert: 'new\n'}});
+    expect(readMarks(target.state).script?.lines).toEqual([
+      {line: 1, enter: 2},
+      {line: 2, enter: 2},
+    ]);
+    target.dispatch({changes: {from: 0, to: target.state.doc.line(3).from}});
+    expect(readMarks(target.state).script?.lines).toEqual([]);
+  });
+  it('ordinary marks keep the script and inserting beside an unrestricted row stays unrestricted', () => {
+    const target = scripted();
+    toggleMark(target as unknown as EditorView, [1], 'highlight');
+    expect(readMarks(target.state).script?.steps).toEqual([
+      'one',
+      'two',
+      'three',
+    ]);
+    target.dispatch({
+      changes: {from: target.state.doc.line(5).from, insert: 'new\n'},
+    });
+    expect(
+      readMarks(target.state).script?.lines.map(line => line.line),
+    ).toEqual([2, 3]);
+  });
+});
