@@ -14,6 +14,7 @@ export type AnimationSettings = {
   easing: EasingValue;
   fps: 24 | 30 | 50 | 60;
   header: AnimationHeader;
+  typewriter?: boolean;
 };
 
 export type EasingName = 'smooth' | 'snappy' | 'strong' | 'linear';

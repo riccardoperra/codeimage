@@ -114,6 +114,7 @@ export const AnimationSettingsSchema = Type.Object({
       title: Type.String({maxLength: 80}),
     }),
   ),
+  typewriter: Type.Optional(Type.Boolean()),
   fps: Type.Union([
     Type.Literal(24),
     Type.Literal(30),

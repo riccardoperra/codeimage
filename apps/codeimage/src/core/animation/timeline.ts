@@ -38,6 +38,7 @@ export type TimelineOptions = {
   lineNumbers: boolean;
   metrics: CodeMetrics;
   widths: GlyphWidths;
+  typewriter?: boolean;
 };
 
 // `offset` moves the frame from the top left of the video to its center.
@@ -224,7 +225,7 @@ export function planTimeline(
   steps: NonEmpty<TimelineStep>,
   options: TimelineOptions,
 ): Timeline {
-  const {fps, lineNumbers, metrics, widths} = options;
+  const {fps, lineNumbers, metrics, widths, typewriter = false} = options;
   const sizes = steps.map(({layout}) => ({
     width: Math.round(layout.size.width),
     height: Math.round(layout.size.height),
@@ -283,13 +284,13 @@ export function planTimeline(
         ? `@keyframes ${name}-window{${window.stops}}`
         : `@keyframes ${name}-slide{from{${boxDeclarations(from)}}to{${boxDeclarations(to)}}}`,
     );
-    const scene = pairScene(step, next, lineNumbers, widths);
+    const scene = pairScene(step, next, lineNumbers, widths, typewriter);
     for (const [active, offsetMs, durationMs] of [
       [index, 0, halfMs],
       [index + 1, halfMs, transitionMs - halfMs],
     ] as const) {
       const timing = {transitionMs, easing, offsetMs};
-      const compiled = compileScene(scene, metrics, timing, name);
+      const compiled = compileScene(scene, metrics, timing, name, typewriter);
       // The second half plays the keyframes of the first, from its offset.
       if (offsetMs === 0) css.push(compiled.css);
       scenes.push({

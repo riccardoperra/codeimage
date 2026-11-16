@@ -101,6 +101,7 @@ export function parseDraft(value: unknown): AnimationDraft {
       value.fps === 60
         ? value.fps
         : ANIMATION_DEFAULTS.fps,
+    ...(value.typewriter === true ? {typewriter: true} : {}),
     header: {
       mode:
         header.mode === 'title' || header.mode === 'tabs' ? header.mode : 'tab',

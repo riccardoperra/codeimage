@@ -1,6 +1,6 @@
 import {useI18n} from '@codeimage/locale';
 import {getEditorStore} from '@codeimage/store/editor';
-import {IconButton} from '@codeui/kit';
+import {Button, IconButton} from '@codeui/kit';
 import {Show} from 'solid-js';
 import type {AppLocaleEntries} from '../../i18n';
 import {CloseIcon} from '../Icons/CloseIcon';
@@ -51,6 +51,17 @@ export function TransportBar(props: {compact: boolean}) {
       <span class={styles.spacer} />
       <Show when={!props.compact}>
         <HeaderField />
+        <Button
+          size="xs"
+          theme={animation.settings().typewriter ? 'primary' : 'secondary'}
+          aria-pressed={animation.settings().typewriter === true}
+          data-animation-typewriter
+          onClick={() =>
+            animation.actions.setTypewriter(!animation.settings().typewriter)
+          }
+        >
+          {t('animation.typewriter')}
+        </Button>
         <StepsMenu />
       </Show>
       <IconButton

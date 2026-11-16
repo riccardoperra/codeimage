@@ -306,3 +306,52 @@ test('line numbers appear only with a gutter, which grows with its digits', () =
   assert.deepEqual(boxOf('9', 0), {width: 10, height: 60});
   assert.deepEqual(boxOf('9', 1000), {width: 20, height: 60});
 });
+
+test('with the typewriter, entering characters appear one by one in reading order', () => {
+  const enter = (key: string, text: string, to: Cell): TokenTransition => ({
+    kind: 'enter',
+    key,
+    text,
+    classes: '',
+    to,
+  });
+  const input = scene([
+    enter('b', 'b', {line: 1, col: 0}),
+    move('kept', {line: 0, col: 0}, {line: 0, col: 0}),
+    enter('a1', 'a', {line: 0, col: 5}),
+    enter('a2', 'c', {line: 0, col: 6}),
+  ]);
+  const {html, css} = compileScene(input, metrics, timing, 'a', true);
+  const elements = descendants(parseHtml(html));
+  const opacity = (text: string, timeMs: number) =>
+    styleAt(
+      elements.find(element => element.text === text)!,
+      css,
+      timeMs,
+    ).opacity;
+  assert.deepEqual(
+    [699, 800, 899, 900, 999].map(time =>
+      ['a', 'c', 'b'].map(
+        text => Math.round(Number(opacity(text, time) ?? 1) * 100) / 100,
+      ),
+    ),
+    [
+      [0, 0, 0],
+      [1, 0, 0],
+      [1, 0.99, 0],
+      [1, 1, 0],
+      [1, 1, 0.99],
+    ],
+  );
+  assert.equal(Number(opacity('kept', 800) ?? 1), 1);
+});
+
+test('without the typewriter, entering tokens fade in together', () => {
+  const {at} = play(
+    scene([
+      {kind: 'enter', key: 'a', text: 'a', classes: '', to: {line: 0, col: 0}},
+      {kind: 'enter', key: 'b', text: 'b', classes: '', to: {line: 1, col: 0}},
+    ]),
+  );
+  assert.equal(at('a', 850).opacity, at('b', 850).opacity);
+});

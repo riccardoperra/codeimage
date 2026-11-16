@@ -1117,6 +1117,166 @@ export async function audit({page, context, base, out, server}) {
       .click();
     await panel.waitFor({state: 'hidden'});
   });
+  await feature('animate-typewriter', async () => {
+    await page.evaluate(
+      () =>
+        new Promise(resolve => {
+          const request = indexedDB.open('keyval-store');
+          request.onsuccess = () => {
+            const transaction = request.result.transaction(
+              'keyval',
+              'readwrite',
+            );
+            transaction.objectStore('keyval').delete('document');
+            transaction.oncomplete = () => {
+              request.result.close();
+              resolve();
+            };
+          };
+        }),
+    );
+    await doctor('/', 'editor', 'inspector');
+    await windowStyle('Editor');
+    await editor().fill('const a = 1;');
+    await page
+      .locator('[data-window-tabs]')
+      .filter({has: page.getByRole('button', {name: 'Add tab', exact: true})})
+      .first()
+      .getByRole('button', {name: 'Add tab', exact: true})
+      .click();
+    await editor().fill('const a = 1;\nlet typed = "hi";');
+    await page.locator('[data-animate-toggle]').click();
+    const panel = page.locator('[data-animate-panel]');
+    await panel.waitFor();
+    const toggle = panel.locator('[data-animation-typewriter]');
+    await toggle.click();
+    assert.equal(await toggle.getAttribute('aria-pressed'), 'true');
+    const saved = () =>
+      page.evaluate(
+        () =>
+          new Promise(resolve => {
+            const request = indexedDB.open('keyval-store');
+            request.onsuccess = () => {
+              const read = request.result
+                .transaction('keyval')
+                .objectStore('keyval')
+                .get('document');
+              read.onsuccess = () => {
+                request.result.close();
+                resolve(read.result?.animation?.typewriter);
+              };
+            };
+          }),
+      );
+    for (let i = 0; i < 50 && (await saved()) !== true; i++)
+      await page.waitForTimeout(100);
+    assert.equal(await saved(), true, 'the typewriter is saved');
+    const ruler = panel.getByRole('slider', {name: 'Playhead', exact: true});
+    await ruler.focus();
+    await ruler.press('Home');
+    const seek = async ms => {
+      while (Number(await ruler.getAttribute('aria-valuenow')) < ms)
+        await ruler.press('Shift+ArrowRight');
+      await page.waitForTimeout(150);
+    };
+    const typed = () =>
+      page.locator('[data-animation-stage]:visible').evaluate(stage => {
+        const scene = [
+          ...stage.querySelectorAll('[data-animation-scene]'),
+        ].find(scene => getComputedStyle(scene).display !== 'none');
+        return [...scene.querySelectorAll('.cm-content span')]
+          .filter(span => span.style.animationName || span.style.animation)
+          .map(span => ({
+            text: span.textContent,
+            top: parseFloat(getComputedStyle(span).top),
+            left: parseFloat(getComputedStyle(span).left),
+            opacity: Number(getComputedStyle(span).opacity),
+          }))
+          .filter(span => span.top > 0)
+          .sort((a, b) => a.left - b.left);
+      });
+    const duration = kind =>
+      panel
+        .locator(`[data-animation-segment][data-kind="${kind}"]`)
+        .first()
+        .getAttribute('aria-valuenow')
+        .then(Number);
+    const holdMs = await duration('hold');
+    const transitionMs = await duration('transition');
+    const times = [0.5, 0.85, 1].map(at => holdMs + at * transitionMs);
+    const enterMs = holdMs + 0.7 * transitionMs;
+    const samples = {};
+    for (const ms of [enterMs - 100, ...times]) {
+      await seek(ms);
+      await page.locator('[data-animation-stage]:visible').screenshot({
+        path: resolve(out, `animate-typewriter-${Math.round(ms)}.png`),
+      });
+      samples[Math.round(ms)] = await typed();
+    }
+    const before = samples[Math.round(enterMs - 100)];
+    const halfway = samples[Math.round(times[1])];
+    assert.equal(
+      halfway.map(span => span.text).join(''),
+      'lettyped="hi";',
+      'each entering character is its own element',
+    );
+    assert.ok(
+      before.every(span => span.opacity === 0),
+      'nothing is typed before the enter window',
+    );
+    const mid = halfway.map(span => span.opacity);
+    assert.ok(
+      mid.every((opacity, i) => i === 0 || opacity <= mid[i - 1]),
+      `characters appear in reading order: ${mid.join(',')}`,
+    );
+    assert.ok(mid[0] === 1 && mid.at(-1) === 0, 'typing is halfway');
+    await page.evaluate(() => {
+      const send = Worker.prototype.postMessage;
+      Worker.prototype.postMessage = function (message, ...options) {
+        if (message?.kind === 'export') window.__typewriterJob = message.job;
+        return send.call(this, message, ...options);
+      };
+    });
+    await page.locator('[data-export-menu]').click();
+    const item = page.locator('[data-export-action="animation"]');
+    if (await item.isVisible()) await item.click();
+    const dialog = page.locator('[data-animation-export]');
+    const exportButton = dialog.getByRole('button', {
+      name: 'Export MP4',
+      exact: true,
+    });
+    await exportButton.waitFor();
+    await page.waitForFunction(
+      () =>
+        [...document.querySelectorAll('[data-animation-export] button')].some(
+          button => button.textContent === 'Export MP4' && !button.disabled,
+        ),
+      undefined,
+      {timeout: 60000},
+    );
+    const downloading = page.waitForEvent('download', {timeout: 180000});
+    await exportButton.click();
+    const file = resolve(out, 'animate-typewriter.mp4');
+    await (await downloading).saveAs(file);
+    const job = await page.evaluate(() => window.__typewriterJob);
+    const html = job.scenes.map(scene => scene.html).join('');
+    assert.ok(/>t<\/span>/.test(html), 'the export job types characters');
+    const {execFileSync} = await import('node:child_process');
+    for (const at of times.map(ms => (ms / 1000).toFixed(2)))
+      execFileSync('ffmpeg', [
+        '-v',
+        'error',
+        '-y',
+        '-ss',
+        at,
+        '-i',
+        file,
+        '-frames:v',
+        '1',
+        resolve(out, `animate-typewriter-export-${at}.png`),
+      ]);
+    return {samples, fps: job.config.fps, scenes: job.scenes.length};
+  });
   async function animationFixture() {
     await windowStyle('Editor');
     await editor().fill('const first = 1;');

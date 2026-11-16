@@ -28,6 +28,7 @@ export const db = factory({
         transitionMs: Number,
         easing: String,
         header: nullable({mode: String, title: String}),
+        typewriter: Boolean,
         fps: (): 24 | 30 | 50 | 60 => 30,
       },
       {defaultsToNull: true},

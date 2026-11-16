@@ -3,7 +3,7 @@ import {draculaTheme} from '@codeimage/highlight/dracula';
 import {tokenize} from '@core/snapshot/tokenize';
 import {test} from 'vitest';
 import type {Scene, Step, TokenTransition} from './model';
-import {pairScene, pairSteps} from './pair';
+import {pairScene, pairSteps, typeEntering} from './pair';
 
 const SOURCE = `function add(a: number, b: number) {
   return a + b;
@@ -277,4 +277,34 @@ test('focus dims every row outside the focused lines, marked or not', async () =
   );
   assert.deepEqual([...scene.from.dimmed], [0, 2]);
   assert.deepEqual([...scene.to.dimmed], []);
+});
+
+test('typeEntering splits entering tokens into characters on their own cells', () => {
+  const typed = typeEntering(
+    [
+      {
+        kind: 'enter',
+        key: 'k',
+        text: 'a界b',
+        classes: 'c',
+        to: {line: 2, col: 3},
+      },
+      {
+        kind: 'leave',
+        key: 'l',
+        text: 'old',
+        classes: '',
+        from: {line: 0, col: 0},
+      },
+    ],
+    new Map([['界', 2]]),
+  );
+  assert.deepEqual(
+    typed.map(token =>
+      token.kind === 'enter'
+        ? [token.key, token.text, token.to.col]
+        : token.key,
+    ),
+    [['k#0', 'a', 3], ['k#1', '界', 4], ['k#2', 'b', 6], 'l'],
+  );
 });

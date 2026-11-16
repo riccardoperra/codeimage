@@ -20,7 +20,7 @@ const ENTER_START = 0.7;
 const DIM_OPACITY = 0.35;
 
 const px = (value: number) => `${Number(value.toFixed(3))}px`;
-const percent = (ratio: number) => `${ratio * 100}%`;
+const percent = (ratio: number) => `${Number((ratio * 100).toFixed(4))}%`;
 
 const escapeHtml = (text: string) =>
   text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
@@ -56,6 +56,7 @@ export function compileScene(
   metrics: CodeMetrics,
   timing: SceneTiming,
   name: string,
+  typewriter = false,
 ): {html: string; css: string; activeRanges: [number, number][]} {
   const {charWidth, lineHeight} = metrics;
   const {from, to} = scene;
@@ -73,7 +74,19 @@ export function compileScene(
   const compileLayer = <T extends Motion>(
     transitions: readonly T[],
     layer: Layer<T>,
+    typed = false,
   ) => {
+    const typing = typed
+      ? transitions
+          .flatMap(item => {
+            const motion: Motion = item;
+            return motion.kind === 'enter' ? [{item, to: motion.to}] : [];
+          })
+          .sort((a, b) => a.to.line - b.to.line || a.to.col - b.to.col)
+          .map(({item}, order) => [item, order] as const)
+      : [];
+    const typedOrder = new Map<T, number>(typing);
+    const slot = (1 - ENTER_START) / Math.max(1, typing.length);
     const pose = (cell: Cell, box: StepBox): Pose => ({
       ...layer.place(cell, box),
       opacity: box.dimmed.has(cell.line) ? DIM_OPACITY : 1,
@@ -105,7 +118,14 @@ export function compileScene(
         const end = pose(motion.to, to);
         if (motion.kind === 'enter') {
           entering = true;
-          const fade = `0%{opacity:0}${percent(ENTER_START)}{opacity:0}100%{opacity:${end.opacity}}`;
+          const order = typedOrder.get(item);
+          const start =
+            order === undefined ? ENTER_START : ENTER_START + order * slot;
+          const shown =
+            order === undefined
+              ? ''
+              : `${percent(start + slot)}{opacity:${end.opacity}}`;
+          const fade = `0%{opacity:0}${percent(start)}{opacity:0}${shown}100%{opacity:${end.opacity}}`;
           return layer.element(item, `${at(end)};${animate(fade)}`);
         }
         const start = pose(motion.from, from);
@@ -130,14 +150,18 @@ export function compileScene(
   const token = (token: TokenTransition, style: string) =>
     `<span class="${escapeAttribute(token.classes)}" style="position:absolute;white-space:pre;${style}">${escapeHtml(token.text)}</span>`;
 
-  const code = compileLayer(scene.code, {
-    place: cell => ({x: cell.col * charWidth, y: cell.line * lineHeight}),
-    element: token,
-    before: token =>
-      token.kind === 'move' && token.fromClasses !== undefined
-        ? {...token, classes: token.fromClasses}
-        : undefined,
-  });
+  const code = compileLayer(
+    scene.code,
+    {
+      place: cell => ({x: cell.col * charWidth, y: cell.line * lineHeight}),
+      element: token,
+      before: token =>
+        token.kind === 'move' && token.fromClasses !== undefined
+          ? {...token, classes: token.fromClasses}
+          : undefined,
+    },
+    typewriter,
+  );
   const bands = (attributes: (mark: MarkTransition['mark']) => string) =>
     compileLayer(scene.marks, {
       place: cell => ({x: 0, y: cell.line * lineHeight}),

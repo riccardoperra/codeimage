@@ -248,14 +248,31 @@ function pairMarks(from: Step, to: Step): MarkTransition[] {
   );
 }
 
+export function typeEntering(
+  transitions: TokenTransition[],
+  widths = NO_WIDTHS,
+): TokenTransition[] {
+  return transitions.flatMap<TokenTransition>(token => {
+    if (token.kind !== 'enter') return [token];
+    let col = token.to.col;
+    return graphemes(token.text).map((text, index) => {
+      const to = {line: token.to.line, col};
+      col = columnsAfter(col, text, widths);
+      return {...token, key: `${token.key}#${index}`, text, to};
+    });
+  });
+}
+
 export function pairScene(
   from: Step,
   to: Step,
   lineNumbers: boolean,
   widths = NO_WIDTHS,
+  typewriter = false,
 ): Scene {
+  const code = pairSteps(from.lines, to.lines, widths);
   return {
-    code: pairSteps(from.lines, to.lines, widths),
+    code: typewriter ? typeEntering(code, widths) : code,
     gutter: lineNumbers ? pairGutters(from, to) : null,
     marks: pairMarks(from, to),
     from: stepBox(from, widths),
