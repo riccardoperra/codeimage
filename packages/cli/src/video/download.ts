@@ -1,14 +1,6 @@
 import {createHash, randomUUID} from 'node:crypto';
-import {constants, createWriteStream} from 'node:fs';
-import {
-  access,
-  chmod,
-  mkdir,
-  readFile,
-  rename,
-  rm,
-  writeFile,
-} from 'node:fs/promises';
+import {constants, createWriteStream, openSync, writeFileSync} from 'node:fs';
+import {access, chmod, mkdir, readFile, rename, rm} from 'node:fs/promises';
 import {homedir} from 'node:os';
 import {join} from 'node:path';
 import {pipeline} from 'node:stream/promises';
@@ -129,10 +121,13 @@ export async function downloadFfmpeg(
           yield chunk;
         }
       }
+      // Open before yielding: a signal cannot unlink before an async open creates the file.
       await pipeline(
         compressed(),
         createGunzip(),
-        createWriteStream(temporary[0], {flags: 'wx', mode: 0o700}),
+        createWriteStream(temporary[0], {
+          fd: openSync(temporary[0], 'wx', 0o700),
+        }),
         {signal},
       );
       if (stderr.isTTY) stderr.write('\rDownloading ffmpeg: 100%\n');
@@ -142,14 +137,19 @@ export async function downloadFfmpeg(
         const response = await request(`${asset.target}.${name}`);
         const text = await response.text();
         if (!text.trim()) throw new Error(`Empty ffmpeg ${name}`);
-        await writeFile(temporary[index + 1], text, {flag: 'wx'});
+        writeFileSync(temporary[index + 1], text, {flag: 'wx'});
       }
       await chmod(temporary[0], 0o755);
       signal.throwIfAborted();
       // Publish the binary last, so a hit always has both licence documents.
       await rename(temporary[1], join(folder, 'LICENSE'));
       await rename(temporary[2], join(folder, 'README'));
-      await rename(temporary[0], join(folder, binaryName));
+      try {
+        await rename(temporary[0], join(folder, binaryName));
+      } catch (error) {
+        // Windows cannot replace an executable another export has started.
+        if (!(await cachedBinary(folder, binaryName, platform))) throw error;
+      }
       return join(folder, binaryName);
     } finally {
       await Promise.all(temporary.map(path => rm(path, {force: true})));
