@@ -16,6 +16,9 @@ const base = process.argv[2] ?? 'http://127.0.0.1:4459';
 const out = resolve(process.argv[3] ?? '/tmp/codeimage-a6-web-parity');
 const ffmpeg = process.env.A6_FFMPEG ?? 'ffmpeg';
 const ffprobe = process.env.A6_FFPROBE ?? 'ffprobe';
+const scenario = process.env.A6_CASE ?? 'unequal';
+assert.ok(['unequal', 'hidden', 'signature'].includes(scenario));
+const requestedFps = Number(process.env.A6_FPS ?? 30);
 await mkdir(out, {recursive: true});
 const profile = await mkdtemp(join(tmpdir(), 'a6-parity-chrome-'));
 const owner = await chromium.launchPersistentContext(profile, {
@@ -65,8 +68,11 @@ try {
     .filter({has: page.getByRole('button', {name: 'Add tab', exact: true})})
     .first();
   const codes = [
-    'const answer = 41;\nconsole.log(answer);',
-    'const answer = 42;\nconsole.log(`The answer is ${answer}`);',
+    'let a = 1;',
+    [
+      ...Array.from({length: 11}, (_, i) => `const row${i} = ${i};`),
+      'const lastLine = "BOTTOM_SENTINEL_WWWWWWWWWWWWW";',
+    ].join('\n'),
   ];
   for (const [index, code] of codes.entries()) {
     if (index)
@@ -87,15 +93,18 @@ try {
       code,
     );
   }
-  if (process.env.A6_TARGET === 'square') {
-    const frame = page.locator('[data-section="frame"] > button');
-    if ((await frame.getAttribute('aria-expanded')) !== 'true')
-      await frame.click();
+  const frame = page.locator('[data-section="frame"] > button');
+  if ((await frame.getAttribute('aria-expanded')) !== 'true')
+    await frame.click();
+  if (scenario === 'hidden')
     await page
-      .locator('[data-control="frame.aspectRatio"]')
-      .getByRole('button')
-      .click();
-    await page.getByRole('option', {name: 'Square', exact: true}).click();
+      .getByRole('switch', {name: 'Visible', exact: true})
+      .press('Space');
+  if (scenario === 'signature') {
+    await page.locator('#signature-options').click();
+    await page
+      .getByPlaceholder('@handle or profile link', {exact: true})
+      .fill('@step_size');
     await page.keyboard.press('Escape');
   }
   await page.locator('[data-animate-toggle]').click();
@@ -110,6 +119,11 @@ try {
     await scale.click();
     await page.getByRole('option', {name: '1×', exact: true}).click();
   }
+  await dialog.getByRole('button', {name: /^Frame rate/}).click();
+  await page
+    .getByRole('option', {name: `${requestedFps} fps`, exact: true})
+    .click();
+  assert.match(await dialog.innerText(), /Current frame/);
   await page.waitForFunction(
     () =>
       [...document.querySelectorAll('[data-animation-export] button')].some(
@@ -152,6 +166,18 @@ try {
     await page.waitForTimeout(100);
   }
   assert.equal(project.animation.steps.length, 2);
+  assert.equal(project.animation.fps, requestedFps);
+  assert.deepEqual(
+    project.editor.editors.map(editor => editor.code),
+    codes,
+  );
+  assert.equal(project.frame.visible, scenario !== 'hidden');
+  assert.equal(
+    project.frame.signature?.handle ?? null,
+    scenario === 'signature' ? '@step_size' : null,
+  );
+  assert.equal(project.frame.aspectRatio, null);
+  assert.equal(project.frame.exportTarget, null);
   const projectPath = join(out, 'project.json');
   await writeFile(projectPath, JSON.stringify(project, null, 2));
   const child = spawn(
@@ -195,7 +221,9 @@ try {
   );
   const ws = web.streams[0],
     cs = cli.streams[0];
+  const metadataDifferences = [];
   for (const key of [
+    'codec_name',
     'width',
     'height',
     'nb_frames',
@@ -206,8 +234,16 @@ try {
     'color_space',
     'color_transfer',
     'color_primaries',
-  ])
-    assert.equal(cs[key], ws[key], key);
+  ]) {
+    if (cs[key] !== ws[key])
+      metadataDifferences.push({key, web: ws[key], cli: cs[key]});
+  }
+  if (cli.format.duration !== web.format.duration)
+    metadataDifferences.push({
+      key: 'duration',
+      web: web.format.duration,
+      cli: cli.format.duration,
+    });
   const fps =
     Number(ws.r_frame_rate.split('/')[0]) /
     Number(ws.r_frame_rate.split('/')[1]);
@@ -252,7 +288,14 @@ try {
     diffs.push({index, time: index / fps, percent});
   }
   const result = {
-    status: diffs.every(diff => diff.percent <= 2) ? 'pass' : 'fail',
+    status:
+      metadataDifferences.length === 0 && diffs.every(diff => diff.percent <= 2)
+        ? 'pass'
+        : 'fail',
+    scenario,
+    requestedFps,
+    webHead: process.env.A6_WEB_HEAD ?? null,
+    metadataDifferences,
     backend: 'MSW',
     browser: browser.version(),
     head: execFileSync('git', ['rev-parse', 'HEAD'], {cwd: root})
@@ -265,6 +308,7 @@ try {
   };
   await writeFile(join(out, 'result.json'), JSON.stringify(result, null, 2));
   console.log(JSON.stringify(result, null, 2));
+  assert.deepEqual(metadataDifferences, [], 'Web/CLI metadata matches');
   assert.deepEqual(errors, []);
   assert.ok(
     diffs.every(diff => diff.percent <= 2),

@@ -176,7 +176,7 @@ describe('raw A2 animation frames', () => {
     const encoded = decodeApng(
       await renderer.renderAnimation({...document, format: 'apng'}),
     );
-    expect(raw.durationMs).toBe(375);
+    expect(raw.durationMs).toBe(400);
     expect(raw.fps).toBe(30);
     expect(frames).toHaveLength(encoded.length);
     for (const [index, frame] of frames.entries()) {

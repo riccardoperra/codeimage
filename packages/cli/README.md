@@ -296,10 +296,12 @@ The live helper exercises lanes 1–9, including a real upstream download and an
 unreachable proxy for the offline case. It temporarily moves an existing
 ffmpeg cache aside and restores it when finished; run it without other MP4
 exports using that cache. Set `A6_FFMPEG` / `A6_FFPROBE` to change the native
-executables used for inspection. For lane 10, run `A6_TARGET=square node packages/cli/scripts/verify-web-mp4.mjs
+executables used for inspection. For lane 10, run `node packages/cli/scripts/verify-web-mp4.mjs
 http://127.0.0.1:4459 /tmp/a6-web-parity` against an owned web development
 server. The helper exports through the web controls, reads the actual saved
-JSON, and compares its CLI MP4. Without A6_TARGET it exercises Current frame,
-whose unpersisted canvas width currently differs from the CLI. The perf helper waits for load
+JSON, and compares its CLI MP4. It uses Current frame with steps of different
+natural sizes. Set `A6_CASE=hidden` or `A6_CASE=signature` for those variants,
+`A6_FPS=24` or `A6_FPS=50` to change the default 30 fps, and `A6_WEB_HEAD` to
+record the web server's source revision. The perf helper waits for load
 below 8 before every timed cold process, records ten interleaved WebP pairs,
 then ten cached MP4 exports, and checks output dimensions and frame counts.
