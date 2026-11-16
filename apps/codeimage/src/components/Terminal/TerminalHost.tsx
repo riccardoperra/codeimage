@@ -25,7 +25,7 @@ export interface BaseTerminalProps extends Omit<
   title?: string;
   headerMode?: AnimationHeader['mode'];
   readonlyTab: boolean;
-  staticTabs?: boolean;
+  fixedTabs?: boolean;
   preview?: boolean;
   tabIcon?: LanguageIconDefinition['content'];
   onTabChange?: (tab: string) => void;

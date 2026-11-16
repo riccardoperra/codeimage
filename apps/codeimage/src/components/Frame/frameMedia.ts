@@ -55,13 +55,12 @@ export function createFrameMedia(
 ): Accessor<FrameMedia> {
   const assets = getAssetsStore();
   const request = createMemo(() => frameMediaRequest(frame()));
-  // A link is its own URL, as in Node; an upload is its object URL.
-  const assetUrl = (id: AssetId | AssetLinkId | null) =>
-    !id
-      ? null
-      : isAssetLinkUrl(id)
-        ? id.slice(assetLinkPrefix.length)
-        : (assets.getAsset(id)()?.url ?? null);
+
+  const assetUrl = (id: AssetId | AssetLinkId | null) => {
+    if (!id) return null;
+    if (isAssetLinkUrl(id)) return id.slice(assetLinkPrefix.length);
+    return assets.getAsset(id)()?.url ?? null;
+  };
   const backgroundImage = createMemo(() => assetUrl(request().backgroundImage));
   const key = () => {
     const source = request().avatar;
@@ -78,15 +77,14 @@ export function createFrameMedia(
   return () => {
     const asset = request().avatarAsset;
     const loaded = avatar.latest;
-    // Reading the sample before it settles would suspend the frame.
+
     const sampled = tone.state === 'ready' ? tone() : undefined;
+    let avatarUrl: string | null = null;
+    if (asset) avatarUrl = assetUrl(asset);
+    else if (loaded?.key === key()) avatarUrl = loaded.url;
     return {
       backgroundImage: backgroundImage(),
-      avatar: asset
-        ? assetUrl(asset)
-        : loaded?.key === key()
-          ? loaded.url
-          : null,
+      avatar: avatarUrl,
       tone:
         request().tone ??
         (sampled?.url === backgroundImage() ? sampled.tone : 'dark'),
@@ -142,7 +140,7 @@ export async function resolveFrameMedia(
         const url = await avatarImageUrl(request.avatar, signal);
         if (!url) return null;
         const image = await fetchImage(url, signal);
-        // Decode optional media before the final render, so corrupt bytes also give initials.
+
         await sample(image);
         return image;
       } catch {

@@ -39,7 +39,7 @@ vi.mock('@codeimage/store/editor/config.store', () => ({
 vi.mock('@codeimage/store/editor/terminal', () => ({
   getTerminalState: () => ({state: {}}),
 }));
-// Each entry stands for a theme resource; undefined while it loads.
+
 const loaded = vi.hoisted(() => () => ({id: 'stub', editorTheme: []}));
 const themes = vi.hoisted(() => ({list: [loaded] as (() => unknown)[]}));
 vi.mock('@codeimage/store/theme/theme.store', () => ({
@@ -96,11 +96,13 @@ for (const [width, height, resolution] of [
     exportState.resolution = resolution;
     const expectedWidth = resolution?.[0] ?? width;
     const expectedHeight = resolution?.[1] ?? height;
+    let exportTarget: string | null = null;
+    if (resolution)
+      exportTarget = resolution[0] === 1200 ? 'open-graph' : 'square';
     Object.assign(frame, {
       width,
       height,
-      exportTarget:
-        resolution?.[0] === 1200 ? 'open-graph' : resolution ? 'square' : null,
+      exportTarget,
     });
     for (const selectedTab of [undefined, tab]) {
       const html = renderToString(() =>
@@ -126,7 +128,6 @@ for (const [width, height, resolution] of [
   });
 }
 
-// The new editor mounts the export copy while the theme resources still load.
 test('waits for a loaded theme before drawing the code', () => {
   const draw = () =>
     renderToString(() =>

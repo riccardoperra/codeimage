@@ -87,9 +87,6 @@ const staticExtensions = (theme: CustomTheme) => [
 
 type MountStyles = (this: {state: EditorState; root: unknown}) => void;
 
-// CodeMirror mounts its base theme, which sets the default gutter color, only
-// from an EditorView and does not export it. Running that mount on a root with
-// no DOM returns the stylesheet an editor with this theme would add, in order.
 export function staticThemeCss(theme: CustomTheme): string {
   const style = {textContent: ''};
   const root = {head: {insertBefore() {}}, createElement: () => style};

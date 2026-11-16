@@ -1,4 +1,4 @@
-import {SIGNATURE_FONT} from '../../core/configuration/signature-fonts';
+import {SIGNATURE_FONT} from '@core/configuration/signature-fonts';
 import {
   createVar,
   fallbackVar,

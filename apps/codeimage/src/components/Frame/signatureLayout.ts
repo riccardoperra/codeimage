@@ -25,7 +25,6 @@ export function signatureScale(frameWidth: number | null | undefined): number {
   );
 }
 
-/** The frame's bottom padding, grown to keep the signature clear of the window. */
 export function frameBottomPadding(
   padding: number,
   signature: FrameState['signature'],

@@ -24,7 +24,6 @@ export interface Size {
   height: number;
 }
 
-// The window shrinks to fit the frame but never grows past its natural size.
 export const fitScale = (viewport: Size, content: Size) =>
   Math.max(
     0,
@@ -53,10 +52,6 @@ export function fittedPlacement(
   };
 }
 
-/**
- * The window's box in a frame, and the watermark scope its children register
- * in. A given placement (Node) replaces the browser's measurement.
- */
 export function FittedWindow(
   props: ParentProps<{
     active: boolean;
@@ -92,8 +87,7 @@ export function FittedWindow(
       current.scale === next.scale
     )
       return;
-    // Setting the signal outside a batch restyles the window synchronously,
-    // which the watermark's export preparation relies on.
+
     setMeasured(next);
     watermark.invalidate();
   };
