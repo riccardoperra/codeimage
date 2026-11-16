@@ -888,7 +888,7 @@ function project(tabs: Tab[], overrides: Overrides = {}): AnimationInput {
   } as AnimationInput;
 }
 
-// The A1 edge cases from scripts/parity/animation-endpoints.ts on #707.
+// The A1 edge cases from scripts/parity/animation-endpoints/index.ts on #707.
 function edgeCases(): {name: string; input: AnimationInput}[] {
   const RENAME_FROM = `function computeTotal(items: number[]) {
   return items.reduce((sum, item) => sum + item, 0);

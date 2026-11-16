@@ -25,15 +25,20 @@ export function signatureScale(frameWidth: number | null | undefined): number {
   );
 }
 
+export function frameBottomPadding(
+  padding: number,
+  signature: FrameState['signature'],
+  scale = 1,
+) {
+  if (!signature) return padding;
+  return Math.max(padding, Math.ceil(RESERVED_SPACE[signature.style] * scale));
+}
+
 export function framePadding(
   padding: number,
   signature: FrameState['signature'],
   scale = 1,
 ) {
   if (!signature) return `${padding}px`;
-  const bottom = Math.max(
-    padding,
-    Math.ceil(RESERVED_SPACE[signature.style] * scale),
-  );
-  return `${padding}px ${padding}px ${bottom}px`;
+  return `${padding}px ${padding}px ${frameBottomPadding(padding, signature, scale)}px`;
 }

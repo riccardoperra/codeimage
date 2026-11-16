@@ -24,7 +24,7 @@ export function loadAvatar(source: AvatarSource): Promise<string | null> {
   const key = avatarKey(source);
   let entry = cache.get(key);
   if (!entry) {
-    entry = imageUrl(source)
+    entry = avatarImageUrl(source)
       .then(url => (url ? shrink(url) : null))
       .catch(() => null);
     // A failure is not kept, so the next render tries again.
@@ -36,13 +36,22 @@ export function loadAvatar(source: AvatarSource): Promise<string | null> {
   return entry;
 }
 
-async function json(url: string): Promise<Record<string, unknown> | null> {
-  const response = await fetch(url, {headers: {Accept: 'application/json'}});
+async function json(
+  url: string,
+  signal?: AbortSignal,
+): Promise<Record<string, unknown> | null> {
+  const response = await fetch(url, {
+    headers: {Accept: 'application/json'},
+    signal,
+  });
   if (!response.ok) return null;
   return (await response.json()) as Record<string, unknown>;
 }
 
-async function imageUrl(source: AvatarSource): Promise<string | null> {
+export async function avatarImageUrl(
+  source: AvatarSource,
+  signal?: AbortSignal,
+): Promise<string | null> {
   switch (source.provider) {
     case 'github':
       // The same image as `github.com/<login>.png`, whose redirect has no CORS headers.
@@ -54,12 +63,13 @@ async function imageUrl(source: AvatarSource): Promise<string | null> {
         `https://${source.instance}/api/v1/accounts/lookup?acct=${encodeURIComponent(
           source.user,
         )}`,
+        signal,
       );
       const url = account?.avatar_static ?? account?.avatar;
       return typeof url === 'string' ? url : null;
     }
     case 'bluesky':
-      return blueskyAvatar(source.actor);
+      return blueskyAvatar(source.actor, signal);
   }
 }
 
@@ -67,30 +77,38 @@ async function imageUrl(source: AvatarSource): Promise<string | null> {
  * Bluesky's image CDN sends no CORS headers, so the avatar is read as a blob
  * from the account's own server (its PDS), which does.
  */
-async function blueskyAvatar(actor: string): Promise<string | null> {
+async function blueskyAvatar(
+  actor: string,
+  signal?: AbortSignal,
+): Promise<string | null> {
   const profile = await json(
     `https://public.api.bsky.app/xrpc/app.bsky.actor.getProfile?actor=${encodeURIComponent(
       actor,
     )}`,
+    signal,
   );
   const did = profile?.did;
   const avatar = profile?.avatar;
   if (typeof did !== 'string' || typeof avatar !== 'string') return null;
   const cid = avatar.match(/\/([a-z\d]+)(?:@[a-z]+)?$/i)?.[1];
   if (!cid) return null;
-  const pds = await personalDataServer(did);
+  const pds = await personalDataServer(did, signal);
   if (!pds) return null;
   return `${pds}/xrpc/com.atproto.sync.getBlob?did=${encodeURIComponent(
     did,
   )}&cid=${encodeURIComponent(cid)}`;
 }
 
-async function personalDataServer(did: string): Promise<string | null> {
+async function personalDataServer(
+  did: string,
+  signal?: AbortSignal,
+): Promise<string | null> {
   const document = did.startsWith('did:plc:')
-    ? await json(`https://plc.directory/${did}`)
+    ? await json(`https://plc.directory/${did}`, signal)
     : did.startsWith('did:web:')
       ? await json(
           `https://${did.slice('did:web:'.length)}/.well-known/did.json`,
+          signal,
         )
       : null;
   const services = document?.service;

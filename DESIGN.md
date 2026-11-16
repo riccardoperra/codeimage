@@ -150,6 +150,8 @@ The editor is CodeMirror 6. CodeMirror owns the DOM it renders and redraws it at
 - To hide something, remove its extension (a `Compartment`, or `createExtension` returning `[]`). Do not clean the DOM afterwards.
 - Something drawn only while editing must not change the layout. The frame fits the longest line, so a line class may change opacity, background or an inset `box-shadow`, but an inline widget that adds width moves the frame.
 - Markup that no live `EditorView` owns, such as `StaticCodeView`, the animation scenes and export clones, may be read from the DOM.
+- Tooltips of the canvas editor mount in the stage's popup host, right after the frame. It sits outside FitFrame's zoom and outside the export copy, so markers, menus and toolbars keep their size and never reach an image. They stay inside the canvas, under panels and sheets. Tab reaches them right after the editor, and a focus entry just before the editor sends Shift+Tab to the line marker, as when the markers sat in the gutter.
+- CodeMirror counts the gutters' width as a scroll margin and hides a tooltip that falls in it. The line marker, its menu and the What's new dot sit beside the gutters, so they use `clip: false` and hide themselves from `getCoords`: they are placed off screen when their line is outside `view.visibleRanges` or the middle of the line leaves the popup space, and otherwise kept inside that space.
 
 ## Text and languages
 
@@ -171,8 +173,8 @@ The editor is CodeMirror 6. CodeMirror owns the DOM it renders and redraws it at
 node .agents/skills/verify-codeimage/scripts/capture-design.mjs http://localhost:4343
 ```
 
-| Sidebar Accordion, the default                                     | Dock                                              | Sidebar Rail                                                 |
-| ----------------------------------------------------------- | ------------------------------------------------- | ------------------------------------------------------------ |
+| Sidebar Accordion, the default                                      | Dock                                              | Sidebar Rail                                                       |
+| ------------------------------------------------------------------- | ------------------------------------------------- | ------------------------------------------------------------------ |
 | ![Sidebar Accordion](docs/design/screenshots/01-inspector-1440.png) | ![Dock](docs/design/screenshots/09-dock-1440.png) | ![Sidebar Rail](docs/design/screenshots/12-studio-themes-1440.png) |
 
 The audit that started this work is in [`docs/design/ui-audit.md`](docs/design/ui-audit.md).

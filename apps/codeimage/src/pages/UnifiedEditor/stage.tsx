@@ -24,6 +24,7 @@ import type {Accessor, Component} from 'solid-js';
 import {untrackCommand} from 'statebuilder/commands';
 import {FrameSkeleton} from '../../components/Frame/FrameSkeleton';
 import {PreviewFrame} from '../../components/Frame/PreviewFrame';
+import {EditorPopupHost} from '../../components/CustomEditor/popupHost';
 import {SuspenseEditorItem} from '../../components/PropertyEditor/SuspenseEditorItem';
 import {TerminalHost} from '../../components/Terminal/TerminalHost';
 import {ThemeBoxSkeleton} from '../../components/ThemeSwitcher/ThemeBoxSkeleton';
@@ -32,6 +33,7 @@ import type {EditorPageState} from './page-state';
 import {ReadOnlyNotice} from './ReadOnlyNotice';
 import {FitFrame} from './FitFrame';
 import * as placeholderStyles from './frame-placeholder.css';
+import * as snippetStyles from './snippet.css';
 import type {ThemeEntry} from './model';
 import {createExporter} from './shell/export';
 import type {Exporter} from './shell/export';
@@ -188,6 +190,7 @@ export function createStage(pageState: Accessor<EditorPageState>): Stage {
     compact,
     Canvas: () => {
       const [pillHost, setPillHost] = createSignal<HTMLDivElement>();
+      const [popupHost, setPopupHost] = createSignal<HTMLDivElement>();
       onMount(() => getExportCanvasStore().initCanvas(exportRef));
       const [fontsReady] = createResource(exportRef, element => {
         // Layout starts loading the preview's code font before awaiting it.
@@ -198,23 +201,26 @@ export function createStage(pageState: Accessor<EditorPageState>): Stage {
       // export copy renders into a portal, so its place in the tree is free.
       return (
         <div ref={setPillHost} class={shortcutStyles.canvas}>
-          <FitFrame
-            onScaleChange={setScale}
-            overlay={<ReadOnlyNotice state={pageState()} />}
-          >
-            <SuspenseEditorItem
-              fallback={<FramePlaceholder frame={exportRef} />}
+          <EditorPopupHost.Provider value={popupHost}>
+            <FitFrame
+              onScaleChange={setScale}
+              overlay={<ReadOnlyNotice state={pageState()} />}
             >
-              <Suspense fallback={<FramePlaceholder frame={exportRef} />}>
-                <Show when={fontsReady()}>
-                  <AnimationPreview pillHost={pillHost()}>
-                    <ManagedFrame />
-                  </AnimationPreview>
-                </Show>
-              </Suspense>
-            </SuspenseEditorItem>
-            <PreviewFrame ref={setExportRef} />
-          </FitFrame>
+              <SuspenseEditorItem
+                fallback={<FramePlaceholder frame={exportRef} />}
+              >
+                <Suspense fallback={<FramePlaceholder frame={exportRef} />}>
+                  <Show when={fontsReady()}>
+                    <AnimationPreview pillHost={pillHost()}>
+                      <ManagedFrame />
+                    </AnimationPreview>
+                  </Show>
+                </Suspense>
+              </SuspenseEditorItem>
+              <PreviewFrame ref={setExportRef} />
+            </FitFrame>
+          </EditorPopupHost.Provider>
+          <div ref={setPopupHost} class={snippetStyles.popupHost} />
           <Show when={!compact() && pageState().kind !== 'read-only'}>
             <ShortcutHelp canvas={pillHost} editable={pageState().editable} />
           </Show>

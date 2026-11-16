@@ -5,6 +5,7 @@ export interface AnnotatedCode {
   code: string;
   marks: TabMarks;
   count: number;
+  sourceLines: number[];
 }
 
 const NOTATION = /\[!code (\+\+|--|highlight|focus)(?::([1-9]\d*))?\]/g;
@@ -38,6 +39,7 @@ export function parseAnnotations(
 ): AnnotatedCode {
   const source = input.replace(/\r\n/g, '\n').split('\n');
   const output: string[] = [];
+  const sourceLines: number[] = [];
   const pending: {
     line: number;
     kind: LineMark['kind'] | 'focus';
@@ -46,7 +48,7 @@ export function parseAnnotations(
   const focusedLines = new Set<number>();
   let count = 0;
   let template = '';
-  for (const line of source) {
+  for (const [sourceIndex, line] of source.entries()) {
     const openAtStart = template;
     template = quoteAt(line, template, line.length) === '`' ? '`' : '';
     const annotations = [...line.matchAll(NOTATION)].filter(
@@ -54,6 +56,7 @@ export function parseAnnotations(
     );
     if (!annotations.length) {
       output.push(line);
+      sourceLines.push(sourceIndex + 1);
       continue;
     }
     const first = annotations[0].index;
@@ -75,6 +78,7 @@ export function parseAnnotations(
     }
     if (commentStart < 0 || quoteAt(line, openAtStart, commentStart)) {
       output.push(line);
+      sourceLines.push(sourceIndex + 1);
       continue;
     }
     const comment = line.slice(commentStart, commentEnd);
@@ -107,7 +111,10 @@ export function parseAnnotations(
       });
       count++;
     }
-    if (!standalone) output.push(cleaned);
+    if (!standalone) {
+      output.push(cleaned);
+      sourceLines.push(sourceIndex + 1);
+    }
   }
   const lines = new Map<number, LineMark>();
   for (const mark of pending) {
@@ -127,5 +134,6 @@ export function parseAnnotations(
       focusedLines: [...focusedLines].sort((a, b) => a - b),
     },
     count,
+    sourceLines,
   };
 }

@@ -1,4 +1,6 @@
 import {trackTimelineInput} from '../../components/Animation/timeline/motion';
+import {getRootEditorStore} from '@codeimage/store/editor';
+import {repositionTooltips} from '@codemirror/view';
 import {getEditorSyncAdapter} from '@codeimage/store/editor/createEditorSync';
 import {getWhatsNew} from '../../state/whats-new';
 import {WhatsNewHost} from '../../components/WhatsNew/WhatsNewHost';
@@ -37,6 +39,7 @@ function Editor() {
     ),
   );
   const model = createEditorControlsModel();
+  const editor = getRootEditorStore();
   createEffect(
     on(
       adapter.snippetId,
@@ -67,6 +70,11 @@ function Editor() {
     if (!(root instanceof HTMLElement)) return;
     if (value) root.dataset.panelSide = value;
     else delete root.dataset.panelSide;
+    const view = editor.activeEditorView();
+    if (view)
+      queueMicrotask(() => {
+        if (editor.activeEditorView() === view) repositionTooltips(view);
+      });
   });
 
   return (

@@ -14,6 +14,7 @@ import type {
 } from '@core/animation/model';
 import {
   planTimeline,
+  timelineSize,
   type StepLayout,
   type Timeline,
   type TimelineStep,
@@ -25,9 +26,10 @@ import {render} from 'solid-js/web';
 import StaticCodeView from '../CustomEditor/StaticCodeView';
 import {targetLayout} from '@core/animation/target-layout';
 import * as frameStyles from '../Frame/Frame.css';
-import {FrameView} from '../Frame/PreviewFrame';
 import {createMeasureCache} from './measureCache';
 import {getFrameState} from '@codeimage/store/editor/frame';
+import {createFrameMedia} from '../Frame/frameMedia';
+import {FrameView} from '../Frame/FrameView';
 
 export type PreviewTab = Pick<
   EditorState,
@@ -202,6 +204,7 @@ export async function measurePreview(
             owner,
             () => (
               <FrameView
+                media={createFrameMedia(() => getFrameState().store)()}
                 targetSize={targetSize}
                 natural
                 signatureWidth={signatureWidth}
@@ -225,9 +228,7 @@ export async function measurePreview(
   let measurements = await measureLayouts();
   if (getFrameState().store.signature)
     measurements = await measureLayouts(
-      Math.round(
-        Math.max(...measurements.map(({layout}) => layout.size.width)),
-      ),
+      timelineSize(measurements.map(({layout}) => layout)).width,
     );
 
   const step = (index: number) => ({

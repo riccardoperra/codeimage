@@ -1,20 +1,15 @@
-import {getAssetsStore, isAssetUrl} from '@codeimage/store/assets/assets';
+import {isAssetUrl} from '@codeimage/store/assets/assetIds';
+import type {FrameMedia} from './frameMedia';
 import type {
   FrameSignature as Signature,
   FrameState,
   SignaturePlatform,
 } from '@codeimage/store/frame/model';
-import {avatarKey, loadAvatar} from '@codeimage/store/frame/avatar';
-import {
-  avatarSource,
-  displayHandle,
-  initials,
-} from '@codeimage/store/frame/signature';
+import {displayHandle, initials} from '@codeimage/store/frame/signature';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 import type {ParentProps} from 'solid-js';
 import {
   createEffect,
-  createResource,
   createSignal,
   Match,
   on,
@@ -22,13 +17,17 @@ import {
   onMount,
   Show,
   Switch,
-  untrack,
 } from 'solid-js';
 import * as styles from './FrameSignature.css';
 import {platformIconPaths} from './platformIcons';
-import {createSignatureTone} from './signatureTone';
 
-export {framePadding, signatureScale} from './signatureLayout';
+export {
+  frameBottomPadding,
+  framePadding,
+  signatureScale,
+} from './signatureLayout';
+
+const scaledPx = (value: number) => `calc(${value}px * ${styles.scale})`;
 
 export function PlatformIcon(props: {
   platform: SignaturePlatform | null;
@@ -40,7 +39,7 @@ export function PlatformIcon(props: {
       {platform => (
         <svg
           class={props.class ?? styles.icon}
-          style={{width: styles.px(props.size), height: styles.px(props.size)}}
+          style={{width: scaledPx(props.size), height: scaledPx(props.size)}}
           viewBox="0 0 24 24"
           fill="currentColor"
           aria-hidden="true"
@@ -52,29 +51,8 @@ export function PlatformIcon(props: {
   );
 }
 
-function Avatar(props: {signature: Signature}) {
-  const assets = getAssetsStore();
-  const source = () =>
-    props.signature.avatar === 'profile' ? avatarSource(props.signature) : null;
-  const key = () => {
-    const value = source();
-    return value ? avatarKey(value) : null;
-  };
-  // Keyed by the source, so typing a handle does not refetch the same
-  // avatar, and an avatar is only shown for the account it was loaded for.
-  const [profileAvatar] = createResource(key, async loading => {
-    const value = untrack(source);
-    return {key: loading, url: value ? await loadAvatar(value) : null};
-  });
-  const url = () => {
-    const avatar = props.signature.avatar;
-    if (!avatar) return null;
-    if (avatar === 'profile') {
-      const loaded = profileAvatar.latest;
-      return loaded && loaded.key === key() ? loaded.url : null;
-    }
-    return assets.getAsset(avatar)()?.url ?? null;
-  };
+function Avatar(props: {signature: Signature; url: string | null}) {
+  const url = () => props.url;
   const [failed, setFailed] = createSignal<string | null>(null);
   const onError = () => setFailed(url());
   return (
@@ -123,6 +101,7 @@ function FitText(props: ParentProps<{class?: string}>) {
 /** The signature itself, without its place in the frame. */
 export function SignatureMark(props: {
   signature: Signature;
+  avatar: string | null;
   ref?: (element: HTMLElement) => void;
 }) {
   const handle = () => displayHandle(props.signature);
@@ -146,7 +125,7 @@ export function SignatureMark(props: {
       </Match>
       <Match when={props.signature.style === 'card'}>
         <div ref={element => props.ref?.(element)} class={styles.card}>
-          <Avatar signature={props.signature} />
+          <Avatar signature={props.signature} url={props.avatar} />
           <div class={styles.cardText}>
             <FitText class={styles.cardName}>
               {props.signature.name?.trim() ||
@@ -170,6 +149,7 @@ export function SignatureMark(props: {
 
 export function FrameSignature(props: {
   signature: FrameState['signature'];
+  media: FrameMedia;
   background: string | null | undefined;
   /** From `signatureScale()`. */
   scale: number;
@@ -179,7 +159,7 @@ export function FrameSignature(props: {
   /** Receives the visible mark: the edit button, or the mark itself. */
   markRef?: (element: HTMLElement) => void;
 }) {
-  const tone = createSignatureTone(() => props.background);
+  const tone = () => props.media.tone;
   // Keep the editor's focus and selection, and start no drag.
   const preventSelection = (event: Event) => {
     event.preventDefault();
@@ -206,7 +186,11 @@ export function FrameSignature(props: {
           <Show
             when={props.onEdit}
             fallback={
-              <SignatureMark signature={signature()} ref={props.markRef} />
+              <SignatureMark
+                signature={signature()}
+                avatar={props.media.avatar}
+                ref={props.markRef}
+              />
             }
           >
             <button
@@ -220,7 +204,10 @@ export function FrameSignature(props: {
               onMouseDown={preventSelection}
               onClick={editSignature}
             >
-              <SignatureMark signature={signature()} />
+              <SignatureMark
+                signature={signature()}
+                avatar={props.media.avatar}
+              />
             </button>
           </Show>
         </div>

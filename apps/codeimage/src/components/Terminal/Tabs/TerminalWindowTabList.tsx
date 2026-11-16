@@ -27,7 +27,7 @@ export interface TerminalWindowTabListProps {
   small?: boolean;
   showOnlyActiveTab?: boolean;
   activeTabId?: string;
-  staticTabs?: boolean;
+  fixedTabs?: boolean;
 }
 
 export function TerminalWindowTabList(
@@ -35,7 +35,7 @@ export function TerminalWindowTabList(
 ) {
   return (
     <>
-      {props.staticTabs ||
+      {props.fixedTabs ||
       (props.appearance && (props.readOnly || props.preview)) ? (
         <StaticWindowTabs {...props} />
       ) : props.preview ? (

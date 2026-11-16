@@ -169,7 +169,7 @@ Layouts do not import What's new modules. The root oxlint override enforces that
 
 Show me on a `control:` place calls `model.controls.reveal`, a generic capability each layout registers to open the panel that holds a control.
 Dock and the Sidebar read the panel from their placement maps, which also drive rendering, so a control without a panel fails the typecheck.
-`editor:line-marks` belongs to the line marks CodeMirror plugin, which renders its dot into `document.body`, outside the exported DOM.
+`editor:line-marks` belongs to the line marks CodeMirror plugin, which renders its dot in a CodeMirror tooltip under `document.body`, outside the exported DOM.
 A highlight whose row is not rendered, such as window style with the title bar off, has no dot and no Show me.
 The Showcase has a minimise button that stores the release in `minimized`, after which it announces through the Nudge.
 `UPCOMING` in the registry holds prepared highlights that nothing renders.

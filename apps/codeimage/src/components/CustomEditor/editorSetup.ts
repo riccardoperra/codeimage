@@ -21,6 +21,7 @@ import {
   keymap,
   rectangularSelection,
 } from '@codemirror/view';
+
 export const EDITOR_BASE_SETUP: Extension = [
   highlightSpecialChars(),
   drawSelection(),

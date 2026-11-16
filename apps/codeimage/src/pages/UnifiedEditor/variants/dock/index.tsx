@@ -1,7 +1,8 @@
+import {BarSettings} from './BarSettings';
 import {getEditorStore} from '@codeimage/store/editor';
 import {useI18n} from '@codeimage/locale';
 import {signatureEditor} from '@codeimage/store/frame/signatureEditor';
-import {Button, IconButton} from '@codeui/kit';
+import {Button} from '@codeui/kit';
 import {Popover} from '@kobalte/core/popover';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 import {
@@ -12,6 +13,7 @@ import {
   onCleanup,
   onMount,
   Show,
+  untrack,
 } from 'solid-js';
 import type {JSX} from 'solid-js';
 import {Dynamic} from 'solid-js/web';
@@ -24,12 +26,8 @@ import {commandMenu} from '../../command-menu/state';
 import type {VariantMeta, VariantProps} from '../../contract';
 import {fieldId, SegmentedChoice, SelectChoice} from '../../controls/fields';
 import {CanvasToolbar} from '../../controls/CanvasToolbar';
-import {keepMarkToolbarAboveSelection} from '../../controls/mark-toolbar';
 import {ShortcutHelp} from '../../controls/ShortcutHelp';
 import type {ControlId} from '../../model';
-import {SettingsIcon} from '../../shell/icons';
-import {settings} from '../../shell/settings-state';
-import {claimHeaderActions} from '../../shell/header-actions';
 import {themeStyle} from '../../theme-styles/style';
 import {ThemeSwatch} from '../../ThemeSwatch';
 import {
@@ -191,32 +189,9 @@ function DockItem(props: DockItemProps & {host: DockItemHost}) {
   );
 }
 
-/** The settings entry in the floating bar, beside Search. */
-function BarSettings() {
-  const [t] = useI18n<AppLocaleEntries>();
-  claimHeaderActions(['commands', 'settings']);
-  return (
-    <IconButton
-      class={styles.item}
-      theme={'secondary'}
-      variant={'ghost'}
-      size={'sm'}
-      aria-label={t('editor.settings')}
-      title={t('editor.settings')}
-      aria-haspopup="dialog"
-      aria-expanded={settings.isOpen()}
-      data-settings-trigger
-      onClick={() => settings.open()}
-    >
-      <SettingsIcon size={16} />
-    </IconButton>
-  );
-}
-
 export default function Dock(props: VariantProps) {
   const [t] = useI18n<AppLocaleEntries>();
-  keepMarkToolbarAboveSelection();
-  const fields = createFields(props.model);
+  const fields = untrack(() => createFields(props.model));
   const compact = createMediaQuery('(max-width: 767px)');
   const canHover = createMediaQuery('(hover: hover) and (pointer: fine)');
 
@@ -255,10 +230,16 @@ export default function Dock(props: VariantProps) {
   });
 
   const dock: DockApi = {
-    model: props.model,
-    stage: props.stage,
+    get model() {
+      return props.model;
+    },
+    get stage() {
+      return props.stage;
+    },
     fields,
-    ThemePicker: props.ThemePicker,
+    get ThemePicker() {
+      return props.ThemePicker;
+    },
     panel,
     compact,
     close,

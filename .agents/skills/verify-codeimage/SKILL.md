@@ -68,7 +68,7 @@ The audit helper `scripts/audit.mjs` is invoked by the main helper when `VERIFY_
 
 ## Scope and maintenance
 
-The feature map follows this checkout, not proposals or unmerged branches. Source readers must check recent commits for new user-facing paths before claiming completeness. The Animate panel of the guest editor is mapped in [features/animate.md](features/animate.md); there is no CLI package in this checkout. Live runs use the real local web app with its existing MSW/Auth0 boundary; production OAuth, PostgreSQL and platform-native sharing remain separate integration checks. Audit assertions prove selected journeys, not every format, control, language or viewport.
+The feature map follows this checkout, not proposals or unmerged branches. Source readers must check recent commits for new user-facing paths before claiming completeness. The Animate panel of the guest editor is mapped in [features/animate.md](features/animate.md); the Node renderer and CLI are mapped in the specialist feature pages below. Live runs use the real local web app with its existing MSW/Auth0 boundary; production OAuth, PostgreSQL and platform-native sharing remain separate integration checks. Audit assertions prove selected journeys, not every format, control, language or viewport.
 
 ## Legacy check migration
 
@@ -77,3 +77,16 @@ Read [the retirement plan](references/legacy-checks.md) before deleting another 
 ## Specialist checks and stored artifacts
 
 Read [specialist checks](references/specialist-checks.md) for retained renderer, line-mark and locale commands. The skill stores reproducible procedures, not the screenshots and logs from earlier runs. Keep reviewed test inputs beside their consuming scripts. Store per-run evidence outside the checkout; Git history retains retired reports.
+
+## Node renderer and CLI checks
+
+Run these from the repository root after the library build, with Node 24. Each Node command is a fresh CLI session; check its exit status and written receipts before the next drive. A failure requires inspecting its log and resetting only its own output/cache before retrying. The browser case uses the existing owned launch, doctor, trace and cleanup.
+
+- [CLI feature flags](features/cli-feature-flags.md): `node .agents/skills/verify-codeimage/scripts/cli/feature-flags/index.mjs /tmp/codeimage-flags`.
+- [CLI font delivery](features/cli-font-cache.md): `node .agents/skills/verify-codeimage/scripts/cli/font-cache.mjs [other-installed-cli/dist/bin.js]`.
+- [CLI MP4 encoding](features/cli-mp4.md): `node .agents/skills/verify-codeimage/scripts/cli/mp4/index.mjs /tmp/codeimage-mp4 [before/dist/bin.js]`.
+- [Cached font pixel parity](features/render-font-parity.md): `node_modules/.bin/tsx .agents/skills/verify-codeimage/scripts/cli/font-parity.mjs /absolute/baseline/dist/index.mjs`.
+- [Immutable font sources](features/render-font-urls.md): `node .agents/skills/verify-codeimage/scripts/cli/font-urls.mjs [manifest.json]`.
+- [Web and CLI MP4 parity](features/web-cli-mp4.md): `VERIFY_AUDIT=1 VERIFY_CASES=web-mp4 VERIFY_BROWSER_CHANNEL=chrome node .agents/skills/verify-codeimage/scripts/verify.mjs`.
+
+Give each run an evidence directory outside the checkout. Redirect each command to its own log; preserve its results and artifacts before cleanup. The font-cache helper prints its evidence directory. Optional baseline/installed-CLI arguments must resolve their own dependencies.

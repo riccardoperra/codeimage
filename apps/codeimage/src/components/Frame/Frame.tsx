@@ -1,3 +1,4 @@
+import {createFrameMedia} from './frameMedia';
 import type {getExportTarget} from '@codeimage/config';
 import type {FrameState} from '@codeimage/store/frame/model';
 import {FittedWindow} from './FittedWindow';
@@ -40,6 +41,10 @@ interface FrameProps {
 }
 
 export const Frame: ParentComponent<FrameProps> = props => {
+  const media = createFrameMedia(() => ({
+    background: props.background ?? null,
+    signature: props.signature,
+  }));
   const [t] = useI18n<AppLocaleEntries>();
   const target = () => props.exportTarget;
   const targetWidth = () => Math.min(640, target()?.resolution[0] ?? 640);
@@ -190,6 +195,7 @@ export const Frame: ParentComponent<FrameProps> = props => {
         </FittedWindow>
         <FrameSignature
           signature={props.signature}
+          media={media()}
           background={props.background}
           scale={scale()}
           onEdit={

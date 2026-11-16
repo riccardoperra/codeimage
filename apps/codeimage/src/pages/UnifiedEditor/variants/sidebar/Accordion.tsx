@@ -19,7 +19,6 @@ import {EditingControls} from '../../EditingControls';
 import type {VariantProps} from '../../contract';
 import {controlOverlay} from '../../controls/ControlOverlay';
 import {CanvasToolbar} from '../../controls/CanvasToolbar';
-import {keepMarkToolbarAboveSelection} from '../../controls/mark-toolbar';
 import {ShortcutHelp} from '../../controls/ShortcutHelp';
 import type {ControlId} from '../../model';
 import * as styles from './accordion.css';
@@ -71,7 +70,7 @@ function Section(
 ) {
   let trigger: HTMLButtonElement | undefined;
   const [measured, setMeasured] = createSignal(0);
-  const header = `sidebar-section-${props.id}`;
+  const header = () => `sidebar-section-${props.id}`;
   return (
     <section
       class={styles.section}
@@ -86,10 +85,10 @@ function Section(
     >
       <button
         type="button"
-        id={header}
+        id={header()}
         class={styles.sectionTrigger}
         aria-expanded={props.open}
-        aria-controls={`${header}-body`}
+        aria-controls={`${header()}-body`}
         onClick={() => props.onOpenChange(!props.open)}
         onKeyDown={moveBetweenHeaders}
         ref={element => {
@@ -106,10 +105,10 @@ function Section(
         </span>
       </button>
       <div
-        id={`${header}-body`}
+        id={`${header()}-body`}
         class={styles.sectionBody}
         role="region"
-        aria-labelledby={header}
+        aria-labelledby={header()}
         ref={body =>
           createEffect(() => body.toggleAttribute('inert', !props.open))
         }
@@ -136,7 +135,6 @@ function Section(
 
 /** The sidebar as one panel of sections, one open at a time. */
 export function Accordion(props: VariantProps) {
-  keepMarkToolbarAboveSelection();
   const [t] = useI18n<AppLocaleEntries>();
   // One section at a time. All may be closed, which leaves the summaries.
   const [openSection, setOpenSection] = createSignal<PanelId | null>('themes');

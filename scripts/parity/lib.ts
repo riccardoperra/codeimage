@@ -1,11 +1,24 @@
 import assert from 'node:assert/strict';
 import {readFile, writeFile} from 'node:fs/promises';
+import {createServer} from 'node:http';
 import pixelmatch from 'pixelmatch';
 import type {Page} from 'playwright';
+import {chromium} from 'playwright';
 import {PNG} from 'pngjs';
 
 export const PIXELMATCH_THRESHOLD = 0.1;
 export const MAX_DIFF_PERCENT = 0.5;
+
+export function launchChrome(scale: number) {
+  return chromium.launch({
+    args: [
+      `--force-device-scale-factor=${scale}`,
+      '--window-size=4000,4000',
+
+      '--font-render-hinting=none',
+    ],
+  });
+}
 
 export async function openEditor(page: Page, url: string) {
   console.log(`Opening ${url}`);
@@ -58,4 +71,38 @@ export async function diffPng(
   );
   await writeFile(diffPath, PNG.sync.write(diff));
   return (pixels / (base.width * base.height)) * 100;
+}
+
+export async function serveFixtureImages() {
+  const fixture = new PNG({width: 192, height: 192});
+  const bytes = (light: boolean) => {
+    for (let i = 0; i < fixture.data.length; i += 4) {
+      fixture.data[i] = light ? 245 : 20;
+      fixture.data[i + 1] = light ? 245 : 40;
+      fixture.data[i + 2] = light ? 245 : 60;
+      fixture.data[i + 3] = 255;
+    }
+    return PNG.sync.write(fixture);
+  };
+  const server = createServer((request, response) => {
+    response.setHeader('Content-Type', 'image/png');
+    response.setHeader('Access-Control-Allow-Origin', '*');
+    response.end(bytes(request.url?.includes('light') ?? false));
+  });
+  await new Promise<void>(resolve => server.listen(0, '127.0.0.1', resolve));
+  const address = server.address();
+  assert.ok(address && typeof address !== 'string');
+  return {
+    url: `http://127.0.0.1:${address.port}`,
+    close: () =>
+      new Promise<void>((resolve, reject) =>
+        server.close(error => (error ? reject(error) : resolve())),
+      ),
+  };
+}
+
+export function last<T>(items: T[]): T {
+  const item = items.at(-1);
+  if (item === undefined) throw new Error('Expected a nonempty list');
+  return item;
 }

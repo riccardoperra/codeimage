@@ -1,3 +1,4 @@
+import * as styles from './StaticCodeView.css';
 import type {CustomTheme} from '@codeimage/highlight';
 import type {TabMarks} from '@codeimage/store/editor/model';
 import type {Language} from '@codemirror/language';
@@ -124,7 +125,7 @@ export default function StaticCodeView(props: StaticCodeViewProps) {
             </div>
           </Show>
           <div
-            class="cm-content cm-lineWrapping"
+            class={`cm-content cm-lineWrapping ${styles.content}`}
             ref={root => watermark?.attach('code', {kind: 'static', root})}
           >
             <For each={visibleLines()}>

@@ -1,14 +1,12 @@
-import type {LanguageIconDefinition} from '@codeimage/config';
 import {SUPPORTED_LANGUAGES} from '@codeimage/config';
 import type {Accessor} from 'solid-js';
-import {createEffect, createSignal, on} from 'solid-js';
+import {createMemo} from 'solid-js';
 
 export function createTabIcon(
   tabName: Accessor<string | null>,
   editorLanguageId: Accessor<string>,
   defaultIfEmpty: boolean,
 ) {
-  const [icon, setIcon] = createSignal<LanguageIconDefinition | null>();
   const languages = SUPPORTED_LANGUAGES;
 
   const currentLanguage = () => {
@@ -37,7 +35,5 @@ export function createTabIcon(
     );
   };
 
-  createEffect(on(currentIcon, setIcon));
-
-  return icon;
+  return createMemo(currentIcon);
 }

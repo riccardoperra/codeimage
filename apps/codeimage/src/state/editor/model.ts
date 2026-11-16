@@ -2,7 +2,7 @@ import type {
   AnimationSettings as ApiAnimationSettings,
   TabMarks as ApiTabMarks,
 } from '@codeimage/api/api-types';
-import type {PersistedFrameState} from '@codeimage/store/frame/model';
+import type {PersistedFrameState} from '../frame/model';
 
 export interface EditorUIOptions {
   fontId: string;

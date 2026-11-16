@@ -1,0 +1,44 @@
+{
+  "name": "@codeimage/cli",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Render CodeImage screenshots from files or stdin",
+  "type": "module",
+  "license": "MIT",
+  "bin": {
+    "codeimage": "dist/bin.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsdown && node scripts/package.mjs",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit",
+    "lint": "oxlint"
+  },
+  "dependencies": {
+    "citty": "0.2.2",
+    "zod": "^4.1.12",
+    "@codeimage/render": "workspace:*",
+    "@takumi-rs/core": "2.19.0",
+    "@clack/prompts": "1.9.0"
+  },
+  "devDependencies": {
+    "@codeimage/config": "workspace:*",
+    "@codeimage/highlight": "workspace:*",
+    "@types/node": "catalog:next",
+    "oxlint": "catalog:next",
+    "tsdown": "catalog:next",
+    "typescript": "catalog:next",
+    "vitest": "catalog:next",
+    "@codeimage/secrets": "workspace:*"
+  },
+  "engines": {
+    "node": ">=24"
+  },
+  "publishConfig": {
+    "access": "public",
+    "directory": "publish"
+  }
+}
