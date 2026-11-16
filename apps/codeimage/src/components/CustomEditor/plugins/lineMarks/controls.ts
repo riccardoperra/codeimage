@@ -1,5 +1,5 @@
 import type {EditorState, Extension} from '@codemirror/state';
-import {RangeSet, StateEffect, StateField} from '@codemirror/state';
+import {Facet, RangeSet, StateEffect, StateField} from '@codemirror/state';
 import type {
   BlockInfo,
   DecorationSet,
@@ -76,6 +76,7 @@ const pointerSelecting = StateEffect.define<boolean>();
 interface SelectionBar {
   pointer: boolean;
   tooltip: Tooltip | null;
+  focused: boolean;
 }
 
 function toolbarView(labels: LineMarkLabels) {
@@ -111,7 +112,6 @@ function toolbarView(labels: LineMarkLabels) {
       if (command.kind) toggles.push([element, command.kind]);
     }
     const sync = () => {
-      dom.style.visibility = view.hasFocus ? '' : 'hidden';
       const marks = readMarks(view.state);
       const lines = selectedLines(view.state);
       for (const [element, kind] of toggles)
@@ -125,67 +125,99 @@ function toolbarView(labels: LineMarkLabels) {
   };
 }
 
-/**
- * Shows the toolbar above the first selected line once a selection settles,
- * hidden while the mouse button is held and while the editor is blurred.
- */
-function selectionBar(labels: LineMarkLabels): Extension {
-  const create = toolbarView(labels);
-  const field = StateField.define<SelectionBar>({
-    create: () => ({pointer: false, tooltip: null}),
-    update(value, tr) {
-      let {pointer} = value;
-      for (const effect of tr.effects)
-        if (effect.is(pointerSelecting)) pointer = effect.value;
-      const range = tr.state.selection.main;
-      if (pointer || range.empty || tr.state.readOnly)
-        return {pointer, tooltip: null};
-      const pos = tr.state.doc.lineAt(range.from).from;
-      const tooltip =
-        value.tooltip?.pos === pos
-          ? value.tooltip
-          : {pos, above: true, strictSide: false, create};
-      return {pointer, tooltip};
-    },
-    provide: field =>
-      showTooltip.compute([field], state => state.field(field).tooltip),
-  });
-  // Touch selection uses native handles, so only a held mouse button hides the bar.
+const labelsFacet = Facet.define<LineMarkLabels, LineMarkLabels>({
+  combine: values => values[0],
+});
+
+export const selectionFocus = StateEffect.define<boolean>();
+
+export const selectionBar = StateField.define<SelectionBar>({
+  create: () => ({pointer: false, focused: false, tooltip: null}),
+  update(value, tr) {
+    let {pointer, focused} = value;
+    for (const effect of tr.effects) {
+      if (effect.is(pointerSelecting)) pointer = effect.value;
+      if (effect.is(selectionFocus)) focused = effect.value;
+    }
+    const range = tr.state.selection.main;
+    if (!focused || pointer || range.empty || tr.state.readOnly)
+      return {pointer, focused, tooltip: null};
+    const pos = tr.state.doc.lineAt(range.from).from;
+    const tooltip =
+      value.tooltip?.pos === pos
+        ? value.tooltip
+        : {
+            pos,
+            above: true,
+            strictSide: false,
+            create: toolbarView(tr.state.facet(labelsFacet)),
+          };
+    return {pointer, focused, tooltip};
+  },
+  provide: field =>
+    showTooltip.compute([field], state => state.field(field).tooltip),
+});
+
+function toolbarSpace(view: EditorView) {
+  const {innerWidth, innerHeight} = view.dom.ownerDocument.defaultView!;
+  const viewport = {
+    left: 8,
+    top: 8,
+    right: innerWidth - 8,
+    bottom: innerHeight - 8,
+  };
+  const toolbar = view.state.field(selectionBar).tooltip;
+  const line = toolbar && view.coordsAtPos(toolbar.pos);
+  return line
+    ? {...viewport, bottom: Math.min(viewport.bottom, line.bottom + 4)}
+    : viewport;
+}
+
+function selectionToolbar(labels: LineMarkLabels): Extension {
   const pointerTracker = ViewPlugin.define(view => {
-    const press = (event: PointerEvent) => {
-      if (event.pointerType === 'mouse' && event.button === 0)
-        view.dispatch({effects: pointerSelecting.of(true)});
+    let alive = true;
+    let scheduled = false;
+    const syncFocus = () => {
+      if (scheduled || view.state.field(selectionBar).focused === view.hasFocus)
+        return;
+      scheduled = true;
+      queueMicrotask(() => {
+        scheduled = false;
+        if (alive && view.state.field(selectionBar).focused !== view.hasFocus)
+          view.dispatch({effects: selectionFocus.of(view.hasFocus)});
+      });
     };
+    syncFocus();
     const release = () => {
-      if (view.state.field(field).pointer)
+      if (view.state.field(selectionBar).pointer)
         view.dispatch({effects: pointerSelecting.of(false)});
     };
     const doc = view.dom.ownerDocument;
-    view.contentDOM.addEventListener('pointerdown', press);
     doc.addEventListener('pointerup', release);
+    doc.addEventListener('pointercancel', release);
     return {
+      update: syncFocus,
       destroy: () => {
-        view.contentDOM.removeEventListener('pointerdown', press);
+        alive = false;
         doc.removeEventListener('pointerup', release);
+        doc.removeEventListener('pointercancel', release);
       },
     };
   });
   return [
-    field,
+    labelsFacet.of(labels),
+    selectionBar,
     pointerTracker,
-    // The code window clips its overflow and is scaled on small screens.
-    tooltips({
-      parent: document.body,
-      tooltipSpace: view => {
-        const {innerWidth, innerHeight} = view.dom.ownerDocument.defaultView!;
-        return {
-          left: 8,
-          top: 8,
-          right: innerWidth - 8,
-          bottom: innerHeight - 8,
-        };
+    EditorView.focusChangeEffect.of((_state, focused) =>
+      selectionFocus.of(focused),
+    ),
+    EditorView.domEventHandlers({
+      pointerdown(event, view) {
+        if (event.pointerType === 'mouse' && event.button === 0)
+          view.dispatch({effects: pointerSelecting.of(true)});
       },
     }),
+    tooltips({parent: document.body, tooltipSpace: toolbarSpace}),
   ];
 }
 
@@ -245,55 +277,101 @@ const gutterPreviewField = StateField.define<DecorationSet>({
   ],
 });
 
-export function gutterMarkMouseDown(
+export function lineAtHeight(view: EditorView, y: number): number {
+  const height = Math.max(
+    0,
+    Math.min((y - view.documentTop) / view.scaleY, view.contentHeight),
+  );
+  const block = view.lineBlockAtHeight(height);
+  return view.state.doc.lineAt(Math.min(block.from, view.state.doc.length))
+    .number;
+}
+
+const gutterDrag = ViewPlugin.define(
+  view => {
+    let drag: {start: number; end: number; kind: 'highlight' | null} | null =
+      null;
+    const doc = view.dom.ownerDocument;
+    const win = doc.defaultView!;
+    const preview = () => {
+      if (!drag) return;
+      view.dispatch({
+        effects: setGutterPreview.of({
+          from: Math.min(drag.start, drag.end),
+          to: Math.max(drag.start, drag.end),
+          kind: drag.kind,
+        }),
+      });
+    };
+    const release = () => {
+      if (!drag) return;
+      const {start, end, kind} = drag;
+      drag = null;
+      view.dispatch({effects: setGutterPreview.of(null)});
+      markLines(
+        view,
+        Array.from(
+          {length: Math.abs(end - start) + 1},
+          (_, i) => Math.min(start, end) + i,
+        ),
+        kind,
+      );
+      view.focus();
+    };
+    doc.addEventListener('pointerup', release);
+    doc.addEventListener('pointercancel', release);
+    win.addEventListener('blur', release);
+    return {
+      start(line: BlockInfo, event: PointerEvent) {
+        const start = view.state.doc.lineAt(line.from).number;
+        drag = {
+          start,
+          end: start,
+          kind: hasMark(readMarks(view.state), start, 'highlight')
+            ? null
+            : 'highlight',
+        };
+        view.contentDOM.setPointerCapture(event.pointerId);
+        preview();
+      },
+      move(event: PointerEvent) {
+        if (!drag) return;
+        const next = lineAtHeight(view, event.clientY);
+        if (next === drag.end) return;
+        drag.end = next;
+        preview();
+      },
+      destroy() {
+        doc.removeEventListener('pointerup', release);
+        doc.removeEventListener('pointercancel', release);
+        win.removeEventListener('blur', release);
+      },
+    };
+  },
+  {
+    eventHandlers: {
+      pointermove(event) {
+        this.move(event);
+      },
+    },
+  },
+);
+
+export function gutterMarkPointerDown(
   view: EditorView,
   line: BlockInfo,
   event: Event,
 ): boolean {
-  if (!(event instanceof MouseEvent)) return false;
-  if (view.state.readOnly || event.button !== 0) return false;
-  if (!view.state.field(gutterPreviewField, false)) return false;
+  if (
+    !(event instanceof PointerEvent) ||
+    event.button !== 0 ||
+    view.state.readOnly
+  )
+    return false;
+  const drag = view.plugin(gutterDrag);
+  if (!drag) return false;
   event.preventDefault();
-  const start = view.state.doc.lineAt(line.from).number;
-  const kind = hasMark(readMarks(view.state), start, 'highlight')
-    ? null
-    : 'highlight';
-  let end = start;
-  const preview = () =>
-    view.dispatch({
-      effects: setGutterPreview.of({
-        from: Math.min(start, end),
-        to: Math.max(start, end),
-        kind,
-      }),
-    });
-  const move = (moveEvent: MouseEvent) => {
-    const pos = view.posAtCoords({
-      x: view.contentDOM.getBoundingClientRect().left + 1,
-      y: moveEvent.clientY,
-    });
-    if (pos === null) return;
-    const next = view.state.doc.lineAt(pos).number;
-    if (next === end) return;
-    end = next;
-    preview();
-  };
-  const up = () => {
-    window.removeEventListener('mousemove', move);
-    window.removeEventListener('mouseup', up);
-    window.removeEventListener('blur', up);
-    view.dispatch({effects: setGutterPreview.of(null)});
-    const lines = Array.from(
-      {length: Math.abs(end - start) + 1},
-      (_, i) => Math.min(start, end) + i,
-    );
-    markLines(view, lines, kind);
-    view.focus();
-  };
-  window.addEventListener('mousemove', move);
-  window.addEventListener('mouseup', up, {once: true});
-  window.addEventListener('blur', up, {once: true});
-  preview();
+  drag.start(line, event);
   return true;
 }
 
@@ -358,8 +436,9 @@ const controlsTheme = EditorView.theme({
 
 export function lineMarkControls(labels: LineMarkLabels): Extension {
   return [
-    selectionBar(labels),
+    selectionToolbar(labels),
     gutterPreviewField,
+    gutterDrag,
     controlsTheme,
     keymap.of(lineMarkKeymap),
   ];

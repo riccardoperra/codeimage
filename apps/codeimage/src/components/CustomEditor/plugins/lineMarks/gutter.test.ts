@@ -1,7 +1,8 @@
 import {EditorState, EditorSelection} from '@codemirror/state';
 import {gutterLineClass} from '@codemirror/view';
 import {expect, test} from 'vitest';
-import {menuLines} from './gutter';
+import {gutterAction, gutterState, menuLines} from './gutter';
+import {selectionBar, selectionFocus} from './controls';
 import type {TabMarks} from '../../../../state/editor/model';
 import {lineMarksField, marksValue, readMarks} from './state';
 
@@ -85,4 +86,81 @@ test('line numbers carry the mark band so the whole row reads as marked', () => 
   expect(classes(1)).toEqual(['cm-lineMark-added', 'cm-lineMarkDim']);
   expect(classes(2)).toEqual(['cm-lineMarkDim']);
   expect(classes(3)).toEqual(['cm-lineMark-highlight']);
+});
+
+test('selection toolbar follows editor focus without changing the selection', () => {
+  let state = EditorState.create({
+    doc,
+    selection: {anchor: 0, head: 7},
+    extensions: [selectionBar],
+  });
+  expect(state.field(selectionBar).tooltip).toBeNull();
+  state = state.update({effects: selectionFocus.of(true)}).state;
+  expect(state.field(selectionBar).tooltip?.pos).toBe(0);
+  const selection = state.selection;
+  state = state.update({effects: selectionFocus.of(false)}).state;
+  expect(state.field(selectionBar).tooltip).toBeNull();
+  expect(state.selection).toBe(selection);
+  state = state.update({effects: selectionFocus.of(true)}).state;
+  expect(state.field(selectionBar).tooltip?.pos).toBe(0);
+  state = state.update({selection: {anchor: 0}}).state;
+  expect(state.field(selectionBar).tooltip).toBeNull();
+});
+
+test('gutter interaction tracks hover, keyboard focus, active line and menu in state', () => {
+  let state = EditorState.create({
+    doc,
+    extensions: [lineMarksField, gutterState],
+  });
+  state = state.update({
+    effects: [
+      gutterAction.of({kind: 'hover', line: 2}),
+      gutterAction.of({kind: 'focus', line: 3}),
+      selectionFocus.of(true),
+      gutterAction.of({kind: 'news', value: true}),
+      gutterAction.of({kind: 'menu', open: {line: 3, keyboard: true}}),
+    ],
+  }).state;
+  expect(state.field(gutterState)).toEqual({
+    hovered: 2,
+    focused: 3,
+    active: 1,
+    tabStop: 3,
+    news: true,
+    open: {line: 3, keyboard: true},
+  });
+  state = state.update({selection: {anchor: state.doc.line(4).from}}).state;
+  expect(state.field(gutterState)).toMatchObject({
+    active: 4,
+    hovered: null,
+    tabStop: 4,
+    open: null,
+  });
+  state = state.update({
+    effects: selectionFocus.of(false),
+  }).state;
+  expect(state.field(gutterState).active).toBeNull();
+});
+
+test('document replacement clears stale gutter targets and keeps one valid tab stop', () => {
+  let state = EditorState.create({
+    doc,
+    extensions: [lineMarksField, gutterState],
+  });
+  state = state.update({
+    effects: [
+      gutterAction.of({kind: 'hover', line: 4}),
+      gutterAction.of({kind: 'focus', line: 4}),
+      gutterAction.of({kind: 'menu', open: {line: 4, keyboard: false}}),
+    ],
+  }).state;
+  state = state.update({
+    changes: {from: 0, to: state.doc.length, insert: 'only'},
+  }).state;
+  expect(state.field(gutterState)).toMatchObject({
+    hovered: null,
+    focused: null,
+    tabStop: 1,
+    open: null,
+  });
 });

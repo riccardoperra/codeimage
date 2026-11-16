@@ -2,6 +2,7 @@
 import type * as solid from 'solid-js';
 import {EditorView} from '@codemirror/view';
 import {EditorState} from '@codemirror/state';
+import {lineAtHeight} from '../../components/CustomEditor/plugins/lineMarks/controls';
 import {createRoot} from 'solid-js';
 import {expect, it, vi} from 'vitest';
 import type {WatermarkScope} from './scope';
@@ -144,6 +145,16 @@ it('measures live text through CodeMirror coordinates and leaves static markup t
       {x: 1, y: 2, width: 3, height: 4},
     ]);
     expect(staticRects).toHaveBeenCalledOnce();
+  } finally {
+    view.destroy();
+  }
+});
+
+it('clamps gutter pointer positions past both ends of the document', () => {
+  const view = new EditorView({doc: 'one\ntwo\nthree', parent: document.body});
+  try {
+    expect(lineAtHeight(view, view.documentTop - 10000)).toBe(1);
+    expect(lineAtHeight(view, view.documentTop + 10000)).toBe(3);
   } finally {
     view.destroy();
   }

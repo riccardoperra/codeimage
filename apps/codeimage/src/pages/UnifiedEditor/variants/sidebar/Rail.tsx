@@ -18,9 +18,9 @@ import {EditingControls} from '../../EditingControls';
 import {CommandMenuButton} from '../../command-menu/CommandMenuButton';
 import {commandMenu} from '../../command-menu/state';
 import type {VariantProps} from '../../contract';
+import type {ControlId} from '../../model';
 import {controlOverlay} from '../../controls/ControlOverlay';
 import {CanvasToolbar} from '../../controls/CanvasToolbar';
-import {keepMarkToolbarAboveSelection} from '../../controls/mark-toolbar';
 import {ShortcutHelp} from '../../controls/ShortcutHelp';
 import {ExperimentsIcon, SettingsIcon, GitHubIcon} from '../../shell/icons';
 import {editorLinks} from '../../shell/links';
@@ -101,14 +101,13 @@ function RailActions() {
 /** The sidebar as a rail of areas, each opening its panel beside the canvas. */
 export function Rail(props: VariantProps) {
   const [t] = useI18n<AppLocaleEntries>();
-  keepMarkToolbarAboveSelection();
   const compactQuery = matchMedia(styles.COMPACT_QUERY);
   const [isPhone, setIsPhone] = createSignal(compactQuery.matches);
   const [openId, setOpenId] = createSignal<PanelId | null>(
-    isPhone() ? null : 'themes',
+    compactQuery.matches ? null : 'themes',
   );
   const [mounted, setMounted] = createSignal<ReadonlySet<PanelId>>(
-    new Set(openId() ? [openId()!] : []),
+    new Set<PanelId>(compactQuery.matches ? [] : ['themes']),
   );
   const [stop, setStop] = createSignal<Stop>('short');
   const [available, setAvailable] = createSignal(0);
@@ -188,16 +187,15 @@ export function Rail(props: VariantProps) {
     exit.onfinish = () => finishClose(id, returnFocus);
   };
 
+  function revealControl(id: ControlId) {
+    const place = PLACES[id];
+    const panel = PANELS.find(panel => panel.id === place.panel);
+    if (panel) open(panel);
+    setStop('tall');
+    if (place.group === 'signature') controlOverlay.open('signature');
+  }
   onMount(() => {
-    onCleanup(
-      props.model.controls.register(id => {
-        const place = PLACES[id];
-        const panel = PANELS.find(panel => panel.id === place.panel);
-        if (panel) open(panel);
-        setStop('tall');
-        if (place.group === 'signature') controlOverlay.open('signature');
-      }),
-    );
+    onCleanup(props.model.controls.register(revealControl));
   });
   // Canvas clicks and the Frame row share the same signature editor.
   onCleanup(signatureEditor.register(() => controlOverlay.open('signature')));

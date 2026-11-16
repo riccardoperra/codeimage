@@ -1,3 +1,5 @@
+import {getRootEditorStore} from '@codeimage/store/editor';
+import {repositionTooltips} from '@codemirror/view';
 import {exportExclude as _exportExclude} from '@core/directives/exportExclude';
 import type {JSX, ParentProps} from 'solid-js';
 import {createSignal, onCleanup, onMount} from 'solid-js';
@@ -23,6 +25,7 @@ interface FitFrameProps {
 export function FitFrame(props: ParentProps<FitFrameProps>) {
   let wrapper!: HTMLDivElement;
   let content!: HTMLDivElement;
+  const editor = getRootEditorStore();
   const [scale, setScale] = createSignal(1);
   const [ready, setReady] = createSignal(false);
 
@@ -73,6 +76,8 @@ export function FitFrame(props: ParentProps<FitFrameProps>) {
       }
       if (!resized) return;
       const changed = fit();
+      const view = editor.activeEditorView();
+      if (view) repositionTooltips(view);
       if (
         available.width &&
         available.height &&

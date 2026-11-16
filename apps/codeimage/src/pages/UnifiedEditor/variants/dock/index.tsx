@@ -12,6 +12,7 @@ import {
   onCleanup,
   onMount,
   Show,
+  untrack,
 } from 'solid-js';
 import type {JSX} from 'solid-js';
 import {Dynamic} from 'solid-js/web';
@@ -24,7 +25,6 @@ import {commandMenu} from '../../command-menu/state';
 import type {VariantMeta, VariantProps} from '../../contract';
 import {fieldId, SegmentedChoice, SelectChoice} from '../../controls/fields';
 import {CanvasToolbar} from '../../controls/CanvasToolbar';
-import {keepMarkToolbarAboveSelection} from '../../controls/mark-toolbar';
 import {ShortcutHelp} from '../../controls/ShortcutHelp';
 import type {ControlId} from '../../model';
 import {SettingsIcon} from '../../shell/icons';
@@ -215,8 +215,7 @@ function BarSettings() {
 
 export default function Dock(props: VariantProps) {
   const [t] = useI18n<AppLocaleEntries>();
-  keepMarkToolbarAboveSelection();
-  const fields = createFields(props.model);
+  const fields = untrack(() => createFields(props.model));
   const compact = createMediaQuery('(max-width: 767px)');
   const canHover = createMediaQuery('(hover: hover) and (pointer: fine)');
 
@@ -255,10 +254,16 @@ export default function Dock(props: VariantProps) {
   });
 
   const dock: DockApi = {
-    model: props.model,
-    stage: props.stage,
+    get model() {
+      return props.model;
+    },
+    get stage() {
+      return props.stage;
+    },
     fields,
-    ThemePicker: props.ThemePicker,
+    get ThemePicker() {
+      return props.ThemePicker;
+    },
     panel,
     compact,
     close,

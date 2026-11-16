@@ -44,7 +44,8 @@ import {baseEditorTheme} from './editorTheme';
 import {createTabIcon} from '../../hooks/use-tab-icon';
 import {mapLines} from '../../core/diff/mapLines';
 import {lineMarksExtension} from './plugins/lineMarks';
-import {gutterMarkMouseDown} from './plugins/lineMarks/controls';
+import {gutterMarkPointerDown} from './plugins/lineMarks/controls';
+import {gutterMarkHover, gutterMarkLeave} from './plugins/lineMarks/gutter';
 import {
   lineMarksField,
   readMarks,
@@ -210,7 +211,11 @@ export default function CustomEditor(props: VoidProps<CustomEditorProps>) {
       ? [
           lineNumbers({
             formatNumber: lineNo => String(newLn(lineNo)),
-            domEventHandlers: {mousedown: gutterMarkMouseDown},
+            domEventHandlers: {
+              pointerdown: gutterMarkPointerDown,
+              pointermove: gutterMarkHover,
+              pointerout: gutterMarkLeave,
+            },
           }),
           EditorView.editorAttributes.of({'data-line-numbers': 'true'}),
         ]
