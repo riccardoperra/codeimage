@@ -60,8 +60,8 @@ export const ANIMATION_FORMATS = {
     }),
     // Text edges grow more slowly than pixel area as scale increases. A
     // separate background term includes the exposed gradient in every frame.
-    // Natural padding is covered by the area term; the extra target charge
-    // ramps up to 1080p, where full-frame gradient compression costs more.
+    // Exposed background ramps up to 1080p. Upscaling repeats gradient
+    // pixels, so its additional charge grows more slowly than pixel area.
     // Coefficients and the 20% headroom are checked by the Chrome matrix
     // in docs/plans/a5-verification.md, rather than by elapsed clip length.
     estimate: ({
@@ -76,10 +76,11 @@ export const ANIMATION_FORMATS = {
       const text = textArea * 0.2 * pixelRatio ** 1.2;
       const chrome = 2500 * pixelRatio ** 1.2;
       const area = width * height;
-      const targetCharge =
-        backgroundArea * 0.02 * Math.min(1, area / (1920 * 1080)) ** 3;
+      const backgroundCharge =
+        (backgroundArea * 0.02 * Math.min(1, area / (1920 * 1080)) ** 3) /
+        pixelRatio ** 0.8;
       const backdrop = detailedBackground
-        ? area ** 0.65 * 3.1 + targetCharge
+        ? area ** 0.65 * 3.1 + backgroundCharge
         : Math.sqrt(area) * 2;
       return 800 + (text + chrome + backdrop) * frameBudget * 1.2;
     },

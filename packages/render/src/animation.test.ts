@@ -174,12 +174,17 @@ const timing = (...editorIds: string[]): AnimationTiming => ({
   fps: 30,
 });
 
-// html > body > scene > preview wrapper > frame
+// html > body > scene > canvas > preview wrapper > frame. The canvas paints
+// the frame background before the wrapper.
 const frameOf = (root: MeasuredNode) =>
-  root.children[0].children[0].children[0].children[0];
+  root.children[0].children[0].children[0].children.at(-1)!.children[0];
 
-// frame > fit viewport > fitted window
-const windowOf = (root: MeasuredNode) => frameOf(root).children[1].children[0];
+// frame > fit viewport > fitted window. A scene hides the frame's own
+// background, which the canvas paints.
+const windowOf = (root: MeasuredNode) => frameOf(root).children[0].children[0];
+
+// The window width a natural frame keeps, as in the web export.
+const MIN_WINDOW_WIDTH = 480;
 
 const box = (node: MeasuredNode) => ({
   x: node.transform[4],
@@ -273,7 +278,7 @@ describe('renderAnimationScenes', {timeout: 30_000}, () => {
     }
   });
 
-  it('holds the static export of each tab', async () => {
+  it('holds the static export of each step', async () => {
     for (const input of [twoTabs, targetTabs]) {
       const {entry, host} = await setup(input);
       const document = parseSnapshotDocument(input);
@@ -282,18 +287,90 @@ describe('renderAnimationScenes', {timeout: 30_000}, () => {
         timing('a', 'b'),
         host,
       );
-      for (const [scene, step, editorId] of [
-        [0, 0, 'a'],
-        [3, 1, 'b'],
+      for (const [scene, step] of [
+        [0, 0],
+        [3, 1],
       ] as const) {
-        const frame = await entry.composeFrame(document, host, editorId);
-        expect(animation.scenes[scene].html).toContain(bodyOf(frame.html));
-        expect(animation.steps[step]).toEqual({
-          ...frame,
-          exactSize: expect.objectContaining({}),
-        });
+        expect(animation.scenes[scene].html).toContain(
+          bodyOf(animation.steps[step].html),
+        );
       }
     }
+  });
+
+  it('exports a target step as its still', async () => {
+    const {entry, host} = await setup(targetTabs);
+    const document = parseSnapshotDocument(targetTabs);
+    const animation = await entry.renderAnimationScenes(
+      document,
+      timing('a', 'b'),
+      host,
+    );
+    for (const [step, editorId] of [
+      [0, 'a'],
+      [1, 'b'],
+    ] as const) {
+      expect(animation.steps[step]).toEqual({
+        ...(await entry.composeFrame(document, host, editorId)),
+        exactSize: expect.objectContaining({}),
+      });
+    }
+  });
+
+  it('keeps a natural step window 480 px wide where its still is narrower', async () => {
+    const {entry, host} = await setup(twoTabs);
+    const document = parseSnapshotDocument(twoTabs);
+    const animation = await entry.renderAnimationScenes(
+      document,
+      timing('a', 'b'),
+      host,
+    );
+    const still = await entry.composeFrame(document, host, 'a');
+    const padding = 2 * twoTabs.frame.padding;
+    expect(still.size.width).toBeLessThan(MIN_WINDOW_WIDTH + padding);
+    expect(animation.steps[0].exactSize.width).toBe(MIN_WINDOW_WIDTH + padding);
+    expect(animation.width).toBe(
+      Math.round(
+        Math.max(...animation.steps.map(({exactSize}) => exactSize.width)),
+      ),
+    );
+  });
+
+  it('sizes the signature of every step for the whole canvas', async () => {
+    const input: SnapshotDocument = {
+      ...twoTabs,
+      frame: {...twoTabs.frame, signature: targetTabs.frame.signature},
+      editor: {
+        ...twoTabs.editor,
+        editors: [
+          twoTabs.editor.editors[0],
+          {
+            ...twoTabs.editor.editors[1],
+            code: `const wide = [${Array(60).fill('a').join(', ')}];`,
+          },
+        ],
+      },
+    };
+    const {entry, host} = await setup(input);
+    const animation = await entry.renderAnimationScenes(
+      parseSnapshotDocument(input),
+      timing('a', 'b'),
+      host,
+    );
+    const [narrow, wide] = animation.steps.map(({exactSize}) => exactSize);
+    expect(wide.width).toBeGreaterThan(narrow.width);
+    // signatureScale in apps/codeimage/src/components/Frame/signatureLayout.ts
+    const scale =
+      Math.round(Math.min(2, Math.max(0.85, animation.width / 640)) * 1000) /
+      1000;
+    expect(scale).toBeGreaterThan(1);
+    const scales = (html: string) =>
+      Array.from(
+        html.matchAll(/--[\w-]*signatureScale[\w-]*:\s*([\d.]+)/g),
+        match => Number(match[1]),
+      );
+    for (const {html} of [...animation.scenes, ...animation.steps])
+      expect(scales(html)).toEqual([scale]);
   });
 
   it('starts and ends a target transition on the windows of its holds', async () => {
@@ -340,11 +417,7 @@ describe('renderAnimationScenes', {timeout: 30_000}, () => {
       host,
     );
     const scenes = await watermarkScenes(animation, place);
-    const placed = await Promise.all(
-      ['a', 'b'].map(async id =>
-        place(await entry.composeFrame(document, host, id)),
-      ),
-    );
+    const placed = await Promise.all(animation.steps.map(place));
     const slotOf = (html: string) =>
       /data-watermark-placement="([\w-]+)"/.exec(html)?.[1];
     const [, slot] = placed.map(slotOf);
@@ -356,12 +429,10 @@ describe('renderAnimationScenes', {timeout: 30_000}, () => {
       slot,
       slot,
     ]);
-    // A hold is the static export, mark included.
+    // A hold is the static export of its step, mark included.
     const inner = (html: string, from: string, to: string) =>
       html.slice(html.indexOf(from) + from.length, html.lastIndexOf(to));
-    expect(
-      inner(scenes[3].html, '<div data-animation-scene="3">', '</div></body>'),
-    ).toEqual(inner(placed[1], '<body>', '</body>'));
+    expect(scenes[3].html).toContain(inner(placed[1], '<body>', '</body>'));
     // A transition keeps the moved mark at its corner of a resizing frame.
     expect(scenes[2].html).toContain(
       '<div data-watermark-anchor="" style="position:absolute;right:0;',
@@ -385,6 +456,11 @@ describe('renderAnimationScenes', {timeout: 30_000}, () => {
 // The second tab is four lines taller than the first.
 const SHORT = 'short';
 const TALL = 'tall\ntall\ntall\ntall\ntall';
+// Windows wider than the 480 px a natural step keeps, so each step's frame
+// is its still. The first has the longer line, the second four more lines.
+const WIDE = Array(13).fill('wide').join(' ');
+const WIDE_TALL = Array(5).fill(Array(12).fill('tall').join(' ')).join('\n');
+const GRAY = [128, 128, 128];
 const steps2 = (
   codes: [string, string],
   animation?: AnimationInput['animation'],
@@ -421,27 +497,66 @@ const still = async (input: AnimationInput, editor: number) => {
   );
 };
 
-// A GIF pixel is drawn or clear. A ghost is drawn where the still, centered
-// in the frame, is clear. A hole is the reverse.
-const coverage = (frame: PNG, image: PNG) => {
+// The still, centered in the frame and drawn over the frame background that
+// covers the whole canvas, as an RGB color at each pixel of the frame.
+const onCanvas = (frame: PNG, image: PNG, background = GRAY) => {
   const left = Math.floor((frame.width - image.width) / 2);
   const top = Math.floor((frame.height - image.height) / 2);
-  let [ghosts, holes] = [0, 0];
+  return (x: number, y: number) => {
+    const [column, row] = [x - left, y - top];
+    if (column < 0 || row < 0 || column >= image.width || row >= image.height)
+      return background;
+    const at = (row * image.width + column) * 4;
+    const alpha = image.data[at + 3] / 255;
+    return background.map(
+      (value, channel) =>
+        image.data[at + channel] * alpha + value * (1 - alpha),
+    );
+  };
+};
+
+// Pixels of the frame that differ from the still on the canvas by more than
+// the rounding of a semi-transparent edge.
+const differingOnCanvas = (frame: PNG, image: PNG) => {
+  const expected = onCanvas(frame, image);
+  let count = 0;
   for (let y = 0; y < frame.height; y++) {
     for (let x = 0; x < frame.width; x++) {
-      const [column, row] = [x - left, y - top];
-      const opaque =
-        column >= 0 &&
-        row >= 0 &&
-        column < image.width &&
-        row < image.height &&
-        image.data[(row * image.width + column) * 4 + 3] > 0;
-      const drawn = frame.data[(y * frame.width + x) * 4 + 3] > 0;
-      if (drawn && !opaque) ghosts++;
-      if (opaque && !drawn) holes++;
+      const at = (y * frame.width + x) * 4;
+      const color = expected(x, y);
+      if (
+        frame.data[at + 3] !== 255 ||
+        color.some(
+          (value, channel) => Math.abs(frame.data[at + channel] - value) > 1,
+        )
+      )
+        count++;
     }
   }
-  return {ghosts, holes};
+  return count;
+};
+
+// A GIF quantizes its colors, so only where code draws, far from the gray,
+// is compared. A ghost is code where the still on the canvas has none, and a
+// hole the reverse.
+const inkCoverage = (frame: PNG, image: PNG) => {
+  const expected = onCanvas(frame, image);
+  const ink = (color: ArrayLike<number>, threshold: number) =>
+    [0, 1, 2].some(
+      channel => Math.abs(color[channel] - GRAY[channel]) > threshold,
+    );
+  let [ghosts, holes, clear] = [0, 0, 0];
+  for (let y = 0; y < frame.height; y++) {
+    for (let x = 0; x < frame.width; x++) {
+      const at = (y * frame.width + x) * 4;
+      const pixel = frame.data.subarray(at, at + 4);
+      if (pixel[3] !== 255) clear++;
+      const color = expected(x, y);
+      if (ink(pixel, 96) && !ink(color, 32)) ghosts++;
+      if (ink(color, 96) && !ink(pixel, 32)) holes++;
+    }
+  }
+  return {ghosts, holes, clear};
 };
 
 // The pixels that draw code. The margin around a smaller frame is clear.
@@ -463,7 +578,7 @@ const markedSteps = (): AnimationInput => {
     ...tab,
     id,
     tabName: `${id}.ts`,
-    code: `const a = 1;\n${middle}\nconst c = 3;`,
+    code: `const a = 1; // ${Array(12).fill('wide').join(' ')}\n${middle}\nconst c = 3;`,
     marks: {lines: [{line: 2, kind}], focusedLines: []},
   });
   return {
@@ -480,29 +595,9 @@ const markedSteps = (): AnimationInput => {
   };
 };
 
-const differingPixels = (frame: PNG, image: PNG) => {
-  expect([frame.width, frame.height]).toEqual([image.width, image.height]);
-  let count = 0;
-  for (let i = 0; i < frame.data.length; i += 4) {
-    if (frame.data.compare(image.data, i, i + 4, i, i + 4)) count++;
-  }
-  return count;
-};
-
-// Pixels of the still that differ in the frame, where the still sits
-// centered in it.
-const differingCentered = (frame: PNG, image: PNG) => {
-  const left = Math.floor((frame.width - image.width) / 2);
-  const top = Math.floor((frame.height - image.height) / 2);
-  let count = 0;
-  for (let y = 0; y < image.height; y++) {
-    for (let x = 0; x < image.width; x++) {
-      const at = (y * image.width + x) * 4;
-      const there = ((y + top) * frame.width + x + left) * 4;
-      if (image.data.compare(frame.data, there, there + 4, at, at + 4)) count++;
-    }
-  }
-  return count;
+const pixelAt = (image: PNG, x: number, y: number) => {
+  const at = (y * image.width + x) * 4;
+  return Array.from(image.data.subarray(at, at + 4));
 };
 
 describe('renderAnimation', {timeout: 60_000}, () => {
@@ -510,17 +605,21 @@ describe('renderAnimation', {timeout: 60_000}, () => {
     const input = steps2([SHORT, TALL]);
     const webp = readWebpAnimation(await renderAnimation(input));
     const [short, tall] = [await still(input, 0), await still(input, 1)];
-    // The short tab has the longer line.
-    expect(short.width).toBeGreaterThan(tall.width);
+    // Both windows are narrower than the 480 px a natural step keeps.
+    expect(short.width).toBeLessThan(MIN_WINDOW_WIDTH);
     expect(tall.height).toBeGreaterThan(short.height);
-    expect([webp.width, webp.height]).toEqual([short.width, tall.height]);
+    expect([webp.width, webp.height]).toEqual([
+      MIN_WINDOW_WIDTH + 2 * input.frame.padding,
+      tall.height,
+    ]);
     expect(sum(webp.durationsMs)).toBe(800 + 700 + 800);
     // WebP stores equal neighbors as one frame, so each hold is one frame
     // that may take in the still ends of the transition. The transition is
-    // 21 frames at 30 fps.
+    // 21 frames at 30 fps, and the frame box itself draws nothing over the
+    // canvas, so frames where only it changes are equal too.
     expect(webp.durationsMs.at(0)).toBeGreaterThanOrEqual(800);
     expect(webp.durationsMs.at(-1)).toBeGreaterThanOrEqual(800);
-    expect(webp.durationsMs.length).toBeGreaterThan(15);
+    expect(webp.durationsMs.length).toBeGreaterThan(10);
     expect(webp.durationsMs.length).toBeLessThanOrEqual(23);
   });
 
@@ -558,22 +657,62 @@ describe('renderAnimation', {timeout: 60_000}, () => {
   it('draws the line marks of the first and the last frame like the still of each step', async () => {
     const input = markedSteps();
     const frames = decodeApng(await renderAnimation(input));
-    expect(differingPixels(frames[0], await still(input, 0))).toBe(0);
-    expect(differingPixels(frames.at(-1)!, await still(input, 1))).toBe(0);
+    const [first, last] = [await still(input, 0), await still(input, 1)];
+    expect([first.width, first.height]).toEqual([last.width, last.height]);
+    expect(differingOnCanvas(frames[0], first)).toBe(0);
+    expect(differingOnCanvas(frames.at(-1)!, last)).toBe(0);
   });
 
   it('places the watermark of each step like its still', async () => {
-    // The second step's last line runs under the watermark's home.
-    const input = steps2([
-      SHORT,
-      `${TALL}\n${Array(40).fill('wide').join(' ')}`,
-    ]);
+    // The second step's last line runs under the watermark's home. It is one
+    // token: Takumi ends each run up to 1/64 px late, so a natural window,
+    // as wide as its text, outgrows the still's by about 0.5 px over 80 runs
+    // and its moved mark follows.
+    const input = steps2([WIDE, `${TALL}\n"${'w'.repeat(200)}"`]);
     input.terminal = {...input.terminal, showWatermark: true};
     const frames = decodeApng(
       await renderAnimation({...input, format: 'apng'}),
     );
-    expect(differingCentered(frames[0], await still(input, 0))).toBe(0);
-    expect(differingCentered(frames.at(-1)!, await still(input, 1))).toBe(0);
+    expect(differingOnCanvas(frames[0], await still(input, 0))).toBe(0);
+    expect(differingOnCanvas(frames.at(-1)!, await still(input, 1))).toBe(0);
+  });
+
+  it('paints one frame background across the whole canvas', async () => {
+    const input = steps2([WIDE, WIDE_TALL]);
+    input.frame = {
+      ...input.frame,
+      background: 'linear-gradient(to right, #ff0000, #0000ff)',
+    };
+    const frames = decodeApng(
+      await renderAnimation({...input, format: 'apng'}),
+    );
+    const [first, last] = [frames[0], frames.at(-1)!];
+    const {width, height} = first;
+    for (const [x, y] of [
+      [0, 0],
+      [width - 1, 0],
+      [0, height - 1],
+      [width - 1, height - 1],
+    ])
+      expect(pixelAt(last, x, y)).toEqual(pixelAt(first, x, y));
+    const [left, right] = [pixelAt(first, 0, 0), pixelAt(first, width - 1, 0)];
+    expect(left[0]).toBeGreaterThan(240);
+    expect(right[2]).toBeGreaterThan(240);
+  });
+
+  it('composites a hidden frame onto the terminal color of the theme', async () => {
+    const input = steps2([WIDE, WIDE_TALL]);
+    input.frame = {...input.frame, visible: false};
+    const frames = decodeApng(
+      await renderAnimation({...input, format: 'apng'}),
+    );
+    // Dracula's terminal color, which the web export's background defaults to.
+    for (const frame of [frames[0], frames.at(-1)!]) {
+      expect(pixelAt(frame, 0, 0)).toEqual([40, 42, 54, 255]);
+      expect(pixelAt(frame, frame.width - 1, frame.height - 1)).toEqual([
+        40, 42, 54, 255,
+      ]);
+    }
   });
 
   it('scales the frames with the pixel ratio', async () => {
@@ -587,21 +726,51 @@ describe('renderAnimation', {timeout: 60_000}, () => {
   });
 
   it.each([
-    ['taller', [TALL, SHORT]],
-    ['wider', [SHORT, TALL]],
+    ['taller', [WIDE_TALL, WIDE]],
+    ['wider', [WIDE, WIDE_TALL]],
   ] as const)(
-    'draws a GIF hold after a %s step exactly where its still is',
+    'draws a GIF hold after a %s step where its still is, on an opaque canvas',
     async (_, codes) => {
       const input = steps2([...codes]);
       const gif = decodeGif(await renderAnimation({...input, format: 'gif'}));
-      expect(coverage(gif.frames[0], await still(input, 0))).toEqual({
+      expect(inkCoverage(gif.frames[0], await still(input, 0))).toEqual({
         ghosts: 0,
         holes: 0,
+        clear: 0,
       });
-      expect(coverage(gif.frames.at(-1)!, await still(input, 1))).toEqual({
+      expect(inkCoverage(gif.frames.at(-1)!, await still(input, 1))).toEqual({
         ghosts: 0,
         holes: 0,
+        clear: 0,
       });
+    },
+  );
+
+  it.each([
+    ['webp', 24, 625],
+    ['apng', 24, 625],
+    ['webp', 30, 600],
+    ['apng', 50, 600],
+  ] as const)(
+    'shows the last %s frame at %i fps for a whole frame, as the web export does',
+    async (format, fps, durationMs) => {
+      const bytes = await renderAnimation({
+        ...steps2([SHORT, TALL], {
+          steps: [
+            {editorId: 'first', holdMs: 200},
+            {editorId: 'second', holdMs: 200},
+          ],
+          transitionMs: 200,
+          easing: 'linear',
+          fps,
+        }),
+        format,
+      });
+      const file =
+        format === 'webp' ? readWebpAnimation(bytes) : readApngAnimation(bytes);
+      expect(Math.round(sum(file.durationsMs))).toBe(durationMs);
+      if (format === 'apng')
+        expect(file.durationsMs).toHaveLength(Math.ceil((600 * fps) / 1000));
     },
   );
 

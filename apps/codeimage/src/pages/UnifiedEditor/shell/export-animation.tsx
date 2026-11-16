@@ -1,6 +1,5 @@
 import {getEditorStore} from '@codeimage/store/editor';
 import {getAssetsStore} from '@codeimage/store/assets/assets';
-import {AssetsImage} from '@codeimage/store/assets/AssetsImage';
 import {getFrameState} from '@codeimage/store/editor/frame';
 import {createRandomId} from '@codeimage/store/plugins/unique-id';
 import {useFrameCodeStyle} from '../../../components/Frame/PreviewFrame';
@@ -15,7 +14,9 @@ import {
   type CodeStyle,
   type PreviewTab,
 } from '../../../components/Animation/planPreview';
+import {AnimationCanvas} from '../../../components/Animation/AnimationCanvas';
 import {prepareWatermark} from '../../../core/watermark/scope';
+import {playedDurationMs} from '../../../core/animation/clock';
 import {frameRules} from '../../../core/animation/timeline';
 import type {NonEmpty, Size} from '../../../core/animation/model';
 import {
@@ -30,7 +31,7 @@ import {
   type AnimationFormat,
 } from '../../../core/video/formats';
 import type {AnimationExport} from '../../../core/video/protocol';
-import {createSignal, getOwner, runWithOwner, Show} from 'solid-js';
+import {createSignal, getOwner, runWithOwner} from 'solid-js';
 import {render} from 'solid-js/web';
 
 const yieldToEditor = () =>
@@ -89,26 +90,16 @@ export function animationSnapshot() {
       codeStyle,
       settings.header,
       output,
-      false,
     );
     const {timeline, languages} = planPreviewTimeline(settings, measured);
-    // Natural padding is already covered by the gradient area term. Only
-    // fixed targets need an additional charge for their exposed background.
-    const backgroundArea = target
-      ? (measured.steps.reduce((sum, {layout}) => {
-          const window = layout.window;
-          const windowArea = window
-            ? window.width * window.height * window.scale ** 2
-            : Math.max(0, layout.size.width - frame.store.padding * 2) *
-              Math.max(0, layout.size.height - frame.store.padding * 2);
-          return (
-            sum +
-            Math.max(0, layout.size.width * layout.size.height - windowArea)
-          );
-        }, 0) /
-          measured.steps.length) *
-        pixelRatio ** 2
-      : 0;
+    const backgroundArea =
+      (measured.windowAreas.reduce(
+        (sum, windowArea) =>
+          sum + Math.max(0, timeline.width * timeline.height - windowArea),
+        0,
+      ) /
+        measured.windowAreas.length) *
+      pixelRatio ** 2;
     const contentSize = {
       width: timeline.width * pixelRatio,
       height: timeline.height * pixelRatio,
@@ -141,8 +132,7 @@ export function animationSnapshot() {
       (sum, scene) => sum + scene.durationMs,
       0,
     );
-    const durationMs =
-      (Math.ceil((ms * config.fps) / 1000) * 1000) / config.fps;
+    const durationMs = playedDurationMs(ms, config.fps);
     const frameBudget = gifFrameBudget(timeline.scenes, config.fps);
     const estimatedBytes = ANIMATION_FORMATS[format].estimate({
       ...config,
@@ -185,12 +175,6 @@ export function animationSnapshot() {
       contentSize,
       config,
     } = await measure(fps, output, scale, format);
-    const assets = getAssetsStore();
-    const background = frame.store.background;
-    const backgroundImage = assets.isAssetUrl(background)
-      ? background
-      : undefined;
-    const visibleBackground = frame.store.visible && frame.store.opacity > 0;
     const host = document.createElement('div');
     host.style.cssText =
       'position:fixed;left:0;top:0;opacity:0;pointer-events:none;z-index:-9999';
@@ -222,48 +206,23 @@ export function animationSnapshot() {
         const [codeReady, setCodeReady] = createSignal(false);
         const [lineLimit, setLineLimit] = createSignal(0);
         const view = () => (
-          <div
+          <AnimationCanvas
             data-video-root
             data-video-capture={scope}
             data-video-scene={index}
-            style={{
-              position: 'relative',
-              overflow: 'hidden',
-              width: `${config.width / pixelRatio}px`,
-              height: `${config.height / pixelRatio}px`,
-              'background-color': matte,
-            }}
+            width={config.width / pixelRatio}
+            height={config.height / pixelRatio}
+            matte={matte}
+            frame={frame.store}
+            image={media().backgroundImage}
           >
-            <Show when={visibleBackground}>
-              <div
-                data-video-background
-                style={{
-                  position: 'absolute',
-                  inset: 0,
-                  background: backgroundImage
-                    ? undefined
-                    : (background ?? undefined),
-                }}
-              >
-                <Show when={backgroundImage}>
-                  <AssetsImage
-                    assetId={backgroundImage!}
-                    style={{
-                      position: 'absolute',
-                      inset: 0,
-                      width: '100%',
-                      height: '100%',
-                      'object-fit': 'cover',
-                    }}
-                  />
-                </Show>
-              </div>
-            </Show>
             <FrameView
               ref={element => frames.push(element)}
               media={media()}
               targetSize={output}
               animated
+              natural
+              signatureWidth={timeline.width}
               header={settings.header}
               activeTabId={tab.id}
               code={
@@ -295,7 +254,7 @@ export function animationSnapshot() {
                 ))
               }
             />
-          </div>
+          </AnimationCanvas>
         );
         const mount = document.createElement('div');
         host.append(mount);
@@ -339,6 +298,11 @@ export function animationSnapshot() {
       for (const frame of frames) {
         await yieldToEditor();
         await prepareWatermark(frame);
+        // Keep the background available to watermark placement, but paint it
+        // only once across the video canvas when serializing each scene.
+        frame
+          .querySelector('[data-watermark-background]')
+          ?.setAttribute('data-export-exclude', 'true');
       }
       const scenes: AnimationExport['scenes'] = [];
       const fontFamilies = new Set<string>();
