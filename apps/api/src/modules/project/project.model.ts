@@ -325,7 +325,6 @@ export function readFrameExportProperties(
   };
 }
 
-// A timeline of 0 ms has no frame to render, so it is no animation.
 export function remapAnimationStep(
   step: AnimationSettings['steps'][number],
   tabIds: ReadonlyMap<string, string>,
@@ -341,6 +340,7 @@ export function remapAnimationStep(
   return {...step, editorId, ...(id === undefined ? {} : {id})};
 }
 
+// A timeline of 0 ms has no frame to render, so it is no animation.
 export function parseAnimationSettings(
   value: unknown,
 ): AnimationSettings | null {
