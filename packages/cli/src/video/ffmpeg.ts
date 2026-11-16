@@ -59,9 +59,16 @@ export async function resolveFfmpeg({
   }
 
   async function find() {
-    for (const candidate of [path, env.CODEIMAGE_FFMPEG]) {
-      if (candidate && (await executable(candidate, platform)))
+    for (const [source, candidate] of [
+      ['--ffmpeg', path],
+      ['CODEIMAGE_FFMPEG', env.CODEIMAGE_FFMPEG],
+    ] as const) {
+      if (!candidate) continue;
+      if (await executable(candidate, platform))
         return paths.resolve(candidate);
+      throw new UsageError(
+        `${source}: ${candidate} is not an executable file. ${FFMPEG_HELP}`,
+      );
     }
     const found = await onPath('ffmpeg');
     if (found) return found;

@@ -1,7 +1,8 @@
 # A6 CLI MP4 verification
 
 MP4 requires user-installed ffmpeg with libx264. The CLI resolves it from
-`--ffmpeg <path>`, `CODEIMAGE_FFMPEG`, then PATH. On Windows it also checks
+`--ffmpeg <path>`, `CODEIMAGE_FFMPEG`, then PATH. An explicit flag or
+variable that is not an executable file exits 2 without falling back. On Windows it also checks
 `%LOCALAPPDATA%\Microsoft\WinGet\Links\ffmpeg.exe` after PATH. The selected
 executable must list libx264 in `ffmpeg -hide_banner -encoders`.
 
@@ -76,7 +77,7 @@ The new prerequisite cases replace the earlier provisioning lanes.
 | 1    | Pass. WebP is byte-identical to unmodified base 5fb5abef, 70,578 bytes.                                                                                                    |
 | 2    | Pass. PATH ffmpeg produces H.264 High, yuv420p, BT.709 limited range, 180 frames at 60 fps, keyframes at 0 and 2 s, and moov before mdat. Redirected stdout is also valid. |
 | 3    | Pass. Missing ffmpeg in a non-TTY environment exits 2, prints installation instructions and executable hints, and leaves no MP4.                                           |
-| 4    | Pass. Wrappers prove flag, environment, then PATH priority.                                                                                                                |
+| 4    | Pass. Wrappers prove flag, environment, then PATH priority. A missing `--ffmpeg` path exits 2 instead of using PATH.                                                       |
 | 5    | Pass. An executable listing only libx264rgb exits 2 with the libx264 requirement before rendering.                                                                         |
 | 6    | Pass. Concurrent exports both play and leave no partial output files.                                                                                                      |
 | 7    | Pass. A naturally 909 px APNG frame encodes at 910 px with its edge repeated, at scale 1.                                                                                  |

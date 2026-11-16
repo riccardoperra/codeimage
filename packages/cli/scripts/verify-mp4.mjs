@@ -202,28 +202,34 @@ await lane(4, async () => {
       `#!/bin/sh\nif [ "$2" != "-encoders" ]; then echo USED_${name} >> '${join(out, 'resolve-order.txt')}'; fi\nexec '${ffmpeg}' "$@"\n`,
       {mode: 0o755},
     );
-  const env = {
-    ...process.env,
-    PATH: wrappers + ':/usr/bin:/bin',
-    CODEIMAGE_FFMPEG: join(wrappers, 'environment'),
-  };
-  for (const [index, name] of ['flag', 'environment', 'ffmpeg'].entries()) {
-    const args = [
-      ...quick,
-      '-o',
-      join(out, `resolve-${index}.mp4`),
-      '--ffmpeg',
-      join(wrappers, 'flag'),
-    ];
-    await run(args, {env});
+  const path = wrappers + ':/usr/bin:/bin';
+  const flag = join(wrappers, 'flag');
+  const fromEnv = join(wrappers, 'environment');
+  const cases = [
+    [['--ffmpeg', flag], {CODEIMAGE_FFMPEG: fromEnv}],
+    [[], {CODEIMAGE_FFMPEG: fromEnv}],
+    [[], {CODEIMAGE_FFMPEG: ''}],
+  ];
+  for (const [index, [extra, vars]] of cases.entries()) {
+    const file = join(out, `resolve-${index}.mp4`);
+    await run([...quick, '-o', file, ...extra], {
+      env: {...process.env, PATH: path, ...vars},
+    });
     // ffmpeg stderr is quiet on success; wrappers leave a marker in a file too.
-    probe(join(out, `resolve-${index}.mp4`));
-    await rm(join(wrappers, name));
+    probe(file);
   }
   assert.deepEqual(
     (await readFile(join(out, 'resolve-order.txt'), 'utf8')).trim().split('\n'),
     ['USED_flag', 'USED_environment', 'USED_ffmpeg'],
   );
+  await rm(flag);
+  const invalid = join(out, 'resolve-invalid.mp4');
+  const rejected = await start([...quick, '-o', invalid, '--ffmpeg', flag], {
+    env: {...process.env, PATH: path, CODEIMAGE_FFMPEG: fromEnv},
+  }).done;
+  assert.equal(rejected.code, 2);
+  assert.ok(rejected.stderr.includes(`--ffmpeg: ${flag} is not an executable`));
+  assert.ok(!existsSync(invalid));
   return {order: ['flag', 'CODEIMAGE_FFMPEG', 'PATH']};
 });
 await lane(5, async () => {

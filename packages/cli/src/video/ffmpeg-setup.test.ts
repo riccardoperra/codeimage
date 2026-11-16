@@ -136,20 +136,38 @@ describe('ffmpeg prerequisite', () => {
     const fromEnv = 'C:\\env\\ffmpeg.exe';
     const onPath = 'C:\\Tools\\ffmpeg.EXE';
     for (const file of [flag, fromEnv, onPath, linked]) state.files.add(file);
-    const options = {
-      platform: 'win32',
-      env: {
-        PATH: 'C:\\Tools',
-        LOCALAPPDATA: 'C:\\Local',
-        CODEIMAGE_FFMPEG: fromEnv,
-      },
-      path: flag,
-    } satisfies Parameters<typeof resolveFfmpeg>[0];
-    for (const file of [flag, fromEnv, onPath, linked]) {
-      expect(await resolveFfmpeg(options)).toBe(file);
-      state.files.delete(file);
-    }
+    const env = {PATH: 'C:\\Tools', LOCALAPPDATA: 'C:\\Local'};
+    const platform = 'win32';
+    expect(
+      await resolveFfmpeg({
+        platform,
+        env: {...env, CODEIMAGE_FFMPEG: fromEnv},
+        path: flag,
+      }),
+    ).toBe(flag);
+    expect(
+      await resolveFfmpeg({platform, env: {...env, CODEIMAGE_FFMPEG: fromEnv}}),
+    ).toBe(fromEnv);
+    expect(await resolveFfmpeg({platform, env})).toBe(onPath);
+    state.files.delete(onPath);
+    expect(await resolveFfmpeg({platform, env})).toBe(linked);
   });
+
+  it.each([
+    ['--ffmpeg', {path: '/missing/ffmpeg'}],
+    ['CODEIMAGE_FFMPEG', {env: {...env, CODEIMAGE_FFMPEG: '/missing/ffmpeg'}}],
+  ] as const)(
+    'reports an invalid %s instead of falling back to PATH',
+    async (source, options) => {
+      state.files.add('/tools/ffmpeg');
+      state.files.add('/tools/brew');
+      await expect(resolveFfmpeg({...darwin(), ...options})).rejects.toThrow(
+        `${source}: /missing/ffmpeg is not an executable file`,
+      );
+      expect(state.confirm).not.toHaveBeenCalled();
+      expect(spawn).not.toHaveBeenCalled();
+    },
+  );
 
   it('does not check WinGet Links on macOS', async () => {
     state.files.add(

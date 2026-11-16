@@ -258,8 +258,9 @@ codeimage a.ts b.ts --animate --format mp4 -o - > demo.mp4
 codeimage a.ts b.ts --animate -o demo.mp4 --ffmpeg /opt/bin/ffmpeg
 ```
 
-The CLI tries `--ffmpeg <path>`, `CODEIMAGE_FFMPEG`, then `ffmpeg` on PATH,
-skipping missing executables. On Windows it also checks
+The CLI tries `--ffmpeg <path>`, `CODEIMAGE_FFMPEG`, then `ffmpeg` on PATH.
+An explicit `--ffmpeg` or `CODEIMAGE_FFMPEG` path that is not an executable
+file exits with code 2 instead of falling back to PATH. On Windows it also checks
 `%LOCALAPPDATA%\Microsoft\WinGet\Links\ffmpeg.exe` after PATH. The selected
 executable must list libx264 in `ffmpeg -hide_banner -encoders`.
 

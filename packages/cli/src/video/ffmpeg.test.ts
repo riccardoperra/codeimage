@@ -72,18 +72,24 @@ it('extends the right and bottom edge when padding odd dimensions', () => {
   expect(() => padFrame({width: 2, height: 2, rgba})).toThrow('RGBA');
 });
 
-it('resolves flag, environment, then PATH, skipping missing files', async () => {
+it('resolves flag, environment, then PATH and reports invalid explicit paths', async () => {
   const flag = await wrapper('flag');
   const envPath = await wrapper('environment');
   const onPath = await wrapper('ffmpeg');
   const env = {CODEIMAGE_FFMPEG: envPath, PATH: folder};
   expect(await resolveFfmpeg({path: flag, env})).toBe(flag);
+  expect(await resolveFfmpeg({env})).toBe(envPath);
+  expect(await resolveFfmpeg({env: {PATH: folder}})).toBe(onPath);
   await rm(flag);
-  expect(await resolveFfmpeg({path: flag, env})).toBe(envPath);
+  await expect(resolveFfmpeg({path: flag, env})).rejects.toThrow(
+    `--ffmpeg: ${flag} is not an executable file`,
+  );
   await rm(envPath);
-  expect(await resolveFfmpeg({path: flag, env})).toBe(onPath);
-  await rm(onPath);
   await expect(resolveFfmpeg({env})).rejects.toThrow(
+    `CODEIMAGE_FFMPEG: ${envPath} is not an executable file`,
+  );
+  await rm(onPath);
+  await expect(resolveFfmpeg({env: {PATH: folder}})).rejects.toThrow(
     /ffmpeg is required.*--ffmpeg.*CODEIMAGE_FFMPEG.*PATH/,
   );
 });
