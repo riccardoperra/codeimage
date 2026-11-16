@@ -20,6 +20,7 @@
     "docs/**"
   ],
   "rules": {
+    "codeimage/disable-directive-format": "error",
     "codeimage/no-comments": "error",
     "max-lines": [
       "error",
