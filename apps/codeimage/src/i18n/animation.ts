@@ -58,7 +58,6 @@ export const animationLocale = {
       decreaseHold: 'Decrease hold by 100 ms',
       increaseTransition: 'Increase transition by 100 ms',
       decreaseTransition: 'Decrease transition by 100 ms',
-      noTransition: 'No incoming transition',
       duplicateLimit: 'Six tabs maximum. Close a tab to duplicate a step.',
       addStep: 'Add to animation',
       duplicate: 'Duplicate as next step',
@@ -168,7 +167,6 @@ export const animationLocale = {
       decreaseHold: 'Riduci la pausa di 100 ms',
       increaseTransition: 'Aumenta la transizione di 100 ms',
       decreaseTransition: 'Riduci la transizione di 100 ms',
-      noTransition: 'Nessuna transizione in entrata',
       duplicateLimit:
         'Massimo sei schede. Chiudi una scheda per duplicare un passaggio.',
       addStep: 'Aggiungi all’animazione',
@@ -280,7 +278,6 @@ export const animationLocale = {
       decreaseHold: 'Pause um 100 ms verringern',
       increaseTransition: 'Übergang um 100 ms erhöhen',
       decreaseTransition: 'Übergang um 100 ms verringern',
-      noTransition: 'Kein eingehender Übergang',
       duplicateLimit:
         'Maximal sechs Tabs. Schließe einen Tab, um einen Schritt zu duplizieren.',
       addStep: 'Zur Animation hinzufügen',
@@ -392,7 +389,6 @@ export const animationLocale = {
       decreaseHold: 'Reducir la pausa en 100 ms',
       increaseTransition: 'Aumentar la transición en 100 ms',
       decreaseTransition: 'Reducir la transición en 100 ms',
-      noTransition: 'Sin transición de entrada',
       duplicateLimit:
         'Máximo seis pestañas. Cierra una pestaña para duplicar un paso.',
       addStep: 'Añadir a la animación',

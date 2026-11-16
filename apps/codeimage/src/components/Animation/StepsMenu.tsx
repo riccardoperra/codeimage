@@ -27,7 +27,9 @@ export function StepsMenu() {
       .settings()
       .steps.findIndex(step => step.id === animation.selection()?.stepId);
   const id = () => animation.settings().steps[index()]?.id;
-  const duplicateDisabled = () => index() < 0 && editor.computed.canAddEditor();
+  // At the tab limit Duplicate stays focusable (aria-disabled) so its hint is reachable;
+  // it is only truly disabled when no step is selected.
+  const noStepSelected = () => index() < 0 && editor.computed.canAddEditor();
   let editDuplicate: number | undefined;
   onCleanup(() => {
     editDuplicate = undefined;
@@ -88,7 +90,7 @@ export function StepsMenu() {
             </DropdownMenuPortal>
           </DropdownSubMenu>
           <DropdownMenuItem
-            disabled={duplicateDisabled()}
+            disabled={noStepSelected()}
             aria-disabled={!editor.computed.canAddEditor() || undefined}
             aria-label={t('animation.duplicate')}
             aria-describedby={
@@ -99,7 +101,7 @@ export function StepsMenu() {
             class={styles.duplicate}
             onSelect={duplicate}
           >
-            <span>{t('animation.duplicate')}</span>
+            <span class={styles.label}>{t('animation.duplicate')}</span>
             <Show when={!editor.computed.canAddEditor()}>
               <span id="animation-duplicate-limit" class={styles.hint}>
                 {t('animation.duplicateLimit')}

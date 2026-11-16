@@ -6,6 +6,9 @@ export const duplicate = style({
   alignItems: 'flex-start',
   gap: 4,
 });
+export const label = style({
+  selectors: {[`${duplicate}[aria-disabled=true] &`]: {opacity: 0.4}},
+});
 export const hint = style({
   maxWidth: 240,
   whiteSpace: 'normal',

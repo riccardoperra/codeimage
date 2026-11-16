@@ -2,6 +2,7 @@ import {getEditorStore} from '@codeimage/store/editor';
 import {getAssetsStore} from '@codeimage/store/assets/assets';
 import {AssetsImage} from '@codeimage/store/assets/AssetsImage';
 import {getFrameState} from '@codeimage/store/editor/frame';
+import {createRandomId} from '@codeimage/store/plugins/unique-id';
 import {
   useFrameCodeStyle,
   FrameView,
@@ -148,7 +149,7 @@ export function animationSnapshot() {
     document.body.append(host);
     const disposers: (() => void)[] = [];
     const frames: HTMLElement[] = [];
-    const scope = `video-${crypto.randomUUID()}`;
+    const scope = `video-${createRandomId()}`;
     const scopedCss = (value: string) =>
       value.replace(/\bt(\d+)-/g, `${scope}-t$1-`);
     const motionCss = scopedCss(timeline.css);
