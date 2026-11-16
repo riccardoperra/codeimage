@@ -1,8 +1,8 @@
 import {createComponent} from 'solid-js';
 import {renderToString} from 'solid-js/web';
 import {afterEach, expect, it, vi} from 'vitest';
-import type {PresetData} from '../../state/presets/types';
-import {createSignature} from '../../state/frame/model';
+import type {PresetData} from '@codeimage/store/presets/types';
+import {createSignature} from '@codeimage/store/frame/model';
 import {CopyCliConfigMenuItem} from './CopyCliConfigMenuItem';
 import {toCliConfig} from './cliConfig';
 

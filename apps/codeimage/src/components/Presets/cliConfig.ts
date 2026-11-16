@@ -1,4 +1,4 @@
-import type {PresetData} from '../../state/presets/types';
+import type {PresetData} from '@codeimage/store/presets/types';
 
 type PresetSections = Pick<PresetData, 'frame' | 'terminal' | 'editor'>;
 

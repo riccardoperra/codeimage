@@ -1,5 +1,3 @@
-// Asset ids without the store, so the frame model and the CLI can use them
-// without pulling in IndexedDB.
 export const assetPrefix = `asset:`;
 export const assetLinkPrefix = `link:`;
 export type AssetId = `${typeof assetPrefix}${string}`;
