@@ -149,7 +149,7 @@ export const selectionBar = StateField.define<SelectionBar>({
         : {
             pos,
             above: true,
-            strictSide: false,
+            strictSide: true,
             create: toolbarView(tr.state.facet(labelsFacet)),
           };
     return {pointer, focused, tooltip};
@@ -338,7 +338,7 @@ const gutterDrag = ViewPlugin.define(
       },
       destroy() {
         doc.removeEventListener('pointerup', release);
-        doc.removeEventListener('pointercancel', release);
+        doc.removeEventListener('pointercancel', cancel);
         win.removeEventListener('blur', release);
       },
     };
