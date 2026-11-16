@@ -378,7 +378,7 @@ export function animationStepSizeCases({
               2,
             ),
           );
-          if (lastLineDifference >= 0.08)
+          if (lastLineDifference >= 0.01)
             failures.push(
               `${name}: final line differs by ${(lastLineDifference * 100).toFixed(2)}%`,
             );
