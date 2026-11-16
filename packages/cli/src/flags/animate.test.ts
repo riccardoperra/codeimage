@@ -145,7 +145,6 @@ describe('animate flag', () => {
   });
 
   it.each([
-    [['-o', 'demo.mp4'], '.mp4. MP4 arrives in a later version. Use'],
     [['-o', 'demo.jpg'], 'cannot write .jpg. Use'],
     [['-o', 'demo.svg'], 'cannot write .svg. Use'],
     [['--format', 'jpeg'], 'cannot write .jpeg. Use'],

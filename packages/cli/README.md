@@ -221,3 +221,64 @@ its platform-specific native binding. No browser is needed.
 
 `publish/` is generated and excluded from the workspace. `DEFAULT_SCALE` in
 `src/args.ts` controls both argument parsing and the help text.
+
+## MP4 animations and ffmpeg
+
+```sh
+codeimage a.ts b.ts --animate -o demo.mp4
+codeimage a.ts b.ts --animate --format mp4 -o - > demo.mp4
+codeimage a.ts b.ts --animate -o demo.mp4 --ffmpeg /opt/bin/ffmpeg
+codeimage install-ffmpeg
+```
+
+MP4 uses H.264 High profile, a keyframe every two seconds, BT.709 limited
+range, and YUV 4:2:0. Odd dimensions grow by one pixel with the edge repeated.
+The file supports progressive playback (`faststart`). Redirected stdout holds
+only the MP4 bytes; diagnostics and download progress go to stderr. Encoding
+uses a temporary file before publishing the output, including when stdout is
+redirected. Ctrl+C removes temporary downloads and video output and stops the
+encoder.
+
+The CLI tries these ffmpeg locations in order, skipping missing executables:
+
+1. `--ffmpeg <path>`
+2. `CODEIMAGE_FFMPEG`
+3. `ffmpeg` on `PATH`
+4. The CodeImage cache; if empty, download the pinned release on first MP4 use.
+
+`codeimage install-ffmpeg` installs into that cache even if ffmpeg is already
+on PATH. It prints the executable path on stdout. Run it once in CI and cache
+`codeimage/ffmpeg/b6.1.1/<platform>-<arch>/` beneath the OS cache directory:
+`~/Library/Caches` on macOS, `$XDG_CACHE_HOME` or `~/.cache` on Linux, and
+`%LOCALAPPDATA%` on Windows. MP4 downloads do not happen at npm installation
+or for PNG, WebP, GIF, or APNG exports. `--offline` controls fonts and remote
+backgrounds; preinstall ffmpeg or provide an executable to export MP4 without
+network access.
+
+The download uses [ffmpeg-static release b6.1.1](https://github.com/eugeneware/ffmpeg-static/releases/tag/b6.1.1).
+Each compressed platform asset has a pinned SHA-256 in `src/video/checksums.ts`.
+The release's platform-specific `LICENSE` and `README` are stored beside the
+binary, which is published only after verification and both notices arrive.
+Download failures exit with code 2 and list all four ways to supply ffmpeg.
+
+The downloaded ffmpeg builds include GPL components. They are separate
+executables and are not bundled in the CLI npm package. Operators should
+review the cached release notices and confirm the GPL-3.0 handling described
+in the animation plan before merging A6 or redistributing these binaries.
+
+Reproduce the CLI live lanes from a tmux pane after building:
+
+```sh
+node packages/cli/scripts/verify-mp4.mjs /tmp/a6-live /absolute/base/dist/bin.js
+node packages/cli/scripts/benchmark-mp4.mjs /tmp/a6-perf /absolute/base/dist/bin.js
+```
+
+The base build must retain its sibling `dist` assets and runtime dependencies.
+The live helper exercises lanes 1–9, including a real upstream download and an
+unreachable proxy for the offline case. It temporarily moves an existing
+ffmpeg cache aside and restores it when finished; run it without other MP4
+exports using that cache. Set `A6_FFMPEG` / `A6_FFPROBE` to change the native
+executables used for inspection. Lane 10 needs the web animation editor and a
+manual comparison of the same saved project. The perf helper waits for load
+below 8 before every timed cold process, records ten interleaved WebP pairs,
+then ten cached MP4 exports, and checks output dimensions and frame counts.
