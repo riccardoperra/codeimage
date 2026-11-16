@@ -127,7 +127,7 @@ export async function verifyColdStart({fresh, out}) {
             },
           },
           async ({page, doctor}) => {
-            await doctor();
+            await doctor('/', 'editor', undefined, page);
             await page
               .locator('[data-fit-scale] [aria-label="Tab name"] input')
               .waitFor();
@@ -249,7 +249,7 @@ export async function verifyExportScreen({fresh, out}) {
     await fresh(
       {name: `export-screen-${layout}`, layout, viewport: viewports[0]},
       async ({page, doctor, editor, settings, closeSettings, download}) => {
-        await doctor();
+        await doctor('/', 'editor', undefined, page);
         await settings('export');
         await page
           .locator('[data-setting=export-format]')
