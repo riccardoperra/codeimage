@@ -548,12 +548,12 @@ const codePixels = (image: PNG) => {
 const markedSteps = (): AnimationInput => {
   const {format, ...base} = plainDocument('', {showLineNumbers: true});
   const [tab] = base.editor.editors;
-  const step = (id: string, middle: string, kind: 'added' | 'removed') => ({
+  const step = (id: string, middle: string) => ({
     ...tab,
     id,
     tabName: `${id}.ts`,
     code: `const a = 1; // ${Array(12).fill('wide').join(' ')}\n${middle}\nconst c = 3;`,
-    marks: {lines: [{line: 2, kind}], focusedLines: []},
+    marks: {lines: [{line: 2, kind: 'highlight' as const}], focusedLines: []},
   });
   return {
     ...base,
@@ -561,10 +561,7 @@ const markedSteps = (): AnimationInput => {
     format: 'apng',
     editor: {
       ...base.editor,
-      editors: [
-        step('first', 'const b = 2;', 'removed'),
-        step('second', 'const d = 4;', 'added'),
-      ],
+      editors: [step('first', 'const b = 2;'), step('second', 'const d = 4;')],
     },
   };
 };
@@ -594,29 +591,26 @@ describe('renderAnimation', {timeout: 60_000}, () => {
     expect(webp.durationsMs.length).toBeLessThanOrEqual(23);
   });
 
-  it('plays the steps and the timing the project stores', async () => {
-    const animation = (
-      first: string,
-      second: string,
-    ): AnimationInput['animation'] => ({
+  it('plays the tabs in order with the timing the project stores', async () => {
+    const animation: AnimationInput['animation'] = {
       steps: [
-        {editorId: first, holdMs: 100},
-        {editorId: second, holdMs: 300},
+        {editorId: 'first', holdMs: 100},
+        {editorId: 'second', holdMs: 300},
       ],
       transitionMs: 200,
       easing: 'linear',
       fps: 60,
-    });
-    const render = async (first: string, second: string) => {
+    };
+    const render = async (codes: [string, string]) => {
       const bytes = await renderAnimation({
-        ...steps2([SHORT, TALL], animation(first, second)),
+        ...steps2(codes, animation),
         format: 'apng',
       });
 
       return {file: readApngAnimation(bytes), firstFrame: decode(bytes)};
     };
-    const shortFirst = await render('first', 'second');
-    const tallFirst = await render('second', 'first');
+    const shortFirst = await render([SHORT, TALL]);
+    const tallFirst = await render([TALL, SHORT]);
     expect(codePixels(shortFirst.firstFrame)).toBeGreaterThan(0);
     expect(codePixels(tallFirst.firstFrame)).toBeGreaterThan(
       2 * codePixels(shortFirst.firstFrame),
@@ -768,7 +762,7 @@ describe('renderAnimation', {timeout: 60_000}, () => {
     },
   );
 
-  it('drops a step whose tab is gone, as the editor does', async () => {
+  it('ignores a stored step whose tab is gone, as the editor does', async () => {
     const webp = readWebpAnimation(
       await renderAnimation(
         steps2([SHORT, TALL], {
@@ -782,7 +776,63 @@ describe('renderAnimation', {timeout: 60_000}, () => {
         }),
       ),
     );
-    expect(sum(webp.durationsMs)).toBe(300);
+    expect(sum(webp.durationsMs)).toBe(1200);
+  });
+
+  it.each([
+    [
+      'a diff tab',
+      {
+        lines: [
+          {line: 2, kind: 'removed' as const},
+          {line: 3, kind: 'added' as const},
+        ],
+        focusedLines: [],
+      },
+    ],
+    [
+      'a tab script',
+      {
+        lines: [],
+        focusedLines: [],
+        script: {
+          steps: ['one', 'two'],
+          lines: [
+            {line: 2, leave: 2},
+            {line: 3, enter: 2},
+          ],
+        },
+      },
+    ],
+  ])('plays %s as the steps the editor shows', async (_, marks) => {
+    const first = `const a = 1; // ${Array(12).fill('wide').join(' ')}`;
+    const code = `${first}\nconst b = 2;\nconst c = 3;`;
+    const {format, ...base} = plainDocument(code, {showLineNumbers: true});
+    const [tab] = base.editor.editors;
+    const input: AnimationInput = {
+      ...base,
+      scale: 1,
+      format: 'apng',
+      editor: {...base.editor, editors: [{...tab, code, marks}]},
+    };
+    const shown = (lines: string) =>
+      still(
+        {
+          ...input,
+          editor: {
+            ...input.editor,
+            editors: [
+              {...tab, code: lines, marks: {lines: [], focusedLines: []}},
+            ],
+          },
+        },
+        0,
+      );
+    const frames = decodeApng(await renderAnimation(input));
+    const before = await shown(`${first}\nconst b = 2;`);
+    const after = await shown(`${first}\nconst c = 3;`);
+    expect(differingOnCanvas(frames[0], before)).toBe(0);
+    expect(differingOnCanvas(lastItem(frames), after)).toBe(0);
   });
 });
 

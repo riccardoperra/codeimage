@@ -8,21 +8,44 @@ const EDITOR = fileURLToPath(
     import.meta.url,
   ),
 );
-const {parseDraft, reconcileSteps, seedSteps} = (await import(EDITOR)) as {
-  parseDraft(value: unknown): {steps: readonly unknown[]};
-  seedSteps(editorIds: string[]): unknown[];
-  reconcileSteps(draft: unknown, editorIds: readonly string[]): unknown;
+type Tab = {
+  id: string;
+  marks: {
+    lines: {line: number; kind: 'added' | 'removed' | 'highlight'}[];
+    focusedLines: number[];
+    script?: {steps: string[]; lines: {line: number; enter?: number}[]};
+  };
+};
+const editor = (await import(EDITOR)) as {
+  parseAnimationSettings(value: unknown, tabs: readonly Tab[]): unknown;
 };
 
-const tabs = ['a', 'b', 'c'] as const;
-
-function editorSettings(value: unknown) {
-  const draft = parseDraft(value);
-  return reconcileSteps(
-    draft.steps.length ? draft : {...draft, steps: seedSteps([...tabs])},
-    tabs,
-  );
-}
+const plain = (id: string): Tab => ({
+  id,
+  marks: {lines: [], focusedLines: []},
+});
+const tabs: [Tab, ...Tab[]] = [plain('a'), plain('b'), plain('c')];
+const viewTabs: [Tab, ...Tab[]] = [
+  plain('a'),
+  {
+    id: 'b',
+    marks: {
+      lines: [
+        {line: 1, kind: 'removed'},
+        {line: 2, kind: 'added'},
+      ],
+      focusedLines: [],
+    },
+  },
+  {
+    id: 'c',
+    marks: {
+      lines: [],
+      focusedLines: [],
+      script: {steps: ['s1', 's2', 's3'], lines: [{line: 2, enter: 2}]},
+    },
+  },
+];
 
 const cases: [string, unknown][] = [
   ['nothing stored', undefined],
@@ -138,6 +161,37 @@ const cases: [string, unknown][] = [
 
 describe('the render package reads Animate settings as the editor does', () => {
   it.each(cases)('%s', (_, value) => {
-    expect(parseAnimationSettings(value, tabs)).toEqual(editorSettings(value));
+    expect(parseAnimationSettings(value, tabs)).toEqual(
+      editor.parseAnimationSettings(value, tabs),
+    );
+  });
+
+  it.each(cases)('%s, with diff and script tabs', (_, value) => {
+    expect(parseAnimationSettings(value, viewTabs)).toEqual(
+      editor.parseAnimationSettings(value, viewTabs),
+    );
+  });
+
+  it('keeps the timing of diff and script steps by id', () => {
+    const settings = parseAnimationSettings(
+      {
+        steps: [
+          {id: 'b:after', editorId: 'b', holdMs: 300},
+          {id: 's2', editorId: 'c', holdMs: 0, transition: {ms: 400}},
+          {id: 's3', editorId: 'c', holdMs: 1200},
+        ],
+      },
+      viewTabs,
+    );
+    expect(
+      settings.steps.map(({id, view, holdMs}) => [id, view, holdMs]),
+    ).toEqual([
+      ['a', {kind: 'tab'}, 800],
+      ['b:before', {kind: 'diff', side: 'before'}, 800],
+      ['b:after', {kind: 'diff', side: 'after'}, 300],
+      ['s1', {kind: 'script', step: 1}, 800],
+      ['s2', {kind: 'script', step: 2}, 0],
+      ['s3', {kind: 'script', step: 3}, 1200],
+    ]);
   });
 });

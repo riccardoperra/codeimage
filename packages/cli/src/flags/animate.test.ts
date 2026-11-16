@@ -56,7 +56,12 @@ describe('animate flag', () => {
     const tabs = document.editor.editors;
     expect(tabs.map(tab => tab.code)).toEqual(inputs.map(input => input.code));
     expect(document.animation).toEqual({
-      steps: tabs.map(tab => ({id: tab.id, editorId: tab.id, holdMs: 800})),
+      steps: tabs.map(tab => ({
+        id: tab.id,
+        editorId: tab.id,
+        view: {kind: 'tab'},
+        holdMs: 800,
+      })),
       transitionMs: 700,
       easing: 'smooth',
       fps: 30,
@@ -140,16 +145,18 @@ describe('animate flag', () => {
     const ids = document.editor.editors.map(tab => tab.id);
     expect(document.animation).toEqual({
       steps: [
-        {id: ids[0], editorId: ids[0], holdMs: 100},
+        {id: ids[0], editorId: ids[0], view: {kind: 'tab'}, holdMs: 100},
         {
           id: ids[1],
           editorId: ids[1],
+          view: {kind: 'tab'},
           holdMs: 300,
           transition: {ms: 1200, easing: 'cubic-bezier(0.1, 0.2, 0.3, 1)'},
         },
         {
           id: ids[2],
           editorId: ids[2],
+          view: {kind: 'tab'},
           holdMs: 0,
           transition: {ms: 450, easing: 'strong'},
         },
@@ -183,7 +190,7 @@ describe('animate flag', () => {
     });
   });
 
-  it('plays a saved project input with its own steps, timing and header', async () => {
+  it('plays a saved project input in tab order with its own timing and header', async () => {
     const project = {
       $snippetId: null,
       $version: '1.10.0',
@@ -200,9 +207,9 @@ describe('animate flag', () => {
       },
       animation: {
         steps: [
-          {id: 'x', editorId: 'three', holdMs: 400},
+          {id: 'three', editorId: 'three', holdMs: 400},
           {
-            id: 'y',
+            id: 'one',
             editorId: 'one',
             holdMs: 600,
             transition: {ms: 1100, easing: 'strong'},
@@ -233,7 +240,20 @@ describe('animate flag', () => {
       'three',
     ]);
     expect(document.frame.background).toBe('#ff0000');
-    expect(document.animation).toEqual(project.animation);
+    expect(document.animation).toEqual({
+      ...project.animation,
+      steps: [
+        {
+          id: 'one',
+          editorId: 'one',
+          view: {kind: 'tab'},
+          holdMs: 600,
+          transition: {ms: 1100, easing: 'strong'},
+        },
+        {id: 'two', editorId: 'two', view: {kind: 'tab'}, holdMs: 800},
+        {id: 'three', editorId: 'three', view: {kind: 'tab'}, holdMs: 400},
+      ],
+    });
     expect(notes).toEqual([
       'GIF supports 50 or 25 fps, so this one plays at 25 instead of 24',
     ]);
