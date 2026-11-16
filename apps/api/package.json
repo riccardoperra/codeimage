@@ -19,7 +19,7 @@
     "test:unit": "RUN_TEST=unit vitest run",
     "test:integration": "RUN_TEST=integration vitest run --no-file-parallelism",
     "test:ui": "vitest --ui",
-    "lint": "oxlint",
+    "lint": "node ../../scripts/lint.mjs",
     "lint:fix": "oxlint --fix",
     "pre-commit-format": "oxfmt",
     "pre-commit-eslint": "oxlint --fix",
