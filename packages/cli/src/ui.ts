@@ -3,14 +3,27 @@ import {confirm, isCancel, log, multiselect, spinner} from '@clack/prompts';
 import type {FontEvent} from '@codeimage/render';
 import type {ErrorReport} from './errors';
 
-export function formatUsage(
+export function formatHelpUsage(
   message: string,
+  quiet = false,
   stdoutTTY = !!process.stdout.isTTY,
   env = process.env,
 ) {
-  return !stdoutTTY || env.NO_COLOR !== undefined
-    ? stripVTControlCharacters(message)
-    : message;
+  const color =
+    stdoutTTY &&
+    !quiet &&
+    env.NO_COLOR === undefined &&
+    env.CI === undefined &&
+    env.TERM !== 'dumb';
+  const title = color ? '\x1b[1mCodeImage CLI\x1b[0m' : 'CodeImage CLI';
+  const links = [
+    'https://app.codeimage.dev',
+    'https://github.com/riccardoperra/codeimage',
+  ]
+    .map(url => (color ? `\x1b]8;;${url}\x1b\\${url}\x1b]8;;\x1b\\` : url))
+    .join(' · ');
+  const body = message.replace(' (codeimage)', '');
+  return `${title}\n${color ? `\x1b[2m${links}\x1b[0m` : links}\n\n${color ? body : stripVTControlCharacters(body)}`;
 }
 
 export function uiMode(
@@ -77,7 +90,7 @@ export function createUi(quiet = false) {
           }
         : undefined,
     text,
-    usage: (message: string) => text(formatUsage(message)),
+    usage: (message: string) => text(formatHelpUsage(message, quiet)),
     success,
     warn,
     async run<T>(label: string, work: () => Promise<T>): Promise<T> {
