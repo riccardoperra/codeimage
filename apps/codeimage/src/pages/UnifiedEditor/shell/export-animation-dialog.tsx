@@ -139,12 +139,18 @@ export function createAnimationExporter() {
     if (!value || value === fps()) return;
     selectedFps[format()] = value;
     setFps(value);
-    if (value !== 25) animation.actions.setFps(value);
+    if (value !== 25) {
+      animation.actions.setFps(value);
+      for (const format of ['mp4', 'gif'] as const) {
+        if (ANIMATION_FORMATS[format].fpsOptions.some(rate => rate === value))
+          selectedFps[format] = value;
+      }
+    }
     void refresh();
   };
   const changeFormat = (value: string) => {
     if (value !== 'mp4' && value !== 'gif') return;
-    const rate = nearestAnimationFps(value, fps(), selectedFps[value]);
+    const rate = selectedFps[value] ?? nearestAnimationFps(value, fps());
     batch(() => {
       setFormat(value);
       setFps(rate);

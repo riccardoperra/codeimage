@@ -342,6 +342,8 @@ export function animationGifCases({
       resolve(out, `${name}.json`),
       JSON.stringify(result, null, 2),
     );
+    if (bytes.length < 6_000_000)
+      assert.equal(suggestion, false, 'GIFs below 6 MB do not suggest MP4');
     if (bytes.length >= 8_000_000)
       assert.ok(suggestion, 'every measured GIF of at least 8 MB suggests MP4');
     assert.ok(
@@ -386,7 +388,7 @@ export function animationGifCases({
         .nth(step % codes.length)
         .click();
     }
-    if (fixture.target || fixture.hidden) {
+    if (fixture.target || fixture.hidden || fixture.solid) {
       const frame = page.locator('[data-section="frame"] > button');
       if ((await frame.getAttribute('aria-expanded')) !== 'true')
         await frame.click();
@@ -399,6 +401,16 @@ export function animationGifCases({
       await page
         .getByRole('option', {name: fixture.target, exact: true})
         .click();
+    }
+    if (fixture.solid) {
+      await page
+        .locator('[data-control="frame.background"]')
+        .getByRole('button')
+        .click();
+      const picker = page.locator('[data-control-overlay="frame.background"]');
+      await picker.getByRole('textbox').fill('#345678');
+      await picker.getByRole('textbox').press('Tab');
+      await picker.getByRole('button', {name: 'Close', exact: true}).click();
     }
     if (fixture.hidden) {
       await page.getByRole('switch', {name: 'Visible', exact: true}).focus();
@@ -434,7 +446,26 @@ export function animationGifCases({
       );
     }
     await close();
-    return {...result, fixture};
+    if (fixture.name === 'heldout-solid-long-under-six')
+      assert.ok(
+        result.bytes < 6_000_000,
+        'long solid fixture stays below 6 MB',
+      );
+    if (fixture.name === 'estimate-solid-long-no-hint')
+      assert.equal(
+        result.suggestion,
+        false,
+        'long solid GIF must not suggest MP4',
+      );
+    assert.ok(
+      result.estimatedBytes <= result.bytes * 1.3,
+      'estimate is at most 30% high',
+    );
+    return {
+      ...result,
+      fixture,
+      group: fixture.name.startsWith('heldout-') ? 'held-out' : 'calibration',
+    };
   }
   async function cancelWorker() {
     const elapsedMs = await getPage().evaluate(
@@ -605,6 +636,26 @@ export function animationGifCases({
     await assertRate(60);
     await selectGif();
     await assertRate(25);
+    for (const rate of [50, 60]) {
+      await selectMp4();
+      await chooseRate(30);
+      await selectGif();
+      await chooseRate(rate);
+      await page.waitForTimeout(700);
+      assert.equal(await storedFps(), rate, 'explicit GIF FPS choice persists');
+      await selectMp4();
+      await assertRate(rate);
+      assert.equal(
+        await storedFps(),
+        rate,
+        'display matches saved supported rate',
+      );
+      await close();
+      await open();
+      await ready();
+      await assertRate(rate);
+      await selectGif();
+    }
     await chooseRate(60);
     results.push(await exportGif('gif-60-as-50', true));
     await cancelWorker();

@@ -91,19 +91,23 @@ export function animationSnapshot() {
       false,
     );
     const {timeline, languages} = planPreviewTimeline(settings, measured);
-    const backgroundArea =
-      (measured.steps.reduce((sum, {layout}) => {
-        const window = layout.window;
-        const windowArea = window
-          ? window.width * window.height * window.scale ** 2
-          : Math.max(0, layout.size.width - frame.store.padding * 2) *
-            Math.max(0, layout.size.height - frame.store.padding * 2);
-        return (
-          sum + Math.max(0, layout.size.width * layout.size.height - windowArea)
-        );
-      }, 0) /
-        measured.steps.length) *
-      pixelRatio ** 2;
+    // Natural padding is already covered by the gradient area term. Only
+    // fixed targets need an additional charge for their exposed background.
+    const backgroundArea = target
+      ? (measured.steps.reduce((sum, {layout}) => {
+          const window = layout.window;
+          const windowArea = window
+            ? window.width * window.height * window.scale ** 2
+            : Math.max(0, layout.size.width - frame.store.padding * 2) *
+              Math.max(0, layout.size.height - frame.store.padding * 2);
+          return (
+            sum +
+            Math.max(0, layout.size.width * layout.size.height - windowArea)
+          );
+        }, 0) /
+          measured.steps.length) *
+        pixelRatio ** 2
+      : 0;
     const contentSize = {
       width: timeline.width * pixelRatio,
       height: timeline.height * pixelRatio,
@@ -152,8 +156,12 @@ export function animationSnapshot() {
           tabs.length) *
         metrics.charWidth *
         metrics.lineHeight,
-      backgroundArea:
-        frame.store.visible && frame.store.opacity > 0 ? backgroundArea : 0,
+      detailedBackground:
+        frame.store.visible &&
+        frame.store.opacity > 0 &&
+        (getAssetsStore().isAssetUrl(frame.store.background) ||
+          /(?:gradient|url)\(/i.test(frame.store.background ?? '')),
+      backgroundArea,
     });
     return {config, durationMs, estimatedBytes, frameBudget};
   };
