@@ -1,6 +1,8 @@
 {
   "extends": ["../../.oxlintrc.json"],
   "rules": {
+    "codeimage/no-static-inline-style": "error",
+    "codeimage/no-document-query": "error",
     "codeimage/no-global-key-listener": "error",
     "no-restricted-imports": [
       "error",
