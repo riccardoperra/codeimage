@@ -87,16 +87,23 @@ export const Frame: ParentComponent<FrameProps> = props => {
     const refValue = ref();
     if (!refValue) return;
 
+    let frame = 0;
     const observer = new ResizeObserver(entries => {
       const size = entries[0]?.borderBoxSize[0];
       if (!size) return;
-      batch(() => {
-        props.onWidthChange(size.inlineSize);
-        props.onHeightChange(size.blockSize);
-      });
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(() =>
+        batch(() => {
+          props.onWidthChange(size.inlineSize);
+          props.onHeightChange(size.blockSize);
+        }),
+      );
     });
     observer.observe(refValue, {box: 'border-box'});
-    onCleanup(() => observer.disconnect());
+    onCleanup(() => {
+      cancelAnimationFrame(frame);
+      observer.disconnect();
+    });
 
     const preview = refValue.querySelector('[data-preview]');
     createResizeObserver(
