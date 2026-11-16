@@ -77,7 +77,7 @@ pnpm --filter=@codeimage/render test
 pnpm --filter=@codeimage/app test src/core/diff/parseAnnotations.test.ts src/core/diff/parseUnifiedDiff.test.ts src/core/altText.test.ts
 pnpm lint
 pnpm typecheck
-node packages/cli/scripts/verify-feature-flags.mjs /tmp/cli-citty-flags
+node .agents/skills/verify-codeimage/scripts/cli/feature-flags/index.mjs /tmp/cli-citty-flags
 ```
 
 ## Source line counts

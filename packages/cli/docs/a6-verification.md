@@ -127,11 +127,11 @@ These runs do not verify production API or OAuth.
 Each case folder contains project.json, both MP4s, decoded frame pairs,
 difference PNGs, ffprobe metadata.json, result.json, and a web screenshot.
 `compare.mjs` in the evidence directory uses the comparison section from the
-checked-in `packages/cli/scripts/verify-web-mp4.mjs`. The browser journey can
-also be replayed with that checked-in helper against an owned web server:
+checked-in `.agents/skills/verify-codeimage/scripts/web-mp4/index.mjs`. The browser journey can
+also be replayed as an audit case through the skill-owned launch and doctor:
 
 ```sh
-A6_CASE=signature A6_WEB_HEAD=45f68cd73a9f6c7acad00b26a480ca9dfbcc2e21 node packages/cli/scripts/verify-web-mp4.mjs http://127.0.0.1:4473 /tmp/a6-parity
+ARTIFACT_DIR=/tmp/a6-parity A6_CASE=signature A6_WEB_HEAD=45f68cd73a9f6c7acad00b26a480ca9dfbcc2e21 VERIFY_AUDIT=1 VERIFY_CASES=web-mp4 VERIFY_BROWSER_CHANNEL=chrome node .agents/skills/verify-codeimage/scripts/verify.mjs
 ```
 
 Set A6_CASE to unequal or hidden for the other cases and use a fresh evidence

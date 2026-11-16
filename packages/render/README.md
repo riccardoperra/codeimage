@@ -72,12 +72,12 @@ Cache policy and CLI commands are documented in [the CLI README](../cli/README.m
 
 - `pnpm --filter=@codeimage/render test` runs the schema and render tests.
 - `pnpm exec tsx scripts/perf.ts` from this package times a 300-line render.
-- `pnpm exec tsx scripts/parity/takumi-vs-chrome.ts` from the repository root compares every theme and terminal against Chrome.
-- `pnpm exec tsx scripts/parity/live-p3.ts` from the repository root runs the renderer's live checks.
-- `pnpm exec tsx scripts/parity/animation-endpoints.ts --encode` from the repository root compares every frame of each animated format with a direct render. It needs `webpmux`, `dwebp`, and `gif2webp` from libwebp.
+- `pnpm exec tsx scripts/parity/takumi-vs-chrome/index.ts` from the repository root compares every theme and terminal against Chrome.
+- `pnpm exec tsx scripts/parity/live-p3/index.ts` from the repository root runs the renderer's live checks.
+- `pnpm exec tsx scripts/parity/animation-endpoints/index.ts --encode` from the repository root compares every frame of each animated format with a direct render. It needs `webpmux`, `dwebp`, and `gif2webp` from libwebp.
 
 Font source recipes live in `build-fonts.mjs`. Package versions must match exact
 `devDependencies` pins. The generator derives every hash and Unicode range.
-`node packages/render/scripts/verify-font-urls.mjs` checks all remote artifacts.
-`node packages/render/scripts/verify-font-parity.mjs <baseline/dist/index.mjs>`
+`node .agents/skills/verify-codeimage/scripts/cli/font-urls.mjs` checks all remote artifacts.
+`node .agents/skills/verify-codeimage/scripts/cli/font-parity.mjs <baseline/dist/index.mjs>`
 compares every font family and weight with another build, byte for byte.

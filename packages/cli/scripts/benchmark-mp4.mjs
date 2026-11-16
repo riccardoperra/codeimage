@@ -1,4 +1,3 @@
-// Fresh-process export timings. Run only while the one-minute load is below 8.
 import assert from 'node:assert/strict';
 import {spawn, execFileSync} from 'node:child_process';
 import {mkdir, readFile, writeFile} from 'node:fs/promises';
@@ -53,7 +52,7 @@ const preset = {
     themeId: 'fleetDark',
   },
 };
-// The fixture renders 1920x1079; MP4 repeats the final row to reach 1080.
+
 const configPath = join(out, 'preset.json');
 await writeFile(configPath, JSON.stringify(preset, null, 2));
 const common = [

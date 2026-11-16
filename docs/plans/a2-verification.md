@@ -47,7 +47,7 @@ Lane 10 did not interrupt the final file write. That write starts after the whol
 
 ## Every frame of every format
 
-`pnpm exec tsx scripts/parity/animation-endpoints.ts --encode` now writes each case with `renderAnimation`, decodes every frame, and compares it with a direct render of the time the export drew it at. Before, it called Takumi itself and compared three frames. The run covered 41 of the 43 cases. `edge-long-line` and `edge-line-2000` were left out, because their frames are 5,969 and 19,371 px wide.
+`pnpm exec tsx scripts/parity/animation-endpoints/index.ts --encode` now writes each case with `renderAnimation`, decodes every frame, and compares it with a direct render of the time the export drew it at. Before, it called Takumi itself and compared three frames. The run covered 41 of the 43 cases. `edge-long-line` and `edge-line-2000` were left out, because their frames are 5,969 and 19,371 px wide.
 
 | Format            | Result over 41 cases                                                                           |
 | ----------------- | ---------------------------------------------------------------------------------------------- |
@@ -138,7 +138,7 @@ Two facts bear on the budgets. The static path is unchanged: lane 1 gives byte-i
 - `pnpm lint` exits 0 with 0 errors. Its 16 warnings are in app files this branch does not touch.
 - `pnpm typecheck` exits 0 after `prisma generate` and the API build.
 - `pnpm why shiki --filter=@codeimage/app` prints nothing.
-- `scripts/parity/animation-endpoints.ts` typechecks by hand with the two expected TS1470 errors.
+- `scripts/parity/animation-endpoints/index.ts` typechecks by hand with the two expected TS1470 errors.
 
 ## Left open
 

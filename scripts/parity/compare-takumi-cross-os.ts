@@ -5,7 +5,6 @@ import {join} from 'node:path';
 import {parseArgs} from 'node:util';
 import {PNG} from 'pngjs';
 
-// Allow sparse MSVC Takumi rounding while rejecting visible rendering changes.
 const MAX_CHANNEL_DELTA = 2;
 const MAX_DIFF_PERCENT = 0.01;
 
@@ -147,7 +146,7 @@ async function main() {
         platformFailed = true;
       }
     }
-    const status = platformFailed ? 'FAIL' : differing.length ? 'WARN' : 'PASS';
+    const status = platformFailed ? 'FAIL' : identicalStatus(differing.length);
     failed ||= platformFailed;
     results.push({
       platform,
@@ -177,3 +176,7 @@ main().catch(error => {
   console.error(error);
   process.exitCode = 1;
 });
+
+function identicalStatus(differing: number) {
+  return differing ? 'WARN' : 'PASS';
+}

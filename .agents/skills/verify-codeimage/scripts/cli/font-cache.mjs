@@ -1,18 +1,18 @@
-import assert from 'node:assert/strict';
-import {spawn} from 'node:child_process';
-import {createHash} from 'node:crypto';
+#!/usr/bin/env node
 import {mkdtemp, mkdir, readFile, readdir, writeFile} from 'node:fs/promises';
-import {tmpdir} from 'node:os';
 import {join, resolve} from 'node:path';
-
-const directory = await mkdtemp(join(tmpdir(), 'codeimage-font-lanes-'));
-const catalog = JSON.parse(
+import {tmpdir} from 'node:os';
+import {spawn} from 'node:child_process';
+import assert from 'node:assert/strict';
+import {createHash} from 'node:crypto';
+export const directory = await mkdtemp(join(tmpdir(), 'codeimage-font-lanes-'));
+export const catalog = JSON.parse(
   await readFile('packages/render/dist/fonts/manifest.json', 'utf8'),
 );
-const binary = resolve('packages/cli/publish/dist/bin.js');
-const code = 'const answer = 42;';
-const cache = join(directory, 'cache');
-async function cli(args, cacheDir = cache, command = binary) {
+export const binary = resolve('packages/cli/publish/dist/bin.js');
+export const code = 'const answer = 42;';
+export const cache = join(directory, 'cache');
+export async function cli(args, cacheDir = cache, command = binary) {
   return new Promise((done, reject) => {
     const child = spawn(process.execPath, [command, ...args], {
       env: {...process.env, CODEIMAGE_CACHE_DIR: cacheDir},
@@ -31,7 +31,7 @@ async function cli(args, cacheDir = cache, command = binary) {
     child.stdin.end(code);
   });
 }
-const images = new Map();
+export const images = new Map();
 for (const font of catalog.fonts.filter(font => font.role === 'code')) {
   const result = await cli(['--font', font.id]);
   images.set(font.id, result.stdout);
@@ -41,19 +41,19 @@ assert.equal((await readdir(join(cache, 'fonts/sha256'))).length, 13);
 console.error(
   'PASS fresh cache: 14 code fonts, 13 remote metric/subset files, no fallback downloads',
 );
-const fira = catalog.fonts
+export const fira = catalog.fonts
   .find(font => font.id === 'fira-code')
   .files.find(file => /-latin-wght/.test(file.file));
 await writeFile(
   join(cache, 'fonts/sha256', fira.sha256),
   Buffer.alloc(fira.bytes),
 );
-const repaired = await cli(['--font=fira-code']);
+export const repaired = await cli(['--font=fira-code']);
 assert.deepEqual(repaired.stdout, images.get('fira-code'));
 assert.match(repaired.stderr, /repairing/);
 console.error('PASS same-length corrupt Fira repaired; PNG unchanged');
-const parallelCache = join(directory, 'parallel');
-const races = await Promise.all(
+export const parallelCache = join(directory, 'parallel');
+export const races = await Promise.all(
   Array.from({length: 4}, () => cli(['--font=fira-code'], parallelCache)),
 );
 for (const result of races) assert.deepEqual(result.stdout, races[0].stdout);

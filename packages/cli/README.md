@@ -222,7 +222,7 @@ The Node-only feature checks run the built CLI and inspect its output files.
 Run them inside tmux when verifying a change.
 
 ```sh
-node packages/cli/scripts/verify-feature-flags.mjs /tmp/swarm-cli-flags
+node .agents/skills/verify-codeimage/scripts/cli/feature-flags/index.mjs /tmp/swarm-cli-flags
 ```
 
 ## Packed distribution
@@ -287,7 +287,7 @@ removes temporary video output and stops the encoder.
 Reproduce the CLI live lanes from a tmux pane after building:
 
 ```sh
-node packages/cli/scripts/verify-mp4.mjs /tmp/a6-live /absolute/base/dist/bin.js
+node .agents/skills/verify-codeimage/scripts/cli/mp4/index.mjs /tmp/a6-live /absolute/base/dist/bin.js
 node packages/cli/scripts/benchmark-mp4.mjs /tmp/a6-perf /absolute/base/dist/bin.js
 ```
 
@@ -297,8 +297,7 @@ errors, resolver order, missing libx264, concurrent encoding, odd dimensions,
 Ctrl+C, and formats that do not need ffmpeg. Set `A6_FFMPEG` / `A6_FFPROBE` to
 change the executables used for inspection. The CLI uses ffmpeg on PATH.
 
-For lane 10, run `node packages/cli/scripts/verify-web-mp4.mjs
-http://127.0.0.1:4459 /tmp/a6-web-parity` against an owned web development
+For lane 10, run `VERIFY_AUDIT=1 VERIFY_CASES=web-mp4 VERIFY_BROWSER_CHANNEL=chrome ARTIFACT_DIR=/tmp/a6-web-parity node .agents/skills/verify-codeimage/scripts/verify.mjs`. The helper starts its own MSW development
 server. The helper exports through the web controls, reads the actual saved
 JSON, and compares its CLI MP4. It uses Current frame with steps of different
 natural sizes. Set `A6_CASE=hidden` or `A6_CASE=signature` for those variants,

@@ -135,14 +135,14 @@ jobs:
 
       - name: Verify font sources and cached CLI
         run: |
-          node packages/render/scripts/verify-font-urls.mjs
+          node .agents/skills/verify-codeimage/scripts/cli/font-urls.mjs
           pnpm --filter=@codeimage/cli test
           node packages/cli/dist/bin.js fonts install --all
 
       - name: Compare Takumi with Chrome
         run: |
           pnpm exec playwright install --with-deps chromium
-          pnpm exec tsx scripts/parity/takumi-vs-chrome.ts
+          pnpm exec tsx scripts/parity/takumi-vs-chrome/index.ts
 
   render-cross-os:
     name: Takumi snapshots (${{ matrix.os }})

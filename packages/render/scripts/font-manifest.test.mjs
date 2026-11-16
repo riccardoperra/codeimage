@@ -33,7 +33,7 @@ test('catalog covers the app, preserves weights, and bundles only Inter/JB', asy
         .find(font => font.id === 'ibm-plex-mono')
         .files.map(file => file.weight),
     ).toEqual([400, 500, 600]);
-    // Twemoji declares no range; its cmap must not claim CJK, or Noto never loads.
+
     const [emoji] = catalog.fonts.find(font => font.id === 'twemoji').files;
     expect(
       emoji.unicodeRange.some(

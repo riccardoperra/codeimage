@@ -1,20 +1,23 @@
-import {createHash} from 'node:crypto';
+#!/usr/bin/env node
+import {fontManifestSchema} from '../../../../../packages/render/src/fontManifest.ts';
 import {readFile} from 'node:fs/promises';
-import {fontManifestSchema} from '../src/fontManifest.ts';
-
-const manifest = fontManifestSchema.parse(
+import {createHash} from 'node:crypto';
+export const manifest = fontManifestSchema.parse(
   JSON.parse(
     await readFile(
       process.argv[2] ??
-        new URL('../dist/fonts/manifest.json', import.meta.url),
+        new URL(
+          '../../../../../packages/render/dist/fonts/manifest.json',
+          import.meta.url,
+        ),
       'utf8',
     ),
   ),
 );
-const files = manifest.fonts
+export const files = manifest.fonts
   .flatMap(font => font.files)
   .filter(file => file.url);
-let next = 0;
+export let next = 0;
 await Promise.all(
   Array.from({length: 6}, async () => {
     while (next < files.length) {

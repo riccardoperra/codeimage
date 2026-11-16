@@ -26,8 +26,6 @@ export default defineConfig({
   },
   plugins: [
     {
-      // The language list lazily imports CodeMirror, Prettier, and SVG icons.
-      // The CLI needs only ids and file matchers, so bundle just those.
       name: 'language-metadata',
       async load(id) {
         if (id !== languagesModule) return;

@@ -3,10 +3,6 @@ import {resolve} from 'node:path';
 import {pathToFileURL} from 'node:url';
 import {parseArgs} from 'node:util';
 
-// Times the static PNG export of the trunk build and of this build, ten runs
-// each, interleaved. Build the trunk copy with `pnpm libs:build:render` on the
-// trunk ref and copy `packages/render/dist` to `packages/render/<dir>/dist`, so
-// it resolves the same dependencies.
 const {values} = parseArgs({
   options: {
     'base-dist': {type: 'string'},
@@ -112,7 +108,7 @@ async function main() {
       trunkRange: [Math.min(...samples.trunk), Math.max(...samples.trunk)],
       headRange: [Math.min(...samples.head), Math.max(...samples.head)],
       runs: Number(values.runs),
-      // Renders whose PNG differs from the first trunk render.
+
       mismatches,
       unit: 'ms',
       loadAverage: loadavg().map(value => Number(value.toFixed(2))),

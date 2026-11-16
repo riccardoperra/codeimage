@@ -92,7 +92,7 @@ Each live lane runs in its own git worktree at the PR head. There is no `control
 - [ ] Create `apps/codeimage/src/components/CustomEditor/AnimatedCodeView.tsx`.
 - [ ] Edit `apps/codeimage/src/render/entry-server.tsx` to export `renderAnimationScenes`.
 - [ ] Edit `apps/codeimage/package.json` to add `@shikijs/magic-move`. Import only `@shikijs/magic-move/core`. Do not add `shiki`. Check with `pnpm why shiki --filter=@codeimage/app`, which must print nothing.
-- [ ] Create `scripts/parity/animation-endpoints.ts` and `scripts/parity/animation-frames.ts`.
+- [ ] Create `scripts/parity/animation-endpoints/index.ts` and `scripts/parity/animation-frames.ts`.
 
 **Build.**
 
@@ -108,11 +108,11 @@ Each live lane runs in its own git worktree at the PR head. There is no `control
 - [ ] Map `easing` to one table. `smooth` is `cubic-bezier(0.65, 0, 0.35, 1)`, `snappy` is `cubic-bezier(0.2, 0, 0, 1)`, and `linear` is `linear`.
 - [ ] Write `AnimatedCodeView.tsx` as `StaticCodeView` with the code area replaced by the compiled spans. Keep the terminal chrome, background, watermark, and signature from the static view, so only the code area differs.
 - [ ] Export `renderAnimationScenes(snapshot, settings)` from `entry-server.tsx`. It returns `{scenes: {html: string; durationMs: number}[]; css: string; width: number; height: number}`. A hold is a static scene of the step. A transition is one scene of `AnimatedCodeView`.
-- [ ] Write `scripts/parity/animation-endpoints.ts`. For each case it renders the transition at `timeMs: 0` and at `timeMs: transitionMs` with Takumi, renders the static export of each step with `renderSnapshot`, and compares them with pixelmatch. Write `animation-frames.ts` to decode any frame of an animated WebP, GIF, or APNG to PNG.
+- [ ] Write `scripts/parity/animation-endpoints/index.ts`. For each case it renders the transition at `timeMs: 0` and at `timeMs: transitionMs` with Takumi, renders the static export of each step with `renderSnapshot`, and compares them with pixelmatch. Write `animation-frames.ts` to decode any frame of an animated WebP, GIF, or APNG to PNG.
 
 **You see.**
 
-- [ ] `pnpm exec tsx scripts/parity/animation-endpoints.ts` prints one row per case with the start and end diff, and every diff is at most 0.5%.
+- [ ] `pnpm exec tsx scripts/parity/animation-endpoints/index.ts` prints one row per case with the start and end diff, and every diff is at most 0.5%.
 - [ ] A frame at half the transition shows tokens between their two places, as in `docs/plans/prototypes/animation/frame-14.png`.
 
 **Verify, unit.** Tests alone are not sufficient verification. A PR is verified only when its unit, live, and perf boxes are all checked.

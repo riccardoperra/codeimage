@@ -27,8 +27,7 @@ try {
     }),
   );
   const results = {P10: [], P11: []};
-  // Each build must repeat its own image. The builds may differ: the adaptive
-  // watermark moves off code that an older baseline draws it over.
+
   const expected = {};
   for (let iteration = 0; iteration < 7; iteration++) {
     for (const [name, binary] of [

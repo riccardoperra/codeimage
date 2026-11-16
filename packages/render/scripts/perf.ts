@@ -71,7 +71,7 @@ function stats(samples: number[]) {
     median: round(at(0.5)),
     min: round(sorted[0]),
     p90: round(at(0.9)),
-    max: round(sorted.at(-1)!),
+    max: round(at(1)),
   };
 }
 
