@@ -2,7 +2,7 @@ import {stripVTControlCharacters} from 'node:util';
 import {confirm, isCancel, log, multiselect, spinner} from '@clack/prompts';
 import type {FontEvent} from '@codeimage/render';
 import type {ErrorReport} from './errors';
-import {HELP_LOGO} from './help-logo';
+import {formatHelpLogo} from './terminal-logo';
 
 export function formatHelpUsage(
   message: string,
@@ -17,7 +17,7 @@ export function formatHelpUsage(
     env.CI === undefined &&
     env.TERM !== 'dumb' &&
     /^(truecolor|24bit)$/i.test(env.COLORTERM ?? '')
-    ? `${HELP_LOGO}\n\n${usage}`
+    ? `${formatHelpLogo(env)}\n\n${usage}`
     : usage;
 }
 

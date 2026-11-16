@@ -27,8 +27,9 @@ describe('help logo', () => {
       });
       const logo = help.slice(0, -message.length - 2);
       const rows = stripVTControlCharacters(logo).split('\n');
-      expect(rows).toHaveLength(9);
-      expect(rows.every(row => row.slice(0, 20).length === 20)).toBe(true);
+      expect(rows).toHaveLength(7);
+      expect(rows.map(row => row.length)).toEqual([14, 14, 14, 25, 14, 14, 14]);
+      expect(rows[3].slice(14)).toBe('  CodeImage');
       expect(logo).toContain('▀');
       expect(logo).toContain('▄');
       expect(logo).toContain('\x1b[38;2;');
@@ -54,9 +55,26 @@ describe('help logo', () => {
     {name: '256 colors', tty: true, quiet: false, env: {COLORTERM: '256color'}},
     {name: 'unknown color support', tty: true, quiet: false, env: {}},
   ])('preserves existing help bytes for $name', ({tty, quiet, env}) => {
-    expect(formatHelpUsage(message, quiet, tty, env)).toBe(
-      formatUsage(message, tty, env),
-    );
+    for (const terminal of [
+      {},
+      {TERM_PROGRAM: 'ghostty'},
+      {TERM_PROGRAM: 'iTerm.app'},
+    ]) {
+      const environment = {...terminal, ...env};
+      expect(formatHelpUsage(message, quiet, tty, environment)).toBe(
+        formatUsage(message, tty, environment),
+      );
+    }
+  });
+
+  it.each([
+    {TERM_PROGRAM: 'ghostty', sequence: '\x1b_G'},
+    {TERM_PROGRAM: 'iTerm.app', sequence: '\x1b]1337;File='},
+  ])('adds image help for $TERM_PROGRAM without changing usage', terminal => {
+    const help = formatHelpUsage(message, false, true, {...env, ...terminal});
+    expect(help).toContain(terminal.sequence);
+    expect(help.endsWith(`\n\n${message}`)).toBe(true);
+    expect(help).toContain('CodeImage');
   });
 
   it('writes help only to stderr', () => {
