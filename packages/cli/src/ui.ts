@@ -22,7 +22,8 @@ export function formatHelpUsage(
   ]
     .map(url => (color ? `\x1b]8;;${url}\x1b\\${url}\x1b]8;;\x1b\\` : url))
     .join(' · ');
-  return `${title}\n${color ? `\x1b[2m${links}\x1b[0m` : links}\n\n${color ? message : stripVTControlCharacters(message)}`;
+  const body = message.replace(' (codeimage)', '');
+  return `${title}\n${color ? `\x1b[2m${links}\x1b[0m` : links}\n\n${color ? body : stripVTControlCharacters(body)}`;
 }
 
 export function uiMode(

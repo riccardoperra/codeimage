@@ -59,7 +59,7 @@ describe('help header', () => {
         "CodeImage CLI
         https://app.codeimage.dev · https://github.com/riccardoperra/codeimage
 
-        Render code as an image (codeimage)"
+        Render code as an image"
       `);
   });
 
