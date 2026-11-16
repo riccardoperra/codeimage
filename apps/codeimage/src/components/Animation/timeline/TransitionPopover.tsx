@@ -16,6 +16,7 @@ export function openTransition(event: MouseEvent, stepId: string) {
   const anchor = event.currentTarget;
   if (!(anchor instanceof HTMLElement)) return;
   if (
+    event.detail > 0 &&
     closed &&
     closed.stepId === stepId &&
     performance.now() - closed.at < 400

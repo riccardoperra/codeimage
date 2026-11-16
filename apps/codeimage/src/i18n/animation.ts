@@ -2,6 +2,7 @@ export const animationLocale = {
   en: {
     animation: {
       timeline: {
+        escapeKey: 'Esc',
         cards: 'Cards',
         list: 'List',
         lines: '{{n}} lines',
@@ -101,7 +102,7 @@ export const animationLocale = {
       addStep: 'Add to animation',
       duplicate: 'Duplicate as next step',
       remove: 'Remove step',
-      needsSteps: 'Add or duplicate a step to play',
+      needsSteps: 'Add a step or tab to play',
       selectHint: 'Select a segment to edit its timing',
       stepName: 'Step {{n}} · {{tab}}',
       betweenSteps: 'Step {{from}} → {{to}}',
@@ -150,6 +151,7 @@ export const animationLocale = {
   it: {
     animation: {
       timeline: {
+        escapeKey: 'Esc',
         cards: 'Schede',
         list: 'Elenco',
         lines: '{{n}} righe',
@@ -253,7 +255,7 @@ export const animationLocale = {
       addStep: 'Aggiungi all’animazione',
       duplicate: 'Duplica come passaggio successivo',
       remove: 'Rimuovi passaggio',
-      needsSteps: 'Aggiungi o duplica un passaggio per riprodurre',
+      needsSteps: 'Aggiungi un passaggio o una scheda per riprodurre',
       selectHint: 'Seleziona un segmento per modificarne i tempi',
       stepName: 'Passaggio {{n}} · {{tab}}',
       betweenSteps: 'Passaggio {{from}} → {{to}}',
@@ -303,6 +305,7 @@ export const animationLocale = {
   de: {
     animation: {
       timeline: {
+        escapeKey: 'Esc',
         cards: 'Karten',
         list: 'Liste',
         lines: '{{n}} Zeilen',
@@ -404,7 +407,7 @@ export const animationLocale = {
       addStep: 'Zur Animation hinzufügen',
       duplicate: 'Als nächsten Schritt duplizieren',
       remove: 'Schritt entfernen',
-      needsSteps: 'Zum Abspielen einen Schritt hinzufügen oder duplizieren',
+      needsSteps: 'Zum Abspielen einen Schritt oder Tab hinzufügen',
       selectHint: 'Segment auswählen, um die Dauer zu ändern',
       stepName: 'Schritt {{n}} · {{tab}}',
       betweenSteps: 'Schritt {{from}} → {{to}}',
@@ -454,6 +457,7 @@ export const animationLocale = {
   es: {
     animation: {
       timeline: {
+        escapeKey: 'Esc',
         cards: 'Tarjetas',
         list: 'Lista',
         lines: '{{n}} líneas',
@@ -556,7 +560,7 @@ export const animationLocale = {
       addStep: 'Añadir a la animación',
       duplicate: 'Duplicar como siguiente paso',
       remove: 'Eliminar paso',
-      needsSteps: 'Añade o duplica un paso para reproducir',
+      needsSteps: 'Añade un paso o una pestaña para reproducir',
       selectHint: 'Selecciona un segmento para editar su duración',
       stepName: 'Paso {{n}} · {{tab}}',
       betweenSteps: 'Paso {{from}} → {{to}}',

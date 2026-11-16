@@ -17,7 +17,12 @@ const tabs = (...ids: [string, ...string[]]) => {
 };
 test('migration derives tab order, removes repeats and inserts new tabs while keeping timing by id', () => {
   const saved = {
-    steps: [step('b', 450), step('a', 200), step('b', 900), step('missing')],
+    steps: [
+      {...step('b', 450), transition: {ms: 350, easing: 'linear'}},
+      step('a', 200),
+      step('b', 900),
+      step('missing'),
+    ],
   };
   const settings = parseAnimationSettings(saved, tabs('a', 'b', 'c'));
   assert.deepEqual(
@@ -29,6 +34,7 @@ test('migration derives tab order, removes repeats and inserts new tabs while ke
     ],
   );
   const reordered = parseAnimationSettings(settings, tabs('c', 'b'));
+  assert.deepEqual(reordered.steps[1].transition, {ms: 350, easing: 'linear'});
   assert.deepEqual(
     reordered.steps.map(s => [s.id, s.holdMs]),
     [

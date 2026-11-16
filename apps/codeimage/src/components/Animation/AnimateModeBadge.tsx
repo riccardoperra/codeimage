@@ -22,7 +22,7 @@ export function AnimateModeBadge() {
         data-animate-done
       >
         {t('animation.timeline.done')}
-        <kbd class={styles.modeKey}>Esc</kbd>
+        <kbd class={styles.modeKey}>{t('animation.timeline.escapeKey')}</kbd>
       </button>
     </div>
   );

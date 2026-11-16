@@ -19,7 +19,7 @@ function saveMarks(store: Store, editorId: string, marks: TabMarks) {
   if (index < 0) return;
   const view = store.editor.activeEditorView();
   if (view && store.editor.activeEditorViewTabId() === editorId)
-    setLineMarks(view, marks);
+    batch(() => setLineMarks(view, marks));
   else store.editor.actions.setEditors(index, 'marks', marks);
 }
 

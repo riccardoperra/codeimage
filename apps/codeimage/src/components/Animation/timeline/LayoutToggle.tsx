@@ -4,8 +4,7 @@ import {Tooltip} from '@codeui/kit';
 import {SegmentedField} from '@ui/SegmentedField/SegmentedField';
 import {setTimelineLayout, timelineLayout} from './layout';
 
-function CardsIcon() {
-  const [t] = useI18n<AppLocaleEntries>();
+function CardsIcon(props: {label: string}) {
   return (
     <svg
       width="16"
@@ -15,17 +14,16 @@ function CardsIcon() {
       stroke="currentColor"
       stroke-width="1.5"
       role="img"
-      aria-label={t('animation.timeline.cards')}
+      aria-label={props.label}
     >
-      <title>{t('animation.timeline.cards')}</title>
+      <title>{props.label}</title>
       <rect x="1.75" y="3.75" width="5.5" height="8.5" rx="1.5" />
       <rect x="8.75" y="3.75" width="5.5" height="8.5" rx="1.5" />
     </svg>
   );
 }
 
-function ListIcon() {
-  const [t] = useI18n<AppLocaleEntries>();
+function ListIcon(props: {label: string}) {
   return (
     <svg
       width="16"
@@ -36,9 +34,9 @@ function ListIcon() {
       stroke-width="1.5"
       stroke-linecap="round"
       role="img"
-      aria-label={t('animation.timeline.list')}
+      aria-label={props.label}
     >
-      <title>{t('animation.timeline.list')}</title>
+      <title>{props.label}</title>
       <path d="M2.5 4h11M2.5 8h11M2.5 12h11" />
     </svg>
   );
@@ -56,7 +54,7 @@ export function LayoutToggle() {
           {
             label: (
               <Tooltip content={t('animation.timeline.cards')} placement="top">
-                <CardsIcon />
+                <CardsIcon label={t('animation.timeline.cards')} />
               </Tooltip>
             ),
             value: 'filmstrip',
@@ -64,7 +62,7 @@ export function LayoutToggle() {
           {
             label: (
               <Tooltip content={t('animation.timeline.list')} placement="top">
-                <ListIcon />
+                <ListIcon label={t('animation.timeline.list')} />
               </Tooltip>
             ),
             value: 'outline',

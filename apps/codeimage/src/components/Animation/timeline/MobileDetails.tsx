@@ -2,7 +2,7 @@ import {useI18n} from '@codeimage/locale';
 import {getEditorStore} from '@codeimage/store/editor';
 import {Button, IconButton} from '@codeui/kit';
 import {Dialog, Content as DialogContent} from '@kobalte/core/dialog';
-import {createEffect, createSignal, on} from 'solid-js';
+import {createEffect, createMemo, createSignal, on} from 'solid-js';
 import type {AppLocaleEntries} from '../../../i18n';
 import {CloseIcon} from '../../Icons/CloseIcon';
 import {StepToolbar} from './StepToolbar';
@@ -14,15 +14,14 @@ export function MobileDetails(props: {model: TimelineModel}) {
   const [t] = useI18n<AppLocaleEntries>();
   const [open, setOpen] = createSignal(false);
   const selected = () => animation.selection();
+  const selectedKey = createMemo(() => {
+    const value = selected();
+    return value ? `${value.kind}:${value.stepId}` : null;
+  });
   createEffect(
-    on(
-      () => {
-        const value = selected();
-        return value ? `${value.kind}:${value.stepId}` : null;
-      },
-      value => setOpen(!!value?.startsWith('hold:')),
-      {defer: true},
-    ),
+    on(selectedKey, value => setOpen(!!value?.startsWith('hold:')), {
+      defer: true,
+    }),
   );
   const title = () =>
     props.model.stepOf(selected()?.stepId ?? '')?.label ?? t('animation.steps');

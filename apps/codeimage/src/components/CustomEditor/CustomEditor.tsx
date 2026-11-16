@@ -252,9 +252,9 @@ export default function CustomEditor(props: VoidProps<CustomEditorProps>) {
     );
   });
   createExtension(() => EditorState.readOnly.of(props.readOnly));
-  createExtension(() => {
+  const scriptAidStep = createMemo(() => {
     const {animation} = getEditorStore();
-    if (props.readOnly || !animation.open()) return [];
+    if (props.readOnly || !animation.open()) return false;
     const selected = animation.selection();
     const selectedStep = animation
       .settings()
@@ -262,7 +262,11 @@ export default function CustomEditor(props: VoidProps<CustomEditorProps>) {
         step => step.id === selected?.stepId && step.editorId === editor()?.id,
       );
     const step = selectedStep?.view;
-    return scriptLinesExtension(step?.kind === 'script' ? step.step : null);
+    return step?.kind === 'script' ? step.step : null;
+  });
+  createExtension(() => {
+    const step = scriptAidStep();
+    return step === false ? [] : scriptLinesExtension(step);
   });
 
   const reconfigureBaseSetup = createExtension(EDITOR_BASE_SETUP);
