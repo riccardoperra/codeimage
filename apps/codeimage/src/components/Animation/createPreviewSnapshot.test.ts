@@ -5,7 +5,6 @@ import {test, vi} from 'vitest';
 import {
   EMPTY_DRAFT,
   reconcileSteps,
-  seedSteps,
 } from '../../state/editor/animationSettings';
 import {
   createPreviewSnapshot,
@@ -18,7 +17,6 @@ vi.mock('solid-js', () =>
 );
 
 const request = (ids: readonly [string, ...string[]]): PreviewRequest => {
-  const settings = reconcileSteps({...EMPTY_DRAFT, steps: seedSteps(ids)}, ids);
   const tab = (id: string) => ({
     id,
     code: id,
@@ -30,7 +28,7 @@ const request = (ids: readonly [string, ...string[]]): PreviewRequest => {
   const [first, ...rest] = ids;
   return {
     key: ids.join(','),
-    settings,
+    settings: reconcileSteps(EMPTY_DRAFT, [tab(first), ...rest.map(tab)]),
     tabs: [tab(first), ...rest.map(tab)],
     style: {
       theme: {

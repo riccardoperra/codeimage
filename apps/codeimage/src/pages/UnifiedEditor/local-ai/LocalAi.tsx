@@ -18,7 +18,7 @@ import type {AgentTool} from '../agent-tools/tools';
 import {ToolRow, useSummaryWords} from '../agent-tools/ToolActivity';
 import {spinner} from '../agent-tools/tool-activity.css';
 import type {EditorPageState} from '../page-state';
-import {ArrowUpIcon, PromptIcon} from '../shell/icons';
+import {ArrowUpIcon} from '../shell/icons';
 import {preferences} from '../shell/preferences';
 import {settings} from '../shell/settings-state';
 import type {Entry, Run} from './agent';
@@ -148,24 +148,6 @@ export function LocalAi(props: {
 }
 
 /** Opens the Ask AI bar. Shown only while the bar can run. */
-export function AskAiButton() {
-  const [t] = useI18n<AppLocaleEntries>();
-  return (
-    <Show when={localAi.enabled()}>
-      <Button
-        size="sm"
-        theme="secondary"
-        variant="ghost"
-        leftIcon={<PromptIcon size={18} />}
-        data-ask-ai
-        onClick={() => localAi.open()}
-      >
-        {t('localAi.ask')}
-      </Button>
-    </Show>
-  );
-}
-
 /** A call as the agent activity card draws it, or the model's own words. */
 function EntryRow(props: {entry: Entry}) {
   const words = useSummaryWords();

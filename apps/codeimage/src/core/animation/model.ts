@@ -1,9 +1,15 @@
 import type {LineMark, TabMarks} from '@codeimage/store/editor/model';
 import type {TokenLine} from '@core/snapshot/tokenize';
 
+export type StepView =
+  | {kind: 'tab'}
+  | {kind: 'diff'; side: 'before' | 'after'}
+  | {kind: 'script'; step: number};
+
 export type AnimationStepSettings = {
   id: string;
   editorId: string;
+  view?: StepView;
   holdMs: number;
   transition?: {ms: number; easing: EasingValue};
 };
@@ -30,6 +36,8 @@ export const EASING_CURVES = {
 
 // One tab as an animation step sees it.
 export type Step = {
+  rows?: number[];
+  source?: string;
   lines: TokenLine[];
   marks: TabMarks;
   lineNumberStart: number;
@@ -71,6 +79,8 @@ export type StepBox = {
 // Everything that changes between two steps. Each layer is placed inside its
 // own box of the static layout, so a cell maps to pixels without offsets.
 export type Scene = {
+  leaveEnd?: number;
+  enterStart?: number;
   code: TokenTransition[];
   // Null when line numbers are off.
   gutter: Gutter | null;

@@ -173,8 +173,8 @@ The editor is CodeMirror 6. CodeMirror owns the DOM it renders and redraws it at
 node .agents/skills/verify-codeimage/scripts/capture-design.mjs http://localhost:4343
 ```
 
-| Sidebar Accordion, the default                                     | Dock                                              | Sidebar Rail                                                 |
-| ----------------------------------------------------------- | ------------------------------------------------- | ------------------------------------------------------------ |
+| Sidebar Accordion, the default                                      | Dock                                              | Sidebar Rail                                                       |
+| ------------------------------------------------------------------- | ------------------------------------------------- | ------------------------------------------------------------------ |
 | ![Sidebar Accordion](docs/design/screenshots/01-inspector-1440.png) | ![Dock](docs/design/screenshots/09-dock-1440.png) | ![Sidebar Rail](docs/design/screenshots/12-studio-themes-1440.png) |
 
 The audit that started this work is in [`docs/design/ui-audit.md`](docs/design/ui-audit.md).

@@ -1,3 +1,4 @@
+import {button as canvasButton} from '../../pages/UnifiedEditor/controls/canvas-toolbar.css';
 import {useI18n} from '@codeimage/locale';
 import {getEditorStore} from '@codeimage/store/editor';
 import {IconButton} from '@codeui/kit';
@@ -5,10 +6,44 @@ import {Show} from 'solid-js';
 import type {AppLocaleEntries} from '../../i18n';
 import {CloseIcon} from '../Icons/CloseIcon';
 import {HeaderField} from './HeaderField';
-import {StepsMenu} from './StepsMenu';
+import {LayoutToggle} from './timeline/LayoutToggle';
 import {PauseIcon, PlayIcon, StopIcon} from './icons';
 import {formatSeconds} from './format';
 import * as styles from './AnimatePanel.css';
+
+export const transportInBar = (compact: boolean) => !compact;
+
+export function BarTransport() {
+  const {animation} = getEditorStore();
+  const [t, {locale}] = useI18n<AppLocaleEntries>();
+  const playing = () => animation.playback().state === 'playing';
+  return (
+    <>
+      <IconButton
+        class={canvasButton}
+        size="sm"
+        theme="primary"
+        aria-label={playing() ? t('animation.pause') : t('animation.play')}
+        title={
+          animation.settings().steps.length < 2
+            ? t('animation.needsSteps')
+            : undefined
+        }
+        disabled={animation.settings().steps.length < 2}
+        onClick={animation.actions.toggle}
+        data-bar-play
+      >
+        {playing() ? <PauseIcon /> : <PlayIcon />}
+      </IconButton>
+      <output class={styles.barTime} data-animation-time>
+        {formatSeconds(animation.playhead(), locale())} /{' '}
+        {formatSeconds(animation.durationMs(), locale())}
+      </output>
+      <LayoutToggle />
+    </>
+  );
+}
+
 export function TransportBar(props: {compact: boolean}) {
   const {animation} = getEditorStore();
   const [t, {locale}] = useI18n<AppLocaleEntries>();
@@ -19,8 +54,9 @@ export function TransportBar(props: {compact: boolean}) {
     document.querySelector<HTMLElement>('[data-animate-toggle]')?.focus();
   };
   return (
-    <div class={styles.transport} data-animation-transport>
+    <div class={styles.transport}>
       <IconButton
+        class={canvasButton}
         size="sm"
         theme="primary"
         aria-label={playing() ? t('animation.pause') : t('animation.play')}
@@ -36,6 +72,7 @@ export function TransportBar(props: {compact: boolean}) {
       </IconButton>
       <Show when={animation.playback().state !== 'editing'}>
         <IconButton
+          class={canvasButton}
           size="sm"
           theme="secondary"
           aria-label={t('animation.stop')}
@@ -49,11 +86,14 @@ export function TransportBar(props: {compact: boolean}) {
         {formatSeconds(animation.durationMs(), locale())}
       </output>
       <span class={styles.spacer} />
-      <Show when={!props.compact}>
+      <div class={styles.desktopHeader}>
         <HeaderField />
-        <StepsMenu />
+      </div>
+      <Show when={!props.compact}>
+        <LayoutToggle />
       </Show>
       <IconButton
+        class={canvasButton}
         size="sm"
         theme="secondary"
         aria-label={t('animation.close')}

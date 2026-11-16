@@ -1,8 +1,10 @@
+import {useSelectContext} from '@kobalte/core/select';
+import {button as canvasButton} from '../../pages/UnifiedEditor/controls/canvas-toolbar.css';
 import {useI18n} from '@codeimage/locale';
 import {getEditorStore} from '@codeimage/store/editor';
 import {Select, TextField} from '@codeui/kit';
 import type {AnimationHeader} from '@core/animation/model';
-import {createEffect, createSignal, Show} from 'solid-js';
+import {createEffect, createSignal, onCleanup, Show} from 'solid-js';
 import type {AppLocaleEntries} from '../../i18n';
 import * as styles from './AnimatePanel.css';
 export function HeaderField() {
@@ -41,7 +43,7 @@ export function HeaderField() {
         onChange={setMode}
         itemLabel={label}
         optionTextValue={label}
-        valueComponent={value => label(value())}
+        valueComponent={value => <HeaderValue label={label(value())} />}
         aria-label={t('animation.header.label')}
         disallowEmptySelection
       />
@@ -52,6 +54,7 @@ export function HeaderField() {
           on:keydown={titleKeyDown}
         >
           <TextField
+            slotClasses={{label: styles.barTitleLabel}}
             size="xs"
             value={title()}
             onChange={setTitle}
@@ -61,4 +64,15 @@ export function HeaderField() {
       </Show>
     </div>
   );
+}
+
+function HeaderValue(props: {label: string}) {
+  const select = useSelectContext();
+  createEffect(() => {
+    const trigger = select.triggerRef();
+    if (!trigger) return;
+    trigger.classList.add(canvasButton);
+    onCleanup(() => trigger.classList.remove(canvasButton));
+  });
+  return <>{props.label}</>;
 }

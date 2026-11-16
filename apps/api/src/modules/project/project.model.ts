@@ -1,15 +1,22 @@
+import {
+  parseAnimationSettings,
+  parseTabMarks,
+  remapAnimationStep,
+} from './project.model.animation.js';
+export {
+  parseAnimationSettings,
+  parseTabMarks,
+  remapAnimationStep,
+} from './project.model.animation.js';
 import {randomUUID} from 'node:crypto';
 import type {Static} from '@sinclair/typebox';
-import {Value} from '@sinclair/typebox/value';
 import {
-  AnimationSettingsSchema,
   type AnimationSettings,
   ExportTargetSchema,
   type FrameSignatureSchema,
   SignaturePlatformSchema,
   SignaturePositionSchema,
   SignatureStyleSchema,
-  TabMarksSchema,
   type TabMarks,
 } from './project.contract.js';
 import {defineErrors} from '../../shared/errors.js';
@@ -248,7 +255,7 @@ export function draftFromClone(
       ...animation,
       steps: animation.steps.map(step => ({
         ...step,
-        editorId: tabIds.get(step.editorId) ?? step.editorId,
+        ...remapAnimationStep(step, tabIds),
       })),
     },
   };
@@ -323,28 +330,6 @@ export function readFrameExportProperties(
       )?.const ?? null,
     signature: readFrameSignature(frame),
   };
-}
-
-// A timeline of 0 ms has no frame to render, so it is no animation.
-export function parseAnimationSettings(
-  value: unknown,
-): AnimationSettings | null {
-  if (!Value.Check(AnimationSettingsSchema, value)) return null;
-  const {steps, transitionMs} = value;
-  const totalMs = steps.reduce(
-    (total, step, index) =>
-      total +
-      step.holdMs +
-      (index === 0 ? 0 : (step.transition?.ms ?? transitionMs)),
-    0,
-  );
-  return totalMs > 0 ? value : null;
-}
-
-export function parseTabMarks(value: unknown): TabMarks {
-  return Value.Check(TabMarksSchema, value)
-    ? value
-    : {lines: [], focusedLines: []};
 }
 
 export function readTerminalSurface(

@@ -151,7 +151,7 @@ export function planAnimation(
   const [first, ...rest] = snapshot.editor.editors;
   const stored = storedAnimation(snapshot, preset);
   const settings = withFlags(
-    parseAnimationSettings(stored, [first.id, ...rest.map(({id}) => id)]),
+    parseAnimationSettings(stored, [first, ...rest]),
     args,
   );
   if (settings.steps.length < 2) {

@@ -4,6 +4,7 @@ import type {AnimationHost, AnimationScenes, AnimationTiming} from './contract';
 
 import {clipFrameCount} from '@core/animation/clock';
 import {easingOf} from '@core/animation/easing';
+import {projectStep} from '@core/animation/project';
 
 import {
   frameRules,
@@ -53,12 +54,29 @@ const sceneSelectors = (scene: number): FrameSelectors => ({
 const keepPadding = ({frame}: FrameSelectors) =>
   `${frame}{padding:${styles.frameVars.padding}!important}`;
 
+function projectSteps(snapshot: RenderSnapshot, timing: AnimationTiming) {
+  const tabs = timing.steps.map(step => {
+    const tab = findTab(snapshot, step.editorId);
+    return projectStep({...tab, marks: tab.marks ?? NO_MARKS}, step.view);
+  });
+  const stepSnapshot = (index: number): RenderSnapshot => ({
+    ...snapshot,
+    editor: {
+      ...snapshot.editor,
+      editors: snapshot.editor.editors.map(tab =>
+        tab.id === tabs[index].id ? tabs[index] : tab,
+      ),
+    },
+  });
+  return {tabs, stepSnapshot};
+}
+
 export async function renderAnimationScenes(
   snapshot: RenderSnapshot,
   timing: AnimationTiming,
   host: AnimationHost,
 ): Promise<AnimationScenes> {
-  const tabs = timing.steps.map(step => findTab(snapshot, step.editorId));
+  const {tabs, stepSnapshot} = projectSteps(snapshot, timing);
   const [loaded, languages] = await Promise.all([
     loadFrame(snapshot, host),
     Promise.all(tabs.map(tab => loadLanguage(tab.languageId, tab.tabName))),
@@ -77,14 +95,15 @@ export async function renderAnimationScenes(
     const composed = new Map<string, Promise<ComposedStep>>();
     const steps: ComposedStep[] = [];
     for (const [index, tab] of tabs.entries()) {
-      let step = composed.get(tab.id);
+      const key = `${tab.id} ${JSON.stringify(timing.steps[index].view ?? {})}`;
+      let step = composed.get(key);
       if (!step) {
-        step = composeStep(snapshot, loaded, host, {
+        step = composeStep(stepSnapshot(index), loaded, host, {
           editorId: tab.id,
           language: languages[index],
           animation: {header: timing.header, signatureWidth},
         });
-        composed.set(tab.id, step);
+        composed.set(key, step);
       }
       steps.push(await step);
     }
@@ -101,7 +120,9 @@ export async function renderAnimationScenes(
     const {holdMs, transition} = timing.steps[index];
     return {
       lines: tokenizeCode(tabs[index].code, languages[index], theme),
-      marks: tabs[index].marks ?? NO_MARKS,
+      marks: tabs[index].marks,
+      rows: tabs[index].rows,
+      source: tabs[index].id,
       lineNumberStart: tabs[index].lineNumberStart,
       layout: steps[index].layout,
       holdMs,
@@ -155,7 +176,7 @@ export async function renderAnimationScenes(
         ),
       );
     } else {
-      body = await renderBody(snapshot, loaded, {
+      body = await renderBody(stepSnapshot(scene.step), loaded, {
         appearance,
         editorId: tab.id,
         language: languages[scene.step],

@@ -1,4 +1,7 @@
-import type {AnimationTiming} from '../../../apps/codeimage/src/render/contract';
+import type {
+  AnimationStepView,
+  AnimationTiming,
+} from '../../../apps/codeimage/src/render/contract';
 
 export const ANIMATION_DEFAULTS = {
   holdMs: 800,
@@ -17,9 +20,14 @@ export type AnimationHeader = NonNullable<AnimationTiming['header']>;
 export interface AnimationStepSettings {
   id: string;
   editorId: string;
+  view?: AnimationStepView;
   holdMs: number;
 
   transition?: {ms: number; easing: AnimationEasing};
+}
+export interface AnimationTab {
+  id: string;
+  marks?: {lines: {kind: string}[]; script?: {steps: string[]}};
 }
 export interface AnimationSettings {
   steps: [AnimationStepSettings, ...AnimationStepSettings[]];
@@ -123,30 +131,53 @@ function parseSteps(value: unknown): AnimationStepSettings[] {
   );
 }
 
+function deriveSteps(tabs: readonly AnimationTab[]): AnimationStepSettings[] {
+  const step = (
+    id: string,
+    editorId: string,
+    view: AnimationStepView,
+  ): AnimationStepSettings => ({
+    id,
+    editorId,
+    view,
+    holdMs: ANIMATION_DEFAULTS.holdMs,
+  });
+  return tabs.flatMap(tab => {
+    const script = tab.marks?.script;
+    if (script)
+      return script.steps.map((id, index) =>
+        step(id, tab.id, {kind: 'script', step: index + 1}),
+      );
+    if (
+      tab.marks?.lines.some(
+        mark => mark.kind === 'added' || mark.kind === 'removed',
+      )
+    )
+      return (['before', 'after'] as const).map(side =>
+        step(`${tab.id}:${side}`, tab.id, {kind: 'diff', side}),
+      );
+    return [step(tab.id, tab.id, {kind: 'tab'})];
+  });
+}
+
 export function parseAnimationSettings(
   value: unknown,
-  editorIds: readonly [string, ...string[]],
+  tabs: readonly [AnimationTab, ...AnimationTab[]],
 ): AnimationSettings {
   const settings = isRecord(value) ? value : {};
-  const stored = parseSteps(settings.steps);
-  const tabs = new Set(editorIds);
-  const kept = (
-    stored.length
-      ? stored
-      : editorIds.map(editorId => ({
-          id: editorId,
-          editorId,
-          holdMs: ANIMATION_DEFAULTS.holdMs,
-        }))
-  ).filter(step => tabs.has(step.editorId));
-  const [
-    first = {
-      id: editorIds[0],
-      editorId: editorIds[0],
-      holdMs: ANIMATION_DEFAULTS.holdMs,
-    },
-    ...rest
-  ] = kept;
+  const timings = new Map(
+    parseSteps(settings.steps).map(step => [step.id, step]),
+  );
+  const [first, ...rest] = deriveSteps(tabs).map(step => {
+    const saved = timings.get(step.id);
+    return saved
+      ? {
+          ...step,
+          holdMs: saved.holdMs,
+          ...(saved.transition ? {transition: saved.transition} : {}),
+        }
+      : step;
+  });
   const header = isRecord(settings.header) ? settings.header : {};
   return {
     steps: [
