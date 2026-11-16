@@ -1,3 +1,74 @@
 {
-  "extends": ["../../.oxlintrc.json"]
+  "extends": ["../../.oxlintrc.json"],
+  "rules": {
+    "codeimage/no-static-inline-style": "error",
+    "codeimage/no-document-query": "error",
+    "codeimage/no-global-key-listener": "error",
+    "no-restricted-imports": [
+      "error",
+      {
+        "patterns": [
+          {
+            "group": ["@codeimage/api", "@codeimage/api/*"],
+            "allowTypeImports": true,
+            "message": "Import only types from @codeimage/api. CI builds the app before the API, so a runtime import breaks Build App and Build packages."
+          },
+          {
+            "regex": "^(\\.\\./)+state/",
+            "message": "Import the store through the @codeimage/store/* alias."
+          },
+          {
+            "regex": "^(\\.\\./)+core/",
+            "message": "Import core modules through the @core/* alias."
+          },
+          {
+            "regex": "^(\\.\\./){2,}ui/",
+            "message": "Import UI primitives through the @ui/* alias."
+          }
+        ]
+      }
+    ]
+  },
+  "overrides": [
+    {
+      "files": ["**/pages/UnifiedEditor/variants/**"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": ["@codeimage/api", "@codeimage/api/*"],
+                "allowTypeImports": true,
+                "message": "Import only types from @codeimage/api. CI builds the app before the API, so a runtime import breaks Build App and Build packages."
+              },
+              {
+                "regex": "^(\\.\\./)+state/",
+                "message": "Import the store through the @codeimage/store/* alias."
+              },
+              {
+                "regex": "^(\\.\\./)+core/",
+                "message": "Import core modules through the @core/* alias."
+              },
+              {
+                "regex": "^(\\.\\./){2,}ui/",
+                "message": "Import UI primitives through the @ui/* alias."
+              },
+              {
+                "group": [
+                  "**/components/WhatsNew",
+                  "**/components/WhatsNew/**",
+                  "**/state/whats-new",
+                  "**/state/whats-new/**",
+                  "@codeimage/store/whats-new",
+                  "@codeimage/store/whats-new/**"
+                ],
+                "message": "Render shared controls or CommandMenuButton. Layouts must not place What's new dots."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
 }
