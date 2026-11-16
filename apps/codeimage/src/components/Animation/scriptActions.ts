@@ -63,10 +63,13 @@ export function deleteScriptStep(store: Store, editorId: string, step: number) {
   if (!tab || !script) return;
   const selected = store.animation.selection();
   const next = removeScriptStep(script, step);
-  const selectedId =
-    selected && selected.stepId !== script.steps[step - 1]
+  const selectedId = !next
+    ? !selected || script.steps.includes(selected.stepId)
+      ? editorId
+      : selected.stepId
+    : selected && selected.stepId !== script.steps[step - 1]
       ? selected.stepId
-      : (next?.steps[Math.max(0, step - 2)] ?? editorId);
+      : next.steps[Math.max(0, step - 2)];
   batch(() => {
     const {script: _, ...marks} = tab.marks;
     saveMarks(store, editorId, {...marks, ...(next ? {script: next} : {})});
