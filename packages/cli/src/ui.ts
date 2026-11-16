@@ -2,6 +2,24 @@ import {stripVTControlCharacters} from 'node:util';
 import {confirm, isCancel, log, multiselect, spinner} from '@clack/prompts';
 import type {FontEvent} from '@codeimage/render';
 import type {ErrorReport} from './errors';
+import {HELP_LOGO} from './help-logo';
+
+export function formatHelpUsage(
+  message: string,
+  quiet = false,
+  stdoutTTY = !!process.stdout.isTTY,
+  env = process.env,
+) {
+  const usage = formatUsage(message, stdoutTTY, env);
+  return stdoutTTY &&
+    !quiet &&
+    env.NO_COLOR === undefined &&
+    env.CI === undefined &&
+    env.TERM !== 'dumb' &&
+    /^(truecolor|24bit)$/i.test(env.COLORTERM ?? '')
+    ? `${HELP_LOGO}\n\n${usage}`
+    : usage;
+}
 
 export function formatUsage(
   message: string,
@@ -77,7 +95,7 @@ export function createUi(quiet = false) {
           }
         : undefined,
     text,
-    usage: (message: string) => text(formatUsage(message)),
+    usage: (message: string) => text(formatHelpUsage(message, quiet)),
     success,
     warn,
     async run<T>(label: string, work: () => Promise<T>): Promise<T> {
