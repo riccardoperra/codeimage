@@ -5,6 +5,9 @@ import {join, resolve} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {afterEach, beforeEach, describe, expect, it} from 'vitest';
 import {PNG} from 'pngjs';
+import {stripVTControlCharacters} from 'node:util';
+import {renderUsage} from 'citty';
+import {COMMAND} from './args';
 
 const root = fileURLToPath(new URL('../../../', import.meta.url));
 const projectPath = (path: string) => resolve(root, path);
@@ -15,7 +18,7 @@ beforeEach(async () => {
 afterEach(() => rm(dir, {recursive: true, force: true}));
 function run(
   args: string[],
-  options: {quiet?: boolean; packed?: boolean} = {},
+  options: {quiet?: boolean; packed?: boolean; env?: NodeJS.ProcessEnv} = {},
 ) {
   return new Promise<{status: number | null; stdout: Buffer; stderr: string}>(
     (resolveResult, reject) => {
@@ -33,6 +36,7 @@ function run(
             ...process.env,
             CI: '1',
             CODEIMAGE_CACHE_DIR: join(dir, 'cache'),
+            ...options.env,
           },
           stdio: ['pipe', 'pipe', 'pipe'],
         },
@@ -54,6 +58,27 @@ function run(
   );
 }
 describe('CLI streams', {timeout: 30_000}, () => {
+  it.each([['--help'], ['-h'], ['--help', '--quiet']])(
+    'includes the plain header in non-TTY help for %j',
+    async (...args) => {
+      const result = await run(args, {
+        env: {
+          CI: undefined,
+          NO_COLOR: undefined,
+          COLORTERM: 'truecolor',
+          TERM: 'xterm-256color',
+        },
+      });
+      expect(result.status, result.stderr).toBe(0);
+      expect(result.stdout.length).toBe(0);
+      const usage = stripVTControlCharacters(
+        await renderUsage(COMMAND),
+      ).replace(' (codeimage)', '');
+      expect(result.stderr).toBe(
+        `CodeImage CLI\nhttps://app.codeimage.dev · https://github.com/riccardoperra/codeimage\n\n${usage.endsWith('\n') ? usage : `${usage}\n`}Fonts: codeimage fonts install [ids...] [--all] [--offline] | list [--json] | clean [-y]\n`,
+      );
+    },
+  );
   it.each([false, true])(
     'pipes a valid PNG with no terminal text, packed=%s',
     async packed => {
@@ -64,6 +89,7 @@ describe('CLI streams', {timeout: 30_000}, () => {
       );
       expect(PNG.sync.read(result.stdout).width).toBeGreaterThan(0);
       expect(result.stderr).not.toContain('\x1b');
+      expect(result.stderr).not.toContain('CodeImage CLI');
       expect(await readdir(dir)).toEqual([]);
     },
   );
