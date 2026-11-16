@@ -100,9 +100,27 @@ export const gutterState = StateField.define<GutterState>({
         if (!action.open) next.hovered = null;
       }
     }
-    return next;
+    return (Object.keys(next) as (keyof GutterState)[]).every(
+      key => next[key] === value[key],
+    )
+      ? value
+      : next;
   },
 });
+
+function markAt(state: EditorState, line: number) {
+  const {decorations, focused} = state.field(lineMarksField);
+  const from = state.doc.line(line).from;
+  let kind: LineMark['kind'] | undefined;
+  let focus = false;
+  decorations.between(from, from, (start, _end, decoration) => {
+    if (start === from) kind = decoration.spec.attributes['data-mark'];
+  });
+  focused.between(from, from, start => {
+    if (start === from) focus = true;
+  });
+  return {kind, focused: focus};
+}
 
 export function gutterMarkHover(
   view: EditorView,
@@ -300,7 +318,6 @@ export function lineMarkGutter(
   }
   const markersFor = (state: EditorState) => {
     const ui = state.field(gutterState);
-    const marks = readMarks(state);
     const cursor = state.doc.lineAt(state.selection.main.head).number;
     return [
       ...new Set([cursor, ui.hovered, ui.focused, ui.open?.line, ui.tabStop]),
@@ -309,20 +326,20 @@ export function lineMarkGutter(
         (line): line is number =>
           line != null && line >= 1 && line <= state.doc.lines,
       )
-      .map(
-        line =>
-          new Marker(
-            line,
-            marks.lines.find(mark => mark.line === line)?.kind,
-            marks.focusedLines.includes(line),
-            line === ui.hovered,
-            line === ui.active,
-            line === ui.tabStop,
-            line === ui.focused,
-            line === ui.open?.line,
-            ui.news && line === cursor,
-          ),
-      );
+      .map(line => {
+        const mark = markAt(state, line);
+        return new Marker(
+          line,
+          mark.kind,
+          mark.focused,
+          line === ui.hovered,
+          line === ui.active,
+          line === ui.tabStop,
+          line === ui.focused,
+          line === ui.open?.line,
+          ui.news && line === cursor,
+        );
+      });
   };
   const markerTooltips = StateField.define<{
     markers: Marker[];
@@ -343,6 +360,16 @@ export function lineMarkGutter(
     },
     update(value, tr) {
       if (tr.state.readOnly) return {markers: [], tooltips: []};
+      if (
+        !tr.docChanged &&
+        !tr.selection &&
+        !tr.startState.readOnly &&
+        tr.startState.field(gutterState, false) ===
+          tr.state.field(gutterState) &&
+        tr.startState.field(lineMarksField, false) ===
+          tr.state.field(lineMarksField)
+      )
+        return value;
       const markers = markersFor(tr.state);
       const tooltips = markers.map(marker => {
         const index = value.markers.findIndex(previous => marker.eq(previous));
