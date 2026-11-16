@@ -1,20 +1,20 @@
 import init, {Renderer} from '@takumi-rs/wasm';
 import wasmUrl from '@takumi-rs/wasm/wasm-url';
-import {padVideoFrame, errorMessage} from '../core/video/encode';
+import {padVideoFrame, errorMessage} from '@core/video/encode';
 import {
   ANIMATION_FORMATS,
   checkAnimationSupport,
   createAnimationEncoder,
   warmAnimationEncoder,
-} from '../core/video/formats';
-import {paletteFrameIndices, palettePixels} from '../core/gif/encode';
-import {clipFrameCount, frameTimeMs} from '../core/animation/clock';
+} from '@core/video/formats';
+import {paletteFrameIndices, palettePixels} from '@core/gif/encode';
+import {clipFrameCount, frameTimeMs} from '@core/animation/clock';
 import type {
   AnimationEvent,
   AnimationFailure,
   AnimationExport,
   AnimationRequest,
-} from '../core/video/protocol';
+} from '@core/video/protocol';
 
 const send = (event: AnimationEvent, transfer: Transferable[] = []) =>
   self.postMessage(event, {transfer});

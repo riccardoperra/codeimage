@@ -220,13 +220,11 @@ export function frameRules(
 
 export const transitionHalfMs = (ms: number) => Math.ceil(ms / 2);
 
-// Whole pixels keep both ends on the pixels of the static export.
 const wholeSize = ({width, height}: Size): Size => ({
   width: Math.round(width),
   height: Math.round(height),
 });
 
-// The one canvas of a clip, as large as the largest frame of its steps.
 export function timelineSize(layouts: readonly Pick<StepLayout, 'size'>[]) {
   const sizes = layouts.map(({size}) => wholeSize(size));
   return {

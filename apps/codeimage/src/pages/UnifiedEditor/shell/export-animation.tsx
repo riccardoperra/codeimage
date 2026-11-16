@@ -15,22 +15,22 @@ import {
   type PreviewTab,
 } from '../../../components/Animation/planPreview';
 import {AnimationCanvas} from '../../../components/Animation/AnimationCanvas';
-import {prepareWatermark} from '../../../core/watermark/scope';
-import {playedDurationMs} from '../../../core/animation/clock';
-import {frameRules} from '../../../core/animation/timeline';
-import type {NonEmpty, Size} from '../../../core/animation/model';
+import {prepareWatermark} from '@core/watermark/scope';
+import {playedDurationMs} from '@core/animation/clock';
+import {frameRules} from '@core/animation/timeline';
+import type {NonEmpty, Size} from '@core/animation/model';
 import {
   collectSnapshotResources,
   cloneAnimationNode,
-} from '../../../core/rasterize/takumi';
+} from '@core/rasterize/takumi';
 import {
   ANIMATION_FORMATS,
   animationConfig,
   gifFrameBudget,
   type AnimationFps,
   type AnimationFormat,
-} from '../../../core/video/formats';
-import type {AnimationExport} from '../../../core/video/protocol';
+} from '@core/video/formats';
+import type {AnimationExport} from '@core/video/protocol';
 import {createSignal, getOwner, runWithOwner} from 'solid-js';
 import {render} from 'solid-js/web';
 
