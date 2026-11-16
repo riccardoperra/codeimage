@@ -1,0 +1,34 @@
+[
+  {
+    "lane": 1,
+    "scale": 1,
+    "dpr": 1,
+    "width": 420,
+    "height": 267,
+    "percent": 0.19172462992687714
+  },
+  {
+    "lane": 5,
+    "scale": 1,
+    "dpr": 1,
+    "width": 420,
+    "height": 267,
+    "percent": 0.22650258605314785
+  },
+  {
+    "lane": 1,
+    "scale": 2,
+    "dpr": 2,
+    "width": 840,
+    "height": 534,
+    "percent": 0.08649901908328875
+  },
+  {
+    "lane": 5,
+    "scale": 2,
+    "dpr": 2,
+    "width": 840,
+    "height": 534,
+    "percent": 0.09251828072052791
+  }
+]

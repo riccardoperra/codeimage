@@ -25,7 +25,7 @@ Source paths in feature files are relative to `apps/codeimage/src/` unless expli
 
 Every feature requires both source review and live evidence during maintenance. Each file distinguishes the executable journey from additional sub-features needing targeted proof. Do not claim complete matrix coverage from one convenient entry point.
 
-Scope follows current checkout HEAD, including the November 14–15 unified editor, line marks, signatures, window styles, What's new and Takumi merges. `pages/UnifiedEditor/` now implements the production guest `/` editor; its folder name is not a reason to exclude it. Authenticated `/` is Dashboard; saved project URLs use the unified editor in the saved layout. The theme-card and editor-controls prototype routes are gone. The Animate panel is available in the unified editor. The animation CLI from a separate branch history is not a reachable feature at this HEAD.
+Scope follows current checkout HEAD, including the November 14–15 unified editor, line marks, signatures, window styles, What's new and Takumi merges. `pages/UnifiedEditor/` now implements the production guest `/` editor; its folder name is not a reason to exclude it. Authenticated `/` is Dashboard; saved project URLs use the unified editor in the saved layout. The theme-card and editor-controls prototype routes are gone. The Animate panel is available in the unified editor. This checkout includes the Node renderer and CLI; the specialist lanes below cover their shipped behavior.
 
 Additional case names are `agent-tools`, `local-ai`, `export-options`, `settings-persistence`, `annotations`, `signature-management`, `editor-options`, and `preset-management`. Animate adds `animate`, `animate-phone`, `animate-focus`, `animate-geometry`, `animate-followups`, `animation-mp4`, `animation-mp4-errors`, `animation-mp4-compositing`, `animation-mp4-modes`, and `animation-mp4-parity`. The six snippet cases are `snippet-save`, `snippet-previews`, `snippet-read-only`, `snippet-clone`, `snippet-missing`, and `snippet-navigation`. What's new adds `whats-new-line-marks-dot` and `whats-new-nudge`. Including the watermark, `frame-cold-start` and `export-screen-parity` journeys, there are forty-one selectable journeys, including `retired-classic-route`, which checks the removed route reaches 404. The two frame cases use the same owned launch and fresh-context helpers. Source paths are unchanged by the check migration. Read [the legacy-check retirement plan](../references/legacy-checks.md) before deleting old scripts.
 
@@ -34,3 +34,14 @@ For real API and PostgreSQL prerequisites, read [backend modes](../references/ba
 A5 adds `animation-gif` and `animation-gif-fallback`; see [Export](export.md) and [Animate](animate.md). The verification record covers thirty-nine journeys on the pinned A5 branch. Main can add independent journeys after that pin, so use the actual `audit.json` results for each run's case count rather than the older base index count above.
 
 `animation-mp4-step-size` and `animation-gif-step-size` check unequal natural step sizes, clipping, background seams, and identical decoded exports across active tabs and reloads in all three desktop layouts. See [Export](export.md#animation-audit).
+
+## Node renderer and CLI
+
+| Feature                                           | Skill-owned check             | Coverage                                                                           |
+| ------------------------------------------------- | ----------------------------- | ---------------------------------------------------------------------------------- |
+| [CLI feature flags](cli-feature-flags.md)         | `cli/feature-flags/index.mjs` | Source review and live execution required; see the feature page for prerequisites. |
+| [CLI font delivery](cli-font-cache.md)            | `cli/font-cache.mjs`          | Source review and live execution required; see the feature page for prerequisites. |
+| [CLI MP4 encoding](cli-mp4.md)                    | `cli/mp4/index.mjs`           | Source review and live execution required; see the feature page for prerequisites. |
+| [Cached font pixel parity](render-font-parity.md) | `cli/font-parity.mjs`         | Source review and live execution required; see the feature page for prerequisites. |
+| [Immutable font sources](render-font-urls.md)     | `cli/font-urls.mjs`           | Source review and live execution required; see the feature page for prerequisites. |
+| [Web and CLI MP4 parity](web-cli-mp4.md)          | `web-mp4`                     | Source review and live execution required; see the feature page for prerequisites. |

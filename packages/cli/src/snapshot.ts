@@ -1,0 +1,213 @@
+import {inferLanguageFromPath} from '@codeimage/config';
+import {basename} from 'node:path';
+import {z} from 'zod';
+import {resolveTheme, UsageError} from './args';
+import {formatIssues} from './errors';
+import type {RenderArgs} from './args';
+import {
+  projectSnapshotSchema,
+  SUPPORTED_SNAPSHOT_MAJOR,
+} from '@codeimage/render';
+import type {ProjectSnapshot, SnapshotDocument} from '@codeimage/render';
+
+const presetSchema = z.looseObject({
+  frame: projectSnapshotSchema.shape.frame,
+  terminal: projectSnapshotSchema.shape.terminal,
+  editor: projectSnapshotSchema.shape.editor.shape.options,
+
+  animation: z.unknown().optional(),
+});
+
+export type Preset = z.output<typeof presetSchema>;
+
+function editorTheme(themeId: string, label: string) {
+  const id = themeId === 'fleetTheme' ? 'fleetDark' : themeId;
+  resolveTheme(id, label);
+  return id;
+}
+
+export function parsePreset(text: string): Preset {
+  let preset: Preset;
+  try {
+    preset = presetSchema.parse(JSON.parse(text));
+  } catch (error) {
+    let message: string;
+    if (error instanceof z.ZodError) message = formatIssues(error.issues);
+    else if (error instanceof Error) message = error.message;
+    else message = String(error);
+    throw new UsageError(`--preset: ${message}`);
+  }
+  const themeId = editorTheme(preset.editor.themeId, '--preset editor.themeId');
+  return {...preset, editor: {...preset.editor, themeId}};
+}
+
+export type CodeInput = {
+  name: string;
+  code: string;
+  marks?: SnapshotDocument['editor']['editors'][number]['marks'];
+};
+
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === 'object' && value !== null;
+
+function readProject({name, code}: CodeInput): ProjectSnapshot | undefined {
+  let value: unknown;
+  try {
+    value = JSON.parse(code);
+  } catch {
+    return undefined;
+  }
+  if (
+    !isRecord(value) ||
+    !('$version' in value) ||
+    !isRecord(value.editor) ||
+    !Array.isArray(value.editor.editors)
+  )
+    return undefined;
+  const parsed = projectSnapshotSchema.safeParse(value);
+  if (!parsed.success)
+    throw new UsageError(`${name}: ${formatIssues(parsed.error.issues)}`);
+  return parsed.data;
+}
+
+function projectSnapshot(
+  args: RenderArgs,
+  inputs: CodeInput[],
+  preset?: Preset,
+): SnapshotDocument | undefined {
+  const project =
+    args.animation && inputs.length === 1 ? readProject(inputs[0]) : undefined;
+  if (!project) return undefined;
+  const flags = {
+    '--preset': preset,
+    '--theme': args.theme,
+    '--lines': args.lines,
+    '--lang': args.language,
+  };
+  for (const [flag, value] of Object.entries(flags)) {
+    if (value !== undefined)
+      throw new UsageError(`${flag}: a project input keeps its own settings`);
+  }
+  const {editor} = project;
+  const themeId = editorTheme(
+    editor.options.themeId,
+    `${inputs[0].name} editor.options.themeId`,
+  );
+  return {
+    ...project,
+    editor: {...editor, options: {...editor.options, themeId}},
+    format: args.format,
+    scale: args.scale,
+  };
+}
+
+export async function buildSnapshot({
+  args,
+  inputs,
+  preset,
+}: {
+  args: RenderArgs;
+  inputs: CodeInput[];
+  preset?: Preset;
+}): Promise<SnapshotDocument> {
+  if (inputs.length === 0)
+    throw new UsageError('no input: give a file or pipe code through stdin');
+  const project = projectSnapshot(args, inputs, preset);
+  if (project) return project;
+  const theme = await resolveTheme(
+    args.theme ?? preset?.editor.themeId ?? 'fleetDark',
+  ).load();
+  const colors =
+    args.theme !== undefined || !preset
+      ? {
+          frame: theme.properties.previewBackground,
+          terminal: theme.properties.terminal.main,
+          text: theme.properties.terminal.text,
+        }
+      : {
+          frame: preset.frame.background,
+          terminal: preset.terminal.background,
+          text: preset.terminal.textColor,
+        };
+  const editors = inputs.map(
+    ({name, code: inputCode, marks: inputMarks}, index) => {
+      let code = inputCode;
+      let marks = inputMarks;
+      const range = args.lines;
+      if (range) {
+        const lines = code.replace(/\r\n?/g, '\n').split('\n');
+        if (lines.at(-1) === '') lines.pop();
+        if (range.start > lines.length) {
+          throw new UsageError(
+            `--lines: ${name} has only ${lines.length} lines`,
+          );
+        }
+        code = lines.slice(range.start - 1, range.end).join('\n');
+        if (marks) {
+          marks = {
+            ...marks,
+            focusedLines: marks.focusedLines
+              .filter(line => line >= range.start && line <= range.end)
+              .map(line => line - range.start + 1),
+            lines: marks.lines
+              .filter(
+                mark => mark.line >= range.start && mark.line <= range.end,
+              )
+              .map(mark => ({...mark, line: mark.line - range.start + 1})),
+          };
+        }
+      }
+      return {
+        id: `cli-${index + 1}`,
+        code,
+        tabName: basename(name),
+        languageId:
+          args.language ?? inferLanguageFromPath(name) ?? 'plain-text',
+        lineNumberStart: args.lines?.start ?? 1,
+        ...(marks && {marks}),
+      };
+    },
+  );
+  return {
+    $snippetId: null,
+    $version: `${SUPPORTED_SNAPSHOT_MAJOR}.0.0`,
+    frame: {
+      padding: 64,
+      radius: 8,
+      visible: true,
+      opacity: 100,
+      signature: null,
+      ...preset?.frame,
+      background: colors.frame,
+    },
+    terminal: {
+      showHeader: true,
+      type: 'macOs',
+      surface: 'solid',
+      accentVisible: true,
+      shadow: 'rgba(0, 0, 0, 0.45) 0px 25px 20px -20px',
+      showWatermark: true,
+      showGlassReflection: false,
+      opacity: 100,
+      alternativeTheme: false,
+      borderType: 'glass',
+      ...preset?.terminal,
+      background: colors.terminal,
+      textColor: colors.text,
+    },
+    editor: {
+      options: {
+        fontId: 'jetbrains-mono',
+        fontWeight: 400,
+        enableLigatures: true,
+        ...preset?.editor,
+        themeId: theme.id,
+        showLineNumbers:
+          args.lines !== undefined || preset?.editor.showLineNumbers === true,
+      },
+      editors,
+    },
+    format: args.format,
+    scale: args.scale,
+  };
+}

@@ -1,5 +1,5 @@
 import type {ExportTargetId} from '@codeimage/config';
-import type {AssetId} from '../assets/assets';
+import type {AssetId} from '../assets/assetIds';
 
 export const SIGNATURE_STYLES = ['minimal', 'pill', 'card'] as const;
 export const SIGNATURE_PLATFORMS = [

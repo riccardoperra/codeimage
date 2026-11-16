@@ -32,7 +32,7 @@ export const WindowsTerminal: ParentComponent<BaseTerminalProps> = props => {
           </Show>
           <Show when={props.showTab && (!props.lite || props.preview)}>
             <TerminalWindowTabList
-              staticTabs={props.staticTabs}
+              fixedTabs={props.fixedTabs}
               activeTabId={props.activeTabId}
               showOnlyActiveTab={props.headerMode === 'tab'}
               lite={props.lite}

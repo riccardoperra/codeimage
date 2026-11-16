@@ -13,7 +13,7 @@ import {useWatermarkPart} from '../../../core/watermark/scope';
 export const exportExclude = _exportExclude;
 
 export interface MacOsTerminalProps extends BaseTerminalProps {
-  headerType: 'default' | 'outline' | 'gray';
+  headerType?: 'default' | 'outline' | 'gray';
 }
 
 export const MacOsTerminal: ParentComponent<MacOsTerminalProps> = props => {
@@ -64,7 +64,7 @@ export const MacOsTerminal: ParentComponent<MacOsTerminalProps> = props => {
           </Show>
           <Show when={props.showTab && (!props.lite || props.preview)}>
             <TerminalWindowTabList
-              staticTabs={props.staticTabs}
+              fixedTabs={props.fixedTabs}
               activeTabId={props.activeTabId}
               lite={props.lite}
               showOnlyActiveTab={props.showOnlyActiveTab}

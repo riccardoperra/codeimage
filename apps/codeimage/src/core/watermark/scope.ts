@@ -1,6 +1,7 @@
 import {EditorSelection} from '@codemirror/state';
+import {WATERMARK} from '@codeimage/render/watermark';
+import type {Rect} from '@codeimage/render/watermark';
 import type {EditorView} from '@codemirror/view';
-import type {Rect} from './placement';
 import type {Accessor} from 'solid-js';
 import {
   createContext,
@@ -54,7 +55,7 @@ export function codeRects(
   staticRects: (line: Element) => Rect[],
 ): Rect[] {
   if (source.kind === 'static')
-    return Array.from(source.root.querySelectorAll('.cm-line')).flatMap(
+    return Array.from(source.root.querySelectorAll(`.${WATERMARK.codeClass}`)).flatMap(
       staticRects,
     );
   const {view} = source;

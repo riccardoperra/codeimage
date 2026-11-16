@@ -33,6 +33,7 @@ import type {ThemeSwitcherVariant} from '../../../components/ThemeSwitcher/Theme
 import {EmptyPresetFallback} from './EmptyPresetFallback';
 import {PresetPreview} from '../../../components/Presets/PresetPreview/PresetPreview';
 import {PresetUpdateDialog} from '../../../components/Presets/PresetUpdateDialog';
+import {CopyCliConfigMenuItem} from '../../../components/Presets/CopyCliConfigMenuItem';
 import * as styles from '../../../components/Presets/PresetSwitcher/PresetSwitcher.css';
 import {PresetTooltipContent} from './PresetTooltipContent';
 
@@ -201,6 +202,7 @@ export const PresetSwitcher: ParentComponent<ThemeSwitcherVariant> = props => {
                                 >
                                   {t('presets.share.label')}
                                 </DropdownMenuItem>
+                                <CopyCliConfigMenuItem data={theme.data} />
                                 <DropdownMenuItem
                                   onClick={() => {
                                     openDialog(ConfirmDialog, {

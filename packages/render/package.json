@@ -1,0 +1,58 @@
+{
+  "name": "@codeimage/render",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Render saved CodeImage projects in Node.",
+  "license": "MIT",
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.mts",
+      "import": "./dist/index.mjs"
+    },
+    "./watermark": {
+      "types": "./dist/watermark.d.mts",
+      "import": "./dist/watermark.mjs"
+    }
+  },
+  "scripts": {
+    "build": "node build.mjs",
+    "test": "vitest run",
+    "lint": "oxlint",
+    "typecheck": "tsc --noEmit",
+    "typecheck:ci": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@takumi-rs/core": "2.19.0",
+    "zod": "^4.1.12",
+    "parse5": "7.3.0"
+  },
+  "devDependencies": {
+    "@fontsource-variable/cascadia-code": "5.3.0",
+    "@fontsource-variable/fira-code": "5.3.0",
+    "@fontsource-variable/jetbrains-mono": "5.3.0",
+    "@fontsource-variable/noto-sans-kr": "5.3.1",
+    "@fontsource-variable/noto-sans-sc": "5.3.1",
+    "@fontsource-variable/overpass-mono": "5.3.0",
+    "@fontsource-variable/source-code-pro": "5.3.1",
+    "@fontsource/space-mono": "5.3.0",
+    "@types/node": "catalog:next",
+    "@types/pngjs": "6.0.5",
+    "inter-ui": "4.1.1",
+    "oxlint": "catalog:next",
+    "pngjs": "7.0.0",
+    "tsdown": "catalog:next",
+    "twemoji-colr-font": "15.0.3",
+    "typescript": "catalog:next",
+    "vite": "catalog:next",
+    "vitest": "catalog:next",
+    "fontkit": "2.0.4",
+    "postcss": "8.5.33"
+  },
+  "engines": {
+    "node": ">=24"
+  }
+}

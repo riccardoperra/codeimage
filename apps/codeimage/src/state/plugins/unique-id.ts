@@ -1,7 +1,5 @@
-import {createUniqueId as $createUniqueId} from 'solid-js';
-
 export function createUniqueId(v = 0): string {
-  const id = $createUniqueId();
+  const id = crypto.randomUUID();
   return `${id}$${v ?? 0}`;
 }
 

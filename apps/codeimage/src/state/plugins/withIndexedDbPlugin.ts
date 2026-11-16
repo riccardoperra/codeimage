@@ -9,13 +9,13 @@ export function withIndexedDbPlugin<T>(idbKey: string, fallbackValue: T) {
       return {
         idb: {
           get(): Promise<T> {
-            return idb
-              .get<T>(idbKey)
+            return Promise.resolve()
+              .then(() => idb.get<T>(idbKey))
               .then(data => data ?? fallbackValue)
               .catch(() => fallbackValue);
           },
           set(data: T) {
-            return idb.set(idbKey, data);
+            return Promise.resolve().then(() => idb.set(idbKey, data));
           },
           update(updaterFn: (data: T) => T) {
             return idb.update(idbKey, data => updaterFn(data));

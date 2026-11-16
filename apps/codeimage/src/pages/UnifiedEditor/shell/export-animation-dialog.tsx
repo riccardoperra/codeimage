@@ -15,7 +15,6 @@ import {Progress} from '@kobalte/core/progress';
 import {RadioGroup} from '@kobalte/core/radio-group';
 import {type Accessor, batch, createEffect, createSignal, Show} from 'solid-js';
 import download from 'downloadjs';
-import {parseToRgb, rgb} from 'polished';
 import {useExportAnimation} from '../../../hooks/use-export-animation';
 import {
   mp4Config,
@@ -32,6 +31,7 @@ import {
 } from '../../../core/video/formats';
 import type {AppLocaleEntries} from '../../../i18n';
 import {animationSnapshot} from './export-animation';
+import {animationMatte} from '../../../components/Animation/AnimationCanvas';
 import * as styles from './export.css';
 
 // Kit 0.1.5's RadioListItem drops its disabled prop. Keep the kit group and
@@ -67,12 +67,7 @@ export function createAnimationExporter() {
   const [mp4Support, setMp4Support] = createSignal<Mp4Support>();
   const [scale, setScale] = createSignal<1 | 2 | 3>(2);
   const [matte, setMatte] = createSignal<string>();
-  const defaultBackground = () => {
-    const {red, green, blue} = parseToRgb(
-      style.theme()!.properties.terminal.main,
-    );
-    return rgb(red, green, blue);
-  };
+  const defaultBackground = () => animationMatte(style.theme()!);
   const solidBackground = () => matte() ?? defaultBackground();
   const validMatte = () =>
     /^#(?:[0-9a-f]{3}|[0-9a-f]{6})$/i.test(solidBackground());
