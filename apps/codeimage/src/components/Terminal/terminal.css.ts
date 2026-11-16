@@ -126,6 +126,7 @@ export const watermark = style({
   right: '6px',
   bottom: '-6px',
   opacity: 0.35,
+  pointerEvents: 'none',
   backgroundColor: 'inherit',
 });
 
