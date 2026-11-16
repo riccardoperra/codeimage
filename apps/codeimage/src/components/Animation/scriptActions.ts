@@ -1,4 +1,5 @@
 import {removeScriptStep} from '@core/animation/script';
+import {selectedLines as selectedLineNumbers} from '../CustomEditor/plugins/lineMarks/controls';
 import {getEditorStore} from '@codeimage/store/editor';
 import type {
   ScriptLine,
@@ -80,21 +81,7 @@ export function deleteScriptStep(store: Store, editorId: string, step: number) {
 export function selectedLines(store: Store, editorId: string): number[] {
   const view = store.editor.activeEditorView();
   if (!view || store.editor.activeEditorViewTabId() !== editorId) return [];
-  const lines = new Set<number>();
-  for (const range of view.state.selection.ranges) {
-    const end = view.state.doc.lineAt(range.to);
-    const to =
-      range.to > range.from && end.from === range.to
-        ? end.number - 1
-        : end.number;
-    for (
-      let line = view.state.doc.lineAt(range.from).number;
-      line <= to;
-      line++
-    )
-      lines.add(line);
-  }
-  return [...lines];
+  return selectedLineNumbers(view.state);
 }
 
 export function lineActionState(

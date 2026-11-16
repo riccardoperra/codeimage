@@ -3,7 +3,8 @@ import {useI18n} from '@codeimage/locale';
 import {getEditorStore} from '@codeimage/store/editor';
 import {SvgIcon} from '@codeimage/ui';
 import {Tooltip} from '@codeui/kit';
-import {createSignal, For, onCleanup, onMount, Show, type JSX} from 'solid-js';
+import {createMemo, For, Show, type JSX} from 'solid-js';
+import {selectionVersion} from '../../CustomEditor/plugins/selection';
 import {
   applyLineAction,
   lineActionState,
@@ -52,18 +53,9 @@ const ACTIONS = [
 export function LineActions(props: {editorId: string; step: number}) {
   const store = getEditorStore();
   const [t] = useI18n<AppLocaleEntries>();
-  const [lines, setLines] = createSignal<number[]>([]);
-  const read = () => setLines(selectedLines(store, props.editorId));
-  onMount(() => {
-    read();
-    document.addEventListener('selectionchange', read);
-    document.addEventListener('keyup', read);
-    document.addEventListener('pointerup', read);
-    onCleanup(() => {
-      document.removeEventListener('selectionchange', read);
-      document.removeEventListener('keyup', read);
-      document.removeEventListener('pointerup', read);
-    });
+  const lines = createMemo(() => {
+    selectionVersion();
+    return selectedLines(store, props.editorId);
   });
   const range = () => {
     const value = lines();
@@ -147,7 +139,6 @@ export function LineActions(props: {editorId: string; step: number}) {
                       item.action,
                       props.step,
                     );
-                    read();
                   }}
                 >
                   <item.Icon />

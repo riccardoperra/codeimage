@@ -1,5 +1,6 @@
 import {getEditorStore} from '@codeimage/store/editor';
 import {scriptLinesExtension} from './plugins/scriptLines';
+import {trackSelection} from './plugins/selection';
 import {animateAidsHidden} from '@core/animation/aids';
 import {SUPPORTED_LANGUAGES} from '@codeimage/config';
 import {useI18n} from '@codeimage/locale';
@@ -270,6 +271,8 @@ export default function CustomEditor(props: VoidProps<CustomEditorProps>) {
     const step = scriptAidStep();
     return step === false ? [] : scriptLinesExtension(step);
   });
+
+  createExtension(trackSelection);
 
   const reconfigureBaseSetup = createExtension(EDITOR_BASE_SETUP);
 
