@@ -6,8 +6,7 @@ export const island = style({
   maxWidth: 1100,
   minWidth: 0,
   minHeight: 0,
-  maxHeight: '60dvh',
-  overflowY: 'auto',
+  maxHeight: 'max(60dvh, 300px)',
   margin: '0 auto 12px',
   boxSizing: 'border-box',
   flexShrink: 0,
@@ -17,12 +16,27 @@ export const island = style({
   color: c.baseText,
   boxShadow: c.dialog.panelShadow,
   display: 'grid',
-  gridAutoRows: 'max-content',
+  gridTemplateRows: 'max-content minmax(0, 1fr)',
   gap: 10,
   fontSize: themeVars.fontSize.sm,
+  selectors: {
+    '&[data-compact]': {
+      gridTemplateRows:
+        'max-content max-content max-content minmax(40px, 1fr) max-content',
+    },
+  },
   '@media': {
     '(max-width: 768px)': {padding: 12, width: 'calc(100% - 16px)', gap: 8},
   },
+});
+// Menu triggers stay outside scrolling ancestors; only the content can scroll.
+export const body = style({
+  minHeight: 0,
+  display: 'grid',
+  gridAutoRows: 'max-content',
+  gap: 10,
+  overflowY: 'auto',
+  selectors: {'&[data-compact]': {display: 'contents', overflowY: 'visible'}},
 });
 globalStyle(
   `${island} [data-cui="button"], ${island} [data-cui="icon-button"], ${island} [aria-haspopup="listbox"]`,

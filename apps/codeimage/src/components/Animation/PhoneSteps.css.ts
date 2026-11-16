@@ -13,6 +13,7 @@ export const list = style({
   listStyle: 'none',
   padding: 0,
   margin: 0,
+  minHeight: 40,
   maxHeight: 'min(208px, 26vh)',
   overflowY: 'auto',
   overscrollBehavior: 'contain',
@@ -59,8 +60,14 @@ export const metric = style({
   fontVariantNumeric: 'tabular-nums',
   fontSize: 11,
 });
+export const footer = style({
+  display: 'flex',
+  flexWrap: 'wrap',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  gap: 8,
+});
 export const add = style({
-  width: '100%',
   justifyContent: 'flex-start',
   minHeight: 40,
 });

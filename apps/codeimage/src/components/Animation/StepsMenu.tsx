@@ -13,6 +13,7 @@ import {
 } from '@codeui/kit';
 import {For, onCleanup, Show} from 'solid-js';
 import type {AppLocaleEntries} from '../../i18n';
+import * as styles from './StepsMenu.css';
 function AddStepItem(props: {id: string; name: string}) {
   const {animation} = getEditorStore();
   const add = () => animation.actions.addStep(props.id);
@@ -26,6 +27,7 @@ export function StepsMenu() {
       .settings()
       .steps.findIndex(step => step.id === animation.selection()?.stepId);
   const id = () => animation.settings().steps[index()]?.id;
+  const duplicateDisabled = () => index() < 0 && editor.computed.canAddEditor();
   let editDuplicate: number | undefined;
   onCleanup(() => {
     editDuplicate = undefined;
@@ -41,7 +43,7 @@ export function StepsMenu() {
   };
   const duplicate = () => {
     const stepId = id();
-    if (stepId) {
+    if (stepId && editor.computed.canAddEditor()) {
       editDuplicate = index() + 1;
       animation.actions.duplicateAsNext(stepId);
     }
@@ -86,21 +88,24 @@ export function StepsMenu() {
             </DropdownMenuPortal>
           </DropdownSubMenu>
           <DropdownMenuItem
-            disabled={index() < 0 || !editor.computed.canAddEditor()}
+            disabled={duplicateDisabled()}
+            aria-disabled={!editor.computed.canAddEditor() || undefined}
+            aria-label={t('animation.duplicate')}
             aria-describedby={
               !editor.computed.canAddEditor()
                 ? 'animation-duplicate-limit'
                 : undefined
             }
+            class={styles.duplicate}
             onSelect={duplicate}
           >
-            {t('animation.duplicate')}
+            <span>{t('animation.duplicate')}</span>
+            <Show when={!editor.computed.canAddEditor()}>
+              <span id="animation-duplicate-limit" class={styles.hint}>
+                {t('animation.duplicateLimit')}
+              </span>
+            </Show>
           </DropdownMenuItem>
-          <Show when={!editor.computed.canAddEditor()}>
-            <p id="animation-duplicate-limit">
-              {t('animation.duplicateLimit')}
-            </p>
-          </Show>
           <DropdownMenuItem disabled={index() <= 0} onSelect={earlier}>
             {t('animation.moveEarlier')}
           </DropdownMenuItem>

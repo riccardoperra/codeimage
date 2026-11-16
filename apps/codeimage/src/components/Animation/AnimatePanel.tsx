@@ -6,7 +6,6 @@ import {PhoneSteps} from './PhoneSteps';
 import {TransportBar} from './TransportBar';
 import {StripTimeline} from './StripTimeline';
 import {SegmentDetails} from './SegmentDetails';
-import {HeaderField} from './HeaderField';
 import * as styles from './AnimatePanel.css';
 export function AnimatePanel(props: {compact: boolean}) {
   const {animation, editor} = getEditorStore();
@@ -39,16 +38,16 @@ export function AnimatePanel(props: {compact: boolean}) {
         class={styles.island}
         aria-label={t('animation.panel')}
         data-animate-panel
+        data-compact={compact() ? '' : undefined}
         on:keydown={keyDown}
       >
         <TransportBar compact={compact()} />
-        <StripTimeline overview={compact()} onDensityChange={setDense} />
-        <Show when={compact()} fallback={<SegmentDetails />}>
-          <PhoneSteps />
-        </Show>
-        <Show when={compact()}>
-          <HeaderField />
-        </Show>
+        <div class={styles.body} data-compact={compact() ? '' : undefined}>
+          <StripTimeline overview={compact()} onDensityChange={setDense} />
+          <Show when={compact()} fallback={<SegmentDetails />}>
+            <PhoneSteps />
+          </Show>
+        </div>
       </section>
     </Show>
   );

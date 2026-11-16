@@ -1189,6 +1189,11 @@ export async function audit({page, context, base, out, server}) {
             )
               warnings.push(message.text());
           });
+          if (caseName === 'followups')
+            await page.addInitScript(() => {
+              // LAN HTTP has getRandomValues, but no secure-context randomUUID.
+              Object.defineProperty(crypto, 'randomUUID', {value: undefined});
+            });
           await page.addInitScript(() => {
             const warn = console.warn;
             console.warn = (...args) =>
@@ -1287,7 +1292,10 @@ export async function audit({page, context, base, out, server}) {
                 '\n' +
                 warnings.join('\n') +
                 '\n' +
-                (await page.locator('body').ariaSnapshot()),
+                (await page
+                  .locator('body')
+                  .ariaSnapshot()
+                  .catch(() => 'Renderer closed by watchdog')),
             );
             throw error;
           } finally {
@@ -1934,6 +1942,72 @@ export async function audit({page, context, base, out, server}) {
         const panel = page.locator('[data-animate-panel]');
         const rows = page.locator('[data-animation-step-row]');
         const sheet = page.locator('[data-animation-step-sheet]');
+        const keyboardOpen = async (trigger, key) => {
+          const browserSession = await context.browser().newBrowserCDPSession();
+          const session = await page.context().newCDPSession(page);
+          const {targetInfo} = await session.send('Target.getTargetInfo');
+          let timer;
+          try {
+            await Promise.race([
+              (async () => {
+                await trigger.focus();
+                await trigger.press(key, {timeout: 3000});
+                await page.getByRole('menu').first().waitFor({timeout: 3000});
+                await page.waitForFunction(
+                  () =>
+                    document.activeElement?.getAttribute('role') === 'menuitem',
+                  undefined,
+                  {timeout: 3000},
+                );
+              })(),
+              new Promise((_, reject) => {
+                timer = setTimeout(() => {
+                  // Close the renderer from the browser process even if its JS loops.
+                  void browserSession
+                    .send('Target.closeTarget', {
+                      targetId: targetInfo.targetId,
+                    })
+                    .catch(() => {});
+                  reject(
+                    new Error(`${name}: ${key} menu open exceeded 5 seconds`),
+                  );
+                }, 5000);
+              }),
+            ]);
+          } finally {
+            clearTimeout(timer);
+            await session.detach().catch(() => {});
+            await browserSession.detach();
+          }
+        };
+        const checkKeyboardMenus = async () => {
+          const listMode = (await rows.count()) > 0;
+          const trigger = listMode
+            ? page.locator('[data-animation-add-step]')
+            : panel.getByRole('button', {name: 'Steps', exact: true});
+          for (const key of ['Enter', 'Space']) {
+            await keyboardOpen(trigger, key);
+            if (!listMode) {
+              await page
+                .getByRole('menuitem', {name: 'Add to animation', exact: true})
+                .press('ArrowRight');
+              await page
+                .getByRole('menu')
+                .last()
+                .getByRole('menuitem', {name: 'index.tsx', exact: true})
+                .waitFor();
+              await page.keyboard.press('Escape');
+            }
+            await page.keyboard.press('Escape');
+            await page.waitForFunction(
+              () => !document.querySelector('[role=menu]'),
+            );
+            assert.ok(
+              await trigger.evaluate(el => el === document.activeElement),
+              'menu restores trigger focus',
+            );
+          }
+        };
         const closeSheet = async () => {
           await sheet
             .getByRole('button', {name: 'Close step settings', exact: true})
@@ -2016,6 +2090,7 @@ export async function audit({page, context, base, out, server}) {
           );
         };
         await assertControls();
+        await checkKeyboardMenus();
         const header = panel.locator('[aria-haspopup="listbox"]:visible');
         await header.click();
         await page
@@ -2071,6 +2146,32 @@ export async function audit({page, context, base, out, server}) {
             'sole ruler label is fully visible',
           );
         }
+        if (await rows.count()) await openSheet(1);
+        else await animationSegments().nth(1).click();
+        await page.locator('[data-easing-trigger]').click();
+        const easing = page.getByRole('dialog', {name: 'Easing', exact: true});
+        const linear = easing.getByRole('tab', {name: 'Linear', exact: true});
+        await linear.click({timeout: 3000});
+        assert.ok(
+          await linear.evaluate(el => {
+            const box = el.getBoundingClientRect();
+            return (
+              box.top >= 0 &&
+              box.bottom <= innerHeight &&
+              el.contains(
+                document.elementFromPoint(
+                  box.x + box.width / 2,
+                  box.y + box.height / 2,
+                ),
+              )
+            );
+          }),
+          'easing tabs stay visible and clickable',
+        );
+        await shot(`animate-followups-${name}-easing`);
+        await linear.press('Escape');
+        await easing.waitFor({state: 'hidden'});
+        if (await rows.count()) await closeSheet();
         await shot(`animate-followups-${name}-short`);
         for (let count = 2; count < 30; count++) {
           if (await rows.count()) {
@@ -2115,6 +2216,7 @@ export async function audit({page, context, base, out, server}) {
               );
               await closeSheet();
             }
+            await checkKeyboardMenus();
             await assertAnimationLabelsFit();
             await assertControls();
             const box = await panel.boundingBox();
@@ -2254,7 +2356,42 @@ export async function audit({page, context, base, out, server}) {
           await closeSheet();
         } else {
           await animationSegments().first().click();
-          await page.getByRole('button', {name: 'Steps', exact: true}).click();
+          await keyboardOpen(
+            page.getByRole('button', {name: 'Steps', exact: true}),
+            'Enter',
+          );
+          await page.keyboard.press('ArrowDown');
+          const duplicate = page.getByRole('menuitem', {
+            name: 'Duplicate as next step',
+            exact: true,
+          });
+          assert.ok(
+            await duplicate.evaluate(el => el === document.activeElement),
+            'blocked Duplicate remains keyboard reachable',
+          );
+          assert.equal(
+            await duplicate.getAttribute('aria-describedby'),
+            'animation-duplicate-limit',
+          );
+          assert.equal(await duplicate.getAttribute('aria-disabled'), 'true');
+          assert.match(await duplicate.ariaSnapshot(), /Six tabs maximum/);
+          const stepsBefore = await animationSegments().count();
+          await duplicate.press('Enter');
+          assert.equal(
+            await animationSegments().count(),
+            stepsBefore,
+            'blocked Duplicate does not add a step',
+          );
+          if (await page.getByRole('menu').count()) {
+            await page.keyboard.press('Escape');
+            await page.waitForFunction(
+              () => !document.querySelector('[role=menu]'),
+            );
+          }
+          await keyboardOpen(
+            page.getByRole('button', {name: 'Steps', exact: true}),
+            'Enter',
+          );
           assert.equal(
             await page
               .getByRole('menuitem', {

@@ -20,6 +20,7 @@ import type {AppLocaleEntries} from '../../i18n';
 import {CloseIcon} from '../Icons/CloseIcon';
 import {DurationInput} from './SegmentDetails';
 import {EasingField} from './EasingField';
+import {HeaderField} from './HeaderField';
 import {EasingCurve} from './EasingCurve';
 import {formatDuration} from './format';
 import * as styles from './PhoneSteps.css';
@@ -35,11 +36,17 @@ function StepRow(props: {id: string; open: (id: string) => void}) {
       .tabName || t('animation.untitledTab');
   const transition = () => transitionOf(animation.settings(), step());
   const label = () =>
-    `${t('animation.stepName', {n: String(index() + 1), tab: name()})}. ${
+    t(
       index() > 0
-        ? `${t('animation.transitionShort')}: ${formatDuration(transition().ms, locale())}`
-        : t('animation.noTransition')
-    }. ${t('animation.holdShort')}: ${formatDuration(step()?.holdMs ?? 0, locale())}`;
+        ? 'animation.stepDescription'
+        : 'animation.firstStepDescription',
+      {
+        n: String(index() + 1),
+        tab: name(),
+        transition: formatDuration(transition().ms, locale()),
+        hold: formatDuration(step()?.holdMs ?? 0, locale()),
+      },
+    );
   const open = () => props.open(props.id);
   return (
     <li>
@@ -283,33 +290,34 @@ export function PhoneSteps() {
         data-animation-step-list
       >
         <For each={ids()}>{id => <StepRow id={id} open={show} />}</For>
-        <li>
-          <DropdownMenu placement="top-end">
-            <DropdownMenuTrigger
-              as={Button}
-              size="sm"
-              theme="secondary"
-              variant="ghost"
-              class={styles.add}
-              data-animation-add-step
-            >
-              + {t('animation.addStepRow')}
-            </DropdownMenuTrigger>
-            <DropdownMenuPortal>
-              <DropdownMenuContent data-animation-steps-menu>
-                <For each={editor.state.editors}>
-                  {tab => (
-                    <AddStep
-                      id={tab.id}
-                      name={tab.tab.tabName || t('animation.untitledTab')}
-                    />
-                  )}
-                </For>
-              </DropdownMenuContent>
-            </DropdownMenuPortal>
-          </DropdownMenu>
-        </li>
       </ol>
+      <div class={styles.footer}>
+        <HeaderField />
+        <DropdownMenu placement="top-end">
+          <DropdownMenuTrigger
+            as={Button}
+            size="sm"
+            theme="secondary"
+            variant="ghost"
+            class={styles.add}
+            data-animation-add-step
+          >
+            + {t('animation.addStepRow')}
+          </DropdownMenuTrigger>
+          <DropdownMenuPortal>
+            <DropdownMenuContent data-animation-steps-menu>
+              <For each={editor.state.editors}>
+                {tab => (
+                  <AddStep
+                    id={tab.id}
+                    name={tab.tab.tabName || t('animation.untitledTab')}
+                  />
+                )}
+              </For>
+            </DropdownMenuContent>
+          </DropdownMenuPortal>
+        </DropdownMenu>
+      </div>
       <Dialog open={!!sheetId()} onOpenChange={changeOpen}>
         <Dialog.Portal>
           <Dialog.Overlay class={styles.overlay} />

@@ -1,6 +1,10 @@
 export const animationLocale = {
   en: {
     animation: {
+      stepDescription:
+        'Step {{n}} · {{tab}}. Transition: {{transition}}. Hold: {{hold}}',
+      firstStepDescription:
+        'Step {{n}} · {{tab}}. No incoming transition. Hold: {{hold}}',
       addStepRow: 'Add step',
       closeStep: 'Close step settings',
       tab: 'Tab',
@@ -107,6 +111,10 @@ export const animationLocale = {
   },
   it: {
     animation: {
+      stepDescription:
+        'Passaggio {{n}} · {{tab}}. Transizione: {{transition}}. Pausa: {{hold}}',
+      firstStepDescription:
+        'Passaggio {{n}} · {{tab}}. Nessuna transizione in entrata. Pausa: {{hold}}',
       addStepRow: 'Aggiungi passaggio',
       closeStep: 'Chiudi impostazioni passaggio',
       tab: 'Scheda',
@@ -215,6 +223,10 @@ export const animationLocale = {
   },
   de: {
     animation: {
+      stepDescription:
+        'Schritt {{n}} · {{tab}}. Übergang: {{transition}}. Halten: {{hold}}',
+      firstStepDescription:
+        'Schritt {{n}} · {{tab}}. Kein eingehender Übergang. Halten: {{hold}}',
       addStepRow: 'Schritt hinzufügen',
       closeStep: 'Schritteinstellungen schließen',
       tab: 'Tab',
@@ -323,6 +335,10 @@ export const animationLocale = {
   },
   es: {
     animation: {
+      stepDescription:
+        'Paso {{n}} · {{tab}}. Transición: {{transition}}. Pausa: {{hold}}',
+      firstStepDescription:
+        'Paso {{n}} · {{tab}}. Sin transición de entrada. Pausa: {{hold}}',
       addStepRow: 'Añadir paso',
       closeStep: 'Cerrar ajustes del paso',
       tab: 'Pestaña',

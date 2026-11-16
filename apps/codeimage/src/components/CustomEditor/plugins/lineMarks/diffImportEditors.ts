@@ -1,7 +1,7 @@
 import {inferLanguageFromPath} from '@codeimage/config';
 import type {DiffFile} from '../../../../core/diff/parseUnifiedDiff';
 import {getInitialEditorState} from '../../../../state/editor/editor';
-import {createUniqueId} from '../../../../state/plugins/unique-id';
+import {createEditorId} from '../../../../state/plugins/unique-id';
 import type {DiffImportSnapshot} from './diffImportHistory';
 
 /** The tabs after importing a diff: the first file replaces the pasted tab, the others open new tabs. */
@@ -30,7 +30,7 @@ export function diffImportEditors(
       ),
       ...rest.map(file => ({
         ...getInitialEditorState(),
-        id: createUniqueId(),
+        id: createEditorId(),
         code: file.code,
         marks: file.marks,
         tab: {tabName: file.path},
