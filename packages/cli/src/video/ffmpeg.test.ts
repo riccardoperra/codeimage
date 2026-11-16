@@ -1,7 +1,6 @@
 import {afterEach, beforeEach, describe, expect, it} from 'vitest';
 import {
   chmod,
-  mkdir,
   mkdtemp,
   readFile,
   readdir,
@@ -15,7 +14,6 @@ import {parseArgs} from '../args';
 import {buildSnapshot} from '../snapshot';
 import {planAnimation} from '../flags/animate';
 import {decodeApng} from '../../../render/src/test-utils';
-import {ffmpegCacheFolder} from './download';
 import {exportMp4, ffmpegArgs, padFrame, resolveFfmpeg} from './ffmpeg';
 
 let folder: string;
@@ -23,7 +21,10 @@ beforeEach(async () => {
   folder = await mkdtemp(join(tmpdir(), 'codeimage-video-'));
 });
 afterEach(() => rm(folder, {recursive: true, force: true}));
-async function wrapper(name: string, script = '#!/bin/sh\nexit 0\n') {
+async function wrapper(
+  name: string,
+  script = '#!/bin/sh\necho " V..... libx264 H.264 encoder"\n',
+) {
   const path = join(folder, name);
   await writeFile(path, script);
   await chmod(path, 0o755);
@@ -71,37 +72,23 @@ it('extends the right and bottom edge when padding odd dimensions', () => {
   expect(() => padFrame({width: 2, height: 2, rgba})).toThrow('RGBA');
 });
 
-it('resolves flag, environment, PATH, cache, then download, skipping missing files', async () => {
+it('resolves flag, environment, then PATH, skipping missing files', async () => {
   const flag = await wrapper('flag');
   const envPath = await wrapper('environment');
   const onPath = await wrapper('ffmpeg');
   const env = {CODEIMAGE_FFMPEG: envPath, PATH: folder};
-  let downloads = 0;
-  const download = async () => {
-    downloads++;
-    return '/download/ffmpeg';
-  };
-  expect(await resolveFfmpeg({path: flag, env, download})).toBe(flag);
+  expect(await resolveFfmpeg({path: flag, env})).toBe(flag);
   await rm(flag);
-  expect(await resolveFfmpeg({path: flag, env, download})).toBe(envPath);
+  expect(await resolveFfmpeg({path: flag, env})).toBe(envPath);
   await rm(envPath);
-  expect(await resolveFfmpeg({path: flag, env, download})).toBe(onPath);
-  expect(downloads).toBe(0);
+  expect(await resolveFfmpeg({path: flag, env})).toBe(onPath);
   await rm(onPath);
-  const cache = ffmpegCacheFolder({cacheRoot: folder});
-  await mkdir(cache, {recursive: true});
-  await writeFile(join(cache, 'ffmpeg'), 'cached', {mode: 0o755});
-  await writeFile(join(cache, 'LICENSE'), 'license');
-  await writeFile(join(cache, 'README'), 'readme');
-  expect(await resolveFfmpeg({env, cacheRoot: folder})).toBe(
-    join(cache, 'ffmpeg'),
+  await expect(resolveFfmpeg({env})).rejects.toThrow(
+    /ffmpeg is required.*--ffmpeg.*CODEIMAGE_FFMPEG.*PATH/,
   );
-  await rm(cache, {recursive: true});
-  expect(await resolveFfmpeg({env, download})).toBe('/download/ffmpeg');
-  expect(downloads).toBe(1);
 });
 
-it('accepts MP4 only with --animate, keeps its default extension and parses install-ffmpeg', () => {
+it('accepts MP4 only with --animate, keeps its default extension and parses --ffmpeg', () => {
   expect(
     parseArgs(['a.ts', 'b.ts', '--animate', '--format', 'mp4']),
   ).toMatchObject({
@@ -112,10 +99,8 @@ it('accepts MP4 only with --animate, keeps its default extension and parses inst
   expect(
     parseArgs(['--animate', '-o', 'demo.MP4', '--ffmpeg', '/bin/ffmpeg']),
   ).toMatchObject({mp4: true, ffmpeg: '/bin/ffmpeg'});
-  expect(parseArgs(['install-ffmpeg'])).toEqual({kind: 'install-ffmpeg'});
   expect(() => parseArgs(['--format', 'mp4'])).toThrow('--format');
   expect(() => parseArgs(['--ffmpeg', '/bin/ffmpeg'])).toThrow('--ffmpeg');
-  expect(() => parseArgs(['install-ffmpeg', 'unexpected'])).toThrow('Usage');
 });
 
 it('reports encoder failure and removes only its own partial MP4', async () => {

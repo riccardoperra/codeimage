@@ -2,8 +2,7 @@
 import assert from 'node:assert/strict';
 import {spawn, execFileSync} from 'node:child_process';
 import {existsSync, readFileSync, readdirSync, statSync} from 'node:fs';
-import {mkdir, readFile, rename, rm, writeFile} from 'node:fs/promises';
-import {homedir} from 'node:os';
+import {mkdir, readFile, rm, writeFile} from 'node:fs/promises';
 import {join, resolve} from 'node:path';
 import {fileURLToPath} from 'node:url';
 
@@ -13,18 +12,13 @@ const baseBin = process.argv[3];
 const bin = join(root, 'packages/cli/dist/bin.js');
 const ffmpeg = process.env.A6_FFMPEG ?? '/opt/homebrew/bin/ffmpeg';
 const ffprobe = process.env.A6_FFPROBE ?? '/opt/homebrew/bin/ffprobe';
-const cacheRoot =
-  process.platform === 'darwin'
-    ? join(homedir(), 'Library/Caches')
-    : process.platform === 'win32'
-      ? process.env.LOCALAPPDATA
-      : (process.env.XDG_CACHE_HOME ?? join(homedir(), '.cache'));
-const cache = join(
-  cacheRoot,
-  'codeimage/ffmpeg/b6.1.1',
-  `${process.platform}-${process.arch}`,
-);
-const noFfmpeg = {...process.env, PATH: '/usr/bin:/bin', CODEIMAGE_FFMPEG: ''};
+const noFfmpeg = {
+  ...process.env,
+  PATH: join(out, 'missing-path'),
+  LOCALAPPDATA: join(out, 'empty-local'),
+  CODEIMAGE_FFMPEG: '',
+  CI: '1',
+};
 await mkdir(out, {recursive: true});
 const a = join(out, 'a.ts');
 const b = join(out, 'b.ts');
@@ -58,13 +52,13 @@ const quick = [
 const results = {};
 const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 
-function start(args, {env = process.env, entry = bin, proxy = false} = {}) {
+function start(args, {env = process.env, entry = bin} = {}) {
   console.log(`$ codeimage ${args.join(' ')}`);
-  const child = spawn(
-    process.execPath,
-    [...(proxy ? ['--use-env-proxy'] : []), entry, ...args],
-    {cwd: root, env, stdio: ['ignore', 'pipe', 'pipe']},
-  );
+  const child = spawn(process.execPath, [entry, ...args], {
+    cwd: root,
+    env,
+    stdio: ['ignore', 'pipe', 'pipe'],
+  });
   const stdout = [];
   let stderr = '';
   child.stdout.on('data', chunk => stdout.push(chunk));
@@ -131,21 +125,12 @@ function probe(file) {
   console.log(JSON.stringify({stream, keyframes: keys, boxes}));
   return {stream, keyframes: keys, boxes};
 }
-async function waitFor(predicate, description) {
-  const deadline = Date.now() + 45_000;
+async function waitFor(predicate, description, timeoutMs = 45_000) {
+  const deadline = Date.now() + timeoutMs;
   while (!predicate()) {
     if (Date.now() >= deadline) throw new Error(`Timed out: ${description}`);
     await delay(5);
   }
-}
-function partials() {
-  return existsSync(cache)
-    ? readdirSync(cache).filter(name => name.endsWith('.partial'))
-    : [];
-}
-async function emptyCache(label) {
-  if (existsSync(cache))
-    await rename(cache, join(out, `cache-${label}-${Date.now()}`));
 }
 async function lane(id, work) {
   console.log(`\nLANE ${id}`);
@@ -192,218 +177,190 @@ await lane(2, async () => {
   return metadata;
 });
 
-const originalCache = existsSync(cache)
-  ? `${cache}.a6-original-${process.pid}`
-  : undefined;
-if (originalCache) await rename(cache, originalCache);
-try {
-  await lane(3, async () => {
-    const first = await run([...quick, '-o', join(out, 'download-first.mp4')], {
-      env: noFfmpeg,
-    });
-    assert.equal(first.stderr.match(/Downloading ffmpeg b6.1.1/g)?.length, 1);
-    probe(join(out, 'download-first.mp4'));
-    const second = await run(
-      [...quick, '-o', join(out, 'download-second.mp4')],
-      {env: noFfmpeg},
+await lane(3, async () => {
+  const file = join(out, 'missing.mp4');
+  const result = await start([...quick, '--offline', '-o', file], {
+    env: noFfmpeg,
+  }).done;
+  assert.equal(result.code, 2);
+  for (const hint of [
+    'ffmpeg is required',
+    '--ffmpeg',
+    'CODEIMAGE_FFMPEG',
+    'PATH',
+  ])
+    assert.ok(result.stderr.includes(hint));
+  assert.ok(!existsSync(file));
+  return {exitCode: result.code, instructions: result.stderr};
+});
+await lane(4, async () => {
+  const wrappers = join(out, 'wrappers');
+  await mkdir(wrappers, {recursive: true});
+  for (const name of ['flag', 'environment', 'ffmpeg'])
+    await writeFile(
+      join(wrappers, name),
+      `#!/bin/sh\nif [ "$2" != "-encoders" ]; then echo USED_${name} >> '${join(out, 'resolve-order.txt')}'; fi\nexec '${ffmpeg}' "$@"\n`,
+      {mode: 0o755},
     );
-    assert.ok(!second.stderr.includes('Downloading ffmpeg'));
-    await emptyCache('online');
-    const offline = await start([...quick, '-o', join(out, 'offline.mp4')], {
-      env: {
-        ...noFfmpeg,
-        HTTPS_PROXY: 'http://127.0.0.1:9',
-        HTTP_PROXY: 'http://127.0.0.1:9',
-        NO_PROXY: '',
-      },
-      proxy: true,
-    }).done;
-    assert.equal(offline.code, 2);
-    for (const hint of [
-      '--ffmpeg',
-      'CODEIMAGE_FFMPEG',
-      'PATH',
-      'install-ffmpeg',
-    ])
-      assert.ok(offline.stderr.includes(hint));
-    assert.ok(!existsSync(join(out, 'offline.mp4')));
-    assert.deepEqual(partials(), []);
-    return {firstDownloads: 1, secondDownloads: 0, offlineCode: offline.code};
-  });
-  await lane(4, async () => {
-    const wrappers = join(out, 'wrappers');
-    await mkdir(wrappers, {recursive: true});
-    for (const name of ['flag', 'environment', 'ffmpeg'])
-      await writeFile(
-        join(wrappers, name),
-        `#!/bin/sh\necho USED_${name} >> '${join(out, 'resolve-order.txt')}'\nexec '${ffmpeg}' "$@"\n`,
-        {mode: 0o755},
-      );
-    const env = {
-      ...process.env,
-      PATH: wrappers + ':/usr/bin:/bin',
-      CODEIMAGE_FFMPEG: join(wrappers, 'environment'),
-    };
-    for (const [index, name] of ['flag', 'environment', 'ffmpeg'].entries()) {
-      const args = [
-        ...quick,
-        '-o',
-        join(out, `resolve-${index}.mp4`),
-        '--ffmpeg',
-        join(wrappers, 'flag'),
-      ];
-      await run(args, {env});
-      // ffmpeg stderr is quiet on success; wrappers leave a marker in a file too.
-      probe(join(out, `resolve-${index}.mp4`));
-      await rm(join(wrappers, name));
-    }
-    assert.deepEqual(
-      (await readFile(join(out, 'resolve-order.txt'), 'utf8'))
-        .trim()
-        .split('\n'),
-      ['USED_flag', 'USED_environment', 'USED_ffmpeg'],
-    );
-    return {order: ['flag', 'CODEIMAGE_FFMPEG', 'PATH']};
-  });
-  await lane(5, async () => {
-    await emptyCache('install');
-    const first = await run(['install-ffmpeg']);
-    const second = await run(['install-ffmpeg']);
-    assert.equal(first.stdout.toString(), second.stdout.toString());
-    assert.equal(first.stderr.match(/Downloading ffmpeg b6.1.1/g)?.length, 1);
-    assert.ok(!second.stderr.includes('Downloading ffmpeg'));
-    assert.equal(
-      first.stdout.toString().trim(),
-      join(cache, process.platform === 'win32' ? 'ffmpeg.exe' : 'ffmpeg'),
-    );
-    return {
-      binary: first.stdout.toString().trim(),
-      firstDownloads: 1,
-      secondDownloads: 0,
-    };
-  });
-  await lane(6, async () => {
-    await emptyCache('concurrent');
-    const files = [
-      join(out, 'concurrent-a.mp4'),
-      join(out, 'concurrent-b.mp4'),
-    ];
-    await Promise.all(
-      files.map(file => run([...quick, '-o', file], {env: noFfmpeg})),
-    );
-    files.forEach(probe);
-    assert.deepEqual(readdirSync(cache).sort(), [
-      'LICENSE',
-      'README',
-      'ffmpeg',
-    ]);
-    return {files, partials: partials()};
-  });
-  await lane(7, async () => {
-    let scale;
-    let width;
-    for (const candidate of ['1', '1.01', '1.02', '1.03', '1.04']) {
-      await run([...quick, '--scale', candidate, '-o', join(out, 'odd.apng')]);
-      width = readFileSync(join(out, 'odd.apng')).readUInt32BE(16);
-      if (width % 2) {
-        scale = candidate;
-        break;
-      }
-    }
-    assert.ok(scale, 'Expected an odd input frame');
-    await run([...quick, '--scale', scale, '-o', join(out, 'odd.mp4')]);
-    const metadata = probe(join(out, 'odd.mp4'));
-    assert.equal(metadata.stream.width, width + 1);
-    execFileSync(ffmpeg, [
-      '-v',
-      'error',
-      '-i',
-      join(out, 'odd.mp4'),
-      '-frames:v',
-      '1',
-      '-y',
-      join(out, 'odd-frame.png'),
-    ]);
-    return {inputWidth: width, encodedWidth: metadata.stream.width, scale};
-  });
-  await lane(8, async () => {
-    const file = join(out, 'abort.mp4');
-    const task = start([
-      ...common,
-      '--hold',
-      '10000',
-      '--transition',
-      '5000',
+  const env = {
+    ...process.env,
+    PATH: wrappers + ':/usr/bin:/bin',
+    CODEIMAGE_FFMPEG: join(wrappers, 'environment'),
+  };
+  for (const [index, name] of ['flag', 'environment', 'ffmpeg'].entries()) {
+    const args = [
+      ...quick,
       '-o',
-      file,
-    ]);
-    await waitFor(
-      () =>
-        readdirSync(out).some(
-          name => name.startsWith('abort.mp4.') && name.endsWith('.partial'),
-        ),
-      'ffmpeg output',
-    );
-    const childPids = execFileSync('/usr/bin/pgrep', [
-      '-P',
-      String(task.child.pid),
-    ])
-      .toString()
-      .trim()
-      .split(/\s+/)
-      .map(Number);
-    const signalledAt = Date.now();
-    task.child.kill('SIGINT');
-    const result = await task.done;
-    const exitMs = Date.now() - signalledAt;
-    assert.ok(exitMs < 1000, `Ctrl+C took ${exitMs}ms`);
-    assert.equal(result.signal, 'SIGINT');
-    assert.ok(!existsSync(file));
-    assert.ok(
-      !readdirSync(out).some(
+      join(out, `resolve-${index}.mp4`),
+      '--ffmpeg',
+      join(wrappers, 'flag'),
+    ];
+    await run(args, {env});
+    // ffmpeg stderr is quiet on success; wrappers leave a marker in a file too.
+    probe(join(out, `resolve-${index}.mp4`));
+    await rm(join(wrappers, name));
+  }
+  assert.deepEqual(
+    (await readFile(join(out, 'resolve-order.txt'), 'utf8')).trim().split('\n'),
+    ['USED_flag', 'USED_environment', 'USED_ffmpeg'],
+  );
+  return {order: ['flag', 'CODEIMAGE_FFMPEG', 'PATH']};
+});
+await lane(5, async () => {
+  const unsupported = join(out, 'unsupported-ffmpeg');
+  await writeFile(
+    unsupported,
+    '#!/bin/sh\necho " V..... libx264rgb H.264 encoder"\n',
+    {mode: 0o755},
+  );
+  const result = await start([
+    ...quick,
+    '--ffmpeg',
+    unsupported,
+    '-o',
+    join(out, 'unsupported.mp4'),
+  ]).done;
+  assert.equal(result.code, 2);
+  assert.ok(result.stderr.includes('MP4 requires the libx264 encoder'));
+  assert.ok(!existsSync(join(out, 'unsupported.mp4')));
+  return {exitCode: result.code};
+});
+await lane(6, async () => {
+  const files = [join(out, 'concurrent-a.mp4'), join(out, 'concurrent-b.mp4')];
+  await Promise.all(files.map(file => run([...quick, '-o', file])));
+  files.forEach(probe);
+  assert.ok(!readdirSync(out).some(name => name.endsWith('.partial')));
+  return {files};
+});
+await lane(7, async () => {
+  const oddInput = join(out, 'odd.ts');
+  const args = [
+    a,
+    oddInput,
+    '--animate',
+    '--hold',
+    '0',
+    '--transition',
+    '100',
+    '--fps',
+    '30',
+    '--scale',
+    '1',
+  ];
+  let width;
+  for (let length = 60; length <= 70; length++) {
+    await writeFile(oddInput, `const wide = "${'W'.repeat(length)}";`);
+    await run([...args, '-o', join(out, 'odd.apng')]);
+    width = readFileSync(join(out, 'odd.apng')).readUInt32BE(16);
+    if (width % 2) break;
+  }
+  assert.ok(width % 2, 'Expected an odd input frame at scale 1');
+  await run([...args, '-o', join(out, 'odd.mp4')]);
+  const metadata = probe(join(out, 'odd.mp4'));
+  assert.equal(metadata.stream.width, width + 1);
+  execFileSync(ffmpeg, [
+    '-v',
+    'error',
+    '-i',
+    join(out, 'odd.mp4'),
+    '-frames:v',
+    '1',
+    '-y',
+    join(out, 'odd-frame.png'),
+  ]);
+  return {inputWidth: width, encodedWidth: metadata.stream.width, scale: 1};
+});
+await lane(8, async () => {
+  const file = join(out, 'abort.mp4');
+  const task = start([
+    ...common,
+    '--hold',
+    '10000',
+    '--transition',
+    '5000',
+    '-o',
+    file,
+  ]);
+  await waitFor(
+    () =>
+      readdirSync(out).some(
         name => name.startsWith('abort.mp4.') && name.endsWith('.partial'),
       ),
-    );
-    for (const pid of childPids) {
-      let alive = false;
-      try {
-        process.kill(pid, 0);
-        alive = true;
-      } catch (error) {
-        if (error.code !== 'ESRCH') throw error;
-      }
-      assert.ok(!alive, `Encoder ${pid} survived Ctrl+C`);
-    }
-    return {exitMs, encoderPids: childPids, signal: result.signal};
-  });
-  await lane(9, async () => {
-    await emptyCache('abort');
-    const task = start(['install-ffmpeg']);
+    'ffmpeg output',
+  );
+  const childPids = execFileSync('/usr/bin/pgrep', [
+    '-P',
+    String(task.child.pid),
+  ])
+    .toString()
+    .trim()
+    .split(/\s+/)
+    .map(Number);
+  const signalledAt = Date.now();
+  task.child.kill('SIGINT');
+  const result = await task.done;
+  const exitMs = Date.now() - signalledAt;
+  assert.ok(exitMs < 1000, `Ctrl+C took ${exitMs}ms`);
+  assert.equal(result.signal, 'SIGINT');
+  assert.ok(!existsSync(file));
+  assert.ok(
+    !readdirSync(out).some(
+      name => name.startsWith('abort.mp4.') && name.endsWith('.partial'),
+    ),
+  );
+  for (const pid of childPids) {
     await waitFor(
-      () =>
-        partials().some(
-          name =>
-            name.startsWith('ffmpeg.') && statSync(join(cache, name)).size > 0,
-        ),
-      'streaming binary download',
+      () => {
+        try {
+          process.kill(pid, 0);
+          return false;
+        } catch (error) {
+          if (error.code !== 'ESRCH') throw error;
+          return true;
+        }
+      },
+      `Encoder ${pid} termination`,
+      Math.max(0, 1000 - (Date.now() - signalledAt)),
     );
-    const signalledAt = Date.now();
-    task.child.kill('SIGINT');
-    const result = await task.done;
-    const exitMs = Date.now() - signalledAt;
-    assert.equal(result.signal, 'SIGINT');
-    assert.ok(exitMs < 1000);
-    assert.deepEqual(readdirSync(cache), []);
-    const retry = await run(['install-ffmpeg']);
-    assert.equal(retry.stderr.match(/Downloading ffmpeg b6.1.1/g)?.length, 1);
-    return {exitMs, partialsAfterAbort: [], retryDownloads: 1};
-  });
-} finally {
-  if (originalCache) {
-    await rm(cache, {recursive: true, force: true});
-    await rename(originalCache, cache);
   }
-}
+  return {
+    exitMs,
+    cleanupMs: Date.now() - signalledAt,
+    encoderPids: childPids,
+    signal: result.signal,
+  };
+});
+await lane(9, async () => {
+  const formats = ['png', 'gif', 'webp', 'apng'];
+  for (const format of formats) {
+    const file = join(out, `without-ffmpeg.${format}`);
+    await run([...(format === 'png' ? [a] : quick), '--offline', '-o', file], {
+      env: noFfmpeg,
+    });
+    assert.ok(statSync(file).size > 0);
+  }
+  return {formats};
+});
 console.log(JSON.stringify(results, null, 2));
 if (Object.values(results).some(result => result.status !== 'pass'))
   process.exitCode = 1;

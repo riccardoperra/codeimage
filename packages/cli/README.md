@@ -238,51 +238,49 @@ its platform-specific native binding. No browser is needed.
 
 ## MP4 animations and ffmpeg
 
+MP4 requires a user-installed ffmpeg build with the libx264 encoder. Install it
+before running the CLI in CI:
+
+```sh
+# macOS, with Homebrew: https://brew.sh
+brew install ffmpeg
+# Windows
+winget install --id Gyan.FFmpeg -e --source winget
+# Linux, using your distro's package manager
+sudo apt install ffmpeg
+sudo dnf install ffmpeg
+sudo pacman -S ffmpeg
+```
+
 ```sh
 codeimage a.ts b.ts --animate -o demo.mp4
 codeimage a.ts b.ts --animate --format mp4 -o - > demo.mp4
 codeimage a.ts b.ts --animate -o demo.mp4 --ffmpeg /opt/bin/ffmpeg
-codeimage install-ffmpeg
 ```
+
+The CLI tries `--ffmpeg <path>`, `CODEIMAGE_FFMPEG`, then `ffmpeg` on PATH,
+skipping missing executables. On Windows it also checks
+`%LOCALAPPDATA%\Microsoft\WinGet\Links\ffmpeg.exe` after PATH. The selected
+executable must list libx264 in `ffmpeg -hide_banner -encoders`.
+
+When ffmpeg is missing in an interactive terminal, macOS and Windows users
+can confirm a package-manager installation. This requires brew or winget on
+PATH. The package manager inherits the terminal's input and output. The CLI
+resolves ffmpeg again after installation and continues rendering. If ffmpeg
+is still missing, restart your terminal or pass `--ffmpeg <path>`.
+
+Linux, CI, non-TTY, and quiet runs print installation instructions and exit
+with code 2. They never prompt or run a package manager. A missing brew or
+winget also produces instructions without prompting. Declining or cancelling
+the confirmation exits with code 2. There is no separate installation command.
+PNG, WebP, GIF, and APNG exports do not check for ffmpeg.
 
 MP4 uses H.264 High profile, a keyframe every two seconds, BT.709 limited
 range, and YUV 4:2:0. Odd dimensions grow by one pixel with the edge repeated.
 The file supports progressive playback (`faststart`). Redirected stdout holds
-only the MP4 bytes; diagnostics and download progress go to stderr. Encoding
-uses a temporary file before publishing the output, including when stdout is
-redirected. Ctrl+C removes temporary downloads and video output and stops the
-encoder.
-
-The CLI tries these ffmpeg locations in order, skipping missing executables:
-
-1. `--ffmpeg <path>`
-2. `CODEIMAGE_FFMPEG`
-3. `ffmpeg` on `PATH`
-4. The CodeImage cache; if empty, download the pinned release on first MP4 use.
-
-`codeimage install-ffmpeg` installs into that cache even if ffmpeg is already
-on PATH. It prints the executable path on stdout. Run it once in CI and cache
-`codeimage/ffmpeg/b6.1.1/<platform>-<arch>/` beneath the OS cache directory:
-`~/Library/Caches` on macOS, `$XDG_CACHE_HOME` or `~/.cache` on Linux, and
-`%LOCALAPPDATA%` on Windows. MP4 downloads do not happen at npm installation
-or for PNG, WebP, GIF, or APNG exports. `--offline` controls fonts and remote
-backgrounds; preinstall ffmpeg or provide an executable to export MP4 without
-network access.
-
-The download uses [ffmpeg-static release b6.1.1](https://github.com/eugeneware/ffmpeg-static/releases/tag/b6.1.1).
-Each compressed platform asset has a pinned SHA-256 in `src/video/checksums.ts`.
-The release's platform-specific `LICENSE` and `README` are stored beside the
-binary, which is published only after verification and both notices arrive.
-Download failures exit with code 2 and list all four ways to supply ffmpeg.
-
-The downloaded ffmpeg builds include GPL components. They are separate
-executables and are not bundled in the CLI npm package. Operators should
-review the cached release notices and confirm the GPL-3.0 handling described
-in the animation plan before merging A6 or redistributing these binaries. The
-macOS arm64 asset in this release also reports `--enable-nonfree`, and its
-`ffmpeg -L` output says it is not legally redistributable. The operator must
-review this additional restriction; the GPL note alone does not describe that
-asset.
+only the MP4 bytes; diagnostics go to stderr. Encoding uses a temporary file
+before publishing the output, including when stdout is redirected. Ctrl+C
+removes temporary video output and stops the encoder.
 
 Reproduce the CLI live lanes from a tmux pane after building:
 
@@ -292,16 +290,18 @@ node packages/cli/scripts/benchmark-mp4.mjs /tmp/a6-perf /absolute/base/dist/bin
 ```
 
 The base build must retain its sibling `dist` assets and runtime dependencies.
-The live helper exercises lanes 1–9, including a real upstream download and an
-unreachable proxy for the offline case. It temporarily moves an existing
-ffmpeg cache aside and restores it when finished; run it without other MP4
-exports using that cache. Set `A6_FFMPEG` / `A6_FFPROBE` to change the native
-executables used for inspection. For lane 10, run `node packages/cli/scripts/verify-web-mp4.mjs
+The live helper checks WebP regression, MP4 metadata, missing-dependency
+errors, resolver order, missing libx264, concurrent encoding, odd dimensions,
+Ctrl+C, and formats that do not need ffmpeg. Set `A6_FFMPEG` / `A6_FFPROBE` to
+change the executables used for inspection. The CLI uses ffmpeg on PATH.
+
+For lane 10, run `node packages/cli/scripts/verify-web-mp4.mjs
 http://127.0.0.1:4459 /tmp/a6-web-parity` against an owned web development
 server. The helper exports through the web controls, reads the actual saved
 JSON, and compares its CLI MP4. It uses Current frame with steps of different
 natural sizes. Set `A6_CASE=hidden` or `A6_CASE=signature` for those variants,
 `A6_FPS=24` or `A6_FPS=50` to change the default 30 fps, and `A6_WEB_HEAD` to
-record the web server's source revision. The perf helper waits for load
-below 8 before every timed cold process, records ten interleaved WebP pairs,
-then ten cached MP4 exports, and checks output dimensions and frame counts.
+record the web server's source revision. The perf helper waits for load below
+8 before every timed cold process, records ten interleaved WebP pairs, then
+ten MP4 exports, and checks output dimensions and frame counts. ffmpeg must
+already be installed on PATH.

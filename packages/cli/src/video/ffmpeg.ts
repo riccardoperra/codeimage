@@ -3,19 +3,28 @@ import {constants} from 'node:fs';
 import {access, rename, rm, stat} from 'node:fs/promises';
 import {randomUUID} from 'node:crypto';
 import {tmpdir} from 'node:os';
-import {delimiter, join, resolve} from 'node:path';
+import {join, resolve, posix, win32} from 'node:path';
 import type {AnimationFrame, RawAnimation} from '@codeimage/render';
 import {UsageError} from '../errors';
-import {downloadFfmpeg, FFMPEG_HELP} from './download';
-import type {DownloadOptions} from './download';
+import type {Ui} from '../ui';
 import {trackEncoder, trackPartial} from './lifecycle';
 
-async function executable(path: string) {
+const FFMPEG_HELP =
+  'Provide ffmpeg with libx264 using --ffmpeg <path>, CODEIMAGE_FFMPEG, or ffmpeg on PATH.';
+
+function installInstructions(platform: NodeJS.Platform) {
+  if (platform === 'darwin')
+    return `Install Homebrew from https://brew.sh, then run: brew install ffmpeg. ${FFMPEG_HELP}`;
+  if (platform === 'win32')
+    return `Install winget from https://learn.microsoft.com/windows/package-manager/winget/, then run: winget install --id Gyan.FFmpeg -e --source winget. ${FFMPEG_HELP}`;
+  if (platform === 'linux')
+    return `Install ffmpeg with your distro package manager: sudo apt install ffmpeg; sudo dnf install ffmpeg; or sudo pacman -S ffmpeg. ${FFMPEG_HELP}`;
+  return `Install ffmpeg with your platform's package manager. ${FFMPEG_HELP}`;
+}
+
+async function executable(path: string, platform: NodeJS.Platform) {
   try {
-    await access(
-      path,
-      process.platform === 'win32' ? constants.F_OK : constants.X_OK,
-    );
+    await access(path, platform === 'win32' ? constants.F_OK : constants.X_OK);
     return (await stat(path)).isFile();
   } catch {
     return false;
@@ -25,27 +34,129 @@ async function executable(path: string) {
 export async function resolveFfmpeg({
   path,
   env = process.env,
-  download = downloadFfmpeg,
-  ...options
-}: DownloadOptions & {
+  platform = process.platform,
+  prompts,
+}: {
   path?: string;
   env?: NodeJS.ProcessEnv;
-  download?: typeof downloadFfmpeg;
+  platform?: NodeJS.Platform;
+  prompts?: Pick<NonNullable<Ui['prompts']>, 'confirm'>;
 } = {}) {
-  for (const candidate of [path, env.CODEIMAGE_FFMPEG]) {
-    if (candidate && (await executable(candidate))) return resolve(candidate);
-  }
+  const paths = platform === 'win32' ? win32 : posix;
   const extensions =
-    process.platform === 'win32'
+    platform === 'win32'
       ? (env.PATHEXT ?? '.EXE;.CMD;.BAT;.COM').split(';')
       : [''];
-  for (const folder of env.PATH?.split(delimiter) ?? []) {
-    for (const extension of extensions) {
-      const candidate = resolve(folder, `ffmpeg${extension}`);
-      if (await executable(candidate)) return candidate;
+
+  async function onPath(name: string) {
+    for (const folder of env.PATH?.split(paths.delimiter) ?? []) {
+      if (!folder) continue;
+      for (const extension of extensions) {
+        const candidate = paths.resolve(folder, `${name}${extension}`);
+        if (await executable(candidate, platform)) return candidate;
+      }
     }
   }
-  return download(options);
+
+  async function find() {
+    for (const candidate of [path, env.CODEIMAGE_FFMPEG]) {
+      if (candidate && (await executable(candidate, platform)))
+        return paths.resolve(candidate);
+    }
+    const found = await onPath('ffmpeg');
+    if (found) return found;
+    if (platform === 'win32' && env.LOCALAPPDATA) {
+      const linked = paths.join(
+        env.LOCALAPPDATA,
+        'Microsoft',
+        'WinGet',
+        'Links',
+        'ffmpeg.exe',
+      );
+      if (await executable(linked, platform)) return linked;
+    }
+  }
+
+  let found = await find();
+  if (!found) {
+    const instructions = installInstructions(platform);
+    const missing = new UsageError(
+      `ffmpeg is required for MP4 export. ${instructions}`,
+    );
+    if (!prompts || env.CI || (platform !== 'darwin' && platform !== 'win32'))
+      throw missing;
+    const command = platform === 'darwin' ? 'brew' : 'winget';
+    const installer = await onPath(command);
+    if (!installer) throw missing;
+    const args =
+      platform === 'darwin'
+        ? ['install', 'ffmpeg']
+        : ['install', '--id', 'Gyan.FFmpeg', '-e', '--source', 'winget'];
+    if (
+      !(await prompts.confirm(
+        `ffmpeg is required for MP4. Run ${command} ${args.join(' ')}?`,
+      ))
+    )
+      throw missing;
+    try {
+      const child = spawn(installer, args, {stdio: 'inherit', env});
+      const untrack = trackEncoder(child);
+      try {
+        await new Promise<void>((resolve, reject) => {
+          child.once('error', reject);
+          child.once('close', code =>
+            code === 0
+              ? resolve()
+              : reject(new Error(`${command} exited ${code}`)),
+          );
+        });
+      } finally {
+        untrack();
+      }
+    } catch (cause) {
+      throw new UsageError(
+        `Could not install ffmpeg: ${cause instanceof Error ? cause.message : String(cause)}. ${instructions}`,
+        {cause},
+      );
+    }
+    found = await find();
+    if (!found)
+      throw new UsageError(
+        `ffmpeg is still unavailable. Restart your terminal or pass --ffmpeg <path>. ${instructions}`,
+      );
+  }
+
+  const child = spawn(found, ['-hide_banner', '-encoders'], {
+    stdio: ['ignore', 'pipe', 'pipe'],
+    windowsHide: true,
+    env,
+  });
+  const untrack = trackEncoder(child);
+  let encoders = '';
+  child.stdout.on('data', chunk => {
+    encoders += String(chunk);
+  });
+  child.stderr.on('data', chunk => {
+    encoders += String(chunk);
+  });
+  try {
+    await new Promise<void>((resolve, reject) => {
+      child.once('error', reject);
+      child.once('close', code =>
+        code === 0 ? resolve() : reject(new Error(`ffmpeg exited ${code}`)),
+      );
+    });
+    if (!/^\s*V\S*\s+libx264\s/m.test(encoders))
+      throw new Error('the libx264 encoder is not listed');
+  } catch (cause) {
+    throw new UsageError(
+      `Cannot use ffmpeg at ${found}: ${cause instanceof Error ? cause.message : String(cause)}. MP4 requires the libx264 encoder. ${installInstructions(platform)}`,
+      {cause},
+    );
+  } finally {
+    untrack();
+  }
+  return found;
 }
 
 export function ffmpegArgs({

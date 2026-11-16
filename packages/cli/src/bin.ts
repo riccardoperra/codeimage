@@ -46,13 +46,8 @@ async function main() {
       'Fonts: codeimage fonts install [ids...] [--all] [--offline] | list [--json] | clean [-y]',
     );
     ui.text(
-      'Video: codeimage a.ts b.ts --animate -o demo.mp4 [--ffmpeg <path>] | codeimage install-ffmpeg',
+      'Video: codeimage a.ts b.ts --animate -o demo.mp4 [--ffmpeg <path>] (requires ffmpeg with libx264)',
     );
-    return;
-  }
-  if (args.kind === 'install-ffmpeg') {
-    const {downloadFfmpeg} = await import('./video/download');
-    process.stdout.write(`${await downloadFfmpeg()}\n`);
     return;
   }
   if (args.kind !== 'render') {
@@ -96,7 +91,10 @@ async function main() {
     if (args.mp4 && args.animation) {
       const {document} = planAnimation(output.snapshot, args.animation, preset);
       const {exportMp4, resolveFfmpeg} = await import('./video/ffmpeg');
-      const ffmpeg = await resolveFfmpeg({path: args.ffmpeg});
+      const ffmpeg = await resolveFfmpeg({
+        path: args.ffmpeg,
+        prompts: ui.prompts,
+      });
       const {bytes} = await ui.run('Rendering MP4', async () =>
         exportMp4({
           animation: await renderer.animationFrames(document),

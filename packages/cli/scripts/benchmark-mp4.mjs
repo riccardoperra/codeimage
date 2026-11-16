@@ -1,9 +1,8 @@
 // Fresh-process export timings. Run only while the one-minute load is below 8.
 import assert from 'node:assert/strict';
 import {spawn, execFileSync} from 'node:child_process';
-import {existsSync} from 'node:fs';
 import {mkdir, readFile, writeFile} from 'node:fs/promises';
-import {cpus, homedir, loadavg} from 'node:os';
+import {cpus, loadavg} from 'node:os';
 import {join, resolve} from 'node:path';
 import {fileURLToPath} from 'node:url';
 
@@ -13,22 +12,6 @@ const baseline = process.argv[3];
 assert.ok(baseline, 'Pass the built base CLI path as the third argument');
 const head = join(root, 'packages/cli/dist/bin.js');
 const ffprobe = process.env.A6_FFPROBE ?? 'ffprobe';
-const cacheRoot =
-  process.platform === 'darwin'
-    ? join(homedir(), 'Library/Caches')
-    : process.platform === 'win32'
-      ? process.env.LOCALAPPDATA
-      : (process.env.XDG_CACHE_HOME ?? join(homedir(), '.cache'));
-const cached = join(
-  cacheRoot,
-  'codeimage/ffmpeg/b6.1.1',
-  `${process.platform}-${process.arch}`,
-  process.platform === 'win32' ? 'ffmpeg.exe' : 'ffmpeg',
-);
-assert.ok(
-  existsSync(cached),
-  'Run codeimage install-ffmpeg before the perf probe',
-);
 await mkdir(out, {recursive: true});
 const a = join(out, 'perf-a.ts');
 const b = join(out, 'perf-b.ts');
@@ -111,7 +94,7 @@ async function run(kind, entry, index, extension) {
   const started = performance.now();
   const child = spawn(process.execPath, [entry, ...common, '-o', output], {
     cwd: root,
-    env: {...process.env, PATH: '/usr/bin:/bin', CODEIMAGE_FFMPEG: ''},
+    env: {...process.env, CODEIMAGE_FFMPEG: ''},
     stdio: ['ignore', 'ignore', 'pipe'],
   });
   let stderr = '';
@@ -122,7 +105,6 @@ async function run(kind, entry, index, extension) {
   });
   const ms = performance.now() - started;
   assert.equal(code, 0, stderr);
-  assert.ok(!stderr.includes('Downloading ffmpeg'));
   const bytes = await readFile(output);
   if (extension === 'webp') assert.equal(bytes.toString('ascii', 0, 4), 'RIFF');
   else {

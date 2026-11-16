@@ -31,7 +31,7 @@ const CORE_ARGS = {
     type: 'string',
     valueHint: 'path',
     description:
-      'ffmpeg executable for MP4 (default: CODEIMAGE_FFMPEG, PATH, cache, download)',
+      'ffmpeg executable with libx264 for MP4 (default: CODEIMAGE_FFMPEG, PATH)',
   },
   theme: {
     type: 'string',
@@ -107,11 +107,6 @@ export function resolveTheme(id: string, flag = '--theme') {
 
 export function parseArgs(argv: string[], stdoutIsTTY = true) {
   if (argv[0] === 'fonts') return parseFontArgs(argv.slice(1));
-  if (argv[0] === 'install-ffmpeg') {
-    if (argv.length !== 1)
-      throw new UsageError('Usage: codeimage install-ffmpeg');
-    return {kind: 'install-ffmpeg'} as const;
-  }
   let parsed;
   try {
     parsed = parseNodeArgs({
