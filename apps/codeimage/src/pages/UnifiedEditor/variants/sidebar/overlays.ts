@@ -29,7 +29,7 @@ const clamp = (value: number, min: number, max: number) =>
 
 /**
  * The production pickers open a SidebarPopover at the right end of their
- * trigger, made for a sidebar on the left. Inspector's panel is on the right,
+ * trigger, made for a sidebar on the left. The panel may be on the right,
  * so the popover would land on the canvas, and a select's list flips up over
  * it near the bottom of a phone sheet. This moves each overlay opened from
  * the panel inside the panel, its collision boundary. Tall content scrolls
@@ -89,7 +89,7 @@ export function createOverlayPlacement(
       const rect = positioner.getBoundingClientRect();
       const left = rect.left - shiftX;
       const top = rect.top - shiftY;
-      // With data-inspector-side="left" the panel sits before the canvas.
+      // On the left side the panel sits before the canvas.
       const panelFirst = box.right <= area.left + 1;
       const x =
         rect.width <= box.width

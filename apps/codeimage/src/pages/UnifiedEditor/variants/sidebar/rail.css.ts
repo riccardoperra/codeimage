@@ -1,4 +1,3 @@
-import {panelRow} from '../../../../components/PropertyEditor/EditorSidebar.css';
 import {themeVars} from '@codeimage/ui';
 import {createVar, globalStyle, style} from '@vanilla-extract/css';
 
@@ -71,6 +70,15 @@ export const body = style({
     '&[data-read-only]': {
       gridTemplateAreas: '"rail main"',
       gridTemplateColumns: 'auto minmax(0, 1fr)',
+    },
+    // Phones leave the side unset and keep the rail at the bottom.
+    "&[data-side='right']": {
+      gridTemplateAreas: '"main panel rail"',
+      gridTemplateColumns: 'minmax(0, 1fr) auto auto',
+    },
+    "&[data-side='right'][data-read-only]": {
+      gridTemplateAreas: '"main rail"',
+      gridTemplateColumns: 'minmax(0, 1fr) auto',
     },
   },
   '@media': {
@@ -255,6 +263,11 @@ export const panelHeader = style({
   padding: '0 12px 0 16px',
 });
 
+// The collapse icon points towards the rail.
+globalStyle(`${body}[data-side='right'] ${panelHeader} svg`, {
+  transform: 'scaleX(-1)',
+});
+
 export const panelTitle = style({
   flex: 1,
   margin: 0,
@@ -269,33 +282,6 @@ export const panelPage = style({
   display: 'flex',
   flexDirection: 'column',
   selectors: {'&[hidden]': {display: 'none'}},
-});
-
-export const panelBody = style({
-  flex: 1,
-  minHeight: 0,
-  overflowY: 'auto',
-  overscrollBehavior: 'contain',
-  padding: '0 16px 16px 0',
-});
-
-globalStyle(`${panelBody} ${panelRow}`, {
-  minHeight: '40px',
-  paddingTop: '2px',
-  paddingBottom: '2px',
-  alignItems: 'center',
-  '@media': {'(max-width: 768px)': {paddingTop: 0, paddingBottom: 0}},
-});
-
-export const section = style({
-  display: 'flex',
-  flexDirection: 'column',
-  selectors: {'& + &': {marginTop: '8px'}},
-});
-
-export const fullWidth = style({
-  paddingLeft: '15px',
-  paddingBottom: '6px',
 });
 
 export const main = style([
@@ -342,26 +328,6 @@ export const compactActions = style({
 globalStyle(`${compactActions} button`, {
   minHeight: '40px',
   minWidth: '40px',
-});
-
-// Themes
-
-export const themeBody = style({
-  flex: 1,
-  minHeight: 0,
-  display: 'flex',
-  flexDirection: 'column',
-  gap: '12px',
-  padding: '0 16px',
-});
-
-export const presetsHost = style({
-  flex: 1,
-  minHeight: 0,
-  display: 'flex',
-  flexDirection: 'column',
-  padding: '4px 12px 12px 16px',
-  overflow: 'hidden',
 });
 
 // The kit's buttons and segmented controls move when pressed. With reduced

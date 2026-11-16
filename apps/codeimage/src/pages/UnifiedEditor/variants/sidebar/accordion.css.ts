@@ -9,9 +9,9 @@ const finePointer = '(hover: hover) and (pointer: fine)';
 const reducedMotion = '(prefers-reduced-motion: reduce)';
 
 /** The height the open section's body animates to. */
-export const bodyHeight = createVar('inspector-body-height');
+export const bodyHeight = createVar('sidebar-body-height');
 /** How tall the phone's sheet may grow under the page's header. */
-export const tallSheet = createVar('inspector-tall-sheet');
+export const tallSheet = createVar('sidebar-tall-sheet');
 
 // The layout, under the page's header, which the harness renders: the rest
 // of the page.
@@ -54,10 +54,10 @@ globalStyle(
 );
 
 /*
- * data-inspector-side="left", on the root or on any ancestor the settings
+ * data-panel-side="left", on the root or on any ancestor the settings
  * own, puts the panel before the canvas. Phones keep the bottom sheet.
  */
-const left = `[data-inspector-side='left'] ${root} &, ${root}[data-inspector-side='left'] &`;
+const left = `[data-panel-side='left'] ${root} &, ${root}[data-panel-side='left'] &`;
 
 export const workspace = style({
   minHeight: 0,
@@ -219,8 +219,7 @@ export const section = style({
 export const sectionTrigger = style({
   display: 'flex',
   alignItems: 'center',
-  justifyContent: 'space-between',
-  gap: '8px',
+  gap: '10px',
   width: '100%',
   minHeight: '36px',
   padding: '0 12px 0 8px',
@@ -244,10 +243,15 @@ export const sectionTrigger = style({
   },
 });
 
-export const sectionName = style({
-  display: 'flex',
-  alignItems: 'center',
-  gap: '8px',
+export const sectionName = style({flex: 1});
+
+export const sectionIcon = style({
+  display: 'grid',
+  placeItems: 'center',
+  color: c.descriptionTextColor,
+  selectors: {
+    [`${sectionTrigger}[aria-expanded='true'] &`]: {color: c.primary},
+  },
 });
 
 export const chevron = style({
@@ -305,100 +309,6 @@ globalStyle(`${themes} > *`, {
   inset: 0,
 });
 
-// The production rows of the shared controls.
-globalStyle(`${root} [data-control] > div`, {
-  gridTemplateColumns: 'minmax(100px, 1fr) minmax(0, 1.5fr)',
-  minHeight: '40px',
-  padding: '2px 4px',
-  alignItems: 'center',
-  '@media': {
-    [phone]: {paddingTop: 0, paddingBottom: 0},
-  },
-});
-
-globalStyle(`${root} [data-control] > div > label`, {
-  paddingLeft: 0,
-  height: 'auto',
-  minHeight: '36px',
-  fontSize: '13px',
-  whiteSpace: 'nowrap',
-  hyphens: 'none',
-  wordBreak: 'normal',
-  '@media': {
-    [phone]: {minHeight: '40px'},
-  },
-});
-
-globalStyle(`${root} [data-control] > div > div`, {
-  minWidth: 0,
-  alignItems: 'center',
-});
-
-globalStyle(
-  `${root} [data-control] [data-cui='select'], ${root} [data-control] [data-field-size]`,
-  {width: '100%'},
-);
-
-globalStyle(`${root} [data-control] button[aria-haspopup='listbox']`, {
-  width: '100%',
-  minHeight: '36px',
-});
-
-globalStyle(`${root} [data-control] [data-field-size] input`, {
-  width: '100%',
-});
-
-globalStyle(`${root} [data-control] input:not([type='checkbox'])`, {
-  '@media': {
-    [phone]: {minHeight: '40px', fontSize: '16px'},
-  },
-});
-
-// A kit button that opens a picker over the panel.
-export const inlineTrigger = style({
-  selectors: {
-    [`${root} &`]: {
-      display: 'flex',
-      gap: '8px',
-      minHeight: '36px',
-      width: '100%',
-      justifyContent: 'space-between',
-      padding: '4px 8px',
-      fontSize: '13px',
-    },
-  },
-});
-
-export const inlineValue = style({
-  flex: 1,
-  minWidth: 0,
-  overflow: 'hidden',
-  whiteSpace: 'nowrap',
-  textOverflow: 'ellipsis',
-  textAlign: 'left',
-});
-
-export const valueSwatch = style({
-  width: '20px',
-  height: '20px',
-  flexShrink: 0,
-  borderRadius: '6px',
-});
-
-// Around the production colour picker, which renders in a popover.
-export const colorPicker = style({});
-
-globalStyle(`${colorPicker} div[title][role='button']`, {
-  cursor: 'pointer',
-  minHeight: '40px',
-  minWidth: '40px',
-});
-
-globalStyle(`${colorPicker} div[title][role='button']:focus-visible`, {
-  outline: '2px solid Highlight',
-  outlineOffset: '3px',
-});
-
 // A kit button: the grip that drags the phone's sheet.
 export const sheetHandle = style({
   selectors: {
@@ -451,19 +361,6 @@ globalStyle(`${root} ${quickControls} button`, {
   '@media': {
     [phone]: {minWidth: 0, padding: '4px', fontSize: '12px'},
   },
-});
-
-// The kit's Select list, which renders in a portal.
-export const selectPortal = style({
-  animation: 'none !important',
-  transition: 'none !important',
-  maxWidth: 'var(--kb-popper-anchor-width)',
-  fontSize: '13px',
-});
-
-globalStyle(`${selectPortal} [role='option']`, {
-  minHeight: '40px',
-  fontSize: '13px',
 });
 
 // Overlays render outside the root, so these rules are global.

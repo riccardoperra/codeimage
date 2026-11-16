@@ -334,7 +334,13 @@ export async function auditSnippets({feature, doctor, context, base, out}) {
       );
       await openThemes(
         page,
-        await page.locator('[data-layout]').getAttribute('data-layout'),
+        await page.locator('[data-layout]').evaluate(root =>
+          root.dataset.layout === 'dock'
+            ? 'dock'
+            : root.dataset.panelNav === 'rail'
+              ? 'studio'
+              : 'inspector',
+        ),
         page.viewportSize().width,
       );
       assert.equal(
@@ -452,7 +458,7 @@ export async function auditSnippets({feature, doctor, context, base, out}) {
             0,
           );
         if (layout === 'studio') {
-          assert.equal(await page.locator('#studio-panel').count(), 0);
+          assert.equal(await page.locator('#sidebar-panel').count(), 0);
           if (width === 390)
             assert.equal(
               await page

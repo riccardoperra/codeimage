@@ -17,7 +17,7 @@ import type {AppLocaleEntries} from '../../../../i18n';
 import {EditingControls} from '../../EditingControls';
 import {CommandMenuButton} from '../../command-menu/CommandMenuButton';
 import {commandMenu} from '../../command-menu/state';
-import type {VariantMeta, VariantProps} from '../../contract';
+import type {VariantProps} from '../../contract';
 import {controlOverlay} from '../../controls/ControlOverlay';
 import {CanvasToolbar} from '../../controls/CanvasToolbar';
 import {keepMarkToolbarAboveSelection} from '../../controls/mark-toolbar';
@@ -31,16 +31,13 @@ import {CloseIcon, CollapseIcon, SearchIcon} from './icons';
 import {PANELS} from './panels';
 import {PLACES} from './places';
 import type {Panel, PanelId} from './panels';
-import * as styles from './studio.css';
-
-export const meta: VariantMeta = {
-  name: 'editor.studio',
-  axis: 'Structure: one named room per area, picked from a rail',
-};
+import * as styles from './rail.css';
+import {createOverlayPlacement} from './overlays';
+import {preferences} from '../../shell/preferences';
 
 type Stop = 'short' | 'tall';
 
-const PANEL_ID = 'studio-panel';
+const PANEL_ID = 'sidebar-panel';
 const DRAWER = 'cubic-bezier(0.32, 0.72, 0, 1)';
 const GAP = 8;
 /** Canvas island height kept above the tall stop, so the frame stays in view. */
@@ -101,7 +98,8 @@ function RailActions() {
   );
 }
 
-export default function Studio(props: VariantProps) {
+/** The sidebar as a rail of areas, each opening its panel beside the canvas. */
+export function Rail(props: VariantProps) {
   const [t] = useI18n<AppLocaleEntries>();
   keepMarkToolbarAboveSelection();
   const compactQuery = matchMedia(styles.COMPACT_QUERY);
@@ -119,6 +117,11 @@ export default function Studio(props: VariantProps) {
   let panelEl!: HTMLElement;
   let bodyEl!: HTMLDivElement;
   let railEl!: HTMLElement;
+  let mainEl!: HTMLElement;
+  createOverlayPlacement(
+    () => panelEl,
+    () => mainEl,
+  );
 
   const openPanel = createMemo(() =>
     PANELS.find(panel => panel.id === openId()),
@@ -322,6 +325,7 @@ export default function Studio(props: VariantProps) {
       <div
         ref={bodyEl}
         class={styles.body}
+        data-side={isPhone() ? undefined : preferences.panelSide()}
         data-read-only={props.pageState().kind === 'read-only' ? '' : undefined}
         style={assignInlineVars({
           [styles.sheetHeight]: `${sheetHeight()}px`,
@@ -402,32 +406,27 @@ export default function Studio(props: VariantProps) {
               onPointerCancel={onGrabEnd}
             >
               <div class={styles.sheetGrip} />
-              <Show when={!openPanel()?.ownHeader}>
-                <div class={styles.panelHeader}>
-                  <h2 class={styles.panelTitle}>
-                    {openPanel() ? t(openPanel()!.label) : ''}
-                  </h2>
-                  <IconButton
-                    size={size()}
-                    theme="secondary"
-                    variant="ghost"
-                    aria-label={t('editor.closePanel', {
-                      panel: openPanel()
-                        ? t(openPanel()!.label)
-                        : t('editor.panel'),
-                    })}
-                    title={t('editor.closeEscape')}
-                    onClick={() => close(true)}
-                  >
-                    <Show
-                      when={isPhone()}
-                      fallback={<CollapseIcon size={18} />}
-                    >
-                      <CloseIcon size={18} />
-                    </Show>
-                  </IconButton>
-                </div>
-              </Show>
+              <div class={styles.panelHeader}>
+                <h2 class={styles.panelTitle}>
+                  {openPanel() ? t(openPanel()!.label) : ''}
+                </h2>
+                <IconButton
+                  size={size()}
+                  theme="secondary"
+                  variant="ghost"
+                  aria-label={t('editor.closePanel', {
+                    panel: openPanel()
+                      ? t(openPanel()!.label)
+                      : t('editor.panel'),
+                  })}
+                  title={t('editor.closeEscape')}
+                  onClick={() => close(true)}
+                >
+                  <Show when={isPhone()} fallback={<CollapseIcon size={18} />}>
+                    <CloseIcon size={18} />
+                  </Show>
+                </IconButton>
+              </div>
             </div>
             <For each={PANELS}>
               {panel => (
@@ -441,7 +440,6 @@ export default function Studio(props: VariantProps) {
                       ThemePicker={props.ThemePicker}
                       size={size}
                       phone={isPhone}
-                      close={() => close(true)}
                     />
                   </div>
                 </Show>
@@ -450,7 +448,7 @@ export default function Studio(props: VariantProps) {
           </section>
         </EditingControls>
 
-        <main class={styles.main}>
+        <main ref={mainEl} class={styles.main}>
           <div class={styles.stage}>
             <props.stage.Canvas />
           </div>

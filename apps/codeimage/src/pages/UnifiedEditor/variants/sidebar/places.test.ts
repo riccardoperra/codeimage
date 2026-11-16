@@ -7,7 +7,7 @@ import type {
 import type {PanelId} from './panels';
 import type {PLACES} from './places';
 
-it('requires a panel for every control in Studio and Dock', () => {
+it('requires a panel for every control in the Sidebar and Dock', () => {
   expectTypeOf<keyof typeof PLACES>().toEqualTypeOf<ControlId>();
   expectTypeOf<typeof PLACES>().toExtend<Record<ControlId, {panel: PanelId}>>();
   expectTypeOf<typeof DockPlaces>().toExtend<
