@@ -1,4 +1,3 @@
-import {stripAnimateAids} from '@core/animation/aids';
 import {easingOf} from '@core/animation/easing';
 import type {CustomTheme} from '@codeimage/highlight';
 import type {EditorState} from '@codeimage/store/editor/model';
@@ -70,7 +69,6 @@ async function measureHidden<T>(
     dispose = runWithOwner(owner, () => render(view, host));
     await document.fonts.ready;
     await new Promise<void>(resolve => setTimeout(resolve, 0));
-    stripAnimateAids(host);
     return read(host);
   } finally {
     dispose?.();

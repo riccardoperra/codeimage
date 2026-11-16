@@ -27,10 +27,7 @@ export function scriptLinesExtension(step: number | null) {
         ranges.push(
           Decoration.line({
             class: classes.join(' '),
-            attributes: {
-              'data-animate-aid': 'line',
-              'data-animate-aid-classes': classes.join(' '),
-            },
+            attributes: {'data-animate-aid': 'line'},
           }).range(line.from),
         );
     }
