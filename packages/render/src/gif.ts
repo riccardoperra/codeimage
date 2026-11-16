@@ -1,0 +1,40 @@
+const EXTENSION = 0x21;
+const GRAPHIC_CONTROL = 0xf9;
+const IMAGE = 0x2c;
+const DISPOSAL_BITS = 0b11100;
+const RESTORE_TO_BACKGROUND = 2 << 2;
+
+export function clearGifFrames(gif: Uint8Array): void {
+  const view = new DataView(gif.buffer, gif.byteOffset, gif.byteLength);
+  const colorTable = (packed: number) =>
+    packed & 0x80 ? 3 * (1 << ((packed & 7) + 1)) : 0;
+  const [width, height] = [view.getUint16(6, true), view.getUint16(8, true)];
+  let offset = 13 + colorTable(gif[10]);
+  const skipSubBlocks = () => {
+    while (gif[offset]) offset += gif[offset] + 1;
+    offset++;
+  };
+  let control: number | undefined;
+  while (offset < gif.length) {
+    const block = gif[offset++];
+    if (block === EXTENSION) {
+      if (gif[offset++] === GRAPHIC_CONTROL) control = offset + 1;
+      skipSubBlocks();
+    } else if (block === IMAGE) {
+      const wholeCanvas =
+        view.getUint16(offset, true) === 0 &&
+        view.getUint16(offset + 2, true) === 0 &&
+        view.getUint16(offset + 4, true) === width &&
+        view.getUint16(offset + 6, true) === height;
+      if (control !== undefined && wholeCanvas) {
+        gif[control] = (gif[control] & ~DISPOSAL_BITS) | RESTORE_TO_BACKGROUND;
+      }
+      control = undefined;
+
+      offset += 9 + colorTable(gif[offset + 8]) + 1;
+      skipSubBlocks();
+    } else {
+      return;
+    }
+  }
+}

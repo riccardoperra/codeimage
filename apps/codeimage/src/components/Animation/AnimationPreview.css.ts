@@ -49,3 +49,5 @@ export const pill = style({
   textAlign: 'center',
   cursor: 'pointer',
 });
+
+export const scene = style({display: 'none'});

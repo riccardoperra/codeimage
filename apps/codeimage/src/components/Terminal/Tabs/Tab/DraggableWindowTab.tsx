@@ -86,6 +86,7 @@ export function DraggableWindowTab(props: VoidProps<WindowTabProps>) {
       accentMode={props.accentMode}
       tabIcon={props.tabIcon}
       data-active-drag={sortable.isActiveDraggable}
+      data-export-exclude={props.exportExclude}
       data-host-index={props.index}
       style={assignInlineVars({
         [styles.tabVars.tabIndex]: String(props.index),

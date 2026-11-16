@@ -1,3 +1,4 @@
+import {WATERMARK} from '@codeimage/render/watermark';
 import type {EditorView} from '@codemirror/view';
 import type {Accessor} from 'solid-js';
 import {
@@ -48,7 +49,9 @@ export function codeRoot(source: CodeSource) {
 
 /** Code is measured line by line so full-width line boxes never count as text. */
 export function codeLines(source: CodeSource) {
-  return Array.from(codeRoot(source).querySelectorAll('.cm-line'));
+  return Array.from(
+    codeRoot(source).querySelectorAll(`.${WATERMARK.codeClass}`),
+  );
 }
 
 export function createWatermarkScope(): WatermarkScope {

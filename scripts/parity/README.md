@@ -21,3 +21,21 @@ Each case selects a theme, terminal and line-number setting through the UI and d
 A cell can stay under 0.5% and still be wrong. Open the diff image of every nonzero cell. Before they were fixed, line numbers drifting 1.4 px per line scored 0.16% to 0.38%, and `.vue` and Angular tabs highlighted with the wrong parser scored 0.27% and 0.38%.
 
 The synchronous renderer accepts a preloaded language from `loadLanguage(languageId, tabName)`. Pass it as `StaticCodeView.language`, or as `PreviewFrame.language` together with `PreviewFrame.tab`. `getStaticTheme(theme)` exposes scope classes and StyleModules; SSR consumers can collect each module's `getRules()`. Client rendering mounts those modules once per theme. Font changes use CSS variables.
+
+## Takumi across operating systems
+
+The `Takumi snapshots` jobs render the shared `takumi-cells/index.ts` matrix on Linux, macOS, and Windows. Each runner downloads the same Linux-built `libs-dist` artifact and loads its local native Takumi binary from `node_modules`. These jobs need no browser or app environment file.
+
+After installing dependencies and building the libraries, render one set from the repository root:
+
+```sh
+node_modules/.bin/tsx scripts/parity/takumi-cross-os.ts --out dist/takumi-cross-os/macOS
+```
+
+The output contains numbered PNGs, a manifest with cell names, SHA-256 hashes and dimensions, and `runtime.json` with the OS, architecture, Node version and loaded native binding paths. Put the three outputs in `dist/takumi-cross-os/{Linux,macOS,Windows}`, then compare:
+
+```sh
+node_modules/.bin/tsx scripts/parity/compare-takumi-cross-os.ts
+```
+
+The comparator reports byte-identical counts and the maximum percentage of differing pixels against Linux. PASS means byte-identical PNGs. WARN allows at most 0.01% differing pixels with a maximum RGBA channel delta of 2/255. Any larger difference or dimension change fails. The comparison artifact contains `table.md`, `results.json`, and diff PNGs for changed cells. Chrome parity keeps its separate tolerances and Linux job. Both scripts render the full shared matrix, including P10 signatures, local avatar and background fixtures, and marks cells.

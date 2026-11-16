@@ -1,3 +1,4 @@
+import {SIGNATURE_FONT} from '@core/configuration/signature-fonts';
 import {
   createVar,
   fallbackVar,
@@ -6,34 +7,25 @@ import {
   styleVariants,
 } from '@vanilla-extract/css';
 
-// Inter ships with the app so that the signature looks the same on every
-// machine and in the downloaded image, which embeds the fonts it finds here.
-const signatureFont = 'CodeImage Signature';
-globalFontFace(signatureFont, [
-  {
-    src: 'url("/assets/fonts/inter/inter-latin-wght-normal.woff2") format("woff2")',
+const signatureFont = SIGNATURE_FONT.family;
+globalFontFace(
+  signatureFont,
+  SIGNATURE_FONT.faces.map(face => ({
+    src: `url("${face.path}") format("woff2")`,
     fontWeight: '100 900',
     fontDisplay: 'swap',
-    unicodeRange:
-      'U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD',
-  },
-  {
-    src: 'url("/assets/fonts/inter/inter-latin-ext-wght-normal.woff2") format("woff2")',
-    fontWeight: '100 900',
-    fontDisplay: 'swap',
-    unicodeRange:
-      'U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF',
-  },
-]);
+    unicodeRange: face.unicodeRange,
+  })),
+);
 
 /**
  * How much bigger the signature is than at a 640px frame. The frame sets it
  * from its width; previews outside a frame draw it at 1.
  */
 export const signatureScale = createVar();
-const scale = fallbackVar(signatureScale, '1');
+export const scale = fallbackVar(signatureScale, '1');
 /** A length that grows with the frame. */
-export const px = (value: number) => `calc(${value}px * ${scale})`;
+const px = (value: number) => `calc(${value}px * ${scale})`;
 
 const ink = createVar();
 const muted = createVar();

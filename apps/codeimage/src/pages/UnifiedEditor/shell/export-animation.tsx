@@ -1,12 +1,10 @@
 import {getEditorStore} from '@codeimage/store/editor';
 import {getAssetsStore} from '@codeimage/store/assets/assets';
-import {AssetsImage} from '@codeimage/store/assets/AssetsImage';
 import {getFrameState} from '@codeimage/store/editor/frame';
 import {createRandomId} from '@codeimage/store/plugins/unique-id';
-import {
-  useFrameCodeStyle,
-  FrameView,
-} from '../../../components/Frame/PreviewFrame';
+import {useFrameCodeStyle} from '../../../components/Frame/PreviewFrame';
+import {FrameView} from '../../../components/Frame/FrameView';
+import {createFrameMedia} from '../../../components/Frame/frameMedia';
 import {FITTED_WINDOW_MIN_WIDTH} from '../../../components/Frame/FittedWindow';
 import StaticCodeView from '../../../components/CustomEditor/StaticCodeView';
 import AnimatedCodeView from '../../../components/CustomEditor/AnimatedCodeView';
@@ -16,22 +14,24 @@ import {
   type CodeStyle,
   type PreviewTab,
 } from '../../../components/Animation/planPreview';
-import {prepareWatermark} from '../../../core/watermark/scope';
-import {frameRules} from '../../../core/animation/timeline';
-import type {NonEmpty, Size} from '../../../core/animation/model';
+import {AnimationCanvas} from '../../../components/Animation/AnimationCanvas';
+import {prepareWatermark} from '@core/watermark/scope';
+import {playedDurationMs} from '@core/animation/clock';
+import {frameRules} from '@core/animation/timeline';
+import type {NonEmpty, Size} from '@core/animation/model';
 import {
   collectSnapshotResources,
   cloneAnimationNode,
-} from '../../../core/rasterize/takumi';
+} from '@core/rasterize/takumi';
 import {
   ANIMATION_FORMATS,
   animationConfig,
   gifFrameBudget,
   type AnimationFps,
   type AnimationFormat,
-} from '../../../core/video/formats';
-import type {AnimationExport} from '../../../core/video/protocol';
-import {createSignal, getOwner, runWithOwner, Show} from 'solid-js';
+} from '@core/video/formats';
+import type {AnimationExport} from '@core/video/protocol';
+import {createSignal, getOwner, runWithOwner} from 'solid-js';
 import {render} from 'solid-js/web';
 
 const yieldToEditor = () =>
@@ -41,6 +41,7 @@ export function animationSnapshot() {
   const {animation, editor} = getEditorStore();
   const frame = getFrameState();
   const style = useFrameCodeStyle();
+  const media = createFrameMedia(() => frame.store);
   const owner = getOwner();
   const measure = async (
     fps: AnimationFps,
@@ -131,8 +132,7 @@ export function animationSnapshot() {
       (sum, scene) => sum + scene.durationMs,
       0,
     );
-    const durationMs =
-      (Math.ceil((ms * config.fps) / 1000) * 1000) / config.fps;
+    const durationMs = playedDurationMs(ms, config.fps);
     const frameBudget = gifFrameBudget(timeline.scenes, config.fps);
     const estimatedBytes = ANIMATION_FORMATS[format].estimate({
       ...config,
@@ -175,12 +175,6 @@ export function animationSnapshot() {
       contentSize,
       config,
     } = await measure(fps, output, scale, format);
-    const assets = getAssetsStore();
-    const background = frame.store.background;
-    const backgroundImage = assets.isAssetUrl(background)
-      ? background
-      : undefined;
-    const visibleBackground = frame.store.visible && frame.store.opacity > 0;
     const host = document.createElement('div');
     host.style.cssText =
       'position:fixed;left:0;top:0;opacity:0;pointer-events:none;z-index:-9999';
@@ -212,46 +206,19 @@ export function animationSnapshot() {
         const [codeReady, setCodeReady] = createSignal(false);
         const [lineLimit, setLineLimit] = createSignal(0);
         const view = () => (
-          <div
+          <AnimationCanvas
             data-video-root
             data-video-capture={scope}
             data-video-scene={index}
-            style={{
-              position: 'relative',
-              overflow: 'hidden',
-              width: `${config.width / pixelRatio}px`,
-              height: `${config.height / pixelRatio}px`,
-              'background-color': matte,
-            }}
+            width={config.width / pixelRatio}
+            height={config.height / pixelRatio}
+            matte={matte}
+            frame={frame.store}
+            image={media().backgroundImage}
           >
-            <Show when={visibleBackground}>
-              <div
-                data-video-background
-                style={{
-                  position: 'absolute',
-                  inset: 0,
-                  background: backgroundImage
-                    ? undefined
-                    : (background ?? undefined),
-                  opacity: frame.store.opacity / 100,
-                }}
-              >
-                <Show when={backgroundImage}>
-                  <AssetsImage
-                    assetId={backgroundImage!}
-                    style={{
-                      position: 'absolute',
-                      inset: 0,
-                      width: '100%',
-                      height: '100%',
-                      'object-fit': 'cover',
-                    }}
-                  />
-                </Show>
-              </div>
-            </Show>
             <FrameView
               ref={element => frames.push(element)}
+              media={media()}
               targetSize={output}
               animated
               natural
@@ -287,7 +254,7 @@ export function animationSnapshot() {
                 ))
               }
             />
-          </div>
+          </AnimationCanvas>
         );
         const mount = document.createElement('div');
         host.append(mount);

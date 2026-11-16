@@ -14,7 +14,11 @@ function $getThemeStore() {
 
   const themes = Object.fromEntries(
     Object.values(THEME_REGISTRY).map(
-      theme => [theme.id, createResource(loaded, theme.load)] as const,
+      theme =>
+        [
+          theme.id,
+          createResource(loaded, theme.load, {ssrLoadFrom: 'initial'}),
+        ] as const,
     ),
   );
 
@@ -45,8 +49,8 @@ function $getThemeStore() {
   } as const;
 }
 
-export const themeStore = createRoot($getThemeStore);
+let themeStore: ReturnType<typeof $getThemeStore> | undefined;
 
 export function getThemeStore() {
-  return themeStore;
+  return (themeStore ??= createRoot($getThemeStore));
 }

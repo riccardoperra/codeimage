@@ -79,10 +79,29 @@ const themes = new WeakMap<
   {classes: string; modules: readonly StyleModule[]}
 >();
 
+const staticExtensions = (theme: CustomTheme) => [
+  theme.editorTheme,
+  baseEditorTheme,
+  staticLayout,
+];
+
+type MountStyles = (this: {state: EditorState; root: unknown}) => void;
+
+export function staticThemeCss(theme: CustomTheme): string {
+  const style = {textContent: ''};
+  const root = {head: {insertBefore() {}}, createElement: () => style};
+  const {mountStyles} = EditorView.prototype as unknown as {
+    mountStyles: MountStyles;
+  };
+  const state = EditorState.create({extensions: staticExtensions(theme)});
+  mountStyles.call({state, root});
+  return style.textContent;
+}
+
 export function getStaticTheme(theme: CustomTheme) {
   let resolved = themes.get(theme);
   if (!resolved) {
-    const extensions = [theme.editorTheme, baseEditorTheme, staticLayout];
+    const extensions = staticExtensions(theme);
     const state = EditorState.create({extensions});
     const modules = state.facet(EditorView.styleModule).slice().reverse();
     const classes = [

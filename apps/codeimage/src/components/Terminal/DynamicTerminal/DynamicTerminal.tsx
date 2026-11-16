@@ -1,3 +1,5 @@
+import {parseWindowType} from '@core/configuration/windowTypes';
+
 import {AVAILABLE_TERMINAL_THEMES} from '@core/configuration/terminal-themes';
 
 import type {JSXElement, ParentComponent} from 'solid-js';
@@ -18,15 +20,8 @@ export const DynamicTerminal: ParentComponent<DynamicTerminalProps> = (
   const terminalThemes = AVAILABLE_TERMINAL_THEMES;
   const tabTheme = createTabTheme(() => props.themeId);
 
-  // The type comes from a stored document, which a newer build may have
-  // written with a style this build does not know.
   const terminal = createMemo(
-    () =>
-      (
-        terminalThemes.entries[
-          props.type as (typeof terminalThemes)['keys'][number]
-        ] ?? terminalThemes.entries[terminalThemes.keys[0]]
-      ).component,
+    () => terminalThemes.entries[parseWindowType(props.type)].component,
   );
 
   const resolvedChildren = children(() => props.children);

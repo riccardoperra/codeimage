@@ -65,13 +65,7 @@ export function placeWatermark(scene: WatermarkScene): WatermarkPlacement {
     const inset = scene.frame.inset;
     for (const bottom of [true, false]) {
       for (const right of [true, false]) {
-        const slot = bottom
-          ? right
-            ? 'frame-bottom-right'
-            : 'frame-bottom-left'
-          : right
-            ? 'frame-top-right'
-            : 'frame-top-left';
+        const slot = frameSlot(bottom, right);
         candidates.push({
           slot,
           rect: at(
@@ -121,4 +115,54 @@ export function placeWatermark(scene: WatermarkScene): WatermarkPlacement {
     return {slot: candidate.slot, rect: candidate.rect};
   }
   return {slot: 'unavoidable'};
+}
+
+export const WATERMARK = {
+  width: 125,
+  opacity: 0.35,
+  gap: 4,
+  frameInset: 24,
+  zIndex: 3,
+  codeClass: 'cm-line',
+  obstacles: '[data-watermark-obstacle], button, [role=tab]',
+} as const;
+
+export function isTransparentColor(value: string): boolean {
+  const color = value.trim().toLowerCase();
+  if (!color || color === 'transparent') return true;
+  if (/^#(?:[a-f\d]{3}0|[a-f\d]{6}00)$/.test(color)) return true;
+  const functional =
+    /^(?:rgba?|hsla?|hwb|lab|lch|oklab|oklch|color)\((.*)\)$/.exec(color);
+  if (!functional) return false;
+  const channels = functional[1];
+  const alpha = colorAlpha(channels);
+  if (
+    alpha === undefined ||
+    !/^[+-]?(?:\d*\.\d+|\d+\.?\d*)(?:e[+-]?\d+)?%?$/.test(alpha)
+  )
+    return false;
+  return Number(alpha.replace(/%$/, '')) <= 0;
+}
+
+export function canHostWatermarkFrame(frame: {
+  visible: boolean;
+  opacity: number;
+  backgroundColor: string;
+  hasImage: boolean;
+}): boolean {
+  return (
+    frame.visible &&
+    frame.opacity > 0 &&
+    (frame.hasImage || !isTransparentColor(frame.backgroundColor))
+  );
+}
+
+function frameSlot(bottom: boolean, right: boolean): WatermarkSlot {
+  if (bottom) return right ? 'frame-bottom-right' : 'frame-bottom-left';
+  return right ? 'frame-top-right' : 'frame-top-left';
+}
+function colorAlpha(channels: string) {
+  if (channels.includes('/'))
+    return channels.slice(channels.lastIndexOf('/') + 1).trim();
+  if (channels.split(',').length === 4) return channels.split(',')[3].trim();
 }

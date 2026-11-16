@@ -28,7 +28,7 @@
   ".agents/skills/verify-codeimage/scripts/audit.mjs": {
     "codeimage(no-comments)": 20,
     "eslint(max-depth)": 1,
-    "eslint(max-lines)": 2625,
+    "eslint(max-lines)": 2590,
     "eslint(max-lines-per-function)": 9,
     "eslint(no-param-reassign)": 6
   },
@@ -135,11 +135,9 @@
     "codeimage(no-global-style)": 1
   },
   "apps/codeimage/src/components/Animation/AnimationPreview.tsx": {
-    "codeimage(no-comments)": 16,
-    "codeimage(no-static-inline-style)": 1,
-    "eslint(max-lines)": 314,
+    "codeimage(no-comments)": 8,
     "eslint(no-nested-ternary)": 1,
-    "typescript(no-non-null-assertion)": 6
+    "typescript(no-non-null-assertion)": 2
   },
   "apps/codeimage/src/components/Animation/EasingCurve.tsx": {
     "typescript(no-non-null-assertion)": 2
@@ -286,7 +284,6 @@
     "codeimage(no-comments)": 60
   },
   "apps/codeimage/src/components/Frame/FittedWindow.tsx": {
-    "codeimage(no-comments)": 1,
     "eslint(no-nested-ternary)": 1,
     "eslint(no-restricted-imports)": 2,
     "typescript(no-non-null-assertion)": 1
@@ -302,10 +299,10 @@
     "codeimage(no-comments)": 2
   },
   "apps/codeimage/src/components/Frame/FrameSignature.css.ts": {
-    "codeimage(no-comments)": 21
+    "codeimage(no-comments)": 19
   },
   "apps/codeimage/src/components/Frame/FrameSignature.tsx": {
-    "codeimage(no-comments)": 9,
+    "codeimage(no-comments)": 7,
     "typescript(no-non-null-assertion)": 1
   },
   "apps/codeimage/src/components/Frame/ManagedFrame.tsx": {
@@ -313,11 +310,7 @@
   },
   "apps/codeimage/src/components/Frame/PreviewFrame.tsx": {
     "codeimage(disable-directive-format)": 1,
-    "codeimage(no-comments)": 9,
-    "codeimage(no-static-inline-style)": 1,
-    "eslint(no-nested-ternary)": 2,
-    "eslint(no-restricted-imports)": 1,
-    "typescript(no-non-null-assertion)": 3,
+    "codeimage(no-comments)": 3,
     "unused-disable-directive": 1
   },
   "apps/codeimage/src/components/Frame/platformIcons.ts": {
@@ -328,9 +321,6 @@
   },
   "apps/codeimage/src/components/Frame/signatureLayout.ts": {
     "codeimage(no-comments)": 4
-  },
-  "apps/codeimage/src/components/Frame/signatureTone.ts": {
-    "codeimage(no-comments)": 3
   },
   "apps/codeimage/src/components/Presets/PresetUpdateDialog.tsx": {
     "codeimage(no-static-inline-style)": 1
@@ -343,9 +333,6 @@
   },
   "apps/codeimage/src/components/PropertyEditor/SuspenseEditorItem.tsx": {
     "typescript(no-non-null-assertion)": 1
-  },
-  "apps/codeimage/src/components/Terminal/DynamicTerminal/DynamicTerminal.tsx": {
-    "codeimage(no-comments)": 2
   },
   "apps/codeimage/src/components/Terminal/MacOsTerminal/MacOsTerminal.tsx": {
     "eslint(no-restricted-imports)": 1,
@@ -427,7 +414,7 @@
     "eslint(complexity)": 1,
     "eslint(max-depth)": 2,
     "eslint(max-lines-per-function)": 1,
-    "eslint(no-restricted-imports)": 3
+    "eslint(no-restricted-imports)": 1
   },
   "apps/codeimage/src/components/WhatsNew/NewDot.tsx": {
     "codeimage(no-comments)": 11,
@@ -532,7 +519,7 @@
     "codeimage(no-comments)": 12
   },
   "apps/codeimage/src/core/animation/timeline.ts": {
-    "codeimage(no-comments)": 36,
+    "codeimage(no-comments)": 35,
     "eslint(no-nested-ternary)": 1
   },
   "apps/codeimage/src/core/configuration.ts": {
@@ -651,9 +638,6 @@
   },
   "apps/codeimage/src/core/watermark/codemirror.ts": {
     "codeimage(no-comments)": 1
-  },
-  "apps/codeimage/src/core/watermark/placement.ts": {
-    "eslint(no-nested-ternary)": 1
   },
   "apps/codeimage/src/core/watermark/scope.test.ts": {
     "codeimage(no-comments)": 2,
@@ -1059,19 +1043,17 @@
   },
   "apps/codeimage/src/pages/UnifiedEditor/shell/export-animation-dialog.tsx": {
     "codeimage(no-comments)": 3,
-    "eslint(max-lines)": 560,
+    "eslint(max-lines)": 555,
     "eslint(max-lines-per-function)": 2,
     "eslint(no-restricted-imports)": 2,
     "typescript(no-non-null-assertion)": 1
   },
   "apps/codeimage/src/pages/UnifiedEditor/shell/export-animation.tsx": {
     "codeimage(no-comments)": 7,
-    "codeimage(no-static-inline-style)": 1,
-    "eslint(max-lines)": 375,
+    "eslint(max-lines)": 342,
     "eslint(max-lines-per-function)": 2,
     "eslint(max-params)": 1,
-    "eslint(no-restricted-imports)": 6,
-    "typescript(no-non-null-assertion)": 2
+    "typescript(no-non-null-assertion)": 1
   },
   "apps/codeimage/src/pages/UnifiedEditor/shell/export-formats.ts": {
     "codeimage(no-comments)": 8
@@ -1418,8 +1400,7 @@
     "codeimage(no-comments)": 1
   },
   "apps/codeimage/src/workers/animation.worker.ts": {
-    "codeimage(no-comments)": 3,
-    "eslint(no-restricted-imports)": 4
+    "codeimage(no-comments)": 3
   },
   "apps/codeimage/vite.config.ts": {
     "codeimage(no-comments)": 2
@@ -1476,7 +1457,7 @@
     "codeimage(no-comments)": 6
   },
   "packages/config/src/lib/base/languages.ts": {
-    "eslint(max-lines)": 816
+    "eslint(max-lines)": 811
   },
   "packages/config/src/lib/types/language-def.ts": {
     "codeimage(disable-directive-format)": 1
@@ -1512,7 +1493,7 @@
     "codeimage(disable-directive-format)": 3,
     "codeimage(no-comments)": 6,
     "eslint(eqeqeq)": 6,
-    "eslint(max-lines)": 330,
+    "eslint(max-lines)": 324,
     "eslint(no-nested-ternary)": 1,
     "eslint(no-param-reassign)": 1,
     "unused-disable-directive": 3
@@ -1534,7 +1515,7 @@
   },
   "packages/dom-export/src/lib/util.ts": {
     "codeimage(disable-directive-format)": 3,
-    "codeimage(no-comments)": 11,
+    "codeimage(no-comments)": 8,
     "unused-disable-directive": 3
   },
   "packages/dom-export/vitest.config.ts": {

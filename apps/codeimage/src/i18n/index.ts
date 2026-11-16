@@ -13,6 +13,7 @@ import sidebarLocale from './sidebar';
 import {uiLocale} from './ui';
 import {bottomBar} from './bottombar';
 import {exportTabs} from './exportTabs';
+import {cliConfig} from './cliConfig';
 import {localAi} from './localAi';
 import {agentActivity} from './agentActivity';
 
@@ -105,6 +106,7 @@ export const locale = {
     ...editorLocale.it,
     ...animationLocale.it,
     ...whatsNewLocale.it,
+    ...cliConfig.it,
   },
   en: {
     ...secrets.en,
@@ -193,6 +195,7 @@ export const locale = {
     ...editorLocale.en,
     ...animationLocale.en,
     ...whatsNewLocale.en,
+    ...cliConfig.en,
   },
   de: {
     ...secrets.de,
@@ -282,6 +285,7 @@ export const locale = {
     ...editorLocale.de,
     ...animationLocale.de,
     ...whatsNewLocale.de,
+    ...cliConfig.de,
   },
   es: {
     ...secrets.es,
@@ -370,6 +374,7 @@ export const locale = {
     ...editorLocale.es,
     ...animationLocale.es,
     ...whatsNewLocale.es,
+    ...cliConfig.es,
   },
 };
 

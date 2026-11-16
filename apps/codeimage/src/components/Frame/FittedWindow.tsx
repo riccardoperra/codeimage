@@ -19,52 +19,84 @@ export const naturalWindowStyle = {
   'min-width': `${FITTED_WINDOW_MIN_WIDTH}px`,
 } satisfies JSX.CSSProperties;
 
-interface Size {
+export interface Size {
   width: number;
   height: number;
 }
 
 export const fitScale = (viewport: Size, content: Size) =>
-  Math.min(1, viewport.width / content.width, viewport.height / content.height);
-
-function fitFrameWindow(frame: HTMLElement) {
-  const content = frame.querySelector<HTMLElement>('[data-fitted-window]');
-  const viewport = content?.parentElement;
-  if (!content || !viewport || !viewport.hasAttribute('data-fit-window'))
-    return false;
-  const width = Math.max(content.offsetWidth, content.scrollWidth);
-  const height = Math.max(content.offsetHeight, content.scrollHeight);
-  const scale = fitScale(
-    {width: viewport.clientWidth, height: viewport.clientHeight},
-    {width, height},
+  Math.max(
+    0,
+    Math.min(
+      1,
+      viewport.width / content.width,
+      viewport.height / content.height,
+    ),
   );
-  const transform = `translate(-50%, -50%) scale(${scale})`;
-  if (content.style.transform === transform) return false;
-  content.style.transform = transform;
-  return true;
+
+export interface FittedPlacement {
+  readonly left: number;
+  readonly top: number;
+  readonly scale: number;
 }
 
-/** The window's box in a frame, and the watermark scope its children register in. */
+export function fittedPlacement(
+  viewport: Size,
+  content: Size,
+): FittedPlacement {
+  const scale = fitScale(viewport, content);
+  return {
+    left: Math.round((viewport.width - content.width * scale) / 2),
+    top: Math.round((viewport.height - content.height * scale) / 2),
+    scale,
+  };
+}
+
 export function FittedWindow(
   props: ParentProps<{
     active: boolean;
     natural?: boolean;
     watermark: WatermarkScope;
+    placement?: FittedPlacement;
   }>,
 ) {
   const [viewport, setViewport] = createSignal<HTMLDivElement>();
   const [content, setContent] = createSignal<HTMLDivElement>();
   const watermark = untrack(() => props.watermark);
+  const [measured, setMeasured] = createSignal<FittedPlacement>({
+    left: 0,
+    top: 0,
+    scale: 1,
+  });
+  const placement = () => props.placement ?? measured();
   const fit = () => {
-    const element = viewport();
-    if (element && props.active && fitFrameWindow(element))
-      watermark.invalidate();
+    const box = viewport();
+    const fitted = content();
+    if (!box || !fitted || !props.active || props.placement) return;
+    const next = fittedPlacement(
+      {width: box.clientWidth, height: box.clientHeight},
+      {
+        width: Math.max(fitted.offsetWidth, fitted.scrollWidth),
+        height: Math.max(fitted.offsetHeight, fitted.scrollHeight),
+      },
+    );
+    const current = untrack(measured);
+    if (
+      current.left === next.left &&
+      current.top === next.top &&
+      current.scale === next.scale
+    )
+      return;
+
+    setMeasured(next);
+    watermark.invalidate();
   };
   createResizeObserver(viewport, fit);
   createResizeObserver(content, fit);
   createEffect(fit);
   onMount(() => {
     watermark.attach('fit', fit);
+    if (props.placement) return;
     const observer = new MutationObserver(fit);
     observer.observe(content()!, {
       subtree: true,
@@ -97,11 +129,12 @@ export function FittedWindow(
           props.active
             ? {
                 position: 'absolute',
-                left: '50%',
-                top: '50%',
+                left: `${placement().left}px`,
+                top: `${placement().top}px`,
+                transform: `scale(${placement().scale})`,
                 width: 'max-content',
                 'min-width': `${FITTED_WINDOW_MIN_WIDTH}px`,
-                'transform-origin': 'center',
+                'transform-origin': '0 0',
               }
             : props.natural
               ? {...naturalWindowStyle, transform: 'none'}

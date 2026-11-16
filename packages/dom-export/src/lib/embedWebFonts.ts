@@ -2,6 +2,7 @@ import {fetchAsDataURL} from './dataurl';
 import {embedResources, shouldEmbed} from './embedResources';
 import type {Options} from './options';
 import {toArray} from './util';
+import {getFontName, matchesFontFace} from './fontValues';
 
 interface Metadata {
   url: string;
@@ -11,8 +12,6 @@ interface Metadata {
 type FontsMap = Record<string, Record<string, CSSStyleRule>>;
 
 const cssFetchCache: {[href: string]: Metadata} = {};
-
-const REGEXP_QUOTE_FONT_FAMILY = /^['"]|['"]$/g;
 
 async function fetchCSS(url: string) {
   let cache = cssFetchCache[url];
@@ -240,17 +239,6 @@ export function getFontsMap(cssStyleRules: CSSStyleRule[]): FontsMap {
   return fontInfo;
 }
 
-const getFontName = (fontFamily: string) => {
-  if (!fontFamily) {
-    console.warn('[dom-export] Given font-family value is invalid');
-    return [];
-  }
-  const fonts = fontFamily.split(',');
-  return fonts.map(font =>
-    font.trim().toLowerCase().replace(REGEXP_QUOTE_FONT_FAMILY, ''),
-  );
-};
-
 const getUsedFontFamiliesRecursively = <T extends Element>(
   acc: string[],
   fontsMap: FontsMap,
@@ -263,7 +251,7 @@ const getUsedFontFamiliesRecursively = <T extends Element>(
     parentFont = fontFamily;
   }
   if (fontFamily || fontStyle || fontWeight) {
-    const computedFont = getFontName(fontFamily ?? parentFont ?? 'default')[0];
+    const computedFont = getFontName(fontFamily || parentFont || 'default')[0];
     const fontId = `${computedFont}-${fontWeight}-${fontStyle}`;
     if (!acc.includes(fontId) && !!fontsMap[computedFont]) {
       acc.push(fontId);
@@ -301,13 +289,17 @@ export function getUsedFontFamiliesByNode<T extends Element>(
     const {fontFamily, fontWeight, fontStyle} =
       getStylesheetFontValues(styleRule);
 
-    const id = `${getFontName(fontFamily)[0]}-${fontWeight}-${fontStyle}`;
+    const family = getFontName(fontFamily)[0];
+    const used = fontFamilies.some(id =>
+      matchesFontFace(id, {family, fontWeight, fontStyle}),
+    );
     if (
-      !fontFamilies.includes(id) &&
-      !experimental_includeExternalFonts.some(font => font.startsWith(id))
-    ) {
+      !used &&
+      !experimental_includeExternalFonts.some(font =>
+        getFontName(font).includes(family),
+      )
+    )
       return acc;
-    }
     return acc.concat(styleRule);
   }, [] as CSSStyleRule[]);
 }

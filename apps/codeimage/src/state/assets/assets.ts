@@ -6,6 +6,16 @@ import type {Accessor} from 'solid-js';
 import {createEffect, createMemo, createResource, on, untrack} from 'solid-js';
 import {unwrap} from 'solid-js/store';
 import {defineStore} from 'statebuilder';
+import type {AssetId, AssetLinkId} from './assetIds';
+import {
+  assetLinkPrefix,
+  assetPrefix,
+  isAssetLinkUrl,
+  isAssetUrl,
+} from './assetIds';
+
+export type {AssetId, AssetLinkId} from './assetIds';
+export {isAssetLinkUrl, isAssetUrl} from './assetIds';
 
 export interface BaseAsset {
   id: string;
@@ -27,26 +37,6 @@ export interface PersistedFileAsset extends BaseAsset {
 export interface PersistedLink extends BaseAsset {
   id: AssetLinkId;
   type: 'link';
-}
-
-const assetPrefix = `asset:`;
-const assetLinkPrefix = `link:`;
-export type AssetId = `${typeof assetPrefix}${string}`;
-export type AssetLinkId = `${typeof assetLinkPrefix}${string}`;
-
-export function isAssetUrl(
-  value: string | null | undefined,
-): value is AssetId | AssetLinkId {
-  return (
-    !!value &&
-    (value.startsWith(assetPrefix) || value?.startsWith(assetLinkPrefix))
-  );
-}
-
-export function isAssetLinkUrl(
-  value: string | null | undefined,
-): value is AssetLinkId {
-  return !!value && value.startsWith(assetLinkPrefix);
 }
 
 export const AssetsStore = defineStore<PersistedAsset[]>(() => [])
