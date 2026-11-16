@@ -3,6 +3,7 @@ import {HttpResponse, type RequestHandler} from 'msw';
 import {http} from 'msw';
 import {db} from './db';
 import {persistDb} from './persist';
+import {projectTerminal} from './projectTerminal';
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL ?? '';
 
@@ -170,19 +171,7 @@ const handlers: RequestHandler[] = [
             visible: body?.frame.visible ?? true,
           },
           isOwner: true,
-          terminal: {
-            opacity: body?.terminal.opacity ?? 100,
-            shadow: body?.terminal.shadow,
-            type: body?.terminal.type,
-            textColor: body?.terminal.textColor ?? '',
-            accentVisible: body?.terminal.accentVisible ?? true,
-            alternativeTheme: body?.terminal.alternativeTheme ?? false,
-            surface: body?.terminal.surface ?? 'solid',
-            borderType: body?.terminal.borderType ?? null,
-            showGlassReflection: body?.terminal.showGlassReflection ?? false,
-            showHeader: body?.terminal.showHeader ?? false,
-            showWatermark: body?.terminal.showWatermark ?? false,
-          },
+          terminal: projectTerminal(body?.terminal),
           editorTabs: body?.editors.map(editor => ({
             id: editor.id,
             tabName: editor.tabName,
@@ -241,20 +230,7 @@ const handlers: RequestHandler[] = [
         visible: body?.frame.visible ?? true,
       },
       isOwner: true,
-      terminal: {
-        id: crypto.randomUUID(),
-        opacity: body?.terminal.opacity ?? 100,
-        shadow: body?.terminal.shadow,
-        type: body?.terminal.type,
-        textColor: body?.terminal.textColor ?? '',
-        accentVisible: body?.terminal.accentVisible ?? true,
-        alternativeTheme: body?.terminal.alternativeTheme ?? false,
-        surface: body?.terminal.surface ?? 'solid',
-        borderType: body?.terminal.borderType ?? null,
-        showGlassReflection: body?.terminal.showGlassReflection ?? false,
-        showHeader: body?.terminal.showHeader ?? false,
-        showWatermark: body?.terminal.showWatermark ?? false,
-      },
+      terminal: {id: crypto.randomUUID(), ...projectTerminal(body?.terminal)},
       editorTabs: body?.editors.map(editor => ({
         id: crypto.randomUUID(),
         tabName: editor.tabName,

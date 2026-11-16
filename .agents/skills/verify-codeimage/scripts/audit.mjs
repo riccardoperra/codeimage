@@ -2,6 +2,7 @@
 import {animateTimelineCases} from './animate-timeline.mjs';
 import {createDoctor} from './health/doctor.mjs';
 import assert from 'node:assert/strict';
+import {auditPresets, auditPresetPersistence} from './presets.mjs';
 import {auditLineMarks} from './audit-line-marks.mjs';
 import {auditLineMarksNews} from './audit-line-marks-news.mjs';
 import {verifyKeyboardScroll} from './keyboard-scroll.mjs';
@@ -590,26 +591,10 @@ export async function audit({page, context, base, out, server}) {
     assert.equal(downloads, 1);
     page.off('download', count);
   });
-  await feature('presets', async () => {
-    await doctor('/', 'editor', 'studio');
-    await page.getByRole('button', {name: 'Presets', exact: true}).click();
-    await page
-      .getByRole('button', {name: 'Add preset', exact: true})
-      .first()
-      .click();
-    const dialog = page.getByRole('alertdialog', {
-      name: 'Add a new preset',
-      exact: true,
-    });
-    await dialog.getByRole('textbox').fill('Verification preset');
-    await dialog.getByRole('button', {name: 'Confirm', exact: true}).click();
-    await page.locator('li').filter({hasText: 'Verification preset'}).waitFor();
-    await page.reload();
-    await editor().waitFor();
-    await page.getByRole('button', {name: 'Presets', exact: true}).click();
-    await page.locator('li').filter({hasText: 'Verification preset'}).click();
-    await shot('preset-reopened');
-  });
+  await feature('presets', () => auditPresets({page, doctor, editor, shot}));
+  await feature('preset-persistence', () =>
+    auditPresetPersistence({fresh, out}),
+  );
   await feature('export-options', async () => {
     try {
       await editor().fill('const exportOptions = true;');
