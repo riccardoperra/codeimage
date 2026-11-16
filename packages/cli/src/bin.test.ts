@@ -59,7 +59,7 @@ function run(
 }
 describe('CLI streams', {timeout: 30_000}, () => {
   it.each([['--help'], ['-h'], ['--help', '--quiet']])(
-    'preserves non-TTY help bytes for %j',
+    'includes the plain header in non-TTY help for %j',
     async (...args) => {
       const result = await run(args, {
         env: {
@@ -73,7 +73,7 @@ describe('CLI streams', {timeout: 30_000}, () => {
       expect(result.stdout.length).toBe(0);
       const usage = stripVTControlCharacters(await renderUsage(COMMAND));
       expect(result.stderr).toBe(
-        `${usage.endsWith('\n') ? usage : `${usage}\n`}Fonts: codeimage fonts install [ids...] [--all] [--offline] | list [--json] | clean [-y]\n`,
+        `CodeImage CLI\nhttps://app.codeimage.dev · https://github.com/riccardoperra/codeimage\n\n${usage.endsWith('\n') ? usage : `${usage}\n`}Fonts: codeimage fonts install [ids...] [--all] [--offline] | list [--json] | clean [-y]\n`,
       );
     },
   );
@@ -87,6 +87,7 @@ describe('CLI streams', {timeout: 30_000}, () => {
       );
       expect(PNG.sync.read(result.stdout).width).toBeGreaterThan(0);
       expect(result.stderr).not.toContain('\x1b');
+      expect(result.stderr).not.toContain('CodeImage CLI');
       expect(await readdir(dir)).toEqual([]);
     },
   );

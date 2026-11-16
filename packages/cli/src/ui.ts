@@ -2,7 +2,6 @@ import {stripVTControlCharacters} from 'node:util';
 import {confirm, isCancel, log, multiselect, spinner} from '@clack/prompts';
 import type {FontEvent} from '@codeimage/render';
 import type {ErrorReport} from './errors';
-import {formatHelpLogo} from './terminal-logo';
 
 export function formatHelpUsage(
   message: string,
@@ -10,25 +9,20 @@ export function formatHelpUsage(
   stdoutTTY = !!process.stdout.isTTY,
   env = process.env,
 ) {
-  const usage = formatUsage(message, stdoutTTY, env);
-  return stdoutTTY &&
+  const color =
+    stdoutTTY &&
     !quiet &&
     env.NO_COLOR === undefined &&
     env.CI === undefined &&
-    env.TERM !== 'dumb' &&
-    /^(truecolor|24bit)$/i.test(env.COLORTERM ?? '')
-    ? `${formatHelpLogo(env)}\n\n${usage}`
-    : usage;
-}
-
-export function formatUsage(
-  message: string,
-  stdoutTTY = !!process.stdout.isTTY,
-  env = process.env,
-) {
-  return !stdoutTTY || env.NO_COLOR !== undefined
-    ? stripVTControlCharacters(message)
-    : message;
+    env.TERM !== 'dumb';
+  const title = color ? '\x1b[1mCodeImage CLI\x1b[0m' : 'CodeImage CLI';
+  const links = [
+    'https://app.codeimage.dev',
+    'https://github.com/riccardoperra/codeimage',
+  ]
+    .map(url => (color ? `\x1b]8;;${url}\x1b\\${url}\x1b]8;;\x1b\\` : url))
+    .join(' · ');
+  return `${title}\n${color ? `\x1b[2m${links}\x1b[0m` : links}\n\n${color ? message : stripVTControlCharacters(message)}`;
 }
 
 export function uiMode(

@@ -1,6 +1,6 @@
 import {stripVTControlCharacters} from 'node:util';
 import {afterEach, describe, expect, it, vi} from 'vitest';
-import {createUi, formatHelpUsage, formatUsage, uiMode} from './ui';
+import {createUi, formatHelpUsage, uiMode} from './ui';
 describe('terminal mode', () => {
   it('requires both output streams and disables rich UI in CI and quiet mode', () => {
     expect(uiMode(false, true, true, {})).toBe('interactive');
@@ -12,69 +12,55 @@ describe('terminal mode', () => {
   });
 });
 
-describe('help logo', () => {
+describe('help header', () => {
   const message = '\x1b[1mUsage\x1b[0m\ncodeimage [file...]';
-  const env = {COLORTERM: 'truecolor', TERM: 'xterm-256color'};
+  const header =
+    'CodeImage CLI\nhttps://app.codeimage.dev · https://github.com/riccardoperra/codeimage';
 
   afterEach(() => vi.restoreAllMocks());
 
-  it.each(['truecolor', '24bit', 'TRUECOLOR'])(
-    'prepends half-block art and a bold wordmark for %s terminals',
-    COLORTERM => {
-      const help = formatHelpUsage(message, false, true, {
-        ...env,
-        COLORTERM,
-      });
-      const logo = help.slice(0, -message.length - 2);
-      const rows = stripVTControlCharacters(logo).split('\n');
-      expect(rows).toHaveLength(7);
-      expect(rows.map(row => row.length)).toEqual([14, 14, 14, 25, 14, 14, 14]);
-      expect(rows[3].slice(14)).toBe('  CodeImage');
-      expect(logo).toContain('▀');
-      expect(logo).toContain('▄');
-      expect(logo).toContain('\x1b[38;2;');
-      expect(logo).toContain(';48;2;');
-      expect(logo).toContain('\x1b[1mCodeImage\x1b[0m');
-      expect(help).toBe(`${logo}\n\n${message}`);
+  it.each([{}, {COLORTERM: '256color'}, {COLORTERM: 'truecolor'}])(
+    'adds a bold title and dim OSC 8 links when color is allowed: %j',
+    env => {
+      const help = formatHelpUsage(message, false, true, env);
+      expect(help).toBe(
+        '\x1b[1mCodeImage CLI\x1b[0m\n' +
+          '\x1b[2m\x1b]8;;https://app.codeimage.dev\x1b\\https://app.codeimage.dev\x1b]8;;\x1b\\ · ' +
+          '\x1b]8;;https://github.com/riccardoperra/codeimage\x1b\\https://github.com/riccardoperra/codeimage\x1b]8;;\x1b\\\x1b[0m' +
+          `\n\n${message}`,
+      );
+      expect(stripVTControlCharacters(help)).toBe(
+        `${header}\n\nUsage\ncodeimage [file...]`,
+      );
     },
   );
 
   it.each([
-    {name: 'piped stdout', tty: false, quiet: false, env},
-    {name: 'quiet', tty: true, quiet: true, env},
-    {name: 'NO_COLOR', tty: true, quiet: false, env: {...env, NO_COLOR: '1'}},
-    {
-      name: 'empty NO_COLOR',
-      tty: true,
-      quiet: false,
-      env: {...env, NO_COLOR: ''},
+    {name: 'piped stdout', tty: false, quiet: false, env: {}},
+    {name: 'quiet', tty: true, quiet: true, env: {}},
+    {name: 'NO_COLOR', tty: true, quiet: false, env: {NO_COLOR: '1'}},
+    {name: 'empty NO_COLOR', tty: true, quiet: false, env: {NO_COLOR: ''}},
+    {name: 'CI', tty: true, quiet: false, env: {CI: '1'}},
+    {name: 'empty CI', tty: true, quiet: false, env: {CI: ''}},
+    {name: 'dumb', tty: true, quiet: false, env: {TERM: 'dumb'}},
+  ])(
+    'keeps the header and strips all escapes for $name',
+    ({tty, quiet, env}) => {
+      const help = formatHelpUsage(message, quiet, tty, env);
+      expect(help).toBe(`${header}\n\nUsage\ncodeimage [file...]`);
+      expect(help).not.toContain('\x1b');
     },
-    {name: 'CI', tty: true, quiet: false, env: {...env, CI: '1'}},
-    {name: 'empty CI', tty: true, quiet: false, env: {...env, CI: ''}},
-    {name: 'dumb', tty: true, quiet: false, env: {...env, TERM: 'dumb'}},
-    {name: '256 colors', tty: true, quiet: false, env: {COLORTERM: '256color'}},
-    {name: 'unknown color support', tty: true, quiet: false, env: {}},
-  ])('preserves existing help bytes for $name', ({tty, quiet, env}) => {
-    for (const terminal of [
-      {},
-      {TERM_PROGRAM: 'ghostty'},
-      {TERM_PROGRAM: 'iTerm.app'},
-    ]) {
-      const environment = {...terminal, ...env};
-      expect(formatHelpUsage(message, quiet, tty, environment)).toBe(
-        formatUsage(message, tty, environment),
-      );
-    }
-  });
+  );
 
-  it.each([
-    {TERM_PROGRAM: 'ghostty', sequence: '\x1b_G'},
-    {TERM_PROGRAM: 'iTerm.app', sequence: '\x1b]1337;File='},
-  ])('adds image help for $TERM_PROGRAM without changing usage', terminal => {
-    const help = formatHelpUsage(message, false, true, {...env, ...terminal});
-    expect(help).toContain(terminal.sequence);
-    expect(help.endsWith(`\n\n${message}`)).toBe(true);
-    expect(help).toContain('CodeImage');
+  it('separates the plain header from the description with one blank line', () => {
+    expect(
+      formatHelpUsage('Render code as an image (codeimage)', false, false, {}),
+    ).toMatchInlineSnapshot(`
+        "CodeImage CLI
+        https://app.codeimage.dev · https://github.com/riccardoperra/codeimage
+
+        Render code as an image (codeimage)"
+      `);
   });
 
   it('writes help only to stderr', () => {
@@ -84,14 +70,5 @@ describe('help logo', () => {
     createUi().usage(message);
     expect(stdout).not.toHaveBeenCalled();
     expect(stderr).toHaveBeenCalledExactlyOnceWith(expected);
-  });
-});
-
-describe('usage colour', () => {
-  it('strips ANSI when stdout is piped or NO_COLOR is present', () => {
-    const text = '\x1b[31mUsage\x1b[0m';
-    expect(formatUsage(text, false, {})).toBe('Usage');
-    expect(formatUsage(text, true, {NO_COLOR: ''})).toBe('Usage');
-    expect(formatUsage(text, true, {})).toBe(text);
   });
 });
