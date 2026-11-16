@@ -2,11 +2,14 @@ import {useI18n} from '@codeimage/locale';
 import {Button, DialogPanelContent, DialogPanelFooter} from '@codeui/kit';
 import {Dialog} from '@kobalte/core/dialog';
 import type {Accessor} from 'solid-js';
+import {getEditorStore} from '@codeimage/store/editor';
 import {Show} from 'solid-js';
 import type {AppLocaleEntries} from '../../../i18n';
 import {useExportShortcuts} from '../controls/shortcuts';
 import type {Exporter} from './export';
+import {AnimationExportDialog} from './export-animation-dialog';
 import * as styles from './export.css';
+import {VideoExport} from './export-styles/video';
 import {PanelExport} from './export-styles/panel';
 import {SheetExport} from './export-styles/sheet';
 import {preferences} from './preferences';
@@ -28,7 +31,16 @@ export interface ExportControlProps {
 export function ExportControl(props: ExportControlProps) {
   const [t] = useI18n<AppLocaleEntries>();
   const exporter = () => props.exporter;
+  const {animation} = getEditorStore();
+  const imageMode = () => {
+    exporter().animation.close();
+    animation.actions.setOpen(false);
+    requestAnimationFrame(() =>
+      document.querySelector<HTMLButtonElement>('[data-export-menu]')?.click(),
+    );
+  };
   const redactedLabel = () => t('editor.redacted');
+  const startAnimation = () => exporter().startAnimation();
   const redactSecrets = () => exporter().redactSecrets();
   const closeConfirmation = (open: boolean) => {
     if (!open) exporter().cancel();
@@ -48,10 +60,23 @@ export function ExportControl(props: ExportControlProps) {
   return (
     <>
       <Show
-        when={preferences.exportStyle() === 'sheet'}
-        fallback={<PanelExport {...props} />}
+        when={animation.open()}
+        fallback={
+          <>
+            <Show
+              when={preferences.exportStyle() === 'sheet'}
+              fallback={<PanelExport {...props} />}
+            >
+              <SheetExport {...props} />
+            </Show>
+            <AnimationExportDialog
+              exporter={exporter().animation}
+              onStart={startAnimation}
+            />
+          </>
+        }
       >
-        <SheetExport {...props} />
+        <VideoExport {...props} onImage={imageMode} />
       </Show>
       <Dialog open={exporter().confirming()} onOpenChange={closeConfirmation}>
         <Dialog.Portal>
@@ -61,7 +86,11 @@ export function ExportControl(props: ExportControlProps) {
               class={styles.confirmationPanel}
               onCloseAutoFocus={restoreFocus}
             >
-              <Dialog.Title>{t('export.title')}</Dialog.Title>
+              <Dialog.Title>
+                {exporter().confirmingAnimation()
+                  ? t('animation.export.title')
+                  : t('export.title')}
+              </Dialog.Title>
               <DialogPanelContent>
                 <div class={styles.warning}>
                   <Show when={exporter().secrets() > 0}>

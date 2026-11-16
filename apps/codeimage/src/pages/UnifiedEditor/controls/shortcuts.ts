@@ -10,7 +10,7 @@ import {
   shortcutKeys,
 } from '../../../components/CustomEditor/plugins/lineMarks/controls';
 import {isApple} from '../../../core/constants/platform';
-import {useHotkey} from '../../../hooks/use-hotkey';
+import {isKeyOwnedByFocus, useHotkey} from '../../../hooks/use-hotkey';
 import type {AppLocaleEntries} from '../../../i18n';
 import type {Exporter} from '../shell/export';
 
@@ -53,6 +53,8 @@ export const shortcutHelpKey = '?';
 type Shortcut = {label: LocaleKeys<AppLocaleEntries>; key: string[]};
 // One list for the unified editor, including the production line-mark bindings.
 export const shortcuts: readonly Shortcut[] = [
+  {label: 'animation.shortcut.togglePlayback', key: ['Space']},
+  {label: 'animation.shortcut.backToEditor', key: ['Esc']},
   {label: 'shortcut.focusCodeEditor', key: ['F']},
   {label: 'shortcut.unFocusCodeEditor', key: ['Esc']},
   {label: 'shortcut.toggleBackground', key: ['B']},
@@ -79,9 +81,7 @@ export function useExportShortcuts(exporter: Accessor<Exporter>) {
   ) => {
     if (
       combo === 'Control+c' &&
-      (getRootEditorStore().state.options.focused ||
-        (event.target instanceof Element &&
-          event.target.closest('input, textarea, [contenteditable=true]')))
+      (getRootEditorStore().state.options.focused || isKeyOwnedByFocus(event))
     )
       return;
     event.preventDefault();
@@ -104,11 +104,7 @@ export function bindEditorShortcuts(editable: Accessor<boolean>) {
   const frame = getFrameState();
   const terminal = getTerminalState();
   const ui = getUiStore();
-  const inField = () =>
-    editor.state.options.focused ||
-    !!document.activeElement?.closest(
-      'input, textarea, [contenteditable=true], [role=dialog], [role=alertdialog]',
-    );
+  const inField = () => editor.state.options.focused || isKeyOwnedByFocus();
   const whenIdle = (action: () => void) => () => {
     if (editable() && !inField()) action();
   };

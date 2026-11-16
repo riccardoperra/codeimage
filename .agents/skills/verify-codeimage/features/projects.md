@@ -14,7 +14,7 @@ Click Sign in with GitHub. Authenticated `/` is Dashboard; `/dashboard` redirect
 
 Audit clicks real login button using the existing Auth0 mock, waits for New, registers POST /api/v1/project before clicking it, records ID, edits code and awaits PUT with 200. Reload and assert exact content. Return via /dashboard and reopen `a[href="/<id>"]`; assert content again. Retain mutation/get bodies and screenshots when investigating persistence.
 
-Source: `pages/Dashboard/components/CreateNewProjectButton/CreateNewProjectButton.tsx`, `ProjectItem/ProjectItem.tsx`, `state/editor/createEditorSync.ts`, `mocks/persist.ts`.
+Source: `pages/Dashboard/components/CreateNewProjectButton/CreateNewProjectButton.tsx`, `ProjectItem/ProjectItem.tsx`, `state/editor/createEditorSync.ts` (250 ms local save), `state/editor/remoteSync.ts` (3 s account save), `mocks/persist.ts`.
 
 The projects journey now renames through the dashboard, reloads the name, clones and verifies identical code under a new ID, then deletes both disposable records and checks absence after reload. Supplemental HTTP boundary assertions check DELETE by another owner receives 404, deleted resources return 404 for get/rename/delete, and the list excludes deleted records. A second disposable context restores IndexedDB and delays MSW startup until document load to verify the saved code still opens. This fixture uses mock session authentication only for the boundary test. It closes in finally.
 
@@ -41,6 +41,8 @@ Run the replacement cases from the repository root:
 VERIFY_AUDIT=1 VERIFY_CASES=snippet-save,snippet-previews,snippet-read-only,snippet-clone,snippet-missing,snippet-navigation node .agents/skills/verify-codeimage/scripts/verify.mjs
 ```
 
-Implementation: `.agents/skills/verify-codeimage/scripts/snippets.mjs`, registered by `scripts/audit.mjs`. The cases dismiss a visible What's new nudge through its button before bottom controls and read-only screenshots. Each case writes a six-row `<case>-matrix.json` and one trace per layout and size. `read-only/` holds the six requested screenshots. A failing row also saves its accessibility snapshot and screenshot.
+Implementation: `.agents/skills/verify-codeimage/scripts/snippets.mjs`, registered by `scripts/audit.mjs`. Before capturing the rendered read-only snippet, the cases wait for the canvas placeholder to detach and a loaded CodeMirror line to appear. The cases dismiss a visible What's new nudge through its button before bottom controls and read-only screenshots. Each case writes a six-row `<case>-matrix.json` and one trace per layout and size. `read-only/` holds the six requested screenshots. A failing row also saves its accessibility snapshot and screenshot.
 
 Ownership and failed-load fixtures use the existing MSW boundary. Navigation uses an anchor fixture to exercise route updates without reloading the provider. Mock logout reloads the current snippet, so the case waits for the signed-out view before following a link to `/`. Share supplies a Web Share input fixture because headless Chromium has no OS share sheet. It checks the snippet URL passed to that API, not native platform sharing. Clipboard and image downloads use real browser APIs. No editor store or exporter internal is called.
+
+To isolate a snippet matrix lane, set `VERIFY_SNIPPET_LAYOUT=inspector`, `dock`, or `studio`, and `VERIFY_SNIPPET_WIDTH=1440` or `390`. The default remains all six combinations. Each run writes the lanes actually exercised to `<case>-matrix.json`; a selected lane does not establish full matrix coverage. All scenario assertions remain active. These selectors allow fresh Chrome processes when a long-lived local browser exits during repeated context changes.

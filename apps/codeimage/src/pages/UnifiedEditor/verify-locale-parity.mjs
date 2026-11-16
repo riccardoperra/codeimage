@@ -219,25 +219,29 @@ function hardcodedMessages(source) {
 }
 const {readdirSync} = await import('node:fs');
 const editorDirectory = fileURLToPath(new URL('./', import.meta.url));
-for (const entry of readdirSync(editorDirectory, {recursive: true})) {
-  if (!/\.tsx?$/.test(entry) || entry.endsWith('.css.ts')) continue;
-  const path = `${editorDirectory}/${entry}`;
-  const contents = readFileSync(path, 'utf8');
-  assert(!contents.includes('// i18n'), `${entry}: unresolved i18n marker`);
-  assert.deepEqual(
-    hardcodedMessages(
-      ts.createSourceFile(
-        path,
-        contents,
-        ts.ScriptTarget.Latest,
-        true,
-        ts.ScriptKind.TSX,
+for (const directory of [
+  editorDirectory,
+  fileURLToPath(new URL('../../components/Animation/', import.meta.url)),
+])
+  for (const entry of readdirSync(directory, {recursive: true})) {
+    if (!/\.tsx?$/.test(entry) || entry.endsWith('.css.ts')) continue;
+    const path = `${directory}/${entry}`;
+    const contents = readFileSync(path, 'utf8');
+    assert(!contents.includes('// i18n'), `${entry}: unresolved i18n marker`);
+    assert.deepEqual(
+      hardcodedMessages(
+        ts.createSourceFile(
+          path,
+          contents,
+          ts.ScriptTarget.Latest,
+          true,
+          ts.ScriptKind.TSX,
+        ),
       ),
-    ),
-    [],
-    `${entry}: hard-coded user-facing messages`,
-  );
-}
+      [],
+      `${entry}: hard-coded user-facing messages`,
+    );
+  }
 assert.deepEqual(
   hardcodedMessages(
     ts.createSourceFile(

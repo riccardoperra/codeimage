@@ -1,8 +1,10 @@
 export {
   ANIMATION_DEFAULTS,
+  ANIMATION_FPS,
   animationDocumentSchema,
-  animationSettingsSchema,
   parseAnimationDocument,
+  parseAnimationSettings,
+  parseEasing,
   parseSnapshotDocument,
   SUPPORTED_SNAPSHOT_MAJOR,
   projectSnapshotSchema,
@@ -10,8 +12,11 @@ export {
 } from './document';
 export type {
   AnimationDocument,
+  AnimationEasing,
+  AnimationHeader,
   AnimationInput,
   AnimationSettings,
+  AnimationStepSettings,
   ProjectSnapshot,
   SnapshotDocument,
   SnapshotInput,

@@ -34,6 +34,7 @@ export const switchControl = style({
   transition: 'background-color 120ms ease',
   selectors: {
     '&[data-checked]': {background: c.primary},
+    '&[data-disabled]': {opacity: 0.4, cursor: 'not-allowed'},
     [`${switchRoot}:has(input:focus-visible) &`]: focusRing,
   },
   '@media': {

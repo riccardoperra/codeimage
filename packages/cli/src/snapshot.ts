@@ -8,7 +8,7 @@ import {
   projectSnapshotSchema,
   SUPPORTED_SNAPSHOT_MAJOR,
 } from '@codeimage/render';
-import type {SnapshotDocument} from '@codeimage/render';
+import type {ProjectSnapshot, SnapshotDocument} from '@codeimage/render';
 
 const presetSchema = z.looseObject({
   frame: projectSnapshotSchema.shape.frame,
@@ -20,6 +20,14 @@ const presetSchema = z.looseObject({
 });
 
 export type Preset = z.output<typeof presetSchema>;
+
+// The editor saves its default theme as fleetTheme and draws it as the
+// first theme of the registry, fleetDark.
+function editorTheme(themeId: string, label: string) {
+  const id = themeId === 'fleetTheme' ? 'fleetDark' : themeId;
+  resolveTheme(id, label);
+  return id;
+}
 
 export function parsePreset(text: string): Preset {
   let preset: Preset;
@@ -34,11 +42,7 @@ export function parsePreset(text: string): Preset {
           : String(error);
     throw new UsageError(`--preset: ${message}`);
   }
-  const themeId =
-    preset.editor.themeId === 'fleetTheme'
-      ? 'fleetDark'
-      : preset.editor.themeId;
-  resolveTheme(themeId, '--preset editor.themeId');
+  const themeId = editorTheme(preset.editor.themeId, '--preset editor.themeId');
   return {...preset, editor: {...preset.editor, themeId}};
 }
 
@@ -47,6 +51,63 @@ export type CodeInput = {
   code: string;
   marks?: SnapshotDocument['editor']['editors'][number]['marks'];
 };
+
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === 'object' && value !== null;
+
+// A project as the editor saves it: a snapshot `$version` and tabs.
+function readProject({name, code}: CodeInput): ProjectSnapshot | undefined {
+  let value: unknown;
+  try {
+    value = JSON.parse(code);
+  } catch {
+    return undefined;
+  }
+  if (
+    !isRecord(value) ||
+    !('$version' in value) ||
+    !isRecord(value.editor) ||
+    !Array.isArray(value.editor.editors)
+  )
+    return undefined;
+  const parsed = projectSnapshotSchema.safeParse(value);
+  if (!parsed.success)
+    throw new UsageError(`${name}: ${formatIssues(parsed.error.issues)}`);
+  return parsed.data;
+}
+
+// With --animate, a saved project as the only input plays its own tabs,
+// settings, and Animate timing, as the editor's export does.
+function projectSnapshot(
+  args: RenderArgs,
+  inputs: CodeInput[],
+  preset?: Preset,
+): SnapshotDocument | undefined {
+  const project =
+    args.animation && inputs.length === 1 ? readProject(inputs[0]) : undefined;
+  if (!project) return undefined;
+  const flags = {
+    '--preset': preset,
+    '--theme': args.theme,
+    '--lines': args.lines,
+    '--lang': args.language,
+  };
+  for (const [flag, value] of Object.entries(flags)) {
+    if (value !== undefined)
+      throw new UsageError(`${flag}: a project input keeps its own settings`);
+  }
+  const {editor} = project;
+  const themeId = editorTheme(
+    editor.options.themeId,
+    `${inputs[0].name} editor.options.themeId`,
+  );
+  return {
+    ...project,
+    editor: {...editor, options: {...editor.options, themeId}},
+    format: args.format,
+    scale: args.scale,
+  };
+}
 
 export async function buildSnapshot({
   args,
@@ -59,6 +120,8 @@ export async function buildSnapshot({
 }): Promise<SnapshotDocument> {
   if (inputs.length === 0)
     throw new UsageError('no input: give a file or pipe code through stdin');
+  const project = projectSnapshot(args, inputs, preset);
+  if (project) return project;
   const theme = await resolveTheme(
     args.theme ?? preset?.editor.themeId ?? 'fleetDark',
   ).load();

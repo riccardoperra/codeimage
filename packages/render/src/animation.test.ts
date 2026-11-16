@@ -227,6 +227,52 @@ describe('renderAnimationScenes', {timeout: 30_000}, () => {
     expect(await frameAt(2, 450)).toEqual(last);
   });
 
+  it('times a transition by the step it leads into and draws the stored header in every scene', async () => {
+    const {entry, host} = await setup(twoTabs);
+    const document = parseSnapshotDocument(twoTabs);
+    const play = (header: AnimationTiming['header']) =>
+      entry.renderAnimationScenes(
+        document,
+        {
+          ...timing('a', 'b', 'a'),
+          steps: [
+            {editorId: 'a', holdMs: 500},
+            {
+              editorId: 'b',
+              holdMs: 500,
+              transition: {ms: 300, easing: 'strong'},
+            },
+            {editorId: 'a', holdMs: 500},
+          ],
+          header,
+        },
+        host,
+      );
+    const tab = await play({mode: 'tab', title: ''});
+    expect(tab.scenes.map(scene => scene.durationMs)).toEqual([
+      500, 150, 150, 500, 450, 450, 500,
+    ]);
+    const names = (html: string) =>
+      ['hello.ts', 'two.ts', 'A story'].filter(name => html.includes(name));
+    expect(tab.scenes.map(({html}) => names(html))).toEqual([
+      ['hello.ts'],
+      ['hello.ts'],
+      ['two.ts'],
+      ['two.ts'],
+      ['two.ts'],
+      ['hello.ts'],
+      ['hello.ts'],
+    ]);
+    const tabs = await play({mode: 'tabs', title: ''});
+    for (const {html} of tabs.scenes)
+      expect(names(html)).toEqual(['hello.ts', 'two.ts']);
+    const title = await play({mode: 'title', title: 'A story'});
+    for (const {html} of title.scenes) {
+      expect(names(html)).toEqual(['A story']);
+      expect(html).toContain('data-animation-title');
+    }
+  });
+
   it('holds the static export of each tab', async () => {
     for (const input of [twoTabs, targetTabs]) {
       const {entry, host} = await setup(input);
@@ -468,14 +514,14 @@ describe('renderAnimation', {timeout: 60_000}, () => {
     expect(short.width).toBeGreaterThan(tall.width);
     expect(tall.height).toBeGreaterThan(short.height);
     expect([webp.width, webp.height]).toEqual([short.width, tall.height]);
-    expect(sum(webp.durationsMs)).toBe(800 + 900 + 800);
+    expect(sum(webp.durationsMs)).toBe(800 + 700 + 800);
     // WebP stores equal neighbors as one frame, so each hold is one frame
     // that may take in the still ends of the transition. The transition is
-    // 27 frames at 30 fps.
+    // 21 frames at 30 fps.
     expect(webp.durationsMs.at(0)).toBeGreaterThanOrEqual(800);
     expect(webp.durationsMs.at(-1)).toBeGreaterThanOrEqual(800);
-    expect(webp.durationsMs.length).toBeGreaterThan(20);
-    expect(webp.durationsMs.length).toBeLessThanOrEqual(29);
+    expect(webp.durationsMs.length).toBeGreaterThan(15);
+    expect(webp.durationsMs.length).toBeLessThanOrEqual(23);
   });
 
   it('plays the steps and the timing the project stores', async () => {
@@ -563,7 +609,7 @@ describe('renderAnimation', {timeout: 60_000}, () => {
     [60, 20],
     [50, 20],
     [30, 40],
-    [24, 50],
+    [24, 40],
   ] as const)(
     'plays a GIF asked for %i fps in frames of %i ms, at its real length',
     async (fps, frameMs) => {
@@ -586,17 +632,21 @@ describe('renderAnimation', {timeout: 60_000}, () => {
     },
   );
 
-  it('names a step whose tab is gone', async () => {
-    await expect(
-      renderAnimation(
+  it('drops a step whose tab is gone, as the editor does', async () => {
+    const webp = readWebpAnimation(
+      await renderAnimation(
         steps2([SHORT, TALL], {
-          steps: [{editorId: 'gone', holdMs: 100}],
+          steps: [
+            {editorId: 'gone', holdMs: 100},
+            {editorId: 'second', holdMs: 300},
+          ],
           transitionMs: 100,
           easing: 'linear',
           fps: 30,
         }),
       ),
-    ).rejects.toThrow('The snapshot has no tab "gone"');
+    );
+    expect(sum(webp.durationsMs)).toBe(300);
   });
 });
 
@@ -630,9 +680,9 @@ describe('animationFps', () => {
     ]);
     expect(animationFps('apng', 60)).toBe(60);
   });
-  it('gives GIF the nearest lower rate with frames of whole hundredths of a second', () => {
+  it('plays GIF at 50 or 25 fps, as the web export does', () => {
     expect([24, 30, 50, 60].map(fps => animationFps('gif', fps))).toEqual([
-      20, 25, 50, 50,
+      25, 25, 50, 50,
     ]);
   });
 });

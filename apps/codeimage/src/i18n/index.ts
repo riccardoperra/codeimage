@@ -3,6 +3,7 @@ import {editorLocale} from './editor';
 import {secrets} from './secrets';
 import {rendering} from './rendering';
 import {altText} from './altText';
+import {animationLocale} from './animation';
 import {lineMarksLocale} from './lineMarks';
 import {notFound} from './ notFound';
 import {dashboard} from './dashboard';
@@ -13,6 +14,8 @@ import {uiLocale} from './ui';
 import {bottomBar} from './bottombar';
 import {exportTabs} from './exportTabs';
 import {cliConfig} from './cliConfig';
+import {localAi} from './localAi';
+import {agentActivity} from './agentActivity';
 
 export const locale = {
   it: {
@@ -96,9 +99,12 @@ export const locale = {
     ...signatures.it,
     ...exportTabs.it,
     ...rendering.it,
+    ...localAi.it,
+    ...agentActivity.it,
     ...altText.it,
     ...lineMarksLocale.it,
     ...editorLocale.it,
+    ...animationLocale.it,
     ...whatsNewLocale.it,
     ...cliConfig.it,
   },
@@ -182,9 +188,12 @@ export const locale = {
     ...signatures.en,
     ...exportTabs.en,
     ...rendering.en,
+    ...localAi.en,
+    ...agentActivity.en,
     ...altText.en,
     ...lineMarksLocale.en,
     ...editorLocale.en,
+    ...animationLocale.en,
     ...whatsNewLocale.en,
     ...cliConfig.en,
   },
@@ -269,9 +278,12 @@ export const locale = {
     ...signatures.de,
     ...exportTabs.de,
     ...rendering.de,
+    ...localAi.de,
+    ...agentActivity.de,
     ...altText.de,
     ...lineMarksLocale.de,
     ...editorLocale.de,
+    ...animationLocale.de,
     ...whatsNewLocale.de,
     ...cliConfig.de,
   },
@@ -355,9 +367,12 @@ export const locale = {
     ...signatures.es,
     ...exportTabs.es,
     ...rendering.es,
+    ...localAi.es,
+    ...agentActivity.es,
     ...altText.es,
     ...lineMarksLocale.es,
     ...editorLocale.es,
+    ...animationLocale.es,
     ...whatsNewLocale.es,
     ...cliConfig.es,
   },

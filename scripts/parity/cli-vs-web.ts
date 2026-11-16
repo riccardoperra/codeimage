@@ -75,6 +75,13 @@ async function checkNewEditorExport(
       portal.style.removeProperty('z-index');
       delete portal.dataset.parityPortal;
     });
+    // What's new opens a few seconds after load as a modal alert dialog,
+    // which hides the editor from the accessibility tree. Minimize it.
+    const news = page.getByRole('button', {name: "Minimize what's new"});
+    await news.waitFor({timeout: 15_000}).then(
+      () => news.click(),
+      () => undefined,
+    );
     const download = page.waitForEvent('download', {timeout: 120_000});
     await page.getByRole('button', {name: 'Export', exact: true}).click();
     const file = join(out, 'new-editor-export.png');

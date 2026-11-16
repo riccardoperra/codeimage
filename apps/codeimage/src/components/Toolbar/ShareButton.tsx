@@ -5,7 +5,7 @@ import {useModality} from '@core/hooks/isMobile';
 import {useWebshare} from '@core/hooks/use-webshare';
 import type {Component} from 'solid-js';
 import {createMemo, onMount, Show} from 'solid-js';
-import {useHotkey} from '../../hooks/use-hotkey';
+import {isKeyOwnedByFocus, useHotkey} from '../../hooks/use-hotkey';
 import type {AppLocaleEntries} from '../../i18n';
 import {ShareIcon} from '../Icons/ShareIcon';
 
@@ -36,6 +36,7 @@ export const ShareButton: Component<ShareButtonProps> = props => {
   }
 
   async function enterEvent(event: KeyboardEvent) {
+    if (isKeyOwnedByFocus(event)) return;
     event.preventDefault();
     await onShare();
   }

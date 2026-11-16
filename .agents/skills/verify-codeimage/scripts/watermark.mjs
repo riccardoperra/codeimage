@@ -8,7 +8,13 @@ const require = createRequire(
 );
 const {unzipSync} = require('fflate');
 
-export async function verifyWatermark({page, out, download, section}) {
+export async function verifyWatermark({
+  page,
+  out,
+  download,
+  section,
+  windowStyle,
+}) {
   const editor = page.locator('.cm-content[contenteditable="true"]').first();
   const originalCode = await editor.innerText();
   const long = 'export const greet = (name: string) => `Hello, ${name}!`;';
@@ -110,19 +116,6 @@ export async function verifyWatermark({page, out, download, section}) {
     );
     return frames;
   };
-  const setStyle = async name => {
-    await section('window');
-    await page
-      .locator('[data-control="window.style"]')
-      .getByRole('button')
-      .click();
-    await page.getByRole('radio', {name, exact: true}).focus();
-    await page.keyboard.press('Space');
-    await page
-      .getByRole('dialog', {name: 'Window', exact: true})
-      .getByRole('button', {name: 'Close', exact: true})
-      .click();
-  };
   for (const style of [
     'macOS',
     'macOS gray',
@@ -132,7 +125,7 @@ export async function verifyWatermark({page, out, download, section}) {
     'Editor',
     'Terminal',
   ]) {
-    await setStyle(style);
+    await windowStyle(style);
     await editor.fill('x');
     const free = await sample(`${style}-free`);
     assert.ok(
@@ -150,7 +143,7 @@ export async function verifyWatermark({page, out, download, section}) {
     });
     await download(`watermark-${style.replaceAll(' ', '-')}.png`);
   }
-  await setStyle('Editor');
+  await windowStyle('Editor');
   if (process.env.VERIFY_WATERMARK_EXTRA === '1') {
     const fixed = 'x'.repeat(60);
     await editor.fill(`${fixed}\nx${' '.repeat(59)}`);
@@ -160,17 +153,20 @@ export async function verifyWatermark({page, out, download, section}) {
       page.evaluate(() =>
         Array.from(document.querySelectorAll('[data-watermark-frame]')).map(
           frame => {
-            const rect = frame
-              .querySelector('.cm-content')
-              .getBoundingClientRect();
-            return [rect.width, rect.height];
+            const content = frame.querySelector('.cm-content');
+            return [content.clientWidth, content.clientHeight];
           },
         ),
       );
     const before = await size();
     await editor.fill(`${fixed}\n${' '.repeat(59)}x`);
     const moved = await sample('same-size-code-right', false);
-    assert.deepEqual(await size(), before, 'code dimensions stay unchanged');
+    const after = await size();
+    assert.deepEqual(after, before, 'unscaled code dimensions stay unchanged');
+    await writeFile(
+      resolve(out, 'watermark-same-size.json'),
+      JSON.stringify({before, after}, null, 2),
+    );
     assert.ok(moved.every(frame => frame.slot !== 'home'));
   }
   await editor.fill(
@@ -279,7 +275,7 @@ export async function verifyWatermark({page, out, download, section}) {
   await section('frame');
   await page
     .locator('[data-control="frame.aspectRatio"]')
-    .getByRole('button')
+    .getByRole('button', {name: 'Aspect ratio', exact: true})
     .click();
   await page
     .getByRole('option', {name: 'LinkedIn portrait', exact: true})
@@ -291,7 +287,7 @@ export async function verifyWatermark({page, out, download, section}) {
   assert.equal(social.height, 1350);
   await page
     .locator('[data-control="frame.aspectRatio"]')
-    .getByRole('button')
+    .getByRole('button', {name: 'Aspect ratio', exact: true})
     .click();
   await page.getByRole('option', {name: 'Free size', exact: true}).click();
   await page.keyboard.press('Escape');
@@ -308,7 +304,7 @@ export async function verifyWatermark({page, out, download, section}) {
   await page.locator('[data-export-menu]').click();
   const [zip] = await Promise.all([
     page.waitForEvent('download', {timeout: 60000}),
-    page.getByRole('button', {name: /^Export one image per tab/}).click(),
+    page.locator('[data-export-action="tabs"]').click(),
   ]);
   const file = resolve(out, 'watermark-tabs.zip');
   await zip.saveAs(file);
@@ -333,7 +329,7 @@ export async function verifyWatermark({page, out, download, section}) {
     .getByRole('button')
     .click();
   await page.getByRole('option', {name: '64', exact: true}).click();
-  await setStyle('macOS');
+  await windowStyle('macOS');
   await page.locator('[data-settings-trigger]').click();
   await page.locator('[data-settings-section="experiments"]').click();
   await page.locator('#settings-rendering-engine').focus();

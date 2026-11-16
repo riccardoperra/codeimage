@@ -1,4 +1,5 @@
 import {getExportTarget} from '@codeimage/config';
+import type {AnimationHeader, Size} from '@core/animation/model';
 import type {CustomTheme} from '@codeimage/highlight';
 import type {FrameState} from '@codeimage/store/frame/model';
 import type {FittedPlacement} from './FittedWindow';
@@ -21,25 +22,46 @@ import StaticCodeView from '../CustomEditor/StaticCodeView';
 import {
   bindWatermarkExport,
   createWatermarkScope,
+  WatermarkContext,
 } from '../../core/watermark/scope';
 import * as styles from './Frame.css';
 
 export interface FrameViewProps {
   ref?: Ref<HTMLDivElement>;
   tab?: EditorState;
-  language: Language | null;
-  /** The syntax theme, already loaded. */
-  theme: CustomTheme;
+  /** The tab the header shows as active, when `code` is not that tab's. */
+  activeTabId?: string;
+  /** The language and the loaded syntax theme of the tab's static code. */
+  language?: Language | null;
+  theme?: CustomTheme;
   media: FrameMedia;
   windowPlacement?: FittedPlacement;
   showOnlyActiveTab?: boolean;
-  /** Replaces the tab's static code, as a Node animation scene does. */
+  /** Replaces the tab's static code, as an animation scene does. */
   code?: JSX.Element;
+  /** A frame of this size instead of the export target's. */
+  targetSize?: Size;
+  /** The header an animation shows in every scene. */
+  header?: AnimationHeader;
+  // Marks the frame and its window for the rules of an animation scene, and
+  // takes the window out of FittedWindow so those rules can place it.
+  animated?: boolean;
+  // Sizes the frame from its code, as the static export of one animation
+  // step, instead of from the editor frame on screen.
+  natural?: boolean;
 }
 
 export function FrameView(props: VoidProps<FrameViewProps>) {
   const frame = getFrameState().store;
-  const target = () => getExportTarget(frame.exportTarget);
+  const target = () =>
+    props.targetSize
+      ? {
+          resolution: [
+            props.targetSize.width,
+            props.targetSize.height,
+          ] satisfies [number, number],
+        }
+      : getExportTarget(frame.exportTarget);
   const scale = () => frameSignatureScale(frame, target());
   const terminal = getTerminalState().state;
   const editor = getRootEditorStore();
@@ -48,6 +70,52 @@ export function FrameView(props: VoidProps<FrameViewProps>) {
   // The parts register through refs and effects, which Node never runs.
   const watermark = createWatermarkScope();
   createEffect(on(() => frame.signature?.position, watermark.invalidate));
+
+  const terminalView = () => (
+    <DynamicTerminal
+      type={terminal.type}
+      activeTabId={props.activeTabId ?? props.tab?.id}
+      readonlyTab={true}
+      staticTabs={!!props.header}
+      headerMode={props.header?.mode}
+      title={props.header?.mode === 'title' ? props.header.title : undefined}
+      showTab={props.header?.mode !== 'title'}
+      showOnlyActiveTab={
+        props.header ? props.header.mode === 'tab' : props.showOnlyActiveTab
+      }
+      shadow={terminal.shadow}
+      background={terminal.background}
+      accentVisible={terminal.accentVisible}
+      textColor={terminal.textColor}
+      showHeader={terminal.showHeader}
+      showGlassReflection={terminal.showGlassReflection}
+      showWatermark={terminal.showWatermark}
+      opacity={terminal.opacity}
+      alternativeTheme={terminal.alternativeTheme}
+      borderType={terminal.borderType}
+      surface={terminal.surface}
+      themeId={editor.state.options.themeId}
+    >
+      {props.code ?? (
+        <Show when={props.theme && tab()}>
+          {active => (
+            <StaticCodeView
+              code={active().code}
+              marks={active().marks}
+              languageId={active().languageId}
+              language={props.language ?? null}
+              theme={props.theme!}
+              showLineNumbers={editor.state.options.showLineNumbers}
+              lineNumberStart={active().lineNumberStart ?? 1}
+              fontFamily={editor.computed.selectedFont().name}
+              fontWeight={editor.state.options.fontWeight}
+              enableLigatures={editor.state.options.enableLigatures}
+            />
+          )}
+        </Show>
+      )}
+    </DynamicTerminal>
+  );
 
   return (
     <div
@@ -64,21 +132,23 @@ export function FrameView(props: VoidProps<FrameViewProps>) {
         ref={element => watermark.attach('frame', element)}
         data-watermark-frame
         data-snapshot-frame
+        data-animation-frame={props.animated ? '' : undefined}
         style={assignInlineVars({
           overflow: 'hidden',
           [styles.frameVars.radius]: `${frame.radius}px`,
           [styles.frameVars.width]: target()
             ? `${target()!.resolution[0]}px`
-            : frame.width
+            : frame.width && !props.natural
               ? `${frame.width}px`
               : 'max-content',
           [styles.frameVars.height]: target()
             ? `${target()!.resolution[1]}px`
-            : frame.height
+            : frame.height && !props.natural
               ? `${frame.height}px`
               : 'auto',
           [styles.frameVars.minWidth]: target() ? '0' : 'max-content',
-          [styles.frameVars.minHeight]: target() ? '0' : '100%',
+          [styles.frameVars.minHeight]:
+            target() || props.animated ? '0' : '100%',
           [styles.frameVars.padding]: framePadding(
             frame.padding,
             frame.signature,
@@ -117,50 +187,24 @@ export function FrameView(props: VoidProps<FrameViewProps>) {
           </Show>
         </div>
 
-        <FittedWindow
-          active={!!target()}
-          watermark={watermark}
-          placement={props.windowPlacement}
+        <Show
+          when={props.animated}
+          fallback={
+            <FittedWindow
+              active={!!target()}
+              watermark={watermark}
+              placement={props.windowPlacement}
+            >
+              {terminalView()}
+            </FittedWindow>
+          }
         >
-          <DynamicTerminal
-            type={terminal.type}
-            activeTabId={props.tab?.id}
-            readonlyTab={true}
-            showTab={true}
-            showOnlyActiveTab={props.showOnlyActiveTab}
-            shadow={terminal.shadow}
-            background={terminal.background}
-            accentVisible={terminal.accentVisible}
-            textColor={terminal.textColor}
-            showHeader={terminal.showHeader}
-            showGlassReflection={terminal.showGlassReflection}
-            showWatermark={terminal.showWatermark}
-            opacity={terminal.opacity}
-            alternativeTheme={terminal.alternativeTheme}
-            borderType={terminal.borderType}
-            surface={terminal.surface}
-            themeId={editor.state.options.themeId}
-          >
-            {props.code ?? (
-              <Show when={tab()}>
-                {active => (
-                  <StaticCodeView
-                    code={active().code}
-                    marks={active().marks}
-                    languageId={active().languageId}
-                    language={props.language}
-                    theme={props.theme}
-                    showLineNumbers={editor.state.options.showLineNumbers}
-                    lineNumberStart={active().lineNumberStart ?? 1}
-                    fontFamily={editor.computed.selectedFont().name}
-                    fontWeight={editor.state.options.fontWeight}
-                    enableLigatures={editor.state.options.enableLigatures}
-                  />
-                )}
-              </Show>
-            )}
-          </DynamicTerminal>
-        </FittedWindow>
+          <div data-animation-window style={{display: 'contents'}}>
+            <WatermarkContext.Provider value={watermark}>
+              {terminalView()}
+            </WatermarkContext.Provider>
+          </div>
+        </Show>
         <FrameSignature
           signature={frame.signature}
           media={props.media}

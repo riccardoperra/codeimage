@@ -123,12 +123,13 @@ export interface RawAnimation {
 }
 // The frame rate a file of `format` plays at when the settings ask for `fps`.
 // A GIF frame lasts whole hundredths of a second, and Takumi rejects one
-// shorter than two of them, so a GIF plays at 50, 25 or 20 fps.
+// shorter than two of them. As the web export does (gifFps in
+// apps/codeimage/src/core/gif/encode.ts), a GIF plays at 50 or 25 fps.
 export function animationFps(
   format: AnimationDocument['format'],
   fps: number,
 ): number {
-  return format === 'gif' ? 100 / Math.ceil(100 / Math.min(fps, 50)) : fps;
+  return format === 'gif' ? (fps >= 50 ? 50 : 25) : fps;
 }
 
 const inCssPixels = (node: MeasuredNode, scale: number): LayoutNode => ({

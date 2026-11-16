@@ -20,6 +20,7 @@ interface SegmentedFieldProps<T> {
   items: readonly SegmentedFieldItem<T>[];
   value: T;
   onChange?: (value: T) => void;
+  onEscape?: () => void;
   size?: SegmentedControlProps['size'];
   id?: string;
 
@@ -32,6 +33,11 @@ interface SegmentedFieldProps<T> {
  * @deprecated This is just a wrapper for @codeui/kit SegmentedControl
  */
 export function SegmentedField<T>(props: SegmentedFieldProps<T>): JSX.Element {
+  const nativeEscape = (event: KeyboardEvent) => {
+    if (event.key !== 'Escape' || !props.onEscape) return;
+    event.stopPropagation();
+    props.onEscape();
+  };
   const value = (): string => {
     const index = props.items.findIndex(item => item.value === props.value);
     if (index === -1) return String(0);
@@ -43,6 +49,9 @@ export function SegmentedField<T>(props: SegmentedFieldProps<T>): JSX.Element {
     props.onChange?.(props.items[index]?.value);
   };
 
+  const escapeProps = () =>
+    props.onEscape ? {'on:keydown': nativeEscape} : {};
+
   return (
     <SegmentedControl
       value={value()}
@@ -53,7 +62,7 @@ export function SegmentedField<T>(props: SegmentedFieldProps<T>): JSX.Element {
     >
       <For each={props.items}>
         {(item, index) => (
-          <SegmentedControlItem value={index().toString()}>
+          <SegmentedControlItem value={index().toString()} {...escapeProps()}>
             {item.label}
           </SegmentedControlItem>
         )}

@@ -1,16 +1,18 @@
 import {extname} from 'node:path';
 import {
   ANIMATION_DEFAULTS,
+  ANIMATION_FPS,
   animationFps,
-  animationSettingsSchema,
   parseAnimationDocument,
+  parseAnimationSettings,
+  parseEasing,
 } from '@codeimage/render';
 import type {
   AnimationDocument,
   AnimationSettings,
   SnapshotDocument,
 } from '@codeimage/render';
-import {formatIssues, UsageError} from '../errors';
+import {UsageError} from '../errors';
 import type {Preset} from '../snapshot';
 import type {Flag, FlagValues} from './index';
 
@@ -81,71 +83,100 @@ export function parseAnimation(values: FlagValues): AnimationArgs | undefined {
       );
     }
   }
-  const {easing, fps} = animationSettingsSchema.shape;
-  const parsedEasing = easing.optional().safeParse(values.easing);
-  if (!parsedEasing.success) {
-    throw new UsageError('--easing: expected smooth, snappy, or linear');
+  const easing =
+    typeof values.easing === 'string' ? parseEasing(values.easing) : undefined;
+  if (easing === null) {
+    throw new UsageError(
+      '--easing: expected smooth, snappy, strong, linear, or cubic-bezier(x1, y1, x2, y2)',
+    );
   }
-  const parsedFps = fps
-    .optional()
-    .safeParse(values.fps === undefined ? undefined : Number(values.fps));
-  if (!parsedFps.success) {
+  const fps =
+    values.fps === undefined
+      ? undefined
+      : ANIMATION_FPS.find(fps => fps === Number(values.fps));
+  if (values.fps !== undefined && fps === undefined) {
     throw new UsageError('--fps: expected 24, 30, 50, or 60');
   }
   return {
     format: format(values),
     holdMs: milliseconds(values, 'hold'),
     transitionMs: milliseconds(values, 'transition'),
-    easing: parsedEasing.data,
-    fps: parsedFps.data,
+    easing,
+    fps,
   };
 }
 
-function presetAnimation(preset?: Preset): AnimationSettings | undefined {
-  if (preset?.animation === undefined) return undefined;
-  const parsed = animationSettingsSchema.safeParse(preset.animation);
-  if (!parsed.success) {
-    throw new UsageError(
-      `--preset animation: ${formatIssues(parsed.error.issues)}`,
-    );
-  }
-  return parsed.data;
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === 'object' && value !== null;
+
+// The settings as the editor saved them: a project input's own, or a
+// preset's, whose steps give their hold and transition to the input files in
+// order.
+function storedAnimation(
+  snapshot: SnapshotDocument,
+  preset?: Preset,
+): unknown {
+  if ('animation' in snapshot) return snapshot.animation;
+  const stored = isRecord(preset?.animation) ? preset.animation : {};
+  const steps = Array.isArray(stored.steps) ? stored.steps : [];
+  return {
+    ...stored,
+    steps: snapshot.editor.editors.map(({id}, index) => ({
+      ...(isRecord(steps[index]) ? steps[index] : {}),
+      id,
+      editorId: id,
+    })),
+  };
 }
 
-// Every tab of the snapshot is one step, in tab order. `notes` are for
+// A flag sets its value for every step, over the stored settings.
+function withFlags(
+  settings: AnimationSettings,
+  args: AnimationArgs,
+): AnimationSettings {
+  const [first, ...rest] = settings.steps.map(step => ({
+    ...step,
+    holdMs: args.holdMs ?? step.holdMs,
+    ...(step.transition && {
+      transition: {
+        ms: args.transitionMs ?? step.transition.ms,
+        easing: args.easing ?? step.transition.easing,
+      },
+    }),
+  }));
+  return {
+    ...settings,
+    steps: [first, ...rest],
+    transitionMs: args.transitionMs ?? settings.transitionMs,
+    easing: args.easing ?? settings.easing,
+    fps: args.fps ?? settings.fps,
+  };
+}
+
+// The steps, timing, and header the editor would play. `notes` are for
 // stderr.
 export function planAnimation(
   snapshot: SnapshotDocument,
   args: AnimationArgs,
   preset?: Preset,
 ): {document: AnimationDocument; notes: string[]} {
-  if (snapshot.editor.editors.length < 2) {
+  const [first, ...rest] = snapshot.editor.editors;
+  const stored = storedAnimation(snapshot, preset);
+  const settings = withFlags(
+    parseAnimationSettings(stored, [first.id, ...rest.map(({id}) => id)]),
+    args,
+  );
+  if (settings.steps.length < 2) {
     throw new UsageError(
       '--animate: needs two or more steps, one per input file or tab',
     );
   }
-  const stored = presetAnimation(preset);
-  const fps = args.fps ?? stored?.fps;
   let document: AnimationDocument;
   try {
     document = parseAnimationDocument({
       ...snapshot,
       format: args.format,
-      animation: {
-        steps: snapshot.editor.editors.map(({id}, index) => ({
-          editorId: id,
-          holdMs:
-            args.holdMs ??
-            stored?.steps[index]?.holdMs ??
-            ANIMATION_DEFAULTS.holdMs,
-        })),
-        transitionMs:
-          args.transitionMs ??
-          stored?.transitionMs ??
-          ANIMATION_DEFAULTS.transitionMs,
-        easing: args.easing ?? stored?.easing ?? ANIMATION_DEFAULTS.easing,
-        fps: fps ?? ANIMATION_DEFAULTS.fps,
-      },
+      animation: settings,
     });
   } catch (error) {
     throw new UsageError(
@@ -153,12 +184,16 @@ export function planAnimation(
     );
   }
   const played = animationFps(document.format, document.animation.fps);
+  // The rate someone asked for, by flag or in the saved settings.
+  const asked =
+    args.fps ??
+    ANIMATION_FPS.find(fps => isRecord(stored) && fps === stored.fps);
   return {
     document,
     notes:
-      fps !== undefined && played !== fps
+      asked !== undefined && played !== asked
         ? [
-            `GIF supports 50, 25, or 20 fps, so this one plays at ${played} instead of ${fps}`,
+            `GIF supports 50 or 25 fps, so this one plays at ${played} instead of ${asked}`,
           ]
         : [],
   };
@@ -186,12 +221,12 @@ export const animate: Flag = {
     easing: {
       type: 'string',
       valueHint: 'name',
-      description: `smooth, snappy, or linear (default: ${easing})`,
+      description: `smooth, snappy, strong, linear, or cubic-bezier(x1, y1, x2, y2) (default: ${easing})`,
     },
     fps: {
       type: 'string',
       valueHint: 'n',
-      description: `24, 30, 50, or 60 (default: ${fps}). GIF plays at 50, 25, or 20`,
+      description: `24, 30, 50, or 60 (default: ${fps}). GIF plays at 50 or 25`,
     },
   },
 };

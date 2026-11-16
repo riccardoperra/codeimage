@@ -1,3 +1,4 @@
+import {getWhatsNew} from '../../../state/whats-new';
 import {useI18n} from '@codeimage/locale';
 import {getFrameState} from '@codeimage/store/editor/frame';
 import {toSignatureData} from '@codeimage/store/signatures/bridge';
@@ -139,7 +140,10 @@ export function SavedSignaturesField(props: {id?: string}) {
                 >
                   <For each={store.list()}>
                     {saved => {
-                      const applySignature = () => store.applyToFrame(saved);
+                      const applySignature = () => {
+                        store.applyToFrame(saved);
+                        getWhatsNew().seen('signature');
+                      };
                       return (
                         <DropdownMenuItem
                           class={styles.item}

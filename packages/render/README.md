@@ -18,12 +18,12 @@ import {renderAnimation} from '@codeimage/render';
 const webp = await renderAnimation({...project, format: 'webp'}); // Uint8Array
 ```
 
-`renderAnimation` plays the `animation` the project stores: each step holds its tab for `holdMs`, then morphs into the next step for `transitionMs`. A project without `animation` plays every tab in order with 800 ms holds, 900 ms transitions, the `smooth` easing, and 30 fps. `format` is `webp` (default), `gif`, or `apng`, and `scale` and `width` work as for a still image. `animationDocumentSchema` is the zod schema. It rounds durations to whole milliseconds and rejects an animation that lasts 0 ms or names a tab the project lacks.
+`renderAnimation` plays the `animation` the project stores, as the editor's Animate panel saves it: each step holds its tab for `holdMs`, and the transition into a step lasts that step's own `transition.ms` with its `transition.easing`, else the animation's `transitionMs` and `easing`. An easing is `smooth`, `snappy`, `strong`, `linear`, or a `cubic-bezier()`. `header.mode` shows the active tab (`tab`), every tab (`tabs`), or only `header.title` (`title`) in every frame. A project without steps plays every tab in order with 800 ms holds, 700 ms transitions, the `smooth` easing, and 30 fps. `format` is `webp` (default), `gif`, or `apng`, and `scale` and `width` work as for a still image. `parseAnimationSettings` reads the settings as the editor reads them: it clamps durations to the editor's limits, falls back to the defaults for invalid values, and drops a step whose tab is gone. `src/animationSettings.test.ts` checks it against the editor's own parser.
 
 The image is as large as the largest step. The first and last frame of a transition match the still export of the step it leaves and the step it reaches.
 
 - WebP is lossless. Takumi writes lossy animated WebP without an alpha channel, so the clear pixels around the frame would turn opaque: its rounded corners fill in, and the margin around a smaller step turns black.
-- A GIF frame lasts whole hundredths of a second, so GIF plays at 50, 25, or 20 fps. `animationFps(format, fps)` returns the rate a file plays at.
+- A GIF frame lasts whole hundredths of a second. As in the web export, GIF plays at 50 fps when the settings ask for 50 or 60, and at 25 fps otherwise. `animationFps(format, fps)` returns the rate a file plays at.
 - Takumi 2.19 marks no GIF frame to be cleared before the next one, so a frame that shrinks left its old edges behind. `clearGifFrames` in `src/gif.ts` sets that mark. Remove it when Takumi sets it.
 - Takumi gives each GIF frame its own 256 colors from a sparse sample, so small details change color between frames, and near-black pixels can turn transparent. WebP and APNG keep every pixel.
 
