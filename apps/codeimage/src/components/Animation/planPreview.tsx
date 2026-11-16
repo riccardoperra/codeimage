@@ -61,9 +61,6 @@ async function measureHidden<T>(
 ): Promise<T> {
   await new Promise<void>(resolve => setTimeout(resolve, 0));
   const host = document.createElement('div');
-  // The frame sets `visibility: visible` on itself, which beats a hidden
-  // parent, so the host also clears opacity and clips everything away.
-  // Neither changes the boxes measured below.
   host.style.cssText =
     'position:fixed;left:0;top:0;visibility:hidden;opacity:0;clip-path:inset(50%);z-index:-1;pointer-events:none';
   document.body.append(host);
@@ -136,11 +133,6 @@ export async function measurePreview(
   style: CodeStyle,
   header: AnimationHeader,
   targetSize?: Size,
-  /**
-   * Everything else the frame reads from the stores (frame, terminal, tab
-   * names). With it, steps already measured under the same scope are reused;
-   * without it, everything is measured again.
-   */
   scope?: string,
 ): Promise<PreviewMeasurement> {
   const font = JSON.stringify({
@@ -150,7 +142,6 @@ export async function measurePreview(
     enableLigatures: style.enableLigatures,
     showLineNumbers: style.showLineNumbers,
   });
-  // Only glyphs outside ASCII are measured one by one, so ASCII edits keep it.
   const glyphs = [
     ...new Set(
       tabs.flatMap(tab => graphemes(tab.code)).filter(glyph => !isAscii(glyph)),

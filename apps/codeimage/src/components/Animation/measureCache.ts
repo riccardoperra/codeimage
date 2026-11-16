@@ -1,8 +1,3 @@
-/**
- * Remembers measurements of the preview by key, so an edit only measures the
- * steps it changed. A failed measurement is forgotten, and the oldest entries
- * leave first once the cache is full.
- */
 export function createMeasureCache(limit = 64) {
   const entries = new Map<string, Promise<unknown>>();
   return {

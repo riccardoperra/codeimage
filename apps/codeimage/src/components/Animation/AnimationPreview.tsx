@@ -94,7 +94,6 @@ export function AnimationPreview(
       terminal: terminal.state,
       showOnlyActiveTab: exportCanvas.get.showOnlyActiveTab,
     });
-    // What the frame reads from the stores besides the steps themselves.
     const scope = JSON.stringify({
       tabNames: editor.state.editors.map(tab => tab.tab.tabName),
       frame: frame.stateToPersist(),
