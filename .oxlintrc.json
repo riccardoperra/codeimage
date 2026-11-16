@@ -20,6 +20,7 @@
     "docs/**"
   ],
   "rules": {
+    "codeimage/no-global-style": "error",
     "codeimage/disable-directive-format": "error",
     "codeimage/no-comments": "error",
     "max-lines": [
@@ -234,6 +235,12 @@
       ],
       "rules": {
         "no-console": "off"
+      }
+    },
+    {
+      "files": ["**/theme/global.css.ts"],
+      "rules": {
+        "codeimage/no-global-style": "off"
       }
     }
   ]

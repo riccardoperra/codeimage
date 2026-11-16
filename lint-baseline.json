@@ -124,13 +124,15 @@
     "codeimage(no-comments)": 1
   },
   "apps/codeimage/src/components/Animation/AnimatePanel.css.ts": {
-    "codeimage(no-comments)": 1
+    "codeimage(no-comments)": 1,
+    "codeimage(no-global-style)": 12
   },
   "apps/codeimage/src/components/Animation/AnimatePanel.tsx": {
     "codeimage(no-comments)": 1
   },
   "apps/codeimage/src/components/Animation/AnimationPreview.css.ts": {
-    "codeimage(no-comments)": 2
+    "codeimage(no-comments)": 2,
+    "codeimage(no-global-style)": 1
   },
   "apps/codeimage/src/components/Animation/AnimationPreview.tsx": {
     "codeimage(no-comments)": 16,
@@ -148,6 +150,9 @@
   "apps/codeimage/src/components/Animation/HeaderField.tsx": {
     "codeimage(no-comments)": 3
   },
+  "apps/codeimage/src/components/Animation/PhoneSteps.css.ts": {
+    "codeimage(no-global-style)": 2
+  },
   "apps/codeimage/src/components/Animation/PhoneSteps.tsx": {
     "eslint(max-lines)": 338
   },
@@ -155,7 +160,8 @@
     "codeimage(no-comments)": 2
   },
   "apps/codeimage/src/components/Animation/StripTimeline.css.ts": {
-    "codeimage(no-comments)": 1
+    "codeimage(no-comments)": 1,
+    "codeimage(no-global-style)": 4
   },
   "apps/codeimage/src/components/Animation/StripTimeline.tsx": {
     "eslint(max-lines)": 357,
@@ -175,6 +181,9 @@
   },
   "apps/codeimage/src/components/Animation/createSegmentResize.ts": {
     "codeimage(no-comments)": 2
+  },
+  "apps/codeimage/src/components/Animation/easing.css.ts": {
+    "codeimage(no-global-style)": 3
   },
   "apps/codeimage/src/components/Animation/measureCache.ts": {
     "typescript(no-non-null-assertion)": 1
@@ -454,6 +463,7 @@
   },
   "apps/codeimage/src/components/WhatsNew/illustrations.css.ts": {
     "codeimage(no-comments)": 52,
+    "codeimage(no-global-style)": 55,
     "eslint(max-lines)": 1133
   },
   "apps/codeimage/src/components/WhatsNew/illustrations.tsx": {
@@ -472,6 +482,7 @@
   },
   "apps/codeimage/src/components/WhatsNew/whats-new.css.ts": {
     "codeimage(no-comments)": 23,
+    "codeimage(no-global-style)": 16,
     "eslint(max-lines)": 390
   },
   "apps/codeimage/src/core/altText.perf.ts": {
@@ -867,10 +878,12 @@
     "codeimage(no-comments)": 3
   },
   "apps/codeimage/src/pages/UnifiedEditor/controls/canvas-toolbar.css.ts": {
-    "codeimage(no-comments)": 2
+    "codeimage(no-comments)": 2,
+    "codeimage(no-global-style)": 1
   },
   "apps/codeimage/src/pages/UnifiedEditor/controls/controls.css.ts": {
-    "codeimage(no-comments)": 9
+    "codeimage(no-comments)": 9,
+    "codeimage(no-global-style)": 2
   },
   "apps/codeimage/src/pages/UnifiedEditor/controls/fields.tsx": {
     "codeimage(no-comments)": 10,
@@ -887,7 +900,8 @@
     "eslint(no-nested-ternary)": 1
   },
   "apps/codeimage/src/pages/UnifiedEditor/controls/overlay.css.ts": {
-    "codeimage(no-comments)": 1
+    "codeimage(no-comments)": 1,
+    "codeimage(no-global-style)": 4
   },
   "apps/codeimage/src/pages/UnifiedEditor/controls/reveal-control.ts": {
     "codeimage(no-comments)": 2,
@@ -896,15 +910,20 @@
   "apps/codeimage/src/pages/UnifiedEditor/controls/saved-signatures.css.ts": {
     "codeimage(no-comments)": 3
   },
+  "apps/codeimage/src/pages/UnifiedEditor/controls/shortcut-help.css.ts": {
+    "codeimage(no-global-style)": 2
+  },
   "apps/codeimage/src/pages/UnifiedEditor/controls/shortcuts.ts": {
     "codeimage(no-comments)": 2,
     "eslint(no-restricted-imports)": 1
   },
   "apps/codeimage/src/pages/UnifiedEditor/controls/signature.css.ts": {
-    "codeimage(no-comments)": 5
+    "codeimage(no-comments)": 5,
+    "codeimage(no-global-style)": 2
   },
   "apps/codeimage/src/pages/UnifiedEditor/frame-placeholder.css.ts": {
-    "codeimage(no-comments)": 2
+    "codeimage(no-comments)": 2,
+    "codeimage(no-global-style)": 1
   },
   "apps/codeimage/src/pages/UnifiedEditor/harness.tsx": {
     "codeimage(no-comments)": 10,
@@ -1089,7 +1108,8 @@
     "codeimage(no-comments)": 1
   },
   "apps/codeimage/src/pages/UnifiedEditor/shell/header.css.ts": {
-    "codeimage(no-comments)": 10
+    "codeimage(no-comments)": 10,
+    "codeimage(no-global-style)": 1
   },
   "apps/codeimage/src/pages/UnifiedEditor/shell/icons.tsx": {
     "codeimage(no-comments)": 14
@@ -1118,10 +1138,12 @@
   },
   "apps/codeimage/src/pages/UnifiedEditor/shell/settings.css.ts": {
     "codeimage(no-comments)": 38,
+    "codeimage(no-global-style)": 9,
     "eslint(max-lines)": 602
   },
   "apps/codeimage/src/pages/UnifiedEditor/snippet.css.ts": {
-    "codeimage(no-comments)": 1
+    "codeimage(no-comments)": 1,
+    "codeimage(no-global-style)": 2
   },
   "apps/codeimage/src/pages/UnifiedEditor/stage.tsx": {
     "codeimage(no-comments)": 14
@@ -1166,6 +1188,7 @@
   },
   "apps/codeimage/src/pages/UnifiedEditor/variants/dock/dock.css.ts": {
     "codeimage(no-comments)": 38,
+    "codeimage(no-global-style)": 14,
     "eslint(max-lines)": 456
   },
   "apps/codeimage/src/pages/UnifiedEditor/variants/dock/fields.ts": {
@@ -1202,6 +1225,7 @@
   },
   "apps/codeimage/src/pages/UnifiedEditor/variants/sidebar/accordion.css.ts": {
     "codeimage(no-comments)": 21,
+    "codeimage(no-global-style)": 10,
     "eslint(max-lines)": 310
   },
   "apps/codeimage/src/pages/UnifiedEditor/variants/sidebar/controls.tsx": {
@@ -1217,7 +1241,8 @@
     "eslint(no-nested-ternary)": 2
   },
   "apps/codeimage/src/pages/UnifiedEditor/variants/sidebar/panels.css.ts": {
-    "codeimage(no-comments)": 3
+    "codeimage(no-comments)": 3,
+    "codeimage(no-global-style)": 2
   },
   "apps/codeimage/src/pages/UnifiedEditor/variants/sidebar/panels.tsx": {
     "codeimage(no-comments)": 8,
@@ -1228,6 +1253,7 @@
   },
   "apps/codeimage/src/pages/UnifiedEditor/variants/sidebar/rail.css.ts": {
     "codeimage(no-comments)": 10,
+    "codeimage(no-global-style)": 3,
     "eslint(max-lines)": 306
   },
   "apps/codeimage/src/pages/UnifiedEditor/verify-i18n.mjs": {
@@ -1514,6 +1540,9 @@
   "packages/dom-export/vitest.config.ts": {
     "codeimage(no-comments)": 1
   },
+  "packages/highlight/dev/global.css.ts": {
+    "codeimage(no-global-style)": 1
+  },
   "packages/highlight/dev/themeStore.ts": {
     "typescript(no-non-null-assertion)": 1
   },
@@ -1557,6 +1586,9 @@
   "packages/secrets/test/bench.ts": {
     "eslint(no-console)": 1
   },
+  "packages/ui/dev/global.css.ts": {
+    "codeimage(no-global-style)": 1
+  },
   "packages/ui/src/lib/hooks/pagination/getLastPage.ts": {
     "codeimage(no-comments)": 1
   },
@@ -1595,6 +1627,9 @@
   },
   "packages/ui/src/lib/theme/base.css.ts": {
     "codeimage(no-comments)": 1
+  },
+  "packages/ui/src/lib/theme/global2.css.ts": {
+    "codeimage(no-global-style)": 1
   },
   "packages/ui/src/lib/theme/sprinkles.css.ts": {
     "codeimage(no-comments)": 1
