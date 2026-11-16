@@ -1,5 +1,7 @@
 # CodeImage feature map
 
+[Keyboard menus in scrollable panels](keyboard.md) maps the `keyboard-scroll` regression case across Inspector, Dock, and Studio at desktop and phone sizes.
+
 | Feature                              | User entry points                                    | Executable audit journey                                                                                                                            |
 | ------------------------------------ | ---------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
 | [Edit code](editor.md)               | Guest `/`, saved project URL                         | Edit/undo and `editor-options`; `frame-cold-start` checks first-paint geometry and lazy tab labels                                                  |

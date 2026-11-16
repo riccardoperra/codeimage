@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import assert from 'node:assert/strict';
+import {verifyKeyboardScroll} from './keyboard-scroll.mjs';
 import {createMockContext} from './mock-context.mjs';
 import {animationMp4Cases} from './animation-mp4.mjs';
 import {auditSnippets} from './snippets.mjs';
@@ -235,6 +236,7 @@ export async function audit({page, context, base, out, server}) {
       ({page, context} = previous);
     }
   }
+  await feature('keyboard-scroll', () => verifyKeyboardScroll({fresh, out}));
   await feature('frame-cold-start', async () => {
     const {verifyColdStart} = await import('./frame-regressions.mjs');
     return verifyColdStart({fresh, out});
