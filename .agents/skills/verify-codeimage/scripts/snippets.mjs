@@ -341,13 +341,15 @@ export async function auditSnippets({feature, doctor, context, base, out}) {
       );
       await openThemes(
         page,
-        await page.locator('[data-layout]').evaluate(root =>
-          root.dataset.layout === 'dock'
-            ? 'dock'
-            : root.dataset.panelNav === 'rail'
-              ? 'studio'
-              : 'inspector',
-        ),
+        await page
+          .locator('[data-layout]')
+          .evaluate(root =>
+            root.dataset.layout === 'dock'
+              ? 'dock'
+              : root.dataset.panelNav === 'rail'
+                ? 'studio'
+                : 'inspector',
+          ),
         page.viewportSize().width,
       );
       assert.equal(

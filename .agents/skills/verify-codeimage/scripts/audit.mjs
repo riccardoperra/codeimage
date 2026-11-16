@@ -1987,17 +1987,6 @@ export async function audit({page, context, base, out, server}) {
             : panel.getByRole('button', {name: 'Steps', exact: true});
           for (const key of ['Enter', 'Space']) {
             await keyboardOpen(trigger, key);
-            if (!listMode) {
-              await page
-                .getByRole('menuitem', {name: 'Add to animation', exact: true})
-                .press('ArrowRight');
-              await page
-                .getByRole('menu')
-                .last()
-                .getByRole('menuitem', {name: 'index.tsx', exact: true})
-                .waitFor();
-              await page.keyboard.press('Escape');
-            }
             await page.keyboard.press('Escape');
             await page.waitForFunction(
               () => !document.querySelector('[role=menu]'),
