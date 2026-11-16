@@ -79,7 +79,12 @@ export type StepBox = {
 
 // Everything that changes between two steps. Each layer is placed inside its
 // own box of the static layout, so a cell maps to pixels without offsets.
-export type SpoilerBox = {key: string; classes: string; columns: number};
+export type SpoilerBox = {
+  key: string;
+  classes: string;
+  columns: number;
+  seed: string;
+};
 
 export type SpoilerTransition = Transition<SpoilerBox>;
 

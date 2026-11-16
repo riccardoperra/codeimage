@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import {test} from 'vitest';
-import {maskLine, maskLines, spoilersByLine} from './spoilers';
+import {maskLine, maskLines, spoilerDotsHtml, spoilersByLine} from './spoilers';
 
 test('a spoiler hides only its part of the line and keeps its width', () => {
   const {line, runs} = maskLine(
@@ -67,4 +67,13 @@ test('overlapping spoilers merge and other lines stay untouched', () => {
     lines.map(line => line.map(span => span.text).join('')),
     ['keep', '      !!'],
   );
+});
+
+test('particles are stable for a seed, scale with width and stay capped', () => {
+  const count = (html: string) => html.match(/cm-spoilerDot /g)?.length;
+  assert.equal(spoilerDotsHtml(5, '0:3'), spoilerDotsHtml(5, '0:3'));
+  assert.notEqual(spoilerDotsHtml(5, '0:3'), spoilerDotsHtml(5, '1:3'));
+  assert.equal(count(spoilerDotsHtml(5, 'a')), 100);
+  assert.equal(count(spoilerDotsHtml(0, 'a')), 6);
+  assert.equal(count(spoilerDotsHtml(500, 'a')), 640);
 });

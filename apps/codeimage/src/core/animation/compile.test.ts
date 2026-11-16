@@ -401,6 +401,7 @@ test('a spoiler box covers its cells and stays put while kept', () => {
           key: 's',
           classes: 'tok-string',
           columns: 4,
+          seed: '1:2',
           from: {line: 1, col: 2},
           to: {line: 1, col: 2},
         },
@@ -410,8 +411,16 @@ test('a spoiler box covers its cells and stays put while kept', () => {
     timing,
     'a',
   );
-  const box = descendants(parseHtml(html)).find(element =>
-    element.attributes.class?.includes('cm-spoiler'),
+  const elements = descendants(parseHtml(html));
+  const box = elements.find(element =>
+    element.attributes.class?.split(' ').includes('cm-spoiler'),
+  );
+  assert.equal(
+    elements.filter(element =>
+      element.attributes.class?.split(' ').includes('cm-spoilerDot'),
+    ).length,
+    80,
+    'four columns get their particles',
   );
   assert.ok(box, 'the spoiler draws its particles');
   const outer = styleAt(box.parent!, css, 500);

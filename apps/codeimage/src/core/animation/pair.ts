@@ -322,6 +322,7 @@ function maskStep(step: Step, widths: GlyphWidths) {
         item: {
           key: `spoiler:${step.rows?.[row] ?? row}:${index}`,
           classes: run.classes,
+          seed: `${row}:${run.from}`,
           columns:
             columnsAfter(col, text.slice(run.from, run.to), widths) - col,
         },

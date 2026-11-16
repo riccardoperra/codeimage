@@ -6,6 +6,7 @@ import type {LineMarkLabels} from './controls';
 import {lineMarkControls} from './controls';
 import {lineMarkGutter} from './gutter';
 import type {TabMarks} from '../../../../state/editor/model';
+import {spoilerLayer} from './spoilerLayer';
 import {lineMarksField, lineMarksHistory, marksValue} from './state';
 
 export function lineMarksExtension(
@@ -16,6 +17,7 @@ export function lineMarksExtension(
 ): Extension {
   return [
     lineMarksField.init(state => marksValue(state.doc, initial)),
+    spoilerLayer,
     ...(interactive && owner ? [lineMarksNews(owner)] : []),
     ...(interactive
       ? [lineMarksHistory, lineMarkControls(labels), lineMarkGutter(labels)]

@@ -1,3 +1,4 @@
+import {spoilerDotsHtml} from '@core/snapshot/spoilers';
 import type {
   Cell,
   CodeMetrics,
@@ -166,7 +167,7 @@ export function compileScene(
   const spoilers = compileLayer(scene.spoilers ?? [], {
     place: cell => ({x: cell.col * charWidth, y: cell.line * lineHeight}),
     element: (box: SpoilerTransition, style) =>
-      `<span aria-hidden="true" style="position:absolute;width:${px(box.columns * charWidth)};height:${px(lineHeight)};${style}"><span class="${escapeAttribute(`${box.classes} cm-spoiler`.trim())}" style="display:block;width:100%;height:100%"></span></span>`,
+      `<span aria-hidden="true" style="position:absolute;width:${px(box.columns * charWidth)};height:${px(lineHeight)};${style}"><span class="${escapeAttribute(`${box.classes} cm-spoiler`.trim())}" style="display:block;position:relative;width:100%;height:100%">${spoilerDotsHtml(box.columns, box.seed)}</span></span>`,
   });
   const bands = (attributes: (mark: MarkTransition['mark']) => string) =>
     compileLayer(scene.marks, {

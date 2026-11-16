@@ -1,7 +1,11 @@
 import type {CustomTheme} from '@codeimage/highlight';
 import type {TabMarks} from '@codeimage/store/editor/model';
 import type {Language} from '@codemirror/language';
-import {maskLines} from '@core/snapshot/spoilers';
+import {
+  maskLines,
+  SPOILER_CLASS,
+  spoilerDotsHtml,
+} from '@core/snapshot/spoilers';
 import {tokenizeCode} from '@core/snapshot/tokenize';
 import {createEffect, createMemo, For, on, Show} from 'solid-js';
 import {isServer} from 'solid-js/web';
@@ -140,9 +144,27 @@ export default function StaticCodeView(props: StaticCodeViewProps) {
                   data-focused={focused().has(index() + 1) ? 'true' : undefined}
                 >
                   <For each={line}>
-                    {span => (
+                    {(span, spanIndex) => (
                       <Show when={span.classes} fallback={span.text}>
-                        <span class={span.classes}>{span.text}</span>
+                        <Show
+                          when={span.classes.split(' ').includes(SPOILER_CLASS)}
+                          fallback={
+                            <span class={span.classes}>{span.text}</span>
+                          }
+                        >
+                          <span
+                            class={span.classes}
+                            innerHTML={`${span.text}${spoilerDotsHtml(
+                              span.text.length,
+                              `${index()}:${line
+                                .slice(0, spanIndex())
+                                .reduce(
+                                  (sum, item) => sum + item.text.length,
+                                  0,
+                                )}`,
+                            )}`}
+                          />
+                        </Show>
                       </Show>
                     )}
                   </For>

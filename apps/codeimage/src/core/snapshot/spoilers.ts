@@ -2,10 +2,45 @@ import type {Spoiler} from '@codeimage/store/editor/model';
 import type {TokenLine} from './tokenize';
 
 export const SPOILER_CLASS = 'cm-spoiler';
-export const SPOILER_DRIFT = 'codeimage-spoiler-drift';
+export const SPOILER_DOT_ANIMATION = 'codeimage-spoiler-dot-';
 
 export const spoilerClockCss = (startMs: number) =>
-  `.${SPOILER_CLASS}{animation-delay:${-Math.round(startMs)}ms!important}`;
+  `.cm-spoilerDot{animation-delay:${-Math.round(startMs)}ms!important}`;
+
+const PATHS = 12;
+const TEMPOS = 3;
+const DOTS_PER_COLUMN = 20;
+const MAX_DOTS = 640;
+
+function seeded(seed: string) {
+  let state = 2166136261;
+  for (let index = 0; index < seed.length; index++)
+    state = Math.imul(state ^ seed.charCodeAt(index), 16777619);
+  return () => {
+    state = (state + 0x6d2b79f5) | 0;
+    let value = Math.imul(state ^ (state >>> 15), 1 | state);
+    value ^= value + Math.imul(value ^ (value >>> 7), 61 | value);
+    return ((value ^ (value >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+const round = (value: number) => Number(value.toFixed(2));
+
+export function spoilerDotsHtml(columns: number, seed: string): string {
+  const random = seeded(seed);
+  const count = Math.min(
+    MAX_DOTS,
+    Math.max(6, Math.round(columns * DOTS_PER_COLUMN)),
+  );
+  let html = '';
+  for (let index = 0; index < count; index++) {
+    const size = round(0.8 + random() * random() * 1.4);
+    const path = Math.floor(random() * PATHS);
+    const tempo = Math.floor(random() * TEMPOS);
+    html += `<i class="cm-spoilerDot cm-sd${path}-${tempo}" style="left:${round(random() * 100)}%;top:${round(14 + random() * 72)}%;width:${size}px;height:${size}px"></i>`;
+  }
+  return `<span class="cm-spoilerDots" aria-hidden="true">${html}</span>`;
+}
 
 export type SpoilerRun = {from: number; to: number; classes: string};
 

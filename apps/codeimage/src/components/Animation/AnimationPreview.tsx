@@ -31,7 +31,7 @@ import {
   createPreviewSnapshot,
   type PreviewRequest,
 } from './createPreviewSnapshot';
-import {SPOILER_DRIFT} from '@core/snapshot/spoilers';
+import {SPOILER_DOT_ANIMATION} from '@core/snapshot/spoilers';
 import {
   type CodeStyle,
   measurePreview,
@@ -286,7 +286,9 @@ function AnimationScenes(props: {plan: PreviewPlan; visible: boolean}) {
     for (const playing of shown.animations) {
       playing.pause();
       playing.currentTime =
-        'animationName' in playing && playing.animationName === SPOILER_DRIFT
+        'animationName' in playing &&
+        typeof playing.animationName === 'string' &&
+        playing.animationName.startsWith(SPOILER_DOT_ANIMATION)
           ? animation.playhead()
           : localMs;
     }
