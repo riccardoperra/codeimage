@@ -4,14 +4,40 @@ import {PNG} from 'pngjs';
 
 const popups = '.cm-lineMarkControl, .cm-lineMarkMenu, .cm-lineMarkToolbar';
 
-async function lineNumbersOff(page, section) {
-  await section('code');
-  const numbers = page.locator('[data-control="editor.lineNumbers"]');
-  const toggle = (await numbers.count())
-    ? numbers.getByRole('switch')
-    : page.getByRole('switch', {name: 'Line number', exact: true});
-  if ((await toggle.getAttribute('aria-checked')) === 'true')
-    await toggle.press('Space');
+const numbersGutter =
+  '.cm-editor:has(.cm-content[contenteditable=true]) .cm-lineNumbers';
+
+export const lineNumberVariants = [
+  ['off', false],
+  ['on', true],
+];
+
+export async function setLineNumbers(page, on) {
+  const shown = async () => (await page.locator(numbersGutter).count()) > 0;
+  if ((await shown()) !== on) {
+    await page.keyboard.press('ControlOrMeta+k');
+    const search = page.getByRole('combobox', {
+      name: 'Search themes and options',
+      exact: true,
+    });
+    await search.fill('Line number');
+    await page
+      .getByRole('option', {name: /^Toggle Line number/})
+      .first()
+      .click();
+    await search.waitFor({state: 'hidden'});
+  }
+  await page
+    .locator(numbersGutter)
+    .first()
+    .waitFor({state: on ? 'attached' : 'detached'});
+}
+
+async function escapeEditor(page) {
+  await page.keyboard.press('Escape');
+  await page
+    .locator('.cm-lineMarkMarker[data-active]')
+    .waitFor({state: 'detached'});
 }
 
 function describeActive(page) {
@@ -69,20 +95,31 @@ function placement(page) {
 }
 
 export async function verifyLineMarkTabOrder({page, editor, out}) {
+  const results = {};
+  for (const [numbers, on] of lineNumberVariants) {
+    await setLineNumbers(page, on);
+    results[numbers] = await tabOrder({page, editor, out, numbers});
+  }
+  return results;
+}
+
+async function tabOrder({page, editor, out, numbers}) {
   await editor.fill(
     ['const one = 1;', 'const two = 2;', 'const three = 3;'].join('\n'),
   );
   await editor.press('ControlOrMeta+Home');
   await editor.press('ArrowDown');
   const steps = {};
-  await editor.press('Escape');
+  await escapeEditor(page);
   await page.keyboard.press('Shift+Tab');
   steps.escapeShiftTab = await describeActive(page);
   assert.equal(
     steps.escapeShiftTab.marker,
     '2',
-    'Escape then Shift+Tab focuses the cursor line marker',
+    `${numbers}: Escape then Shift+Tab focuses the cursor line marker`,
   );
+  const focused = await lineGeometry(page, 2);
+  assertPlaced(focused, `${numbers}: focused marker`);
   await page.keyboard.press('Shift+Tab');
   steps.shiftTabFromMarker = await describeActive(page);
   assert.equal(steps.shiftTabFromMarker.marker, null);
@@ -102,7 +139,7 @@ export async function verifyLineMarkTabOrder({page, editor, out}) {
     true,
     'Tab from the marker enters the code',
   );
-  await page.keyboard.press('Escape');
+  await escapeEditor(page);
   await page.keyboard.press('Tab');
   steps.escapeTab = await describeActive(page);
   assert.equal(steps.escapeTab.marker, null);
@@ -128,8 +165,51 @@ export async function verifyLineMarkTabOrder({page, editor, out}) {
     assert.equal(element.afterFrame, true, `${element.className} after frame`);
     assert.equal(element.position, 'fixed', `${element.className} fixed`);
   }
-  await page.screenshot({path: resolve(out, 'line-mark-tab-order.png')});
-  return {steps, placed};
+  await page.screenshot({
+    path: resolve(out, `line-mark-tab-order-${numbers}.png`),
+  });
+  return {steps, focused, placed};
+}
+
+async function pointGeometry(page, point) {
+  return page.evaluate(point => {
+    const editor = document.querySelector(
+      '.cm-editor:has(.cm-content[contenteditable=true])',
+    );
+    const marker = document.querySelector('.cm-lineMarkMarker[data-active]');
+    const index = Number(marker?.dataset.markLine);
+    const row = [
+      ...editor.querySelectorAll('.cm-content[contenteditable=true] .cm-line'),
+    ].find(row => row.textContent === `const value${index} = ${index};`);
+    const rect = element => {
+      const box = element?.getBoundingClientRect();
+      return (
+        box && {
+          left: box.left,
+          top: box.top,
+          right: box.right,
+          bottom: box.bottom,
+        }
+      );
+    };
+    const own = row.getBoundingClientRect();
+    return {
+      lineNumber: index,
+      clicked: document.elementFromPoint(point.x, point.y)?.closest('.cm-line')
+        ?.textContent,
+      line: rect(row),
+      content: rect(editor.querySelector('.cm-content')),
+      slot: rect(
+        [...editor.querySelectorAll('.cm-lineMarkSlot')].find(slot => {
+          const box = slot.getBoundingClientRect();
+          const middle = (box.top + box.bottom) / 2;
+          return middle >= own.top && middle <= own.bottom;
+        }),
+      ),
+      viewport: {width: innerWidth, height: innerHeight},
+      marker: rect(marker),
+    };
+  }, point);
 }
 
 async function lineGeometry(page, line) {
@@ -158,6 +238,15 @@ async function lineGeometry(page, line) {
       ),
       line: rect(row),
       content: rect(editor.querySelector('.cm-content')),
+      slot: rect(
+        [...editor.querySelectorAll('.cm-lineMarkSlot')].find(slot => {
+          const box = slot.getBoundingClientRect();
+          const middle = (box.top + box.bottom) / 2;
+          const own = row.getBoundingClientRect();
+          return middle >= own.top && middle <= own.bottom;
+        }),
+      ),
+      viewport: {width: innerWidth, height: innerHeight},
       marker: rect(marker),
       menu: rect(document.querySelector('.cm-lineMarkMenu')),
       toolbar: rect(document.querySelector('.cm-lineMarkToolbar')),
@@ -165,22 +254,107 @@ async function lineGeometry(page, line) {
   }, line);
 }
 
-function assertPlaced(geometry, label) {
-  const {line, marker, content} = geometry;
+function assertPlaced(geometry, label, centred = true) {
+  const {line, marker, content, slot, viewport} = geometry;
   assert.ok(marker, `${label}: marker shown`);
+  assert.ok(
+    marker.top >= 0 &&
+      marker.bottom <= viewport.height &&
+      marker.left >= 0 &&
+      marker.right <= viewport.width,
+    `${label}: marker on screen (${JSON.stringify(marker)})`,
+  );
+  assert.ok(slot, `${label}: gutter column rendered`);
   const middle = (line.top + line.bottom) / 2;
   assert.ok(
-    Math.abs((marker.top + marker.bottom) / 2 - middle) <= 2,
+    !centred || Math.abs((marker.top + marker.bottom) / 2 - middle) <= 2,
     `${label}: marker centred on its line (${JSON.stringify({marker, line})})`,
   );
   assert.ok(
-    marker.right <= content.left + 1 && marker.right >= content.left - 40,
-    `${label}: marker beside the code (${JSON.stringify({marker, content})})`,
+    Math.abs(marker.right - slot.right) <= 1 &&
+      marker.right <= content.left + 1,
+    `${label}: marker in the gutter column beside the code (${JSON.stringify({marker, slot, content})})`,
   );
 }
 
-export async function verifyLineMarkZoom({page, editor, section, out}) {
-  await lineNumbersOff(page, section);
+export async function verifyLineMarkZoom({page, editor, out}) {
+  const results = {};
+  for (const [numbers, on] of lineNumberVariants) {
+    await setLineNumbers(page, on);
+    results[numbers] = await zoomPlacement({page, editor, out, numbers});
+    results[numbers].overflow = await overflowHidden({page, editor, numbers});
+  }
+  return results;
+}
+
+async function overflowHidden({page, editor, numbers}) {
+  const lines = 1200;
+  await editor.fill(
+    Array.from(
+      {length: lines},
+      (_, i) => `const value${i + 1} = ${i + 1};`,
+    ).join('\n'),
+  );
+  await page.waitForTimeout(300);
+  const measure = target =>
+    page.evaluate(target => {
+      const frame = document.querySelector('[data-fit-scale]');
+      const area = frame.parentElement.getBoundingClientRect();
+      const box = element => {
+        const rect = element?.getBoundingClientRect();
+        return rect && {top: rect.top, bottom: rect.bottom};
+      };
+      return {
+        scale: Number(frame.dataset.fitScale),
+        area: {top: area.top, bottom: area.bottom},
+        frame: box(frame),
+        target,
+        marker: box(
+          document.querySelector(
+            `.cm-lineMarkMarker[data-mark-line="${target}"]`,
+          ),
+        ),
+      };
+    }, target);
+  await editor.press('ControlOrMeta+Home');
+  await page.waitForTimeout(300);
+  await page.evaluate(() => {
+    const canvas = document.querySelector('[data-fit-scale]').parentElement;
+    canvas.scrollTop = canvas.scrollHeight;
+  });
+  await page.waitForTimeout(300);
+  const state = await measure(1);
+  assert.ok(
+    state.frame.top < state.area.top - 100,
+    `${numbers}: the first line is scrolled out of the canvas (${JSON.stringify(state)})`,
+  );
+  assert.ok(state.marker, `${numbers}: the cut-off line has a marker`);
+  assert.ok(
+    state.marker.bottom <= 0 || state.marker.top >= state.area.bottom,
+    `${numbers}: a marker whose line is cut off by the canvas is hidden (${JSON.stringify(state)})`,
+  );
+  const content = await editor.boundingBox();
+  const point = {
+    x: content.x + Math.min(40, content.width / 2),
+    y: (state.area.top + state.area.bottom) / 2,
+  };
+  await page.mouse.click(point.x, point.y);
+  await page.locator('.cm-lineMarkMarker[data-active]').waitFor();
+  await page.waitForTimeout(100);
+  const middle = await pointGeometry(page, point);
+  assertPlaced(
+    middle,
+    `${numbers} overflow: line in the middle of the canvas`,
+    false,
+  );
+  middle.drift =
+    (middle.marker.top + middle.marker.bottom) / 2 -
+    (middle.line.top + middle.line.bottom) / 2;
+  state.middle = middle;
+  return state;
+}
+
+async function zoomPlacement({page, editor, out, numbers}) {
   const results = {};
   for (const [name, lines] of [
     ['full', 6],
@@ -208,17 +382,17 @@ export async function verifyLineMarkZoom({page, editor, section, out}) {
       .locator(`.cm-lineMarkMarker[data-mark-line="${line}"]`)
       .waitFor();
     const hovered = await lineGeometry(page, line);
-    assertPlaced(hovered, name);
+    assertPlaced(hovered, `${numbers} ${name}`);
     await page.locator(`.cm-lineMarkMarker[data-mark-line="${line}"]`).click();
     await page.getByRole('menu', {name: 'Line marks', exact: true}).waitFor();
     const opened = await lineGeometry(page, line);
     assert.ok(
       Math.abs(opened.menu.top - (opened.marker.bottom + 4)) <= 2 ||
         Math.abs(opened.menu.top - (opened.line.bottom + 4)) <= 2,
-      `${name}: menu below its marker (${JSON.stringify(opened)})`,
+      `${numbers} ${name}: menu below its marker (${JSON.stringify(opened)})`,
     );
     await page.screenshot({
-      path: resolve(out, `line-mark-zoom-${name}-menu.png`),
+      path: resolve(out, `line-mark-zoom-${numbers}-${name}-menu.png`),
     });
     await page.keyboard.press('Escape');
     await editor.click();
@@ -232,14 +406,14 @@ export async function verifyLineMarkZoom({page, editor, section, out}) {
     const selected = await lineGeometry(page, 2);
     assert.ok(
       Math.abs(selected.toolbar.bottom - (selected.line.top - 4)) <= 2,
-      `${name}: toolbar above the selection (${JSON.stringify(selected)})`,
+      `${numbers} ${name}: toolbar above the selection (${JSON.stringify(selected)})`,
     );
     assert.ok(
       selected.toolbar.left >= selected.content.left - 2,
-      `${name}: toolbar starts at the code`,
+      `${numbers} ${name}: toolbar starts at the code`,
     );
     await page.screenshot({
-      path: resolve(out, `line-mark-zoom-${name}-toolbar.png`),
+      path: resolve(out, `line-mark-zoom-${numbers}-${name}-toolbar.png`),
     });
     results[name] = {hovered, opened, selected};
   }
@@ -272,14 +446,22 @@ function samePixels(a, b) {
   return Buffer.compare(a.data, b.data) === 0;
 }
 
-export async function verifyLineMarkExportClean({
-  page,
-  editor,
-  out,
-  download,
-  section,
-}) {
-  await lineNumbersOff(page, section);
+export async function verifyLineMarkExportClean({page, editor, out, download}) {
+  const results = {};
+  for (const [numbers, on] of lineNumberVariants) {
+    await setLineNumbers(page, on);
+    results[numbers] = await exportClean({
+      page,
+      editor,
+      out,
+      download,
+      numbers,
+    });
+  }
+  return results;
+}
+
+async function exportClean({page, editor, out, download, numbers}) {
   await editor.fill(
     ['const one = 1;', 'const two = 2;', 'const three = 3;'].join('\n'),
   );
@@ -291,7 +473,9 @@ export async function verifyLineMarkExportClean({
     .locator('.cm-lineMarkToolbar')
     .waitFor({state: 'detached'})
     .catch(() => {});
-  const clean = PNG.sync.read(await download('line-mark-export-clean.png'));
+  const clean = PNG.sync.read(
+    await download(`line-mark-export-clean-${numbers}.png`),
+  );
   await editor.click();
   await editor.press('ControlOrMeta+Home');
   await editor.press('Shift+ArrowDown');
@@ -303,12 +487,21 @@ export async function verifyLineMarkExportClean({
     await marker.evaluate(element => getComputedStyle(element).opacity),
     '1',
   );
-  await page.screenshot({path: resolve(out, 'line-mark-export-visible.png')});
+  assertPlaced(
+    await lineGeometry(
+      page,
+      Number(await marker.getAttribute('data-mark-line')),
+    ),
+    `${numbers}: export marker`,
+  );
+  await page.screenshot({
+    path: resolve(out, `line-mark-export-visible-${numbers}.png`),
+  });
   const [pending] = await Promise.all([
     page.waitForEvent('download', {timeout: 60000}),
     page.keyboard.press('ControlOrMeta+s'),
   ]);
-  const file = resolve(out, 'line-mark-export-with-popups.png');
+  const file = resolve(out, `line-mark-export-with-popups-${numbers}.png`);
   await pending.saveAs(file);
   const {readFile} = await import('node:fs/promises');
   const withPopups = PNG.sync.read(await readFile(file));
@@ -330,7 +523,9 @@ export async function verifyLineMarkExportClean({
     await page.locator('.cm-lineMarkMarker[data-mark-line="1"]').click();
     await page.getByRole('menu', {name: 'Line marks', exact: true}).waitFor();
   }
-  await page.screenshot({path: resolve(out, 'line-mark-copy-visible.png')});
+  await page.screenshot({
+    path: resolve(out, `line-mark-copy-visible-${numbers}.png`),
+  });
   const popupCopy = await copiedImage(page, () => page.keyboard.press(copyKey));
   assert.equal(
     samePixels(cleanCopy, popupCopy),
@@ -354,7 +549,7 @@ export async function verifyLineMarkExportClean({
   };
 }
 
-export async function verifyLineMarkRailSheet({page, editor, out}) {
+export async function verifyLineMarkRailSheet({page, editor, out, numbers}) {
   await editor.fill(
     Array.from({length: 6}, (_, i) => `const value${i + 1} = ${i + 1};`).join(
       '\n',
@@ -366,6 +561,9 @@ export async function verifyLineMarkRailSheet({page, editor, out}) {
   await editor.locator('.cm-line').last().tap();
   const marker = page.locator('.cm-lineMarkMarker[data-mark-line="6"]');
   await marker.waitFor();
+  await page.waitForTimeout(200);
+  const placed = await lineGeometry(page, 6);
+  assertPlaced(placed, `${numbers}: marker above the sheet`);
   await marker.tap();
   await page.getByRole('menu', {name: 'Line marks', exact: true}).waitFor();
   await page.waitForTimeout(200);
@@ -395,7 +593,9 @@ export async function verifyLineMarkRailSheet({page, editor, out}) {
       markerUnderSheet: sheet.contains(hit),
     };
   });
-  await page.screenshot({path: resolve(out, 'line-mark-rail-sheet.png')});
+  await page.screenshot({
+    path: resolve(out, `line-mark-rail-sheet-${numbers}.png`),
+  });
   assert.equal(
     layers.menuClearOfSheet,
     true,
@@ -406,5 +606,45 @@ export async function verifyLineMarkRailSheet({page, editor, out}) {
     true,
     'a marker over the sheet is painted under it',
   );
-  return layers;
+  return {...layers, placed};
+}
+
+export async function verifyLineMarkLayout({page, editor, out, layout}) {
+  const results = {};
+  await editor.fill(
+    ['const one = 1;', 'const two = 2;', 'const three = 3;'].join('\n'),
+  );
+  for (const [numbers, on] of lineNumberVariants) {
+    await setLineNumbers(page, on);
+    await editor.click();
+    await editor.press('ControlOrMeta+Home');
+    await page
+      .locator('.cm-content[contenteditable=true] .cm-line')
+      .nth(1)
+      .hover();
+    const marker = page.locator('.cm-lineMarkMarker[data-mark-line="2"]');
+    await marker.waitFor();
+    await page.waitForTimeout(100);
+    const hovered = await lineGeometry(page, 2);
+    assertPlaced(hovered, `${layout} ${numbers}`);
+    await marker.click();
+    await page.getByRole('menu', {name: 'Line marks', exact: true}).waitFor();
+    await page.waitForTimeout(100);
+    const opened = await lineGeometry(page, 2);
+    assert.ok(
+      Math.abs(opened.menu.top - (opened.marker.bottom + 4)) <= 2 ||
+        Math.abs(opened.menu.top - (opened.line.bottom + 4)) <= 2,
+      `${layout} ${numbers}: menu below its marker (${JSON.stringify(opened)})`,
+    );
+    assert.ok(
+      opened.menu.left >= 0 && opened.menu.bottom <= opened.viewport.height,
+      `${layout} ${numbers}: menu on screen`,
+    );
+    await page.screenshot({
+      path: resolve(out, `line-mark-layout-${layout}-${numbers}.png`),
+    });
+    await page.keyboard.press('Escape');
+    results[numbers] = {hovered, menu: opened.menu};
+  }
+  return results;
 }

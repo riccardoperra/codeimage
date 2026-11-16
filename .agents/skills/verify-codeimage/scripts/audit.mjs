@@ -438,37 +438,60 @@ export async function audit({page, context, base, out, server}) {
   });
   await feature('line-mark-zoom', async () => {
     const {verifyLineMarkZoom} = await import('./line-mark-layering.mjs');
-    return verifyLineMarkZoom({page, editor: editor(), section, out});
+    return verifyLineMarkZoom({page, editor: editor(), out});
+  });
+  await feature('line-mark-layouts', async () => {
+    const {verifyLineMarkLayout} = await import('./line-mark-layering.mjs');
+    const layouts = {};
+    for (const layout of ['inspector', 'dock', 'studio'])
+      layouts[layout] = await fresh(
+        {
+          name: `line-mark-layouts-${layout}`,
+          layout,
+          viewport: {width: 1440, height: 1000},
+        },
+        async ({page, doctor, editor}) => {
+          await doctor();
+          return verifyLineMarkLayout({page, editor: editor(), out, layout});
+        },
+      );
+    return layouts;
   });
   await feature('line-mark-export-clean', async () => {
     const {verifyLineMarkExportClean} =
       await import('./line-mark-layering.mjs');
-    return verifyLineMarkExportClean({
-      page,
-      editor: editor(),
-      section,
-      out,
-      download,
-    });
+    return verifyLineMarkExportClean({page, editor: editor(), out, download});
   });
-  await feature('line-mark-rail-sheet-phone', () =>
-    fresh(
-      {
-        name: 'line-mark-rail-sheet-phone',
-        layout: 'studio',
-        viewport: {width: 390, height: 844},
-        hasTouch: true,
-      },
-      async ({page, doctor, editor}) => {
-        await doctor();
-        const {verifyLineMarkRailSheet} =
-          await import('./line-mark-layering.mjs');
-        return verifyLineMarkRailSheet({page, editor: editor(), out});
-      },
-    ),
-  );
+  await feature('line-mark-rail-sheet-phone', async () => {
+    const {verifyLineMarkRailSheet, lineNumberVariants, setLineNumbers} =
+      await import('./line-mark-layering.mjs');
+    const variants = {};
+    for (const [numbers, on] of lineNumberVariants)
+      variants[numbers] = await fresh(
+        {
+          name: `line-mark-rail-sheet-phone-${numbers}`,
+          layout: 'studio',
+          viewport: {width: 390, height: 844},
+          hasTouch: true,
+        },
+        async ({page, doctor, editor}) => {
+          await doctor();
+          await setLineNumbers(page, on);
+          return verifyLineMarkRailSheet({
+            page,
+            editor: editor(),
+            out,
+            numbers,
+          });
+        },
+      );
+    return variants;
+  });
   await feature('line-marks', async () => {
     await editor().fill('const marked = 1;\nconst other = 2;');
+    await editor().press('ControlOrMeta+a');
+    await editor().press('ControlOrMeta+Alt+0');
+    await editor().locator('[data-mark]').first().waitFor({state: 'detached'});
     await editor().press('ControlOrMeta+Home');
     await editor().press('ControlOrMeta+Alt+1');
     await editor().locator('[data-mark="highlight"]').waitFor();
@@ -582,12 +605,34 @@ export async function audit({page, context, base, out, server}) {
               offsetX: Math.round(b.left - c.right),
               offsetY: Math.round(b.top - c.top),
               cellLeft: Math.round(c.left),
+              onScreen:
+                b.top >= 0 &&
+                b.left >= 0 &&
+                b.bottom <= innerHeight &&
+                b.right <= innerWidth,
               ownsItsPoint: Boolean(top && badge.contains(top)),
             };
           });
         const before = await measure();
-        assert.ok(before, 'the line marks dot is on screen');
+        assert.ok(before?.onScreen, 'the line marks dot is on screen');
         assert.deepEqual([before.offsetX, before.offsetY], [-46, 0]);
+        const {setLineNumbers} = await import('./line-mark-layering.mjs');
+        await setLineNumbers(page, true);
+        await badge.waitFor();
+        await page.evaluate(
+          () =>
+            new Promise(done =>
+              requestAnimationFrame(() => requestAnimationFrame(done)),
+            ),
+        );
+        const numbers = await measure();
+        assert.ok(
+          numbers?.onScreen,
+          `the dot is on screen with line numbers on (${JSON.stringify(numbers)})`,
+        );
+        assert.deepEqual([numbers.offsetX, numbers.offsetY], [-46, 0]);
+        assert.ok(numbers.ownsItsPoint, 'the dot covers nothing but itself');
+        await setLineNumbers(page, false);
         // Moving the inspector moves the canvas without a resize or a scroll.
         await settings('appearance');
         await page
@@ -611,7 +656,10 @@ export async function audit({page, context, base, out, server}) {
             ),
         );
         const after = await measure();
-        assert.ok(after, 'the dot is still on screen after the canvas moved');
+        assert.ok(
+          after?.onScreen,
+          'the dot is still on screen after the canvas moved',
+        );
         assert.notEqual(after.cellLeft, before.cellLeft);
         assert.deepEqual([after.offsetX, after.offsetY], [-46, 0]);
         assert.ok(after.ownsItsPoint, 'the dot covers nothing but itself');
@@ -649,7 +697,7 @@ export async function audit({page, context, base, out, server}) {
         await page.screenshot({
           path: resolve(out, 'whats-new-line-marks-dot.png'),
         });
-        return {before, after};
+        return {before, numbers, after};
       },
     ),
   );
