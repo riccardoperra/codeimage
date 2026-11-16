@@ -4,23 +4,14 @@ import {SvgIcon} from '@codeimage/ui';
 export const WindowsTerminalControls = () => (
   <div class={styles.headerIconRow} data-watermark-obstacle>
     <SvgIcon class={styles.headerIconRowItem} viewBox="0 0 12 12">
-      <line
-        x1={0}
-        x2={12}
-        y1={6}
-        y2={6}
-        stroke="currentColor"
-        stroke-width="2"
-      />
+      <path fill="currentColor" d="M0 5h12v2H0z" />
     </SvgIcon>
 
     <SvgIcon class={styles.headerIconRowItem} viewBox="0 0 12 12">
-      <rect
-        fill={'transparent'}
-        width={'100%'}
-        height={'100%'}
-        stroke="currentColor"
-        stroke-width="4"
+      <path
+        fill="currentColor"
+        fill-rule="evenodd"
+        d="M-2-2h16v16H-2z M2 2v8h8V2z"
       />
     </SvgIcon>
 
@@ -30,21 +21,13 @@ export const WindowsTerminalControls = () => (
       version="1.1"
       xmlns="http://www.w3.org/2000/svg"
     >
-      <line
-        x1="1"
-        y1="11"
-        x2="11"
-        y2="1"
-        stroke="currentColor"
-        stroke-width="2"
+      <path
+        fill="currentColor"
+        d="M0.292893 10.292893 10.292893 0.292893 11.707107 1.707107 1.707107 11.707107z"
       />
-      <line
-        x1="1"
-        y1="1"
-        x2="11"
-        y2="11"
-        stroke="currentColor"
-        stroke-width="2"
+      <path
+        fill="currentColor"
+        d="M1.707107 0.292893 11.707107 10.292893 10.292893 11.707107 0.292893 1.707107z"
       />
     </svg>
   </div>

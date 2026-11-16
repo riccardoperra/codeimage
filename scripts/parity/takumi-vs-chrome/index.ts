@@ -7,7 +7,7 @@ import {
   PIXELMATCH_THRESHOLD,
   serveFixtureImages,
 } from '../lib';
-import {matrix, MAX_MARKS_DIFF_PERCENT, SCALE} from '../takumi-cells/index';
+import {matrix, MAX_MARKS_DIFF_PERCENT} from '../takumi-cells/index';
 import {
   renderSnapshot,
   snapshotMarkup,
@@ -29,7 +29,7 @@ export async function main() {
   await mkdir(args.out, {recursive: true});
   const fixtures = await serveFixtureImages();
   const fixtureUrl = fixtures.url;
-  const browsers = await Promise.all([launchChrome(1), launchChrome(SCALE)]);
+  const browsers = await Promise.all([1, 2, 3].map(launchChrome));
   const originalFetch = globalThis.fetch;
   const rows: string[] = [];
   let failed = 0;
@@ -54,7 +54,7 @@ export async function main() {
         crop,
         marksStrip,
       } = await renderInChrome(
-        browsers[markup.document.scale === 1 ? 0 : 1],
+        browsers[markup.document.scale - 1],
         markup,
         {width, height},
         cell.checkMarks ?? false,
