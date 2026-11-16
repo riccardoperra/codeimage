@@ -41,7 +41,9 @@ import {getEditorStore} from '@codeimage/store/editor';
 import type {PersistedFrameState as FrameAppearance} from '@codeimage/store/frame/model';
 import type {CustomTheme} from '@codeimage/highlight';
 import type {Language} from '@codemirror/language';
+import {easingOf} from '@core/animation/easing';
 import {measureCode} from '@core/animation/measure';
+import type {AnimationHeader} from '@core/animation/model';
 import {
   frameRules,
   planTimeline,
@@ -216,6 +218,8 @@ interface Pass {
   editor?: RenderSnapshot['editor'];
   // Replaces the active tab's static code, as a transition scene does.
   code?: () => JSX.Element;
+  // The header of an animation, in its holds and its transitions.
+  header?: AnimationHeader;
 }
 
 // Serializes one FrameView of the snapshot, the frame every export draws.
@@ -248,6 +252,7 @@ function renderBody(
           media={media}
           windowPlacement={pass.placement}
           showOnlyActiveTab={false}
+          header={pass.header}
           code={pass.code?.()}
         />
       );
@@ -290,12 +295,19 @@ async function composeStep(
   host: FrameHost,
   editorId: string,
   language: Language | null,
+  header?: AnimationHeader,
 ): Promise<ComposedStep> {
   const {frame} = snapshot;
   const {appearance, painted} = loaded;
   const target = getExportTarget(frame.exportTarget);
   const pass = (appearance: FrameAppearance, placement?: FittedPlacement) =>
-    renderBody(snapshot, loaded, {appearance, editorId, language, placement});
+    renderBody(snapshot, loaded, {
+      appearance,
+      editorId,
+      language,
+      placement,
+      header,
+    });
   const watermarkFrame = (width: number) => ({
     painted,
     inset: WATERMARK.frameInset * signatureScale(width),
@@ -446,19 +458,34 @@ export async function renderAnimationScenes(
     if (!composed.has(tab.id)) {
       composed.set(
         tab.id,
-        composeStep(snapshot, loaded, host, tab.id, languages[index]),
+        composeStep(
+          snapshot,
+          loaded,
+          host,
+          tab.id,
+          languages[index],
+          timing.header,
+        ),
       );
     }
     steps.push(await composed.get(tab.id)!);
   }
 
-  const timelineStep = (index: number): TimelineStep => ({
-    lines: tokenizeCode(tabs[index].code, languages[index], theme),
-    marks: tabs[index].marks ?? NO_MARKS,
-    lineNumberStart: tabs[index].lineNumberStart,
-    layout: steps[index].layout,
-    holdMs: timing.steps[index].holdMs,
-  });
+  // A step's own transition leads into it, as in the editor.
+  const timelineStep = (index: number): TimelineStep => {
+    const {holdMs, transition} = timing.steps[index];
+    return {
+      lines: tokenizeCode(tabs[index].code, languages[index], theme),
+      marks: tabs[index].marks ?? NO_MARKS,
+      lineNumberStart: tabs[index].lineNumberStart,
+      layout: steps[index].layout,
+      holdMs,
+      transition: transition && {
+        ms: transition.ms,
+        easing: easingOf(transition.easing),
+      },
+    };
+  };
   const timeline = planTimeline(
     [
       timelineStep(0),
@@ -466,7 +493,7 @@ export async function renderAnimationScenes(
     ],
     {
       transitionMs: timing.transitionMs,
-      easing: timing.easing,
+      easing: easingOf(timing.easing),
       fps: timing.fps,
       lineNumbers: options.showLineNumbers,
       metrics,
@@ -500,6 +527,7 @@ export async function renderAnimationScenes(
         editorId: tab.id,
         language: languages[scene.step],
         placement: step.placement,
+        header: timing.header,
         code: () => (
           <AnimatedCodeView
             html={scene.code}

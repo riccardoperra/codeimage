@@ -152,12 +152,12 @@ for a still image. Progress and notes go to stderr.
 
 Any other extension is a usage error. MP4 arrives in a later version.
 
-| Flag           | Value                           | Default  |
-| -------------- | ------------------------------- | -------- |
-| `--hold`       | Milliseconds a step stays still | 800      |
-| `--transition` | Milliseconds of each morph      | 900      |
-| `--easing`     | `smooth`, `snappy`, or `linear` | `smooth` |
-| `--fps`        | 24, 30, 50, or 60               | 30       |
+| Flag           | Value                                                    | Default  |
+| -------------- | -------------------------------------------------------- | -------- |
+| `--hold`       | Milliseconds a step stays still                          | 800      |
+| `--transition` | Milliseconds of each morph                               | 700      |
+| `--easing`     | `smooth`, `snappy`, `strong`, `linear`, `cubic-bezier()` | `smooth` |
+| `--fps`        | 24, 30, 50, or 60                                        | 30       |
 
 The image is as large as the largest step, and a smaller step sits centered in
 it. The first and last frame of a morph are the still images of its two steps.
@@ -165,15 +165,17 @@ The other flags apply to every step, so `--theme`, `--preset`, `--lines`,
 `--size`, `--signature`, `--diff`, and redaction work as for a still image.
 `--split-tabs` and `--alt` do not combine with `--animate`.
 
-A GIF frame lasts whole hundredths of a second, so a GIF plays at 50, 25, or
-20 fps. When `--fps` or the preset asks for another rate, the command names the
-rate it used on stderr. Each GIF frame has its own 256 colors, so a gradient
+A GIF plays at 50 fps when the settings ask for 50 or 60, and at 25 fps
+otherwise, as in the web export. When `--fps` or the saved settings ask for
+another rate, the command names the rate it used on stderr. Each GIF frame has its own 256 colors, so a gradient
 shows bands and a small detail can change color between frames. WebP and
 animated PNG keep every pixel.
 
-A preset can hold an `animation` section in the shape the web app stores,
-with `steps`, `transitionMs`, `easing`, and `fps`. The steps give their
-`holdMs` to the input files in order. Flags override the preset.
+A preset can hold an `animation` section in the same shape. Its steps give
+their hold and transition to the input files in order, and its header applies
+to every frame. Values out of range are clamped and invalid ones fall back to
+the defaults, as in the editor. A flag sets its value for every step and
+overrides the saved settings.
 
 ## Development
 

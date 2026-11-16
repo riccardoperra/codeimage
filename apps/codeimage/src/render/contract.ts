@@ -39,17 +39,31 @@ export interface AnimationHost extends FrameHost {
   layout(markup: FrameMarkup): Promise<LayoutNode>;
 }
 
+// The persisted Animate settings, as core/animation/model.ts names them. This
+// file stays free of app imports, so the render package can read it.
+export type AnimationEasing =
+  | 'smooth'
+  | 'snappy'
+  | 'strong'
+  | 'linear'
+  | `cubic-bezier(${string})`;
+
 export interface AnimationStep {
   editorId: string;
   holdMs: number;
+  // The transition that leads into this step, when it has its own.
+  transition?: {ms: number; easing: AnimationEasing};
 }
 
 // `fps` is the frame rate of the export, which a format can lower.
 export interface AnimationTiming {
   steps: readonly [AnimationStep, ...AnimationStep[]];
   transitionMs: number;
-  easing: 'smooth' | 'snappy' | 'linear';
+  easing: AnimationEasing;
   fps: number;
+  // What the window header shows in every scene. The static export's header
+  // without it.
+  header?: {mode: 'tab' | 'title' | 'tabs'; title: string};
 }
 
 export interface AnimationScene {

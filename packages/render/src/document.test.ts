@@ -189,83 +189,119 @@ describe('parseAnimationDocument', () => {
       ],
     },
   };
-  const animation = (
-    holds: number[],
-    transitionMs: number,
-    ids = ['a', 'b', 'c'],
-  ) => ({
-    steps: holds.map((holdMs, index) => ({editorId: ids[index], holdMs})),
-    transitionMs,
-    easing: 'snappy',
-    fps: 60,
+  const step = (editorId: string, holdMs: number, id = editorId) => ({
+    id,
+    editorId,
+    holdMs,
   });
+  const header = {mode: 'tab', title: ''};
 
   it('makes every tab a step in tab order when the project stores no animation', () => {
     expect(parseAnimationDocument(project)).toMatchObject({
       format: 'webp',
       scale: 2,
       animation: {
-        steps: [
-          {editorId: 'a', holdMs: 800},
-          {editorId: 'b', holdMs: 800},
-          {editorId: 'c', holdMs: 800},
-        ],
-        transitionMs: 900,
+        steps: [step('a', 800), step('b', 800), step('c', 800)],
+        transitionMs: 700,
         easing: 'smooth',
         fps: 30,
+        header,
       },
     });
   });
-  it('keeps the steps and the timing the project stores', () => {
-    const stored = animation([100, 0, 250], 400, ['c', 'a', 'c']);
+  it('keeps the steps, transitions, easing and header the editor saves', () => {
+    const stored = {
+      steps: [
+        step('c', 100),
+        {
+          ...step('a', 0, 'a-2'),
+          transition: {ms: 1200, easing: 'cubic-bezier(0.1, 0.2, 0.3, 1)'},
+        },
+        {...step('c', 250, 'c~2'), transition: {ms: 300, easing: 'strong'}},
+      ],
+      transitionMs: 400,
+      easing: 'snappy',
+      fps: 60,
+      header: {mode: 'title', title: 'A story'},
+    };
     expect(
       parseAnimationDocument({...project, animation: stored}).animation,
     ).toEqual(stored);
   });
-  it('rounds durations to whole milliseconds', () => {
-    const {steps, transitionMs} = parseAnimationDocument({
-      ...project,
-      animation: animation([100.5, 0.4], 33.3),
-    }).animation;
-    expect([steps.map(step => step.holdMs), transitionMs]).toEqual([
-      [101, 0],
-      33,
-    ]);
-  });
-  it.each([
-    ['one step held for 0 ms', animation([0], 900)],
-    ['holds and a transition of 0 ms', animation([0, 0], 0)],
-    ['durations that round to 0 ms', animation([0.4, 0.2], 0.3)],
-  ])('rejects %s', (_, stored) => {
-    expect(() =>
-      parseAnimationDocument({...project, animation: stored}),
-    ).toThrow('animation: The holds and transitions add up to 0 ms');
-  });
-  it('accepts holds of 0 ms between transitions', () => {
+  it('reads a project saved before step ids and headers', () => {
     expect(
-      parseAnimationDocument({...project, animation: animation([0, 0], 300)})
-        .animation.transitionMs,
-    ).toBe(300);
-  });
-  it('names a step whose tab is gone', () => {
-    expect(() =>
       parseAnimationDocument({
         ...project,
-        animation: animation([100, 100], 300, ['a', 'gone']),
-      }),
-    ).toThrow('animation.steps.1.editorId: The snapshot has no tab "gone"');
+        animation: {
+          steps: [
+            {editorId: 'b', holdMs: 100},
+            {editorId: 'b', holdMs: 200},
+          ],
+          transitionMs: 900,
+          easing: 'linear',
+          fps: 24,
+        },
+      }).animation,
+    ).toEqual({
+      steps: [step('b', 100), step('b', 200, 'b~2')],
+      transitionMs: 900,
+      easing: 'linear',
+      fps: 24,
+      header,
+    });
   });
-  it.each([{steps: []}, {transitionMs: -1}, {easing: 'bounce'}, {fps: 25}])(
-    'rejects invalid settings %s',
-    settings => {
-      expect(() =>
-        parseAnimationDocument({
-          ...project,
-          animation: {...animation([100, 100], 300), ...settings},
-        }),
-      ).toThrow('animation');
-    },
-  );
+  it('clamps and rounds durations as the editor does', () => {
+    const {steps, transitionMs} = parseAnimationDocument({
+      ...project,
+      animation: {
+        steps: [
+          step('a', 100.5),
+          {...step('b', 20_000), transition: {ms: 33.3, easing: 'linear'}},
+        ],
+        transitionMs: 9000,
+      },
+    }).animation;
+    expect([
+      steps.map(step => [step.holdMs, step.transition?.ms]),
+      transitionMs,
+    ]).toEqual([
+      [
+        [101, undefined],
+        [10_000, 100],
+      ],
+      5000,
+    ]);
+  });
+  it('holds a lone step whose hold is 0 ms for the default hold', () => {
+    expect(
+      parseAnimationDocument({
+        ...project,
+        animation: {steps: [step('a', 0)]},
+      }).animation.steps,
+    ).toEqual([step('a', 800)]);
+  });
+  it('drops a step whose tab is gone', () => {
+    expect(
+      parseAnimationDocument({
+        ...project,
+        animation: {steps: [step('a', 100), step('gone', 100)]},
+      }).animation.steps,
+    ).toEqual([step('a', 100)]);
+  });
+  it.each([
+    [{transitionMs: -1}, {transitionMs: 100}],
+    [{easing: 'bounce'}, {easing: 'smooth'}],
+    [{easing: '0.65, 0, 0.35, 1'}, {easing: 'smooth'}],
+    [{fps: 25}, {fps: 30}],
+    [{header: {mode: 'all', title: 3}}, {header}],
+  ])('reads invalid settings %j as the editor does', (settings, expected) => {
+    expect(
+      parseAnimationDocument({
+        ...project,
+        animation: {steps: [step('a', 100), step('b', 100)], ...settings},
+      }).animation,
+    ).toMatchObject(expected);
+  });
   it.each(['png', 'svg', 'mp4'])('rejects the format %s', format => {
     expect(() => parseAnimationDocument({...project, format})).toThrow(
       'format',

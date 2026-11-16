@@ -19,7 +19,7 @@ async function plan(argv: string[], files = inputs, presetJson?: object) {
   return {...planAnimation(snapshot, args.animation, preset), args};
 }
 
-const presetWith = (animation: object) => ({
+const presetWith = (animation?: object) => ({
   frame: {
     background: '#ff0000',
     padding: 32,
@@ -56,10 +56,11 @@ describe('animate flag', () => {
     const tabs = document.editor.editors;
     expect(tabs.map(tab => tab.code)).toEqual(inputs.map(input => input.code));
     expect(document.animation).toEqual({
-      steps: tabs.map(tab => ({editorId: tab.id, holdMs: 800})),
-      transitionMs: 900,
+      steps: tabs.map(tab => ({id: tab.id, editorId: tab.id, holdMs: 800})),
+      transitionMs: 700,
       easing: 'smooth',
       fps: 30,
+      header: {mode: 'tab', title: ''},
     });
   });
 
@@ -114,16 +115,73 @@ describe('animate flag', () => {
     });
   });
 
-  it('names --preset and the field on invalid animation settings', async () => {
-    const preset = presetWith({steps: [], transitionMs: 1});
-    await expect(plan([], inputs, preset)).rejects.toThrow(
-      '--preset animation: steps',
+  it('gives the preset steps transitions and header to the files in order', async () => {
+    const preset = presetWith({
+      steps: [
+        {id: 's1', editorId: 'tab-2', holdMs: 100},
+        {
+          id: 's2',
+          editorId: 'tab-1',
+          holdMs: 300,
+          transition: {ms: 1200, easing: 'cubic-bezier(0.1, 0.2, 0.3, 1)'},
+        },
+        {
+          id: 's3',
+          editorId: 'tab-3',
+          holdMs: 0,
+          transition: {ms: 450, easing: 'strong'},
+        },
+      ],
+      transitionMs: 500,
+      easing: 'snappy',
+      fps: 60,
+      header: {mode: 'title', title: 'A story'},
+    });
+    const {document} = await plan([], inputs, preset);
+    const ids = document.editor.editors.map(tab => tab.id);
+    expect(document.animation).toEqual({
+      steps: [
+        {id: ids[0], editorId: ids[0], holdMs: 100},
+        {
+          id: ids[1],
+          editorId: ids[1],
+          holdMs: 300,
+          transition: {ms: 1200, easing: 'cubic-bezier(0.1, 0.2, 0.3, 1)'},
+        },
+        {
+          id: ids[2],
+          editorId: ids[2],
+          holdMs: 0,
+          transition: {ms: 450, easing: 'strong'},
+        },
+      ],
+      transitionMs: 500,
+      easing: 'snappy',
+      fps: 60,
+      header: {mode: 'title', title: 'A story'},
+    });
+    const flagged = await plan(
+      ['--transition', '800', '--easing', 'linear'],
+      inputs,
+      preset,
     );
+    expect(flagged.document.animation).toMatchObject({
+      steps: [
+        {holdMs: 100},
+        {transition: {ms: 800, easing: 'linear'}},
+        {transition: {ms: 800, easing: 'linear'}},
+      ],
+      transitionMs: 800,
+      easing: 'linear',
+    });
   });
 
-  it('keeps a still export working with invalid animation settings', () => {
-    const preset = presetWith({steps: [], transitionMs: 1});
-    expect(() => parsePreset(JSON.stringify(preset))).not.toThrow();
+  it('reads invalid preset settings as the editor does', async () => {
+    const preset = presetWith({steps: [], transitionMs: 1, easing: 'bounce'});
+    expect((await plan([], inputs, preset)).document.animation).toMatchObject({
+      transitionMs: 100,
+      easing: 'smooth',
+    });
   });
 
   it.each([
@@ -163,11 +221,11 @@ describe('animate flag', () => {
   it.each([
     [['--fps', '60'], '50 instead of 60'],
     [['--fps', '30'], '25 instead of 30'],
-    [['--fps', '24'], '20 instead of 24'],
+    [['--fps', '24'], '25 instead of 24'],
   ])('with %j notes that the GIF plays at %s', async (argv, note) => {
     const {notes} = await plan([...argv, '-o', 'demo.gif']);
     expect(notes).toHaveLength(1);
-    expect(notes[0]).toContain('GIF supports 50, 25, or 20 fps');
+    expect(notes[0]).toContain('GIF supports 50 or 25 fps');
     expect(notes[0]).toContain(note);
   });
 
@@ -180,7 +238,7 @@ describe('animate flag', () => {
     });
     const {notes} = await plan(['-o', 'demo.gif'], inputs, preset);
     expect(notes).toEqual([
-      'GIF supports 50, 25, or 20 fps, so this one plays at 50 instead of 60',
+      'GIF supports 50 or 25 fps, so this one plays at 50 instead of 60',
     ]);
   });
 
@@ -208,7 +266,11 @@ describe('animate flag', () => {
     [['--transition', '99'], '--transition: expected milliseconds from 100'],
     [['--transition', '5001'], '--transition: expected milliseconds from 100'],
     [['--transition', 'Infinity'], '--transition: expected milliseconds'],
-    [['--easing', 'bounce'], '--easing: expected smooth, snappy, or linear'],
+    [
+      ['--easing', 'bounce'],
+      '--easing: expected smooth, snappy, strong, linear, or cubic-bezier',
+    ],
+    [['--easing', 'cubic-bezier(2, 0, 0, 1)'], '--easing: expected smooth'],
     [['--fps', '25'], '--fps: expected 24, 30, 50, or 60'],
     [['--fps', 'fast'], '--fps: expected 24, 30, 50, or 60'],
     [['--split-tabs'], '--split-tabs: --animate writes one file'],
@@ -219,6 +281,15 @@ describe('animate flag', () => {
     expect(parse).toThrow(message);
   });
 
+  it.each([
+    ['strong', 'strong'],
+    ['cubic-bezier(0.1,0.2,0.3,1)', 'cubic-bezier(0.1, 0.2, 0.3, 1)'],
+    ['0.65, 0, 0.35, 1', 'smooth'],
+  ])('reads --easing %s as %s', async (value, easing) => {
+    const {document} = await plan(['--easing', value]);
+    expect(document.animation.easing).toBe(easing);
+  });
+
   it('rejects a single step, which would be a still image', async () => {
     await expect(plan([], [inputs[0]])).rejects.toThrow(
       '--animate: needs two or more steps',
@@ -227,7 +298,7 @@ describe('animate flag', () => {
 
   it('accepts holds of 0 ms while the transitions move', async () => {
     const moving = await plan(['--hold', '0']);
-    expect(moving.document.animation.transitionMs).toBe(900);
+    expect(moving.document.animation.transitionMs).toBe(700);
   });
 
   it('keeps the format rules of a still image without --animate', () => {
