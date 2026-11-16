@@ -22,8 +22,8 @@ export const tick = style({
   transform: 'translateX(-50%)',
   whiteSpace: 'nowrap',
   selectors: {
-    '&[data-first]': {transform: 'none', paddingLeft: 6},
-    '&[data-last]': {transform: 'translateX(-100%)'},
+    '&[data-alignment="start"]': {transform: 'none', paddingLeft: 6},
+    '&[data-alignment="end"]': {transform: 'translateX(-100%)'},
   },
 });
 export const playhead = style({

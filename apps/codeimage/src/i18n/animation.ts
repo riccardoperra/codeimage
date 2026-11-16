@@ -1,6 +1,10 @@
 export const animationLocale = {
   en: {
     animation: {
+      stepDescription:
+        'Step {{n}} · {{tab}}. Transition: {{transition}}. Hold: {{hold}}',
+      firstStepDescription:
+        'Step {{n}} · {{tab}}. No incoming transition. Hold: {{hold}}',
       addStepRow: 'Add step',
       closeStep: 'Close step settings',
       tab: 'Tab',
@@ -53,8 +57,11 @@ export const animationLocale = {
         estimate: 'Estimated size · {{size}}',
         suggestMp4: 'This GIF may exceed 8 MB. Choose MP4 for a smaller file.',
       },
-      increaseDuration: 'Increase duration by 100 ms',
-      decreaseDuration: 'Decrease duration by 100 ms',
+      increaseHold: 'Increase hold by 100 ms',
+      decreaseHold: 'Decrease hold by 100 ms',
+      increaseTransition: 'Increase transition by 100 ms',
+      decreaseTransition: 'Decrease transition by 100 ms',
+      duplicateLimit: 'Six tabs maximum. Close a tab to duplicate a step.',
       addStep: 'Add to animation',
       duplicate: 'Duplicate as next step',
       remove: 'Remove step',
@@ -106,6 +113,10 @@ export const animationLocale = {
   },
   it: {
     animation: {
+      stepDescription:
+        'Passaggio {{n}} · {{tab}}. Transizione: {{transition}}. Pausa: {{hold}}',
+      firstStepDescription:
+        'Passaggio {{n}} · {{tab}}. Nessuna transizione in entrata. Pausa: {{hold}}',
       addStepRow: 'Aggiungi passaggio',
       closeStep: 'Chiudi impostazioni passaggio',
       tab: 'Scheda',
@@ -159,8 +170,12 @@ export const animationLocale = {
         suggestMp4:
           'Questa GIF potrebbe superare 8 MB. Scegli MP4 per un file più piccolo.',
       },
-      increaseDuration: 'Aumenta la durata di 100 ms',
-      decreaseDuration: 'Riduci la durata di 100 ms',
+      increaseHold: 'Aumenta la pausa di 100 ms',
+      decreaseHold: 'Riduci la pausa di 100 ms',
+      increaseTransition: 'Aumenta la transizione di 100 ms',
+      decreaseTransition: 'Riduci la transizione di 100 ms',
+      duplicateLimit:
+        'Massimo sei schede. Chiudi una scheda per duplicare un passaggio.',
       addStep: 'Aggiungi all’animazione',
       duplicate: 'Duplica come passaggio successivo',
       remove: 'Rimuovi passaggio',
@@ -213,6 +228,10 @@ export const animationLocale = {
   },
   de: {
     animation: {
+      stepDescription:
+        'Schritt {{n}} · {{tab}}. Übergang: {{transition}}. Halten: {{hold}}',
+      firstStepDescription:
+        'Schritt {{n}} · {{tab}}. Kein eingehender Übergang. Halten: {{hold}}',
       addStepRow: 'Schritt hinzufügen',
       closeStep: 'Schritteinstellungen schließen',
       tab: 'Tab',
@@ -266,8 +285,12 @@ export const animationLocale = {
         suggestMp4:
           'Dieses GIF könnte größer als 8 MB werden. Wähle MP4 für eine kleinere Datei.',
       },
-      increaseDuration: 'Dauer um 100 ms erhöhen',
-      decreaseDuration: 'Dauer um 100 ms verringern',
+      increaseHold: 'Pause um 100 ms erhöhen',
+      decreaseHold: 'Pause um 100 ms verringern',
+      increaseTransition: 'Übergang um 100 ms erhöhen',
+      decreaseTransition: 'Übergang um 100 ms verringern',
+      duplicateLimit:
+        'Maximal sechs Tabs. Schließe einen Tab, um einen Schritt zu duplizieren.',
       addStep: 'Zur Animation hinzufügen',
       duplicate: 'Als nächsten Schritt duplizieren',
       remove: 'Schritt entfernen',
@@ -320,6 +343,10 @@ export const animationLocale = {
   },
   es: {
     animation: {
+      stepDescription:
+        'Paso {{n}} · {{tab}}. Transición: {{transition}}. Pausa: {{hold}}',
+      firstStepDescription:
+        'Paso {{n}} · {{tab}}. Sin transición de entrada. Pausa: {{hold}}',
       addStepRow: 'Añadir paso',
       closeStep: 'Cerrar ajustes del paso',
       tab: 'Pestaña',
@@ -373,8 +400,12 @@ export const animationLocale = {
         suggestMp4:
           'Este GIF puede superar los 8 MB. Elige MP4 para un archivo más pequeño.',
       },
-      increaseDuration: 'Aumentar la duración en 100 ms',
-      decreaseDuration: 'Reducir la duración en 100 ms',
+      increaseHold: 'Aumentar la pausa en 100 ms',
+      decreaseHold: 'Reducir la pausa en 100 ms',
+      increaseTransition: 'Aumentar la transición en 100 ms',
+      decreaseTransition: 'Reducir la transición en 100 ms',
+      duplicateLimit:
+        'Máximo seis pestañas. Cierra una pestaña para duplicar un paso.',
       addStep: 'Añadir a la animación',
       duplicate: 'Duplicar como siguiente paso',
       remove: 'Eliminar paso',

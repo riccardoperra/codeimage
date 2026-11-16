@@ -1,5 +1,5 @@
 import {themeVars} from '@codeimage/ui';
-import {style} from '@vanilla-extract/css';
+import {createVar, fallbackVar, style} from '@vanilla-extract/css';
 
 const c = themeVars.dynamicColors;
 
@@ -83,6 +83,17 @@ export const group = style({
   fontWeight: themeVars.fontWeight.semibold,
 });
 
+// The section a group belongs to reads as a path before the group's name.
+export const groupSection = style({
+  fontWeight: themeVars.fontWeight.normal,
+});
+
+export const groupSlash = style({
+  margin: `0 ${themeVars.spacing['1']}`,
+  fontWeight: themeVars.fontWeight.normal,
+  opacity: 0.6,
+});
+
 export const row = style({
   display: 'flex',
   alignItems: 'center',
@@ -95,6 +106,31 @@ export const row = style({
     '&[aria-selected="true"]': {background: c.input.backgroundColor},
   },
   '@media': {'(max-width: 767px)': {height: '44px'}},
+});
+
+// One box for a theme orb, a fill, an icon or a language, so that the text of
+// every row in a group starts at the same place.
+export const leading = style({
+  flex: 'none',
+  display: 'grid',
+  placeItems: 'center',
+  width: '20px',
+  height: '20px',
+  color: c.descriptionTextColor,
+  selectors: {
+    [`${row}[aria-selected="true"] &`]: {color: c.baseText},
+  },
+});
+
+export const fillValue = createVar();
+
+export const fill = style({
+  width: '16px',
+  height: '16px',
+  borderRadius: '50%',
+  background: fallbackVar(fillValue, 'transparent'),
+  // A hairline keeps a fill the colour of the panel visible.
+  boxShadow: 'inset 0 0 0 1px rgba(127, 127, 127, 0.35)',
 });
 
 export const label = style({

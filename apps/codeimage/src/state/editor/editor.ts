@@ -2,7 +2,10 @@ import type * as ApiTypes from '@codeimage/api/api-types';
 import {SUPPORTED_LANGUAGES} from '@codeimage/config';
 import {EditorConfigStore} from '@codeimage/store/editor/config.store';
 import {provideAppState} from '@codeimage/store/index';
-import {createUniqueId} from '@codeimage/store/plugins/unique-id';
+import {
+  createEditorId,
+  createUniqueId,
+} from '@codeimage/store/plugins/unique-id';
 import type {PresetData} from '@codeimage/store/presets/types';
 import type {EditorView} from '@codemirror/view';
 import {appEnvironment} from '@core/configuration';
@@ -178,7 +181,7 @@ export function createEditorsStore() {
     active?: boolean,
   ) => {
     if (store.get.editors.length === MAX_EDITOR_TABS) return;
-    const id = createUniqueId();
+    const id = createEditorId();
     const editor: EditorState = {
       ...getInitialEditorState(),
       tab: {

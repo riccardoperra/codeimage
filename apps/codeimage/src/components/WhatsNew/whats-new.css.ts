@@ -71,6 +71,7 @@ export const muted = style({color: c.descriptionTextColor, fontSize: '12px'});
 export const expanded = style([
   face,
   {
+    position: 'relative',
     padding: '10px 10px 12px',
     clipPath: 'inset(0 round 18px)',
     transition: `clip-path ${ms(duration.reveal)} ${ease}`,
@@ -125,6 +126,15 @@ export const body = style({
 });
 // Every step keeps room for three lines, so Next never resizes the card.
 globalStyle(`${slide} ${body}`, {minHeight: '3lh'});
+// Show me sits under the step it belongs to, out of the footer row, so
+// Next and Done never shift sideways from one step to the next.
+export const reveal = style({marginTop: '10px'});
+export const nudgeClose = style({
+  position: 'absolute',
+  top: '8px',
+  right: '8px',
+  zIndex: 1,
+});
 export const actions = style({
   display: 'flex',
   alignItems: 'center',

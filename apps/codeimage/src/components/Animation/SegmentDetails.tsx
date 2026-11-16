@@ -12,6 +12,8 @@ import * as styles from './AnimatePanel.css';
 export function DurationInput(props: {
   id: string;
   label: string;
+  field: 'hold' | 'transition';
+  compact?: boolean;
   value: number;
   limits: {min: number; max: number};
   commit: (value: number) => void;
@@ -65,7 +67,7 @@ export function DurationInput(props: {
       onPointerDown={pointerDown}
     >
       <label for={`${props.id}-input`}>{props.label}</label>
-      <div class={styles.number}>
+      <div class={styles.number} data-compact={props.compact ? '' : undefined}>
         <TextField
           ref={configureInput}
           id={props.id}
@@ -80,7 +82,11 @@ export function DurationInput(props: {
             theme="secondary"
             variant="ghost"
             tabIndex={-1}
-            aria-label={t('animation.increaseDuration')}
+            aria-label={t(
+              props.field === 'hold'
+                ? 'animation.increaseHold'
+                : 'animation.increaseTransition',
+            )}
             disabled={numericValue() >= props.limits.max}
             onClick={increase}
           >
@@ -92,7 +98,11 @@ export function DurationInput(props: {
             theme="secondary"
             variant="ghost"
             tabIndex={-1}
-            aria-label={t('animation.decreaseDuration')}
+            aria-label={t(
+              props.field === 'hold'
+                ? 'animation.decreaseHold'
+                : 'animation.decreaseTransition',
+            )}
             disabled={numericValue() <= props.limits.min}
             onClick={decrease}
           >
@@ -170,6 +180,7 @@ export function SegmentDetails() {
         <span>{label()}</span>
         <DurationInput
           id="animationDuration"
+          field={segment()?.kind === 'hold' ? 'hold' : 'transition'}
           label={
             segment()?.kind === 'hold'
               ? t('animation.hold')

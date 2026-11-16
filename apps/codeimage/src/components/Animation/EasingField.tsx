@@ -115,6 +115,8 @@ export function EasingField(props: {stepId: string; modal?: boolean}) {
       open={open()}
       onOpenChange={openChange}
       placement="top-end"
+      slide
+      overflowPadding={8}
       modal={props.modal}
     >
       <PopoverTrigger

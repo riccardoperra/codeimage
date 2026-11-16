@@ -1,3 +1,4 @@
+import {createRandomId} from '../plugins/unique-id';
 import type {
   AnimationSettings,
   AnimationHeader,
@@ -332,7 +333,7 @@ export function createAnimationStore(
       editStep,
       addStep(editorId: string) {
         if (!editorIds().includes(editorId)) return;
-        const id = crypto.randomUUID();
+        const id = createRandomId();
         update(settings => ({
           ...settings,
           steps: [
@@ -359,7 +360,7 @@ export function createAnimationStore(
             true,
           );
           const editorId = editor.state.editors.at(-1)!.id;
-          const id = crypto.randomUUID();
+          const id = createRandomId();
           update(settings => {
             const steps = [...settings.steps];
             steps.splice(index + 1, 0, {id, editorId, holdMs: step.holdMs});

@@ -6,8 +6,13 @@ import {settings} from './shell/settings-state';
 import type {JSX} from 'solid-js';
 import {createEffect, createMemo, For, on, Show} from 'solid-js';
 import {Dynamic} from 'solid-js/web';
+import {AgentTools} from './agent-tools/AgentTools';
+import {ToolActivity} from './agent-tools/ToolActivity';
+import {createAgentTools, createEditorBrief} from './agent-tools/tools';
 import {CommandMenu} from './command-menu/CommandMenu';
+import {createListedModel} from './command-menu/listed-model';
 import {EditorHost} from './EditorHost';
+import {LocalAi, localAi} from './local-ai/LocalAi';
 import {createEditorControlsModel} from './model';
 import {controlOverlay} from './controls/ControlOverlay';
 import {resolveEditorPageState} from './page-state';
@@ -37,6 +42,7 @@ function Editor() {
       () => {
         commandMenu.close();
         controlOverlay.close();
+        localAi.close();
         model.endPreview();
       },
       {defer: true},
@@ -45,20 +51,21 @@ function Editor() {
   let page!: HTMLDivElement;
 
   const side = () =>
-    preferences.layout() === 'inspector'
-      ? preferences.inspectorSide()
-      : undefined;
+    preferences.layout() === 'sidebar' ? preferences.panelSide() : undefined;
+  const nav = () =>
+    preferences.layout() === 'sidebar' ? preferences.panelNav() : undefined;
 
-  // The Inspector reads its side from the layout root. The attribute goes on
-  // the page below and on the root element the layout renders into it, the
-  // one after the header.
+  // The sidebar's accordion reads its side from the layout root. The
+  // attribute goes on the page below and on the root element the layout
+  // renders into it, the one after the header.
   createEffect(() => {
     const value = side();
     preferences.layout();
+    preferences.panelNav();
     const root = page.querySelector(':scope > header + *');
     if (!(root instanceof HTMLElement)) return;
-    if (value) root.dataset.inspectorSide = value;
-    else delete root.dataset.inspectorSide;
+    if (value) root.dataset.panelSide = value;
+    else delete root.dataset.panelSide;
   });
 
   return (
@@ -85,13 +92,22 @@ function Editor() {
         ref={page}
         data-layout={preferences.layout()}
         data-page-state={pageState().kind}
-        data-inspector-side={side()}
+        data-panel-side={side()}
+        data-panel-nav={nav()}
       >
         <Show when={layouts[preferences.layout()]} keyed>
           {layout => {
             // Created outside the JSX: a call in a prop compiles to a getter
             // and would build a new stage on every read.
             const stage = createStage(pageState);
+            const listed = createListedModel(model);
+            const tools = createAgentTools({
+              model,
+              listed,
+              exporter: stage.exporter,
+              pageState,
+            });
+            const brief = createEditorBrief({model, listed});
             const BoundThemePicker = (slot: ThemePickerSlotProps) => (
               <ThemePicker
                 {...slot}
@@ -117,6 +133,13 @@ function Editor() {
                   stage={stage}
                   pageState={pageState}
                 />
+                <AgentTools tools={tools} />
+                <LocalAi
+                  tools={tools}
+                  brief={brief}
+                  compact={stage.compact}
+                  pageState={pageState}
+                />
               </>
             );
           }}
@@ -124,14 +147,20 @@ function Editor() {
       </div>
       {/* Outside the layout, so it stays open while the layout under it changes. */}
       <SettingsDialog model={model} />
-      <WhatsNewHost quiet={() => !settings.isOpen() && !commandMenu.isOpen()} />
+      <ToolActivity />
+      <WhatsNewHost
+        quiet={() =>
+          !settings.isOpen() && !commandMenu.isOpen() && !localAi.isOpen()
+        }
+      />
     </>
   );
 }
 
 /**
- * The editor in the layout the user chose. The layout, Inspector side and
- * theme cards are settings, changed in the settings dialog and command menu.
+ * The editor in the layout the user chose. The layout, the sidebar's
+ * navigation and side, and the theme cards are settings, changed in the
+ * settings dialog and command menu.
  */
 export function UnifiedEditor(): JSX.Element {
   return (

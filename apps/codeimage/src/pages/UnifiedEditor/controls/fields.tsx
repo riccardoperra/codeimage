@@ -10,7 +10,7 @@ import * as styles from './controls.css';
 export type FieldSize = 'sm' | 'md';
 export type ChoiceControl = SegmentedControl | SelectControl;
 
-/** `inspector-frame-padding` for the frame padding of Inspector. */
+/** `sidebar-frame-padding` for the frame padding of the Sidebar. */
 export const fieldId = (prefix: string, id: ControlId) =>
   `${prefix}-${id.replace('.', '-')}`;
 
@@ -20,12 +20,14 @@ export function SwitchField(props: {
   onChange: (checked: boolean) => void;
   /** For a switch outside a labelled row. */
   label?: string;
+  disabled?: boolean;
 }) {
   return (
     <Switch
       class={styles.switchRoot}
       checked={props.checked}
       onChange={props.onChange}
+      disabled={props.disabled}
     >
       <Switch.Input id={props.id} aria-label={props.label} />
       <Switch.Control class={styles.switchControl}>

@@ -114,7 +114,7 @@ Run the eight audit cases with a new evidence directory and owned ports:
 
 ```sh
 VERIFY_BROWSER_CHANNEL=chrome VERIFY_AUDIT=1 \
-VERIFY_PORT=5021 VERIFY_CHROME_PORT=15021 \
+VERIFY_PORT=5021 VERIFY_DEBUG_PORT=15021 \
 ARTIFACT_DIR=/tmp/codeimage-a5-reproduction \
 VERIFY_CASES=animation-gif-estimates,animation-gif,animation-gif-fallback,animation-mp4,animation-mp4-errors,animation-mp4-compositing,animation-mp4-modes,animation-mp4-parity \
 fnm exec --using=v24.14.0 node .agents/skills/verify-codeimage/scripts/verify.mjs

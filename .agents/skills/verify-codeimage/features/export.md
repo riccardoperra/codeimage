@@ -12,11 +12,11 @@ At `/`, Export downloads immediately. Arrow More ways to export opens actions an
 
 ## Driving it with Playwright
 
-Baseline waits for a download before clicking `[data-export-image]` and decodes actual PNG. Audit changes `[data-setting="export-format"]` in Settings → Export to SVG, downloads and parses it, restores PNG, focuses `#settings-rendering-engine` and presses Space to enable it (the visible switch wrapper intercepts pointer clicks on its input) in Experiments, downloads Takumi PNG and rejects the renderer-fallback console error, then restores the engine. Tabs journey decodes ZIP members. Unified shortcuts come from `controls/shortcuts.ts` and are bound in ExportControl. On Apple platforms, Cmd+S downloads, Cmd+O opens a new tab and Cmd+Shift+C copies the image; Control+S/O/C remain supported. Elsewhere Ctrl+S/O/C keep those actions. Cmd+C stays text copy, and Control+C stays text copy while an editable field is focused. Exercise every combo and the secrets review when claiming shortcut coverage.
+Baseline waits for a download before clicking `[data-export-image]` and decodes actual PNG. The `exports` case changes `[data-setting="export-format"]` in Settings → Export to SVG, downloads it and checks the text contains `<svg`, restores PNG, focuses `#settings-rendering-engine` and presses Space to enable it (the visible switch wrapper intercepts pointer clicks on its input) in Experiments, downloads Takumi PNG and rejects the renderer-fallback console error, then restores the engine. Tabs journey decodes ZIP members. Unified shortcuts come from `controls/shortcuts.ts` and are bound in ExportControl. On Apple platforms, Cmd+S downloads, Cmd+O opens a new tab and Cmd+Shift+C copies the image; Control+S/O/C remain supported. Elsewhere Ctrl+S/O/C keep those actions. Cmd+C stays text copy, and Control+C stays text copy while an editable field is focused. Exercise every combo and the secrets review when claiming shortcut coverage.
 
 Source: `pages/UnifiedEditor/shell/ExportControl.tsx`, `shell/export.tsx`, `shell/sections.tsx`, `core/rasterize/takumi.ts`.
 
-Run `export-options` for actual 1x and 2x PNG dimensions, JPEG magic bytes and alt-text clipboard contents. It restores PNG and 1x afterward. The Takumi case asserts the switch is checked before exporting and rejects fallback diagnostics.
+Run `export-options` for actual 1x and 2x PNG dimensions, JPEG magic bytes and alt-text clipboard contents. It restores PNG and 1x afterward. The `exports` case also covers Takumi: it asserts the switch is checked before exporting and rejects fallback diagnostics.
 
 Run `export-screen-parity` for twelve PNG/screen comparisons: Inspector, Dock and Studio, each with one/two named tabs and the window header shown/hidden. The audit's fresh-context helper opens each layout at 1440×900. It chooses PNG and 1x in Settings, fills real CodeMirror and tab-name inputs, adds a tab through the window button, and toggles Header through the command menu. Downloads use the audit's Export-button helper; no editor stores or exporter internals are called.
 
@@ -24,7 +24,7 @@ The case asserts live zoom 1, exact decoded PNG/screen pixel dimensions, a visib
 
 ## Gotchas
 
-Clipboard is available for PNG/SVG and needs permission. Share requires navigator.share. Do not mock those browser APIs to claim native sharing. Redaction modifies documents. Animation is available in the unified guest editor; the classic editor and CLI are outside this export surface.
+Copy image always writes a PNG, whatever export format is chosen, and is disabled only when `navigator.clipboard.write` is missing; it needs clipboard permission. Share requires navigator.share. Do not mock those browser APIs to claim native sharing. Redaction modifies documents. Animation is available in the unified guest editor; the classic editor and CLI are outside this export surface.
 
 `snippet-read-only` verifies a real PNG download and clipboard PNG from another owner's snippet in all three layouts at desktop and phone sizes. See [saved projects](projects.md).
 
