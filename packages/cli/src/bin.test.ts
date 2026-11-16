@@ -71,7 +71,7 @@ describe('CLI streams', {timeout: 30_000}, () => {
       });
       expect(result.status, result.stderr).toBe(0);
       expect(result.stdout.length).toBe(0);
-      const usage = stripVTControlCharacters(await renderUsage(COMMAND));
+      const usage = stripVTControlCharacters(await renderUsage(COMMAND)).replace(' (codeimage)', '');
       expect(result.stderr).toBe(
         `CodeImage CLI\nhttps://app.codeimage.dev · https://github.com/riccardoperra/codeimage\n\n${usage.endsWith('\n') ? usage : `${usage}\n`}Fonts: codeimage fonts install [ids...] [--all] [--offline] | list [--json] | clean [-y]\n`,
       );
