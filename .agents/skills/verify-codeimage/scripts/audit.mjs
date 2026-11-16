@@ -2002,9 +2002,10 @@ export async function audit({page, context, base, out, server}) {
             await page.waitForFunction(
               () => !document.querySelector('[role=menu]'),
             );
-            assert.ok(
-              await trigger.evaluate(el => el === document.activeElement),
-              'menu restores trigger focus',
+            await page.waitForFunction(
+              el => el === document.activeElement,
+              await trigger.elementHandle(),
+              {timeout: 2000},
             );
           }
         };
