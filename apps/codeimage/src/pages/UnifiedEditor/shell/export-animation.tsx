@@ -89,7 +89,6 @@ export function animationSnapshot() {
       codeStyle,
       settings.header,
       output,
-      false,
     );
     const {timeline, languages} = planPreviewTimeline(settings, measured);
     // Natural padding is already covered by the gradient area term. Only
@@ -243,6 +242,7 @@ export function animationSnapshot() {
                   background: backgroundImage
                     ? undefined
                     : (background ?? undefined),
+                  opacity: frame.store.opacity / 100,
                 }}
               >
                 <Show when={backgroundImage}>
@@ -263,6 +263,7 @@ export function animationSnapshot() {
               ref={element => frames.push(element)}
               targetSize={output}
               animated
+              natural
               header={settings.header}
               activeTabId={tab.id}
               code={
@@ -338,6 +339,11 @@ export function animationSnapshot() {
       for (const frame of frames) {
         await yieldToEditor();
         await prepareWatermark(frame);
+        // Keep the background available to watermark placement, but paint it
+        // only once across the video canvas when serializing each scene.
+        frame
+          .querySelector('[data-watermark-background]')
+          ?.setAttribute('data-export-exclude', 'true');
       }
       const scenes: AnimationExport['scenes'] = [];
       const fontFamilies = new Set<string>();

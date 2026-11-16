@@ -105,7 +105,10 @@ export function FrameView(props: VoidProps<FrameViewProps>) {
           ] satisfies [number, number],
         }
       : getFrameState().exportTarget();
-  const scale = () => signatureScale(target()?.resolution[0] ?? frame.width);
+  const scale = () =>
+    signatureScale(
+      target()?.resolution[0] ?? (props.natural ? 0 : frame.width),
+    );
   const terminal = getTerminalState().state;
   const editor = getRootEditorStore();
   const assetsStore = getAssetsStore();

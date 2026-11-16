@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import {animationGifCases} from './animation-gif.mjs';
+import {animationStepSizeCases} from './animation-step-size.mjs';
 import {execFileSync} from 'node:child_process';
 import {readFile, writeFile} from 'node:fs/promises';
 import {createMockContext} from './mock-context.mjs';
@@ -665,6 +666,7 @@ export function animationMp4Cases({
     await page.getByRole('button', {name: 'Close', exact: true}).click();
     await page.getByRole('alertdialog').waitFor({state: 'hidden'});
     const results = [];
+    let naturalClip;
     for (const size of ['current', 'widened']) {
       if (size === 'widened') {
         const handle = page.locator('[class*="dragControlRight"]').first();
@@ -709,6 +711,23 @@ export function animationMp4Cases({
             .first()
             .boundingBox(),
           line: await editor().locator('.cm-line').nth(2).boundingBox(),
+          code: await editor().evaluate(element => {
+            const range = document.createRange();
+            const boxes = [...element.querySelectorAll('.cm-line')]
+              .filter(line => line.textContent)
+              .map(line => {
+                range.selectNodeContents(line);
+                return range.getBoundingClientRect();
+              });
+            const x = Math.min(...boxes.map(box => box.x));
+            const y = Math.min(...boxes.map(box => box.y));
+            return {
+              x,
+              y,
+              width: Math.max(...boxes.map(box => box.right)) - x,
+              height: Math.max(...boxes.map(box => box.bottom)) - y,
+            };
+          }),
         });
         const downloading = page.waitForEvent('download');
         await page.locator('[data-export-image]').click();
@@ -721,9 +740,37 @@ export function animationMp4Cases({
       await ready();
       const name = `animation-counter-${size}`;
       const video = await exportFile(name);
-      assert.equal(video.stream.width, pngs[0].width + (pngs[0].width % 2));
-      assert.equal(video.stream.height, pngs[0].height + (pngs[0].height % 2));
+      const decodedClip = execFileSync(
+        'ffmpeg',
+        [
+          '-v',
+          'error',
+          '-i',
+          resolve(out, `${name}.mp4`),
+          '-f',
+          'framemd5',
+          'pipe:1',
+        ],
+        {encoding: 'utf8'},
+      );
+      if (naturalClip)
+        assert.equal(
+          decodedClip,
+          naturalClip,
+          'resizing the live editor does not change a natural animation',
+        );
+      naturalClip ??= decodedClip;
       const job = await page.evaluate(() => window.__mp4Jobs.at(-1));
+      const holds = await page.evaluate(() => {
+        const {scenes, pixelRatio} = window.__mp4LastJob;
+        return [scenes[0].css, scenes.at(-1).css].map(css => {
+          const [, x, y] = /translate\(([\d.]+)px,([\d.]+)px\)/.exec(css);
+          return {
+            x: Math.round(Number(x) * pixelRatio),
+            y: Math.round(Number(y) * pixelRatio),
+          };
+        });
+      });
       const lastHold =
         job.scenes.slice(0, -1).reduce((n, scene) => n + scene.durationMs, 0) /
         1000;
@@ -745,15 +792,24 @@ export function animationMp4Cases({
         const decoded = PNG.sync.read(await readFile(decodedPath));
         const png = pngs[index];
         const cropped = new PNG({width: png.width, height: png.height});
-        PNG.bitblt(decoded, cropped, 0, 0, png.width, png.height, 0, 0);
+        PNG.bitblt(
+          decoded,
+          cropped,
+          holds[index].x,
+          holds[index].y,
+          Math.min(png.width, decoded.width - holds[index].x),
+          Math.min(png.height, decoded.height - holds[index].y),
+          0,
+          0,
+        );
         // The third source line is blank. A wrapped createSignal call paints
         // coloured syntax on this row even when whole-frame pixel error is small.
-        const {frame, line} = blankLines[index];
+        const {frame, line, code} = blankLines[index];
         assert.ok(frame && line, 'blank source line has measured bounds');
         const scaleX = png.width / frame.width;
         const scaleY = png.height / frame.height;
         const left = Math.ceil((line.x - frame.x) * scaleX + 4);
-        const right = Math.floor((line.x + line.width - frame.x) * scaleX - 4);
+        const right = Math.floor((code.x + code.width - frame.x) * scaleX - 4);
         const top = Math.ceil((line.y - frame.y + line.height / 4) * scaleY);
         const bottom = Math.floor(
           (line.y - frame.y + (line.height * 3) / 4) * scaleY,
@@ -773,11 +829,58 @@ export function animationMp4Cases({
           ink / ((right - left) * (bottom - top)) < 0.001,
           'createSignal stays on its source line in the decoded video',
         );
-        const different =
-          pixelmatch(png.data, cropped.data, null, png.width, png.height, {
-            threshold: 0.15,
-          }) /
-          (png.width * png.height);
+        // The static PNG retains the live frame's width. Compare the code
+        // inside it with the naturally sized, centered animation window.
+        const bounds = {
+          x: Math.floor((code.x - frame.x) * scaleX),
+          y: Math.floor((code.y - frame.y) * scaleY),
+          width: Math.ceil(code.width * scaleX),
+          height: Math.ceil(code.height * scaleY),
+        };
+        const expected = new PNG({width: bounds.width, height: bounds.height});
+        const actual = new PNG({width: bounds.width, height: bounds.height});
+        PNG.bitblt(
+          png,
+          expected,
+          bounds.x,
+          bounds.y,
+          bounds.width,
+          bounds.height,
+          0,
+          0,
+        );
+        // The live editor's fit zoom rounds DOM bounds at display pixels.
+        // Align within one CSS pixel at 2x before comparing glyph pixels.
+        let different = 1;
+        for (let y = -2; y <= 2; y++)
+          for (let x = -2; x <= 2; x++) {
+            PNG.bitblt(
+              cropped,
+              actual,
+              bounds.x + x,
+              bounds.y + y,
+              bounds.width,
+              bounds.height,
+              0,
+              0,
+            );
+            different = Math.min(
+              different,
+              pixelmatch(
+                expected.data,
+                actual.data,
+                null,
+                bounds.width,
+                bounds.height,
+                {threshold: 0.15},
+              ) /
+                (bounds.width * bounds.height),
+            );
+          }
+        await writeFile(
+          resolve(out, `counter-${size}-comparison-${index}.json`),
+          JSON.stringify({bounds, different}, null, 2),
+        );
         differences.push(different);
         assert.ok(
           different < 0.03,
@@ -804,7 +907,20 @@ export function animationMp4Cases({
     shot: name => shot(name),
     editor: () => editor(),
   });
+  const stepSize = animationStepSizeCases({
+    page: () => page,
+    out,
+    setup,
+    doctor,
+    open,
+    ready,
+    close,
+    choose,
+    editor: () => editor(),
+  });
   return {
+    stepSizeMp4: isolated('animation-mp4-step-size', stepSize.mp4),
+    stepSizeGif: isolated('animation-gif-step-size', stepSize.gif),
     gifEstimates: async () => {
       const results = [];
       for (const fixture of [

@@ -1014,6 +1014,8 @@ export async function audit({page, context, base, out, server}) {
   await feature('animation-mp4-compositing', mp4.compositing);
   await feature('animation-mp4-modes', mp4.modes);
   await feature('animation-mp4-parity', mp4.parity);
+  await feature('animation-mp4-step-size', mp4.stepSizeMp4);
+  await feature('animation-gif-step-size', mp4.stepSizeGif);
   await feature('animate', async () => {
     // The Editor window names its Add tab button; the default one does not.
     await windowStyle('Editor');
