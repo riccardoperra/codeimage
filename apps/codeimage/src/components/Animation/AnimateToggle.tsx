@@ -1,3 +1,4 @@
+import {button as canvasButton} from '../../pages/UnifiedEditor/controls/canvas-toolbar.css';
 import {useI18n} from '@codeimage/locale';
 import {getEditorStore} from '@codeimage/store/editor';
 import {Button, Tooltip} from '@codeui/kit';
@@ -23,6 +24,7 @@ export function AnimateToggle(props: {iconOnly?: boolean}) {
       placement="top"
     >
       <Button
+        class={canvasButton}
         size="xs"
         theme="secondary"
         leftIcon={animation.open() ? <CloseIcon /> : <PlayIcon />}

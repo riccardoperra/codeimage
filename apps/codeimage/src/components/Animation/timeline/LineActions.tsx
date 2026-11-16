@@ -14,6 +14,7 @@ import * as styles from './toolbar.css';
 
 const icon = (path: JSX.Element) => () => (
   <SvgIcon
+    class={styles.actionIcon}
     viewBox="0 0 16 16"
     fill="none"
     stroke="currentColor"
@@ -77,15 +78,16 @@ export function LineActions(props: {editorId: string; step: number}) {
       ?.marks.script?.lines.find(line => line.line === value[0]);
     if (!line) return '';
     const from = line.enter ?? 1;
+    let range = '';
+    if (line.leave !== undefined)
+      range = t('animation.timeline.lineVisibleRange', {
+        from: String(from),
+        to: String(line.leave - 1),
+      });
+    else if (from > 1)
+      range = t('animation.timeline.lineVisibleFrom', {n: String(from)});
     return [
-      line.leave !== undefined
-        ? t('animation.timeline.lineVisibleRange', {
-            from: String(from),
-            to: String(line.leave - 1),
-          })
-        : from > 1
-          ? t('animation.timeline.lineVisibleFrom', {n: String(from)})
-          : '',
+      range,
       line.focus?.length
         ? t('animation.timeline.lineFocusIn', {steps: line.focus.join(', ')})
         : '',

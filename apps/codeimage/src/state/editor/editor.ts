@@ -1,3 +1,9 @@
+import {
+  defaultId,
+  getInitialEditorState,
+  getInitialEditorUiOptions,
+} from './initialState';
+export {getInitialEditorState, getInitialEditorUiOptions} from './initialState';
 import type * as ApiTypes from '@codeimage/api/api-types';
 import {SUPPORTED_LANGUAGES} from '@codeimage/config';
 import {EditorConfigStore} from '@codeimage/store/editor/config.store';
@@ -5,46 +11,16 @@ import {provideAppState} from '@codeimage/store/index';
 import {
   createEditorId,
   createRandomId,
-  createUniqueId,
 } from '@codeimage/store/plugins/unique-id';
 import type {PresetData} from '@codeimage/store/presets/types';
 import type {EditorView} from '@codemirror/view';
-import {appEnvironment} from '@core/configuration';
 import {from, map, shareReplay} from 'rxjs';
 import {createSelector, createSignal} from 'solid-js';
 import type {SetStoreFunction} from 'solid-js/store';
 import {defineStore, provideState} from 'statebuilder';
 import {createCommand, withProxyCommands} from 'statebuilder/commands';
-import type {EditorState, EditorUIOptions, PersistedEditorState} from './model';
+import type {EditorState, PersistedEditorState} from './model';
 import {MAX_EDITOR_TABS} from './model';
-
-const defaultId = createUniqueId();
-
-export function getInitialEditorState(): EditorState {
-  return {
-    id: defaultId,
-    code: appEnvironment.defaultState.editor.code,
-    languageId: appEnvironment.defaultState.editor.languageId,
-    formatter: null,
-    lineNumberStart: 1,
-    marks: {lines: [], focusedLines: []},
-    tab: {
-      tabName: 'index.tsx',
-      tabIcon: undefined,
-    },
-  };
-}
-
-export function getInitialEditorUiOptions(): EditorUIOptions {
-  return {
-    themeId: 'fleetTheme',
-    showLineNumbers: false,
-    fontId: appEnvironment.defaultState.editor.font.id,
-    fontWeight: appEnvironment.defaultState.editor.font.types[0].weight,
-    focused: false,
-    enableLigatures: true,
-  };
-}
 
 export function createEditorsStore() {
   const [activeEditorView, setActiveEditorView] = createSignal<EditorView>();

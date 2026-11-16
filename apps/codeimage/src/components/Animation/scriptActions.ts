@@ -40,13 +40,11 @@ export function addScriptStep(store: Store, editorId: string) {
       .settings()
       .steps.filter(step => step.editorId === editorId)
       .map(step => step.id),
-    lines: tab.marks.lines.flatMap((mark): ScriptLine[] =>
-      mark.kind === 'added'
-        ? [{line: mark.line, enter: 2}]
-        : mark.kind === 'removed'
-          ? [{line: mark.line, leave: 2}]
-          : [],
-    ),
+    lines: tab.marks.lines.flatMap((mark): ScriptLine[] => {
+      if (mark.kind === 'added') return [{line: mark.line, enter: 2}];
+      if (mark.kind === 'removed') return [{line: mark.line, leave: 2}];
+      return [];
+    }),
   };
   batch(() => {
     saveMarks(store, editorId, {
@@ -64,13 +62,17 @@ export function deleteScriptStep(store: Store, editorId: string, step: number) {
   if (!tab || !script) return;
   const selected = store.animation.selection();
   const next = removeScriptStep(script, step);
-  const selectedId = !next
-    ? !selected || script.steps.includes(selected.stepId)
-      ? editorId
-      : selected.stepId
-    : selected && selected.stepId !== script.steps[step - 1]
-      ? selected.stepId
-      : next.steps[Math.max(0, step - 2)];
+  let selectedId: string | undefined;
+  if (!next)
+    selectedId =
+      !selected || script.steps.includes(selected.stepId)
+        ? editorId
+        : selected.stepId;
+  else
+    selectedId =
+      selected && selected.stepId !== script.steps[step - 1]
+        ? selected.stepId
+        : next.steps[Math.max(0, step - 2)];
   batch(() => {
     const {script: _, ...marks} = tab.marks;
     saveMarks(store, editorId, {...marks, ...(next ? {script: next} : {})});

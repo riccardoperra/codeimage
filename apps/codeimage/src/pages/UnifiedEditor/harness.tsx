@@ -1,3 +1,4 @@
+import {trackTimelineInput} from '../../components/Animation/timeline/motion';
 import {getEditorSyncAdapter} from '@codeimage/store/editor/createEditorSync';
 import {getWhatsNew} from '../../state/whats-new';
 import {WhatsNewHost} from '../../components/WhatsNew/WhatsNewHost';
@@ -89,7 +90,10 @@ function Editor() {
       </For>
       <div
         class={`unified-editor ${pageClass}`}
-        ref={page}
+        ref={element => {
+          page = element;
+          trackTimelineInput(element);
+        }}
         data-layout={preferences.layout()}
         data-page-state={pageState().kind}
         data-panel-side={side()}

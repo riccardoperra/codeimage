@@ -1,39 +1,16 @@
-import {getEditorStore} from '@codeimage/store/editor';
-import {scriptLinesExtension} from './plugins/scriptLines';
+import {createScriptAids} from './plugins/scriptLines/extension';
 import {trackSelection} from './plugins/selection';
-import {animateAidsHidden} from '@core/animation/aids';
 import {SUPPORTED_LANGUAGES} from '@codeimage/config';
 import {useI18n} from '@codeimage/locale';
 import type {AppLocaleEntries} from '../../i18n';
 import {getRootEditorStore} from '@codeimage/store/editor';
 import {getActiveEditorStore} from '@codeimage/store/editor/activeEditor';
 import {getThemeStore} from '@codeimage/store/theme/theme.store';
-import {
-  autocompletion,
-  closeBrackets,
-  closeBracketsKeymap,
-  completionKeymap,
-} from '@codemirror/autocomplete';
-import {
-  defaultKeymap,
-  history,
-  historyKeymap,
-  indentWithTab,
-  isolateHistory,
-} from '@codemirror/commands';
-import {bracketMatching, indentOnInput} from '@codemirror/language';
-import type {Extension} from '@codemirror/state';
+import {isolateHistory} from '@codemirror/commands';
 import {EditorState, Transaction} from '@codemirror/state';
-import {
-  crosshairCursor,
-  drawSelection,
-  dropCursor,
-  EditorView,
-  highlightSpecialChars,
-  keymap,
-  lineNumbers,
-  rectangularSelection,
-} from '@codemirror/view';
+import type {Extension} from '@codemirror/state';
+import {EditorView, lineNumbers} from '@codemirror/view';
+import {EDITOR_BASE_SETUP} from './editorSetup';
 import {createCodeMirror, createEditorReadonly} from 'solid-codemirror';
 import type {VoidProps} from 'solid-js';
 import {
@@ -46,7 +23,7 @@ import {
 } from 'solid-js';
 import {baseEditorTheme} from './editorTheme';
 import {createTabIcon} from '../../hooks/use-tab-icon';
-import {mapLines} from '../../core/diff/mapLines';
+import {formattedMarks} from './formattedMarks';
 import {lineMarksExtension} from './plugins/lineMarks';
 import {gutterMarkMouseDown} from './plugins/lineMarks/controls';
 import {
@@ -55,27 +32,6 @@ import {
   marksValue,
   replaceMarks,
 } from './plugins/lineMarks/state';
-
-const EDITOR_BASE_SETUP: Extension = [
-  highlightSpecialChars(),
-  drawSelection(),
-  dropCursor(),
-  EditorState.allowMultipleSelections.of(true),
-  indentOnInput(),
-  bracketMatching(),
-  closeBrackets(),
-  autocompletion(),
-  rectangularSelection(),
-  crosshairCursor(),
-  history(),
-  keymap.of([
-    ...closeBracketsKeymap,
-    ...defaultKeymap,
-    ...completionKeymap,
-    ...historyKeymap,
-    indentWithTab,
-  ]),
-];
 
 interface CustomEditorProps {
   readOnly: boolean;
@@ -254,23 +210,12 @@ export default function CustomEditor(props: VoidProps<CustomEditorProps>) {
     );
   });
   createExtension(() => EditorState.readOnly.of(props.readOnly));
-  const scriptAidStep = createMemo(() => {
-    const {animation} = getEditorStore();
-    if (props.readOnly || !animation.open() || animateAidsHidden())
-      return false;
-    const selected = animation.selection();
-    const selectedStep = animation
-      .settings()
-      .steps.find(
-        step => step.id === selected?.stepId && step.editorId === editor()?.id,
-      );
-    const step = selectedStep?.view;
-    return step?.kind === 'script' ? step.step : null;
-  });
-  createExtension(() => {
-    const step = scriptAidStep();
-    return step === false ? [] : scriptLinesExtension(step);
-  });
+  createExtension(
+    createScriptAids(
+      () => props.readOnly,
+      () => editor()?.id,
+    ),
+  );
 
   createExtension(trackSelection);
 
@@ -323,31 +268,14 @@ export default function CustomEditor(props: VoidProps<CustomEditorProps>) {
         }
         if (!changedTab && changedCode && !props.readOnly) {
           // Format rewrites the stored code; map marks by line and keep the step undoable.
-          const lines = mapLines(current, code);
           const previous = readMarks(view.state);
           view.dispatch({
             changes: {from: 0, to: view.state.doc.length, insert: code},
             effects: replaceMarks.of(
-              marksValue(EditorState.create({doc: code}).doc, {
-                ...(previous.script
-                  ? {
-                      script: {
-                        ...previous.script,
-                        lines: previous.script.lines.flatMap(rule => {
-                          const line = lines.get(rule.line);
-                          return line ? [{...rule, line}] : [];
-                        }),
-                      },
-                    }
-                  : {}),
-                focusedLines: previous.focusedLines.flatMap(
-                  line => lines.get(line) ?? [],
-                ),
-                lines: previous.lines.flatMap(mark => {
-                  const line = lines.get(mark.line);
-                  return line ? [{...mark, line}] : [];
-                }),
-              }),
+              marksValue(
+                EditorState.create({doc: code}).doc,
+                formattedMarks(previous, current, code),
+              ),
             ),
             annotations: isolateHistory.of('full'),
           });

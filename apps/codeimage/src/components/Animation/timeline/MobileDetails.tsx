@@ -1,3 +1,4 @@
+import {trackTimelineInput} from './motion';
 import {useI18n} from '@codeimage/locale';
 import {getEditorStore} from '@codeimage/store/editor';
 import {Button, IconButton} from '@codeui/kit';
@@ -29,6 +30,7 @@ export function MobileDetails(props: {model: TimelineModel}) {
   return (
     <>
       <Button
+        class={styles.button}
         size="sm"
         theme="secondary"
         disabled={!selected()}
@@ -40,20 +42,23 @@ export function MobileDetails(props: {model: TimelineModel}) {
         <Dialog.Portal>
           <Dialog.Overlay class={styles.sheetOverlay} />
           <DialogContent
+            ref={trackTimelineInput}
             class={styles.sheet}
             data-animation-step-sheet
             onCloseAutoFocus={event => {
               event.preventDefault();
-              document
-                .querySelector<HTMLElement>(
+              props.model
+                .viewport()
+                ?.element.querySelector<HTMLElement>(
                   `[data-nav="hold:${CSS.escape(selected()?.stepId ?? '')}"]`,
                 )
                 ?.focus({preventScroll: true});
             }}
           >
             <div class={styles.sheetHead}>
-              <Dialog.Title>{title()}</Dialog.Title>
+              <Dialog.Title class={styles.sheetTitle}>{title()}</Dialog.Title>
               <IconButton
+                class={styles.button}
                 size="sm"
                 theme="secondary"
                 aria-label={t('animation.closeStep')}

@@ -26,7 +26,8 @@ export function navKeyDown(
     const to = options.step.tab - 1 + (next ? 1 : -1);
     if (to < 0 || to >= actions.tabCount()) return;
     actions.moveTab(options.step.editorId, to);
-    focusKey(options.root, target.dataset.nav!);
+    const key = target.dataset.nav;
+    if (key) focusKey(options.root, key);
     return;
   }
   if (
@@ -45,12 +46,7 @@ export function navKeyDown(
     ...(options.root?.querySelectorAll<HTMLElement>('[data-nav]') ?? []),
   ];
   const index = items.indexOf(target);
-  const to =
-    event.key === 'Home'
-      ? 0
-      : event.key === 'End'
-        ? items.length - 1
-        : Math.max(0, Math.min(items.length - 1, index + (next ? 1 : -1)));
+  const to = navigationIndex(event.key, {length: items.length, index, next});
   items[to]?.focus();
 }
 
@@ -59,3 +55,12 @@ export const tabStopOf = (
   key: string,
   first: string,
 ) => ((selected ?? first) === key ? 0 : -1);
+
+function navigationIndex(
+  key: string,
+  {length, index, next}: {length: number; index: number; next: boolean},
+) {
+  if (key === 'Home') return 0;
+  if (key === 'End') return length - 1;
+  return Math.max(0, Math.min(length - 1, index + (next ? 1 : -1)));
+}

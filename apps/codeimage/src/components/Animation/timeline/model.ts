@@ -50,62 +50,7 @@ export const keyOf = (value: SegmentSelection) =>
 export function createTimelineModel() {
   const {animation, editor} = getEditorStore();
   const [t] = useI18n<AppLocaleEntries>();
-  const describe = (source: StepSource, code: string) => {
-    const count = String(code.split('\n').length);
-    if (source.kind === 'tab')
-      return {
-        short: t('animation.timeline.lines', {n: count}),
-        long: t('animation.timeline.lines', {n: count}),
-      };
-    const tab = editor.state.editors.find(tab => tab.id === source.editorId)!;
-    if (source.kind === 'diff') {
-      if (source.side === 'before')
-        return {
-          short: t('animation.timeline.before'),
-          long: t('animation.timeline.before'),
-        };
-      const enters = tab.marks.lines.filter(
-        line => line.kind === 'added',
-      ).length;
-      const leaves = tab.marks.lines.filter(
-        line => line.kind === 'removed',
-      ).length;
-      return {
-        short: `+${enters} −${leaves}`,
-        long: t('animation.timeline.changes', {
-          enter: String(enters),
-          leave: String(leaves),
-        }),
-      };
-    }
-    const rules = tab.marks.script?.lines ?? [];
-    const enters = rules.filter(line => line.enter === source.step).length;
-    const leaves = rules.filter(line => line.leave === source.step).length;
-    const focus = rules.filter(line =>
-      line.focus?.includes(source.step),
-    ).length;
-    const short = [
-      enters || leaves ? `+${enters} −${leaves}` : '',
-      focus ? t('animation.timeline.focusCount', {n: String(focus)}) : '',
-    ]
-      .filter(Boolean)
-      .join(' · ');
-    const long = [
-      enters || leaves
-        ? t('animation.timeline.changes', {
-            enter: String(enters),
-            leave: String(leaves),
-          })
-        : '',
-      focus ? t('animation.timeline.focusCount', {n: String(focus)}) : '',
-    ]
-      .filter(Boolean)
-      .join(' · ');
-    return {
-      short: short || t('animation.holdShort'),
-      long: long || t('animation.timeline.lines', {n: count}),
-    };
-  };
+  const describe = createStepDescription();
   const tabs = createMemo((): TimelineTab[] => {
     const settings = animation.settings();
     const segments = animation.segments();
@@ -132,6 +77,10 @@ export function createTimelineModel() {
       const projected = tab
         ? projectStep(tab, source)
         : {code: '', marks: {lines: [], focusedLines: []}};
+      const hold = segments.find(
+        segment => segment.kind === 'hold' && segment.stepId === step.id,
+      );
+      if (!hold) return;
       group.steps.push({
         stepId: step.id,
         index,
@@ -139,9 +88,7 @@ export function createTimelineModel() {
         editorId: source.editorId,
         tab: tabIndex + 1,
         sub: null,
-        hold: segments.find(
-          segment => segment.kind === 'hold' && segment.stepId === step.id,
-        )!,
+        hold,
         transition:
           segments.find(
             segment =>
@@ -225,4 +172,65 @@ export function projectedCode(step: TimelineStep) {
   const {editor} = getEditorStore();
   const tab = editor.state.editors.find(tab => tab.id === step.editorId);
   return tab ? projectStep(tab, step.source).code : '';
+}
+
+function createStepDescription() {
+  const {editor} = getEditorStore();
+  const [t] = useI18n<AppLocaleEntries>();
+  return (source: StepSource, code: string) => {
+    const count = String(code.split('\n').length);
+    if (source.kind === 'tab')
+      return {
+        short: t('animation.timeline.lines', {n: count}),
+        long: t('animation.timeline.lines', {n: count}),
+      };
+    const tab = editor.state.editors.find(tab => tab.id === source.editorId);
+    if (source.kind === 'diff') {
+      if (source.side === 'before')
+        return {
+          short: t('animation.timeline.before'),
+          long: t('animation.timeline.before'),
+        };
+      const enters = (tab?.marks.lines ?? []).filter(
+        line => line.kind === 'added',
+      ).length;
+      const leaves = (tab?.marks.lines ?? []).filter(
+        line => line.kind === 'removed',
+      ).length;
+      return {
+        short: `+${enters} −${leaves}`,
+        long: t('animation.timeline.changes', {
+          enter: String(enters),
+          leave: String(leaves),
+        }),
+      };
+    }
+    const rules = tab?.marks.script?.lines ?? [];
+    const enters = rules.filter(line => line.enter === source.step).length;
+    const leaves = rules.filter(line => line.leave === source.step).length;
+    const focus = rules.filter(line =>
+      line.focus?.includes(source.step),
+    ).length;
+    const short = [
+      enters || leaves ? `+${enters} −${leaves}` : '',
+      focus ? t('animation.timeline.focusCount', {n: String(focus)}) : '',
+    ]
+      .filter(Boolean)
+      .join(' · ');
+    const long = [
+      enters || leaves
+        ? t('animation.timeline.changes', {
+            enter: String(enters),
+            leave: String(leaves),
+          })
+        : '',
+      focus ? t('animation.timeline.focusCount', {n: String(focus)}) : '',
+    ]
+      .filter(Boolean)
+      .join(' · ');
+    return {
+      short: short || t('animation.holdShort'),
+      long: long || t('animation.timeline.lines', {n: count}),
+    };
+  };
 }

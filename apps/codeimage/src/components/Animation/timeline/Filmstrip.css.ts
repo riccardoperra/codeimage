@@ -1,5 +1,5 @@
 import {themeVars} from '@codeimage/ui';
-import {globalStyle, style} from '@vanilla-extract/css';
+import {style} from '@vanilla-extract/css';
 import {curve} from '../../WhatsNew/motion';
 
 const c = themeVars.dynamicColors;
@@ -66,32 +66,42 @@ export const tabMeta = style({
 });
 export const cards = style({display: 'flex', alignItems: 'center', gap: 6});
 
-export const card = style({
-  position: 'relative',
-  display: 'flex',
-  flexDirection: 'column',
-  gap: 6,
-  width: 136,
-  height: 96,
-  flexShrink: 0,
-  boxSizing: 'border-box',
-  padding: 8,
-  border: 0,
-  borderRadius: themeVars.borderRadius.lg,
-  background: c.panel.background,
-  color: c.baseText,
-  font: 'inherit',
-  textAlign: 'left',
-  cursor: 'pointer',
-  overflow: 'hidden',
-  transition: `transform 160ms ${curve.out}`,
-  selectors: {
-    '&:active': {transform: 'scale(0.98)'},
-    '&[data-current]': {background: c.dialog.panelBackgroundColor},
-    '&:focus-visible': {outline: `2px solid ${c.primary}`, outlineOffset: 2},
+export const card = style([
+  {
+    position: 'relative',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 6,
+    width: 136,
+    height: 96,
+    flexShrink: 0,
+    boxSizing: 'border-box',
+    padding: 8,
+    border: 0,
+    borderRadius: themeVars.borderRadius.lg,
+    background: c.panel.background,
+    color: c.baseText,
+    font: 'inherit',
+    textAlign: 'left',
+    cursor: 'pointer',
+    overflow: 'hidden',
+    transition: `transform 160ms ${curve.out}`,
+    selectors: {
+      '&:active': {transform: 'scale(0.98)'},
+      '&[data-current]': {background: c.dialog.panelBackgroundColor},
+      '&:focus-visible': {outline: `2px solid ${c.primary}`, outlineOffset: 2},
+    },
+    '@media': {[phone]: {width: 120, height: 92}},
   },
-  '@media': {[phone]: {width: 120, height: 92}},
-});
+  {
+    selectors: {
+      '[data-animate-input="keyboard"] &': {
+        transition: 'none',
+        animation: 'none',
+      },
+    },
+  },
+]);
 export const cardHead = style({
   display: 'flex',
   alignItems: 'baseline',
@@ -121,38 +131,48 @@ export const code = style({
   opacity: 0.8,
 });
 
-export const chip = style({
-  display: 'inline-flex',
-  alignItems: 'center',
-  gap: 4,
-  height: 28,
-  flexShrink: 0,
-  padding: '0 8px 0 4px',
-  border: 0,
-  borderRadius: 999,
-  background: 'transparent',
-  color: c.baseText,
-  font: 'inherit',
-  fontSize: 12,
-  fontVariantNumeric: 'tabular-nums',
-  whiteSpace: 'nowrap',
-  cursor: 'pointer',
-  position: 'relative',
-  overflow: 'hidden',
-  opacity: 0.8,
-  transition: `transform 160ms ${curve.out}`,
-  selectors: {
-    '&:active': {transform: 'scale(0.97)'},
-    '&[data-current]': {opacity: 1, background: c.panel.background},
-    '&:focus-visible': {outline: `2px solid ${c.primary}`},
-  },
-  '@media': {
-    [phone]: {height: 40},
-    [hover]: {
-      selectors: {'&:hover': {opacity: 1, background: c.panel.background}},
+export const chip = style([
+  {
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: 4,
+    height: 28,
+    flexShrink: 0,
+    padding: '0 8px 0 4px',
+    border: 0,
+    borderRadius: 999,
+    background: 'transparent',
+    color: c.baseText,
+    font: 'inherit',
+    fontSize: 12,
+    fontVariantNumeric: 'tabular-nums',
+    whiteSpace: 'nowrap',
+    cursor: 'pointer',
+    position: 'relative',
+    overflow: 'hidden',
+    opacity: 0.8,
+    transition: `transform 160ms ${curve.out}`,
+    selectors: {
+      '&:active': {transform: 'scale(0.97)'},
+      '&[data-current]': {opacity: 1, background: c.panel.background},
+      '&:focus-visible': {outline: `2px solid ${c.primary}`},
+    },
+    '@media': {
+      [phone]: {height: 40},
+      [hover]: {
+        selectors: {'&:hover': {opacity: 1, background: c.panel.background}},
+      },
     },
   },
-});
+  {
+    selectors: {
+      '[data-animate-input="keyboard"] &': {
+        transition: 'none',
+        animation: 'none',
+      },
+    },
+  },
+]);
 export const between = style({alignSelf: 'center', marginTop: 34});
 
 export const add = style({
@@ -192,6 +212,14 @@ export const ghost = style([
     fontSize: 12,
     '@media': {[phone]: {width: 136}},
   },
+  {
+    selectors: {
+      '[data-animate-input="keyboard"] &': {
+        transition: 'none',
+        animation: 'none',
+      },
+    },
+  },
 ]);
 export const ghostHead = style({
   display: 'flex',
@@ -203,10 +231,14 @@ export const ghostHint = style({fontSize: 11, lineHeight: 1.35, opacity: 0.7});
 export const addTab = style([
   add,
   {width: 104, alignSelf: 'flex-end', marginBottom: 8, fontSize: 12, gap: 2},
+  {
+    selectors: {
+      '[data-animate-input="keyboard"] &': {
+        transition: 'none',
+        animation: 'none',
+      },
+    },
+  },
 ]);
-globalStyle(`${chip} svg`, {width: 18, height: 16});
 
-globalStyle(
-  `[data-animate-input="keyboard"] ${card}, [data-animate-input="keyboard"] ${chip}, [data-animate-input="keyboard"] ${ghost}, [data-animate-input="keyboard"] ${addTab}`,
-  {transition: 'none', animation: 'none'},
-);
+export const glyph = style({width: 18, height: 16});

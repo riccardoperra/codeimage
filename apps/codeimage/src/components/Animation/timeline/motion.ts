@@ -41,14 +41,6 @@ if (typeof document !== 'undefined') {
     },
     true,
   );
-  document.addEventListener(
-    'keydown',
-    () => {
-      modality = 'keyboard';
-      document.documentElement.dataset.animateInput = modality;
-    },
-    true,
-  );
 }
 export const byPointer = () => modality === 'pointer';
 let pointerToggle = false;
@@ -67,14 +59,15 @@ type Rects = Map<string, DOMRect>;
 const measure = (root: ParentNode): Rects =>
   new Map(
     [...root.querySelectorAll<HTMLElement>('[data-flip]')].map(element => [
-      element.dataset.flip!,
+      element.dataset.flip ?? '',
       element.getBoundingClientRect(),
     ]),
   );
 
 function play(root: ParentNode, before: Rects, skip?: string) {
   for (const element of root.querySelectorAll<HTMLElement>('[data-flip]')) {
-    const key = element.dataset.flip!;
+    const key = element.dataset.flip;
+    if (!key) continue;
     if (key === skip) continue;
     const previous = before.get(key);
     if (!previous) {
@@ -209,12 +202,9 @@ export function startReorder(
     ).length;
     items.forEach((element, index) => {
       if (element === item) return;
-      const shift =
-        from < to && index > from && index <= to
-          ? -room
-          : to < from && index >= to && index < from
-            ? room
-            : 0;
+      let shift = 0;
+      if (from < to && index > from && index <= to) shift = -room;
+      else if (to < from && index >= to && index < from) shift = room;
       element.style.transform = shift ? translate(shift) : '';
     });
   };
@@ -310,4 +300,13 @@ export function createIndicator(options: {
     onCleanup(() => observer.disconnect());
   });
   return {place};
+}
+
+export function trackTimelineInput(root: HTMLElement) {
+  const keyboard = () => {
+    modality = 'keyboard';
+    document.documentElement.dataset.animateInput = modality;
+  };
+  root.addEventListener('keydown', keyboard, true);
+  onCleanup(() => root.removeEventListener('keydown', keyboard, true));
 }

@@ -146,7 +146,8 @@ test('stepAt agrees with scene ownership at every millisecond and boundary', () 
     start += scene.durationMs;
   }
   assert.equal(stepAt(settings, start), settings.steps.length - 1);
-  const last = segmentsOf(settings).at(-1)!;
+  const last = segmentsOf(settings).at(-1);
+  assert.ok(last);
   assert.equal(last.startMs + last.durationMs, start);
 });
 

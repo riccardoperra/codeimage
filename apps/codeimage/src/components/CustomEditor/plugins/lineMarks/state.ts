@@ -1,3 +1,4 @@
+import {inheritScriptRanges} from '../scriptLines/map';
 import {invertedEffects, isolateHistory} from '@codemirror/commands';
 import type {ChangeDesc, Extension, Text} from '@codemirror/state';
 import {
@@ -68,16 +69,17 @@ export const replaceMarks = StateEffect.define<MarkState>({
 });
 
 export function marksValue(doc: Text, marks: TabMarks): MarkState {
+  const script = marks.script;
   const byLine = new Map(marks.lines.map(mark => [mark.line, mark.kind]));
   return {
-    ...(marks.script
+    ...(script
       ? {
           script: {
-            steps: [...marks.script.steps],
+            steps: [...script.steps],
             lines: Decoration.set(
               Array.from({length: doc.lines}, (_, index) =>
                 Decoration.line({
-                  script: marks.script!.lines.find(
+                  script: script.lines.find(
                     line => line.line === index + 1,
                   ) ?? {line: index + 1},
                 }).range(doc.line(index + 1).from),
@@ -120,7 +122,8 @@ const gutterMarks = {
 
 export const lineMarksField = StateField.define<MarkState>({
   create: () => ({decorations: Decoration.none, focused: Decoration.none}),
-  update(value, tr) {
+  update(previousValue, tr) {
+    let value = previousValue;
     if (tr.docChanged) {
       const map = (decorations: DecorationSet) => {
         const mapped = mapDecorations(
@@ -149,35 +152,9 @@ export const lineMarksField = StateField.define<MarkState>({
       };
     }
     if (tr.docChanged && value.script) {
-      const byLine = new Map<number, ScriptLine>();
-      for (let cursor = value.script.lines.iter(); cursor.value; cursor.next())
-        byLine.set(
-          tr.state.doc.lineAt(cursor.from).number,
-          cursor.value.spec.script,
-        );
-      const ranges = [];
-      let previous: ScriptLine | undefined;
-      for (let line = 1; line <= tr.state.doc.lines; line++) {
-        let rule = byLine.get(line);
-        if (!rule) {
-          const neighbour =
-            previous ?? [...byLine].find(([number]) => number > line)?.[1];
-          rule = {
-            line,
-            ...(neighbour?.enter === undefined ? {} : {enter: neighbour.enter}),
-            ...(neighbour?.leave === undefined ? {} : {leave: neighbour.leave}),
-          };
-        }
-        previous = rule;
-        ranges.push(
-          Decoration.line({script: {...rule, line}}).range(
-            tr.state.doc.line(line).from,
-          ),
-        );
-      }
       value = {
         ...value,
-        script: {...value.script, lines: Decoration.set(ranges)},
+        script: inheritScriptRanges(value.script, tr.state.doc),
       };
     }
     for (const effect of tr.effects) {

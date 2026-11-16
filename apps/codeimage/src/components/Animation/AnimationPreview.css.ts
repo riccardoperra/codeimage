@@ -114,3 +114,5 @@ export const modeKey = style({
   fontSize: 11,
   opacity: 0.7,
 });
+
+export const scene = style({display: 'none'});

@@ -19,14 +19,11 @@ function scriptOf(state: EditorState) {
 }
 
 function badgeText(value: ScriptLine) {
-  return [
-    value.leave !== undefined
-      ? `${value.enter ?? 1}–${value.leave - 1}`
-      : (value.enter ?? 1) > 1
-        ? `${value.enter}→`
-        : '',
-    value.focus?.length ? `●${value.focus.join(',')}` : '',
-  ]
+  let range = '';
+  if (value.leave !== undefined)
+    range = `${value.enter ?? 1}–${value.leave - 1}`;
+  else if ((value.enter ?? 1) > 1) range = `${value.enter}→`;
+  return [range, value.focus?.length ? `●${value.focus.join(',')}` : '']
     .filter(Boolean)
     .join(' ');
 }

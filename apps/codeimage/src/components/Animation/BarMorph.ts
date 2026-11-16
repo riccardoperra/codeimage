@@ -164,11 +164,7 @@ export function morphBar(options: {
       .map(entry => ({...entry, distance: distance(entry.item)}))
       .sort((a, b) => a.distance - b.distance)
       .forEach(({item, opacity, midway}, index) => {
-        const start = midway
-          ? 0
-          : opening
-            ? timelineFor.barInAt
-            : timelineFor.barInAtClose;
+        const start = midway ? 0 : barArrivalDelay(opening);
         const stagger =
           opening && !reduce && !midway ? timelineFor.barStagger : 0;
         item.animate(
@@ -188,4 +184,8 @@ export function morphBar(options: {
         );
       });
   }
+}
+
+function barArrivalDelay(opening: boolean) {
+  return opening ? timelineFor.barInAt : timelineFor.barInAtClose;
 }

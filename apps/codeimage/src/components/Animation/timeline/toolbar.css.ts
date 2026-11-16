@@ -1,8 +1,6 @@
 import {themeVars} from '@codeimage/ui';
-import {globalStyle, keyframes, style} from '@vanilla-extract/css';
+import {keyframes, style} from '@vanilla-extract/css';
 import {curve} from '../../WhatsNew/motion';
-import {durationSteppers, field, number} from '../AnimatePanel.css';
-import {curve as curveSvg} from '../easing.css';
 
 const c = themeVars.dynamicColors;
 const phone = '(max-width: 768px)';
@@ -30,14 +28,6 @@ export const divider = style({
 });
 export const group = style({display: 'flex', alignItems: 'center', gap: 8});
 
-globalStyle(
-  `${toolbar} [data-cui="button"], ${toolbar} [data-cui="icon-button"]`,
-  {
-    minHeight: 28,
-    '@media': {[phone]: {minHeight: 40, minWidth: 40}},
-  },
-);
-
 export const segmented = style({
   display: 'inline-flex',
   alignItems: 'center',
@@ -46,59 +36,51 @@ export const segmented = style({
   borderRadius: themeVars.borderRadius.lg,
   background: c.background,
 });
-export const segment = style({
-  display: 'inline-flex',
-  alignItems: 'center',
-  gap: 6,
-  height: 28,
-  padding: '0 10px',
-  border: 0,
-  borderRadius: themeVars.borderRadius.md,
-  background: 'transparent',
-  color: c.baseText,
-  font: 'inherit',
-  fontSize: 12,
-  cursor: 'pointer',
-  transition: `transform 160ms ${curve.out}`,
-  selectors: {
-    '&[aria-pressed="true"]': {
-      background: c.primary,
-      color: themeVars.backgroundColor.white,
+export const segment = style([
+  {
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: 6,
+    height: 28,
+    padding: '0 10px',
+    border: 0,
+    borderRadius: themeVars.borderRadius.md,
+    background: 'transparent',
+    color: c.baseText,
+    font: 'inherit',
+    fontSize: 12,
+    cursor: 'pointer',
+    transition: `transform 160ms ${curve.out}`,
+    selectors: {
+      '&[aria-pressed="true"]': {
+        background: c.primary,
+        color: themeVars.backgroundColor.white,
+      },
+      '&:disabled': {opacity: 0.4, cursor: 'default'},
+      '&:not(:disabled):active': {transform: 'scale(0.97)'},
+      '&:focus-visible': {outline: `2px solid ${c.primary}`, outlineOffset: 1},
     },
-    '&:disabled': {opacity: 0.4, cursor: 'default'},
-    '&:not(:disabled):active': {transform: 'scale(0.97)'},
-    '&:focus-visible': {outline: `2px solid ${c.primary}`, outlineOffset: 1},
-  },
-  '@media': {
-    [phone]: {height: 40, padding: '0 12px'},
-    '(hover: hover) and (pointer: fine)': {
-      selectors: {
-        '&:not(:disabled):not([aria-pressed="true"]):hover': {
-          background: c.panel.background,
+    '@media': {
+      [phone]: {height: 40, padding: '0 12px'},
+      '(hover: hover) and (pointer: fine)': {
+        selectors: {
+          '&:not(:disabled):not([aria-pressed="true"]):hover': {
+            background: c.panel.background,
+          },
         },
       },
     },
   },
-});
-globalStyle(`${segment} svg`, {width: 14, height: 14, flexShrink: 0});
+  {
+    selectors: {
+      '[data-animate-input="keyboard"] &': {
+        transition: 'none',
+        animation: 'none',
+      },
+    },
+  },
+]);
 
-globalStyle(`${toolbar} ${number}`, {
-  width: 150,
-  '@media': {[phone]: {width: 150}},
-});
-globalStyle(`${toolbar} ${number} input`, {
-  height: 32,
-  paddingRight: 64,
-  '@media': {[phone]: {height: 40, paddingRight: 84}},
-});
-globalStyle(`${toolbar} ${durationSteppers}`, {flexDirection: 'row', gap: 2});
-globalStyle(`${toolbar} ${durationSteppers} button`, {
-  width: 28,
-  minWidth: 28,
-  height: 28,
-  minHeight: 28,
-  '@media': {[phone]: {width: 40, minWidth: 40, height: 40, minHeight: 40}},
-});
 const grow = keyframes({
   from: {opacity: 0, transform: 'scale(0.96)'},
   to: {opacity: 1, transform: 'scale(1)'},
@@ -131,21 +113,6 @@ export const chipPopover = style({
   padding: 12,
   fontSize: 13,
 });
-globalStyle(`${chipPopover} > p`, {gap: 10});
-globalStyle(`${chipPopover} ${field}`, {justifyContent: 'space-between'});
-globalStyle(`${chipPopover} ${field} label`, {
-  whiteSpace: 'nowrap',
-  color: c.descriptionTextColor,
-});
-globalStyle(`${chipPopover} ${number}`, {width: 120, flex: 'none'});
-globalStyle(`${chipPopover} ${number} input`, {height: 28, fontSize: 13});
-globalStyle(`${chipPopover} [role="tab"]`, {fontSize: 12});
-globalStyle(`${chipPopover} ${curveSvg}`, {height: 88});
-globalStyle(`${chipPopover} > p > [data-cui="button"]`, {
-  minHeight: 28,
-  height: 28,
-  fontSize: 13,
-});
 
 export const menu = style({
   ...surface,
@@ -155,28 +122,7 @@ export const menu = style({
   fontSize: 13,
   color: c.baseText,
 });
-globalStyle(`${menu} [role="menuitem"]`, {
-  minHeight: 32,
-  padding: '0 10px',
-  borderRadius: themeVars.borderRadius.md,
-  fontSize: 13,
-  gap: 8,
-  '@media': {[phone]: {minHeight: 40}},
-});
-globalStyle(`${menu} [role="menuitem"] svg`, {
-  width: 14,
-  height: 14,
-  flexShrink: 0,
-  opacity: 0.7,
-});
-globalStyle(`${menu} hr, ${menu} [role="separator"]`, {
-  height: 0,
-  margin: '5px 4px',
-  border: 0,
-  borderTop: `1px solid ${c.divider}`,
-  background: 'none',
-  opacity: 1,
-});
+
 export const menuLabel = style({
   padding: '6px 10px 2px',
   fontSize: 11,
@@ -192,12 +138,6 @@ export const danger = style({
     '&&:not([data-disabled])': {color: themeVars.backgroundColor.red['400']},
   },
 });
-globalStyle(`${danger}:not([data-disabled]) svg`, {opacity: 1});
-
-globalStyle(
-  `${chipPopover} ${number} input, ${chipPopover} > p > [data-cui="button"]`,
-  {'@media': {[phone]: {minHeight: 40, height: 40}}},
-);
 
 export const sheetOverlay = style({
   position: 'fixed',
@@ -228,13 +168,46 @@ export const sheetHead = style({
   justifyContent: 'space-between',
   gap: 12,
 });
-globalStyle(`${sheet} h2`, {margin: 0, fontSize: 14});
-globalStyle(
-  `${sheet} [data-cui="button"], ${sheet} [data-cui="icon-button"], ${sheet} input`,
-  {minHeight: 40},
-);
 
-globalStyle(`[data-animate-input="keyboard"] ${segment}`, {
-  transition: 'none',
-  animation: 'none',
+export const button = style({
+  selectors: {
+    '[data-step-toolbar] &': {
+      minHeight: 28,
+      '@media': {[phone]: {minHeight: 40, minWidth: 40}},
+    },
+    '[data-animation-step-sheet] &': {minHeight: 40},
+  },
 });
+export const actionIcon = style({width: 14, height: 14, flexShrink: 0});
+export const menuItem = style({
+  selectors: {
+    '[data-animation-steps-menu] &': {
+      minHeight: 32,
+      padding: '0 10px',
+      borderRadius: themeVars.borderRadius.md,
+      fontSize: 13,
+      gap: 8,
+      '@media': {[phone]: {minHeight: 40}},
+    },
+  },
+});
+export const menuIcon = style({
+  width: 14,
+  height: 14,
+  flexShrink: 0,
+  opacity: 0.7,
+  selectors: {'[data-menu-danger]:not([data-disabled]) &': {opacity: 1}},
+});
+export const menuSeparator = style({
+  selectors: {
+    '[data-animation-steps-menu] &': {
+      height: 0,
+      margin: '5px 4px',
+      border: 0,
+      borderTop: `1px solid ${c.divider}`,
+      background: 'none',
+      opacity: 1,
+    },
+  },
+});
+export const sheetTitle = style({margin: 0, fontSize: 14});

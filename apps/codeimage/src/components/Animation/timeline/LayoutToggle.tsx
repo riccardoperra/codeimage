@@ -1,3 +1,4 @@
+import {button as canvasButton} from '../../../pages/UnifiedEditor/controls/canvas-toolbar.css';
 import type {AppLocaleEntries} from '../../../i18n';
 import {useI18n} from '@codeimage/locale';
 import {Tooltip} from '@codeui/kit';
@@ -47,6 +48,7 @@ export function LayoutToggle() {
   return (
     <div data-timeline-layout-toggle>
       <SegmentedField
+        itemClass={canvasButton}
         size="xs"
         value={timelineLayout()}
         onChange={setTimelineLayout}

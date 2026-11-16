@@ -60,9 +60,12 @@ export function DurationInput(props: {
       on:keydown={keyDown}
       onPointerDown={pointerDown}
     >
-      <label for={`${props.id}-input`}>{props.label}</label>
+      <label class={styles.durationLabel} for={`${props.id}-input`}>
+        {props.label}
+      </label>
       <div class={styles.number} data-compact={props.compact ? '' : undefined}>
         <TextField
+          slotClasses={{input: styles.durationInput}}
           ref={configureInput}
           id={props.id}
           size="xs"
@@ -71,6 +74,7 @@ export function DurationInput(props: {
         />
         <div class={styles.durationSteppers}>
           <Button
+            class={styles.durationButton}
             type="button"
             size="xs"
             theme="secondary"
@@ -87,6 +91,7 @@ export function DurationInput(props: {
             <icons.ChevronUpIcon />
           </Button>
           <Button
+            class={styles.durationButton}
             type="button"
             size="xs"
             theme="secondary"

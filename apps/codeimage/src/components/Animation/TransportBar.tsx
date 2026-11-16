@@ -1,3 +1,4 @@
+import {button as canvasButton} from '../../pages/UnifiedEditor/controls/canvas-toolbar.css';
 import {useI18n} from '@codeimage/locale';
 import {getEditorStore} from '@codeimage/store/editor';
 import {IconButton} from '@codeui/kit';
@@ -19,6 +20,7 @@ export function BarTransport() {
   return (
     <>
       <IconButton
+        class={canvasButton}
         size="sm"
         theme="primary"
         aria-label={playing() ? t('animation.pause') : t('animation.play')}
@@ -54,6 +56,7 @@ export function TransportBar(props: {compact: boolean}) {
   return (
     <div class={styles.transport}>
       <IconButton
+        class={canvasButton}
         size="sm"
         theme="primary"
         aria-label={playing() ? t('animation.pause') : t('animation.play')}
@@ -69,6 +72,7 @@ export function TransportBar(props: {compact: boolean}) {
       </IconButton>
       <Show when={animation.playback().state !== 'editing'}>
         <IconButton
+          class={canvasButton}
           size="sm"
           theme="secondary"
           aria-label={t('animation.stop')}
@@ -89,6 +93,7 @@ export function TransportBar(props: {compact: boolean}) {
         <LayoutToggle />
       </Show>
       <IconButton
+        class={canvasButton}
         size="sm"
         theme="secondary"
         aria-label={t('animation.close')}

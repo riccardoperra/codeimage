@@ -18,8 +18,9 @@ export const StopIcon = () => (
   </SvgIcon>
 );
 
-export const ArrowLeftIcon = () => (
+export const ArrowLeftIcon = (props: {class?: string}) => (
   <svg
+    class={props.class}
     viewBox="0 0 16 16"
     fill="none"
     stroke="currentColor"
@@ -32,8 +33,9 @@ export const ArrowLeftIcon = () => (
   </svg>
 );
 
-export const ArrowRightIcon = () => (
+export const ArrowRightIcon = (props: {class?: string}) => (
   <svg
+    class={props.class}
     viewBox="0 0 16 16"
     fill="none"
     stroke="currentColor"
@@ -46,8 +48,9 @@ export const ArrowRightIcon = () => (
   </svg>
 );
 
-export const TabPlusIcon = () => (
+export const TabPlusIcon = (props: {class?: string}) => (
   <svg
+    class={props.class}
     viewBox="0 0 16 16"
     fill="none"
     stroke="currentColor"
@@ -60,8 +63,9 @@ export const TabPlusIcon = () => (
   </svg>
 );
 
-export const TrashIcon = () => (
+export const TrashIcon = (props: {class?: string}) => (
   <svg
+    class={props.class}
     viewBox="0 0 16 16"
     fill="none"
     stroke="currentColor"
@@ -74,8 +78,9 @@ export const TrashIcon = () => (
   </svg>
 );
 
-export const MinusSquareIcon = () => (
+export const MinusSquareIcon = (props: {class?: string}) => (
   <svg
+    class={props.class}
     viewBox="0 0 16 16"
     fill="none"
     stroke="currentColor"

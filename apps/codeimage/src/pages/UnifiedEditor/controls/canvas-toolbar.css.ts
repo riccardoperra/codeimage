@@ -1,5 +1,5 @@
 import {themeVars} from '@codeimage/ui';
-import {globalStyle, style} from '@vanilla-extract/css';
+import {style} from '@vanilla-extract/css';
 
 const c = themeVars.dynamicColors;
 const phone = 'screen and (max-width: 768px)';
@@ -62,15 +62,11 @@ export const content = style({
   },
 });
 
-globalStyle(`${toolbar} button`, {
-  minHeight: '36px',
-  '@media': {[phone]: {minHeight: '40px'}},
-});
-globalStyle(`${toolbar} [data-bar-transport] label`, {
-  position: 'absolute',
-  width: '1px',
-  height: '1px',
-  overflow: 'hidden',
-  clip: 'rect(0 0 0 0)',
-  whiteSpace: 'nowrap',
+export const button = style({
+  selectors: {
+    '[data-bar-mode] &': {
+      minHeight: '36px',
+      '@media': {[phone]: {minHeight: '40px'}},
+    },
+  },
 });

@@ -74,17 +74,35 @@ export const details = style({
   minHeight: 36,
   '@media': {'(max-width: 768px)': {minHeight: 40}},
 });
-export const field = style({
-  display: 'flex',
-  alignItems: 'center',
-  gap: 8,
-  minWidth: 0,
-});
-export const number = style({
-  position: 'relative',
-  width: 110,
-  '@media': {'(max-width: 768px)': {width: 142}},
-});
+export const field = style([
+  {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 8,
+    minWidth: 0,
+  },
+  {
+    selectors: {
+      '[data-transition-popover] &': {justifyContent: 'space-between'},
+    },
+  },
+]);
+export const number = style([
+  {
+    position: 'relative',
+    width: 110,
+    '@media': {'(max-width: 768px)': {width: 142}},
+  },
+  {
+    selectors: {
+      '[data-step-toolbar] &': {
+        width: 150,
+        '@media': {'(max-width: 768px)': {width: 150}},
+      },
+    },
+  },
+  {selectors: {'[data-transition-popover] &': {width: 120, flex: 'none'}}},
+]);
 export const hint = style({margin: 0, opacity: 0.7, fontSize: 12});
 
 globalStyle(`${island} input`, {
@@ -94,15 +112,18 @@ globalStyle(`${number} input`, {
   paddingRight: 28,
   '@media': {'(max-width: 768px)': {paddingRight: 84}},
 });
-export const durationSteppers = style({
-  position: 'absolute',
-  right: 4,
-  top: '50%',
-  transform: 'translateY(-50%)',
-  display: 'flex',
-  flexDirection: 'column',
-  '@media': {'(max-width: 768px)': {flexDirection: 'row'}},
-});
+export const durationSteppers = style([
+  {
+    position: 'absolute',
+    right: 4,
+    top: '50%',
+    transform: 'translateY(-50%)',
+    display: 'flex',
+    flexDirection: 'column',
+    '@media': {'(max-width: 768px)': {flexDirection: 'row'}},
+  },
+  {selectors: {'[data-step-toolbar] &': {flexDirection: 'row', gap: 2}}},
+]);
 globalStyle(`${durationSteppers} button`, {
   height: 14,
   minHeight: 14,
@@ -133,4 +154,59 @@ export const scriptControls = style({
   display: 'flex',
   alignItems: 'center',
   gap: 4,
+});
+
+export const durationLabel = style({
+  selectors: {
+    '[data-transition-popover] &': {
+      whiteSpace: 'nowrap',
+      color: c.descriptionTextColor,
+    },
+  },
+});
+export const durationInput = style({
+  selectors: {
+    '[data-step-toolbar] &': {
+      height: 32,
+      paddingRight: 64,
+      '@media': {'(max-width: 768px)': {height: 40, paddingRight: 84}},
+    },
+    '[data-transition-popover] &': {
+      height: 28,
+      fontSize: 13,
+      '@media': {'(max-width: 768px)': {minHeight: 40, height: 40}},
+    },
+    '[data-animation-step-sheet] &': {minHeight: 40},
+  },
+});
+export const durationButton = style({
+  selectors: {
+    '[data-step-toolbar] &': {
+      width: 28,
+      minWidth: 28,
+      height: 28,
+      minHeight: 28,
+      '@media': {
+        '(max-width: 768px)': {
+          width: 40,
+          minWidth: 40,
+          height: 40,
+          minHeight: 40,
+        },
+      },
+    },
+    '[data-animation-step-sheet] &': {minHeight: 40},
+  },
+});
+export const barTitleLabel = style({
+  selectors: {
+    '[data-bar-transport] &': {
+      position: 'absolute',
+      width: '1px',
+      height: '1px',
+      overflow: 'hidden',
+      clip: 'rect(0 0 0 0)',
+      whiteSpace: 'nowrap',
+    },
+  },
 });

@@ -79,7 +79,8 @@ function interpolate(
       ? a[to] + ((value - a[from]) / length) * (b[to] - a[to])
       : b[to];
   }
-  return knots.at(-1)![to];
+  const last = knots.at(-1);
+  return last ? last[to] : 0;
 }
 
 const finePointer = (event: PointerEvent) =>
@@ -154,13 +155,10 @@ export function createListViewport(
       const {start, size} = placeOf(viewport, item);
       const scroll = scrollOf(viewport);
       const visible = sizeOf(viewport);
-      const target = follow
-        ? start + size / 2 - visible / 2
-        : start < scroll
-          ? start
-          : start + size > scroll + visible
-            ? start + size - visible
-            : scroll;
+      let target = scroll;
+      if (follow) target = start + size / 2 - visible / 2;
+      else if (start < scroll) target = start;
+      else if (start + size > scroll + visible) target = start + size - visible;
       const max =
         (axis === 'x'
           ? viewport.element.scrollWidth

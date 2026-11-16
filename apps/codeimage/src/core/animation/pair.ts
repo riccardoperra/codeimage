@@ -140,8 +140,12 @@ export function pairSteps(
       ).map(token => ({
         ...token,
         key: `row:${sourceLine}:${token.key}`,
-        ...('from' in token ? {from: {...token.from, line: fromRow!}} : {}),
-        ...('to' in token ? {to: {...token.to, line: toRow!}} : {}),
+        ...('from' in token && fromRow !== undefined
+          ? {from: {...token.from, line: fromRow}}
+          : {}),
+        ...('to' in token && toRow !== undefined
+          ? {to: {...token.to, line: toRow}}
+          : {}),
       }));
     return [
       ...from.rows.flatMap((line, row) =>

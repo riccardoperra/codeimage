@@ -1,5 +1,5 @@
 import {themeVars} from '@codeimage/ui';
-import {globalStyle, style} from '@vanilla-extract/css';
+import {style} from '@vanilla-extract/css';
 import {curve} from '../../WhatsNew/motion';
 
 const c = themeVars.dynamicColors;
@@ -53,41 +53,60 @@ const rowBase = {
   cursor: 'pointer',
 } as const;
 
-export const row = style({
-  ...rowBase,
-  height: 40,
-  padding: '0 8px 0 4px',
-  fontSize: 13,
-  selectors: {
-    '&[data-current]': {background: c.panel.background},
-    '&:focus-visible': {outline: `2px solid ${c.primary}`, outlineOffset: -2},
-  },
-  '@media': {
-    [hover]: {selectors: {'&:hover': {background: c.panel.background}}},
-  },
-});
-export const tabRow = style({background: c.background});
-export const stepRow = style({paddingLeft: 44, height: 36});
-export const transitionRow = style({
-  ...rowBase,
-  height: 28,
-  padding: '0 8px 0 44px',
-  fontSize: 12,
-  opacity: 0.8,
-  fontVariantNumeric: 'tabular-nums',
-  selectors: {
-    '&[data-current]': {opacity: 1, background: c.panel.background},
-    '&:focus-visible': {outline: `2px solid ${c.primary}`, outlineOffset: -2},
-  },
-  '@media': {
-    [phone]: {height: 40},
-    [hover]: {
-      selectors: {'&:hover': {opacity: 1, background: c.panel.background}},
+export const row = style([
+  {
+    ...rowBase,
+    height: 40,
+    padding: '0 8px 0 4px',
+    fontSize: 13,
+    selectors: {
+      '&[data-current]': {background: c.panel.background},
+      '&:focus-visible': {outline: `2px solid ${c.primary}`, outlineOffset: -2},
+    },
+    '@media': {
+      [hover]: {selectors: {'&:hover': {background: c.panel.background}}},
     },
   },
-});
+  {
+    selectors: {
+      '[data-animate-input="keyboard"] &': {
+        transition: 'none',
+        animation: 'none',
+      },
+    },
+  },
+]);
+export const tabRow = style({background: c.background});
+export const stepRow = style({paddingLeft: 44, height: 36});
+export const transitionRow = style([
+  {
+    ...rowBase,
+    height: 28,
+    padding: '0 8px 0 44px',
+    fontSize: 12,
+    opacity: 0.8,
+    fontVariantNumeric: 'tabular-nums',
+    selectors: {
+      '&[data-current]': {opacity: 1, background: c.panel.background},
+      '&:focus-visible': {outline: `2px solid ${c.primary}`, outlineOffset: -2},
+    },
+    '@media': {
+      [phone]: {height: 40},
+      [hover]: {
+        selectors: {'&:hover': {opacity: 1, background: c.panel.background}},
+      },
+    },
+  },
+  {
+    selectors: {
+      '[data-animate-input="keyboard"] &': {
+        transition: 'none',
+        animation: 'none',
+      },
+    },
+  },
+]);
 export const betweenTabs = style({paddingLeft: 12});
-globalStyle(`${transitionRow} svg`, {width: 18, height: 16, flexShrink: 0});
 
 export const grip = style({
   display: 'grid',
@@ -126,46 +145,66 @@ export const time = style({
   fontSize: 12,
   fontVariantNumeric: 'tabular-nums',
 });
-export const add = style({
-  display: 'grid',
-  placeItems: 'center',
-  minWidth: 28,
-  height: 28,
-  padding: '0 10px',
-  flexShrink: 0,
-  border: 0,
-  borderRadius: themeVars.borderRadius.md,
-  background: 'transparent',
-  color: c.baseText,
-  font: 'inherit',
-  fontSize: 12,
-  whiteSpace: 'nowrap',
-  cursor: 'pointer',
-  transition: `transform 160ms ${curve.out}`,
-  selectors: {
-    '&:active': {transform: 'scale(0.97)'},
-    '&:focus-visible': {outline: `2px solid ${c.primary}`},
+export const add = style([
+  {
+    display: 'grid',
+    placeItems: 'center',
+    minWidth: 28,
+    height: 28,
+    padding: '0 10px',
+    flexShrink: 0,
+    border: 0,
+    borderRadius: themeVars.borderRadius.md,
+    background: 'transparent',
+    color: c.baseText,
+    font: 'inherit',
+    fontSize: 12,
+    whiteSpace: 'nowrap',
+    cursor: 'pointer',
+    transition: `transform 160ms ${curve.out}`,
+    selectors: {
+      '&:active': {transform: 'scale(0.97)'},
+      '&:focus-visible': {outline: `2px solid ${c.primary}`},
+    },
+    '@media': {
+      [phone]: {minWidth: 40, height: 40},
+      [hover]: {selectors: {'&:hover': {background: c.panel.background}}},
+    },
   },
-  '@media': {
-    [phone]: {minWidth: 40, height: 40},
-    [hover]: {selectors: {'&:hover': {background: c.panel.background}}},
+  {
+    selectors: {
+      '[data-animate-input="keyboard"] &': {
+        transition: 'none',
+        animation: 'none',
+      },
+    },
   },
-});
-export const addTab = style({
-  ...rowBase,
-  height: 36,
-  padding: '0 12px',
-  fontSize: 13,
-  opacity: 0.7,
-  selectors: {
-    '&:disabled': {opacity: 0.3, cursor: 'default'},
-    '&:focus-visible': {outline: `2px solid ${c.primary}`, outlineOffset: -2},
+]);
+export const addTab = style([
+  {
+    ...rowBase,
+    height: 36,
+    padding: '0 12px',
+    fontSize: 13,
+    opacity: 0.7,
+    selectors: {
+      '&:disabled': {opacity: 0.3, cursor: 'default'},
+      '&:focus-visible': {outline: `2px solid ${c.primary}`, outlineOffset: -2},
+    },
+    '@media': {
+      [phone]: {height: 40},
+      [hover]: {selectors: {'&:not(:disabled):hover': {opacity: 1}}},
+    },
   },
-  '@media': {
-    [phone]: {height: 40},
-    [hover]: {selectors: {'&:not(:disabled):hover': {opacity: 1}}},
+  {
+    selectors: {
+      '[data-animate-input="keyboard"] &': {
+        transition: 'none',
+        animation: 'none',
+      },
+    },
   },
-});
+]);
 export const rowButton = style({
   display: 'flex',
   alignItems: 'center',
@@ -186,7 +225,4 @@ export const rowButton = style({
   },
 });
 
-globalStyle(
-  `[data-animate-input="keyboard"] ${row}, [data-animate-input="keyboard"] ${transitionRow}, [data-animate-input="keyboard"] ${add}, [data-animate-input="keyboard"] ${addTab}`,
-  {transition: 'none', animation: 'none'},
-);
+export const glyph = style({width: 18, height: 16, flexShrink: 0});
