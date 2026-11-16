@@ -8,8 +8,6 @@ import {sampleDocument} from './sample';
 export const decode = (bytes: Uint8Array | string) =>
   PNG.sync.read(Buffer.from(bytes as Uint8Array));
 
-// Flat gray frame and terminal with no header, watermark, border or shadow,
-// so only the code and the gutter put color in the image.
 export const plainDocument = (
   code: string,
   options: Partial<typeof sampleDocument.editor.options> = {},
@@ -48,7 +46,6 @@ export interface AnimationFile {
   durationsMs: number[];
 }
 
-// The canvas and the frame times of an animated WebP, from its RIFF chunks.
 export function readWebpAnimation(bytes: Uint8Array): AnimationFile {
   const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
   const uint24 = (offset: number) =>
@@ -68,7 +65,6 @@ export function readWebpAnimation(bytes: Uint8Array): AnimationFile {
   return file;
 }
 
-// The canvas and the frame times of an animated PNG, from its chunks.
 export function readApngAnimation(bytes: Uint8Array): AnimationFile {
   const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
   const file: AnimationFile = {width: 0, height: 0, durationsMs: []};
@@ -98,8 +94,6 @@ const pngChunk = (type: string, data: Uint8Array) => {
   return chunk;
 };
 
-// Each frame of an animated PNG whose frames are whole canvases that replace
-// the one before, which is how Takumi writes them.
 export function decodeApng(bytes: Uint8Array): PNG[] {
   const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
   let header: Uint8Array = new Uint8Array();
@@ -119,7 +113,7 @@ export function decodeApng(bytes: Uint8Array): PNG[] {
       }
       frames.push([]);
     }
-    // The first four bytes of fdAT are its sequence number.
+
     if (type === 'IDAT') frames.at(-1)?.push(data);
     if (type === 'fdAT') frames.at(-1)?.push(data.subarray(4));
     offset += size + 12;
@@ -186,8 +180,6 @@ function decodeLzw(minCodeSize: number, data: Uint8Array, pixels: number) {
   return out;
 }
 
-// Each frame of a GIF as a viewer shows it: drawn over what the frames
-// before it left on the canvas.
 export function decodeGif(bytes: Uint8Array): AnimationFile & {frames: PNG[]} {
   const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
   const colorTable = (packed: number) =>
@@ -242,15 +234,17 @@ export function decodeGif(bytes: Uint8Array): AnimationFile & {frames: PNG[]} {
         frameWidth * frameHeight,
       );
       const before = Buffer.from(canvas);
-      for (let row = 0; row < frameHeight; row++) {
-        for (let column = 0; column < frameWidth; column++) {
-          const index = indexes[row * frameWidth + column];
-          if (index === control.transparent) continue;
-          const target = ((top + row) * width + left + column) * 4;
-          canvas.set(palette.subarray(index * 3, index * 3 + 3), target);
-          canvas[target + 3] = 255;
-        }
-      }
+      paintGifFrame({
+        canvas,
+        indexes,
+        palette,
+        left,
+        top,
+        width,
+        frameWidth,
+        frameHeight,
+        transparent: control.transparent,
+      });
       const frame = new PNG({width, height});
       canvas.copy(frame.data);
       file.frames.push(frame);
@@ -268,4 +262,36 @@ export function decodeGif(bytes: Uint8Array): AnimationFile & {frames: PNG[]} {
     }
   }
   return file;
+}
+
+function paintGifFrame({
+  canvas,
+  indexes,
+  palette,
+  left,
+  top,
+  width,
+  frameWidth,
+  frameHeight,
+  transparent,
+}: {
+  canvas: Buffer;
+  indexes: Uint8Array;
+  palette: Uint8Array;
+  left: number;
+  top: number;
+  width: number;
+  frameWidth: number;
+  frameHeight: number;
+  transparent: number;
+}) {
+  for (let row = 0; row < frameHeight; row++) {
+    for (let column = 0; column < frameWidth; column++) {
+      const index = indexes[row * frameWidth + column];
+      if (index === transparent) continue;
+      const target = ((top + row) * width + left + column) * 4;
+      canvas.set(palette.subarray(index * 3, index * 3 + 3), target);
+      canvas[target + 3] = 255;
+    }
+  }
 }

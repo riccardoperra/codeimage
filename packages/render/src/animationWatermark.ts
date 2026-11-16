@@ -30,10 +30,9 @@ function fragment(html: string, parent: Element): ChildNode[] {
   return nodes;
 }
 
-// Where positionWatermark put the mark of one step's static export.
 interface StepMark {
   slot: string;
-  // The home's children and the moved mark, when the mark left its home.
+
   home: string;
   moved: Element | null;
   size: FrameSize;
@@ -59,9 +58,6 @@ const setStyle = (element: Element, style: string) => {
   ];
 };
 
-// A transition resizes the frame, so a mark moved to a right or bottom slot
-// hangs from that corner of the frame. At the step's own size it sits where
-// the static export put it.
 function anchoredMark({slot, moved, size}: StepMark & {moved: Element}) {
   const right = slot.endsWith('right');
   const bottom = slot.startsWith('frame-bottom');
@@ -71,7 +67,8 @@ function anchoredMark({slot, moved, size}: StepMark & {moved: Element}) {
     `<div data-watermark-anchor style="position:absolute;${right ? 'right' : 'left'}:0;${bottom ? 'bottom' : 'top'}:0;width:0;height:0;z-index:${WATERMARK.zIndex}">${html}</div>`,
     moved,
   )[0] as Element;
-  const mark = anchor.childNodes.find(isElement)!;
+  const mark = anchor.childNodes.find(isElement);
+  if (!mark) throw new Error('The watermark anchor lost its mark');
   const shift = (property: string, by: number) => (value: string) =>
     value.replace(
       new RegExp(`(^|;)${property}:(-?[\\d.e+-]+)px`),
@@ -109,13 +106,6 @@ function applyMark(html: string, mark: StepMark | null, anchor: boolean) {
   return serialize(document);
 }
 
-/**
- * Gives every scene the watermark of its step's static export. `place` runs
- * positionWatermark on that export, as the static path does. A hold then
- * draws the static export exactly, and a transition starts and ends with the
- * mark of the step at that end, since its own frame still holds tokens that
- * are hidden there.
- */
 export async function watermarkScenes(
   animation: Pick<AnimationScenes, 'scenes' | 'steps'>,
   place: (step: AnimationStepFrame) => Promise<string>,
@@ -123,13 +113,12 @@ export async function watermarkScenes(
   const placed = new Map<AnimationStepFrame, Promise<StepMark | null>>();
   const marks = await Promise.all(
     animation.steps.map(step => {
-      if (!placed.has(step)) {
-        placed.set(
-          step,
-          place(step).then(html => readMark(html, step.exactSize)),
-        );
+      let mark = placed.get(step);
+      if (!mark) {
+        mark = place(step).then(html => readMark(html, step.exactSize));
+        placed.set(step, mark);
       }
-      return placed.get(step)!;
+      return mark;
     }),
   );
   return animation.scenes.map(scene => ({

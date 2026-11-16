@@ -31,7 +31,6 @@ import {
 } from './test-utils';
 import {positionWatermark} from './watermarkGeometry';
 
-// The built SSR entry, called the way renderAnimation calls it.
 interface AnimationEntry {
   composeFrame(
     document: SnapshotDocument,
@@ -63,7 +62,6 @@ const twoTabs: SnapshotDocument = {
   },
 };
 
-// The second step outgrows the target, so its window scales down.
 const targetTabs: SnapshotDocument = {
   ...twoTabs,
   frame: {
@@ -94,7 +92,6 @@ const targetTabs: SnapshotDocument = {
   },
 };
 
-// Lays out at a pixel ratio of 1, so the host works in CSS pixels.
 async function setup(document: SnapshotDocument) {
   const [entry, stylesheet, markup] = await Promise.all([
     import(
@@ -147,7 +144,7 @@ async function setup(document: SnapshotDocument) {
       width: animation.width,
       height: animation.height,
     });
-  // The watermark of a static export, as createRenderer places it.
+
   const place = (frame: ComposedFrame) =>
     positionWatermark({
       html: frame.html,
@@ -174,16 +171,11 @@ const timing = (...editorIds: string[]): AnimationTiming => ({
   fps: 30,
 });
 
-// html > body > scene > canvas > preview wrapper > frame. The canvas paints
-// the frame background before the wrapper.
 const frameOf = (root: MeasuredNode) =>
-  root.children[0].children[0].children[0].children.at(-1)!.children[0];
+  lastItem(root.children[0].children[0].children[0].children).children[0];
 
-// frame > fit viewport > fitted window. A scene hides the frame's own
-// background, which the canvas paints.
 const windowOf = (root: MeasuredNode) => frameOf(root).children[0].children[0];
 
-// The window width a natural frame keeps, as in the web export.
 const MIN_WINDOW_WIDTH = 480;
 
 const box = (node: MeasuredNode) => ({
@@ -359,7 +351,7 @@ describe('renderAnimationScenes', {timeout: 30_000}, () => {
     );
     const [narrow, wide] = animation.steps.map(({exactSize}) => exactSize);
     expect(wide.width).toBeGreaterThan(narrow.width);
-    // signatureScale in apps/codeimage/src/components/Frame/signatureLayout.ts
+
     const scale =
       Math.round(Math.min(2, Math.max(0.85, animation.width / 640)) * 1000) /
       1000;
@@ -395,7 +387,6 @@ describe('renderAnimationScenes', {timeout: 30_000}, () => {
   });
 
   it('gives every scene the watermark of its step', async () => {
-    // The last line of the second tab runs under the watermark's home.
     const input: SnapshotDocument = {
       ...twoTabs,
       editor: {
@@ -429,11 +420,11 @@ describe('renderAnimationScenes', {timeout: 30_000}, () => {
       slot,
       slot,
     ]);
-    // A hold is the static export of its step, mark included.
+
     const inner = (html: string, from: string, to: string) =>
       html.slice(html.indexOf(from) + from.length, html.lastIndexOf(to));
     expect(scenes[3].html).toContain(inner(placed[1], '<body>', '</body>'));
-    // A transition keeps the moved mark at its corner of a resizing frame.
+
     expect(scenes[2].html).toContain(
       '<div data-watermark-anchor="" style="position:absolute;right:0;',
     );
@@ -452,12 +443,9 @@ describe('renderAnimationScenes', {timeout: 30_000}, () => {
   });
 });
 
-// Two tabs on a flat gray frame, so only code puts other colors in a frame.
-// The second tab is four lines taller than the first.
 const SHORT = 'short';
 const TALL = 'tall\ntall\ntall\ntall\ntall';
-// Windows wider than the 480 px a natural step keeps, so each step's frame
-// is its still. The first has the longer line, the second four more lines.
+
 const WIDE = Array(13).fill('wide').join(' ');
 const WIDE_TALL = Array(5).fill(Array(12).fill('tall').join(' ')).join('\n');
 const GRAY = [128, 128, 128];
@@ -497,8 +485,6 @@ const still = async (input: AnimationInput, editor: number) => {
   );
 };
 
-// The still, centered in the frame and drawn over the frame background that
-// covers the whole canvas, as an RGB color at each pixel of the frame.
 const onCanvas = (frame: PNG, image: PNG, background = GRAY) => {
   const left = Math.floor((frame.width - image.width) / 2);
   const top = Math.floor((frame.height - image.height) / 2);
@@ -515,8 +501,6 @@ const onCanvas = (frame: PNG, image: PNG, background = GRAY) => {
   };
 };
 
-// Pixels of the frame that differ from the still on the canvas by more than
-// the rounding of a semi-transparent edge.
 const differingOnCanvas = (frame: PNG, image: PNG) => {
   const expected = onCanvas(frame, image);
   let count = 0;
@@ -536,9 +520,6 @@ const differingOnCanvas = (frame: PNG, image: PNG) => {
   return count;
 };
 
-// A GIF quantizes its colors, so only where code draws, far from the gray,
-// is compared. A ghost is code where the still on the canvas has none, and a
-// hole the reverse.
 const inkCoverage = (frame: PNG, image: PNG) => {
   const expected = onCanvas(frame, image);
   const ink = (color: ArrayLike<number>, threshold: number) =>
@@ -559,7 +540,6 @@ const inkCoverage = (frame: PNG, image: PNG) => {
   return {ghosts, holes, clear};
 };
 
-// The pixels that draw code. The margin around a smaller frame is clear.
 const codePixels = (image: PNG) => {
   let count = 0;
   for (let i = 0; i < image.data.length; i += 4) {
@@ -569,8 +549,6 @@ const codePixels = (image: PNG) => {
   return count;
 };
 
-// Two tabs of one size with line numbers. Their middle line is removed in the
-// first tab and added in the second.
 const markedSteps = (): AnimationInput => {
   const {format, ...base} = plainDocument('', {showLineNumbers: true});
   const [tab] = base.editor.editors;
@@ -605,7 +583,7 @@ describe('renderAnimation', {timeout: 60_000}, () => {
     const input = steps2([SHORT, TALL]);
     const webp = readWebpAnimation(await renderAnimation(input));
     const [short, tall] = [await still(input, 0), await still(input, 1)];
-    // Both windows are narrower than the 480 px a natural step keeps.
+
     expect(short.width).toBeLessThan(MIN_WINDOW_WIDTH);
     expect(tall.height).toBeGreaterThan(short.height);
     expect([webp.width, webp.height]).toEqual([
@@ -613,10 +591,7 @@ describe('renderAnimation', {timeout: 60_000}, () => {
       tall.height,
     ]);
     expect(sum(webp.durationsMs)).toBe(800 + 700 + 800);
-    // WebP stores equal neighbors as one frame, so each hold is one frame
-    // that may take in the still ends of the transition. The transition is
-    // 21 frames at 30 fps, and the frame box itself draws nothing over the
-    // canvas, so frames where only it changes are equal too.
+
     expect(webp.durationsMs.at(0)).toBeGreaterThanOrEqual(800);
     expect(webp.durationsMs.at(-1)).toBeGreaterThanOrEqual(800);
     expect(webp.durationsMs.length).toBeGreaterThan(10);
@@ -641,7 +616,7 @@ describe('renderAnimation', {timeout: 60_000}, () => {
         ...steps2([SHORT, TALL], animation(first, second)),
         format: 'apng',
       });
-      // pngjs reads the first frame of an animated PNG.
+
       return {file: readApngAnimation(bytes), firstFrame: decode(bytes)};
     };
     const shortFirst = await render('first', 'second');
@@ -660,21 +635,17 @@ describe('renderAnimation', {timeout: 60_000}, () => {
     const [first, last] = [await still(input, 0), await still(input, 1)];
     expect([first.width, first.height]).toEqual([last.width, last.height]);
     expect(differingOnCanvas(frames[0], first)).toBe(0);
-    expect(differingOnCanvas(frames.at(-1)!, last)).toBe(0);
+    expect(differingOnCanvas(lastItem(frames), last)).toBe(0);
   });
 
   it('places the watermark of each step like its still', async () => {
-    // The second step's last line runs under the watermark's home. It is one
-    // token: Takumi ends each run up to 1/64 px late, so a natural window,
-    // as wide as its text, outgrows the still's by about 0.5 px over 80 runs
-    // and its moved mark follows.
     const input = steps2([WIDE, `${TALL}\n"${'w'.repeat(200)}"`]);
     input.terminal = {...input.terminal, showWatermark: true};
     const frames = decodeApng(
       await renderAnimation({...input, format: 'apng'}),
     );
     expect(differingOnCanvas(frames[0], await still(input, 0))).toBe(0);
-    expect(differingOnCanvas(frames.at(-1)!, await still(input, 1))).toBe(0);
+    expect(differingOnCanvas(lastItem(frames), await still(input, 1))).toBe(0);
   });
 
   it('paints one frame background across the whole canvas', async () => {
@@ -686,7 +657,7 @@ describe('renderAnimation', {timeout: 60_000}, () => {
     const frames = decodeApng(
       await renderAnimation({...input, format: 'apng'}),
     );
-    const [first, last] = [frames[0], frames.at(-1)!];
+    const [first, last] = [frames[0], lastItem(frames)];
     const {width, height} = first;
     for (const [x, y] of [
       [0, 0],
@@ -706,8 +677,8 @@ describe('renderAnimation', {timeout: 60_000}, () => {
     const frames = decodeApng(
       await renderAnimation({...input, format: 'apng'}),
     );
-    // Dracula's terminal color, which the web export's background defaults to.
-    for (const frame of [frames[0], frames.at(-1)!]) {
+
+    for (const frame of [frames[0], lastItem(frames)]) {
       expect(pixelAt(frame, 0, 0)).toEqual([40, 42, 54, 255]);
       expect(pixelAt(frame, frame.width - 1, frame.height - 1)).toEqual([
         40, 42, 54, 255,
@@ -738,7 +709,7 @@ describe('renderAnimation', {timeout: 60_000}, () => {
         holes: 0,
         clear: 0,
       });
-      expect(inkCoverage(gif.frames.at(-1)!, await still(input, 1))).toEqual({
+      expect(inkCoverage(lastItem(gif.frames), await still(input, 1))).toEqual({
         ghosts: 0,
         holes: 0,
         clear: 0,
@@ -820,8 +791,6 @@ describe('renderAnimation', {timeout: 60_000}, () => {
 });
 
 describe('Takumi', () => {
-  // clearGifFrames makes up for this. When this fails, Takumi clears its GIF
-  // frames itself: delete clearGifFrames.
   it('still marks no GIF frame to be cleared before the next one', async () => {
     const gif = await new Renderer().renderAnimation({
       scenes: [
@@ -855,3 +824,10 @@ describe('animationFps', () => {
     ]);
   });
 });
+
+function lastItem<T>(items: T[]): T {
+  const item = items.at(-1);
+  expect(item).toBeDefined();
+  if (item === undefined) throw new Error('Expected a last item');
+  return item;
+}

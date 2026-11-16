@@ -4,11 +4,6 @@ const IMAGE = 0x2c;
 const DISPOSAL_BITS = 0b11100;
 const RESTORE_TO_BACKGROUND = 2 << 2;
 
-// Takumi 2.19 and 2.20 write every GIF frame as a whole canvas with the
-// disposal "do not dispose", so the next frame is drawn over it. A pixel that
-// turns transparent then keeps showing the frame before, and a frame that
-// shrinks leaves its old edges behind. This marks each whole-canvas frame to
-// be cleared after it is shown, in place.
 export function clearGifFrames(gif: Uint8Array): void {
   const view = new DataView(gif.buffer, gif.byteOffset, gif.byteLength);
   const colorTable = (packed: number) =>
@@ -35,7 +30,7 @@ export function clearGifFrames(gif: Uint8Array): void {
         gif[control] = (gif[control] & ~DISPOSAL_BITS) | RESTORE_TO_BACKGROUND;
       }
       control = undefined;
-      // The descriptor, its color table, and the LZW code size.
+
       offset += 9 + colorTable(gif[offset + 8]) + 1;
       skipSubBlocks();
     } else {
