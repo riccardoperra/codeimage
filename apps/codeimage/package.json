@@ -13,7 +13,7 @@
     "pre-commit": "lint-staged --relative",
     "pre-commit-format": "oxfmt",
     "pre-commit-eslint": "oxlint --fix",
-    "lint": "oxlint",
+    "lint": "node ../../scripts/lint.mjs",
     "lint:fix": "oxlint --fix",
     "typecheck": "tsc --noEmit",
     "test": "vitest run"

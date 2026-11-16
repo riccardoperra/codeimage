@@ -1,0 +1,1748 @@
+{
+  ".agents/skills/verify-codeimage/scripts/agent-tools.mjs": {
+    "codeimage(no-comments)": 3,
+    "eslint(max-lines)": 476,
+    "eslint(max-lines-per-function)": 2
+  },
+  ".agents/skills/verify-codeimage/scripts/animation-gif.mjs": {
+    "codeimage(no-comments)": 7,
+    "eslint(complexity)": 2,
+    "eslint(max-depth)": 1,
+    "eslint(max-lines)": 768,
+    "eslint(max-lines-per-function)": 3
+  },
+  ".agents/skills/verify-codeimage/scripts/animation-mp4.mjs": {
+    "codeimage(no-comments)": 7,
+    "eslint(max-depth)": 1,
+    "eslint(max-lines)": 1071,
+    "eslint(max-lines-per-function)": 2,
+    "eslint(no-param-reassign)": 7
+  },
+  ".agents/skills/verify-codeimage/scripts/animation-step-size.mjs": {
+    "codeimage(no-comments)": 9,
+    "eslint(complexity)": 1,
+    "eslint(max-depth)": 4,
+    "eslint(max-lines)": 575,
+    "eslint(max-lines-per-function)": 2
+  },
+  ".agents/skills/verify-codeimage/scripts/audit.mjs": {
+    "codeimage(no-comments)": 20,
+    "eslint(max-depth)": 1,
+    "eslint(max-lines)": 2625,
+    "eslint(max-lines-per-function)": 9,
+    "eslint(no-param-reassign)": 6
+  },
+  ".agents/skills/verify-codeimage/scripts/capture-design.mjs": {
+    "codeimage(no-comments)": 3
+  },
+  ".agents/skills/verify-codeimage/scripts/frame-regressions.mjs": {
+    "codeimage(no-comments)": 2,
+    "eslint(max-lines)": 444,
+    "eslint(max-lines-per-function)": 3
+  },
+  ".agents/skills/verify-codeimage/scripts/keyboard-scroll.mjs": {
+    "codeimage(no-comments)": 2,
+    "eslint(max-lines)": 330,
+    "eslint(max-lines-per-function)": 3
+  },
+  ".agents/skills/verify-codeimage/scripts/local-ai.mjs": {
+    "codeimage(no-comments)": 37,
+    "eslint(max-lines)": 1246,
+    "eslint(max-lines-per-function)": 2,
+    "eslint(no-nested-ternary)": 1,
+    "eslint(no-unused-vars)": 1
+  },
+  ".agents/skills/verify-codeimage/scripts/mock-context.mjs": {
+    "codeimage(no-comments)": 2
+  },
+  ".agents/skills/verify-codeimage/scripts/news.mjs": {
+    "codeimage(no-comments)": 5
+  },
+  ".agents/skills/verify-codeimage/scripts/snippets.mjs": {
+    "codeimage(no-comments)": 3,
+    "eslint(max-depth)": 1,
+    "eslint(max-lines)": 679,
+    "eslint(max-lines-per-function)": 3,
+    "eslint(no-nested-ternary)": 1,
+    "eslint(no-useless-escape)": 1
+  },
+  ".agents/skills/verify-codeimage/scripts/verify.mjs": {
+    "codeimage(no-comments)": 2
+  },
+  ".agents/skills/verify-codeimage/scripts/watermark.mjs": {
+    "eslint(max-lines)": 339,
+    "eslint(max-lines-per-function)": 1
+  },
+  "apps/api/src/modules/project/project.contract.ts": {
+    "codeimage(no-comments)": 6,
+    "eslint(max-lines)": 431
+  },
+  "apps/api/src/modules/project/project.model.ts": {
+    "codeimage(no-comments)": 6,
+    "eslint(max-lines)": 323
+  },
+  "apps/api/src/modules/project/project.repository.ts": {
+    "codeimage(no-comments)": 2,
+    "eslint(max-lines)": 310
+  },
+  "apps/api/src/modules/signature/signature.contract.ts": {
+    "codeimage(no-comments)": 2
+  },
+  "apps/api/src/modules/signature/signature.model.ts": {
+    "codeimage(no-comments)": 1
+  },
+  "apps/api/src/modules/signature/signature.repository.ts": {
+    "codeimage(no-comments)": 2
+  },
+  "apps/api/src/plugins/auth0.ts": {
+    "typescript(no-non-null-assertion)": 2
+  },
+  "apps/api/test/architecture.test.ts": {
+    "eslint(no-nested-ternary)": 1,
+    "typescript(no-non-null-assertion)": 2
+  },
+  "apps/api/test/helpers/app.ts": {
+    "eslint(no-nested-ternary)": 1
+  },
+  "apps/api/test/modules/project/mapper/animation.test.ts": {
+    "typescript(no-non-null-assertion)": 1
+  },
+  "apps/api/test/plugins/cors.test.ts": {
+    "codeimage(disable-directive-format)": 1,
+    "unicorn(no-unnecessary-await)": 1
+  },
+  "apps/api/test/routes/ownership.integration.test.ts": {
+    "codeimage(no-comments)": 1
+  },
+  "apps/api/test/shared/bus.test.ts": {
+    "codeimage(no-comments)": 1
+  },
+  "apps/api/tsdown.config.ts": {
+    "codeimage(no-comments)": 2
+  },
+  "apps/codeimage/src/client.d.ts": {
+    "codeimage(no-comments)": 1
+  },
+  "apps/codeimage/src/components/Animation/AnimatePanel.css.ts": {
+    "codeimage(no-comments)": 1,
+    "codeimage(no-global-style)": 12
+  },
+  "apps/codeimage/src/components/Animation/AnimatePanel.tsx": {
+    "codeimage(no-comments)": 1
+  },
+  "apps/codeimage/src/components/Animation/AnimationPreview.css.ts": {
+    "codeimage(no-comments)": 2,
+    "codeimage(no-global-style)": 1
+  },
+  "apps/codeimage/src/components/Animation/AnimationPreview.tsx": {
+    "codeimage(no-comments)": 16,
+    "codeimage(no-static-inline-style)": 1,
+    "eslint(max-lines)": 314,
+    "eslint(no-nested-ternary)": 1,
+    "typescript(no-non-null-assertion)": 6
+  },
+  "apps/codeimage/src/components/Animation/EasingCurve.tsx": {
+    "typescript(no-non-null-assertion)": 2
+  },
+  "apps/codeimage/src/components/Animation/EasingField.tsx": {
+    "typescript(no-non-null-assertion)": 1
+  },
+  "apps/codeimage/src/components/Animation/HeaderField.tsx": {
+    "codeimage(no-comments)": 3
+  },
+  "apps/codeimage/src/components/Animation/PhoneSteps.css.ts": {
+    "codeimage(no-global-style)": 2
+  },
+  "apps/codeimage/src/components/Animation/PhoneSteps.tsx": {
+    "eslint(max-lines)": 338
+  },
+  "apps/codeimage/src/components/Animation/StepsMenu.tsx": {
+    "codeimage(no-comments)": 2
+  },
+  "apps/codeimage/src/components/Animation/StripTimeline.css.ts": {
+    "codeimage(no-comments)": 1,
+    "codeimage(no-global-style)": 4
+  },
+  "apps/codeimage/src/components/Animation/StripTimeline.tsx": {
+    "eslint(max-lines)": 357,
+    "eslint(max-lines-per-function)": 1,
+    "eslint(no-nested-ternary)": 2,
+    "typescript(no-non-null-assertion)": 1
+  },
+  "apps/codeimage/src/components/Animation/TransportBar.tsx": {
+    "codeimage(no-document-query)": 1
+  },
+  "apps/codeimage/src/components/Animation/createPreviewSnapshot.test.ts": {
+    "eslint(no-restricted-imports)": 1,
+    "typescript(no-non-null-assertion)": 5
+  },
+  "apps/codeimage/src/components/Animation/createPreviewSnapshot.ts": {
+    "typescript(no-non-null-assertion)": 1
+  },
+  "apps/codeimage/src/components/Animation/createSegmentResize.ts": {
+    "codeimage(no-comments)": 2
+  },
+  "apps/codeimage/src/components/Animation/easing.css.ts": {
+    "codeimage(no-global-style)": 3
+  },
+  "apps/codeimage/src/components/Animation/measureCache.ts": {
+    "typescript(no-non-null-assertion)": 1
+  },
+  "apps/codeimage/src/components/Animation/planPreview.tsx": {
+    "codeimage(no-comments)": 8,
+    "eslint(max-params)": 1,
+    "typescript(no-non-null-assertion)": 2
+  },
+  "apps/codeimage/src/components/Animation/timelineGeometry.test.ts": {
+    "eslint(no-nested-ternary)": 1
+  },
+  "apps/codeimage/src/components/Animation/timelineGeometry.ts": {
+    "eslint(no-nested-ternary)": 3
+  },
+  "apps/codeimage/src/components/CustomEditor/AnimatedCodeView.tsx": {
+    "codeimage(disable-directive-format)": 1,
+    "codeimage(no-comments)": 4,
+    "codeimage(no-static-inline-style)": 1,
+    "eslint(no-restricted-imports)": 1
+  },
+  "apps/codeimage/src/components/CustomEditor/CanvasEditor.tsx": {
+    "eslint(max-lines)": 315,
+    "eslint(max-lines-per-function)": 1,
+    "eslint(no-restricted-imports)": 4
+  },
+  "apps/codeimage/src/components/CustomEditor/CustomEditor.tsx": {
+    "codeimage(no-comments)": 4,
+    "eslint(complexity)": 1,
+    "eslint(max-lines)": 333,
+    "eslint(max-lines-per-function)": 1,
+    "eslint(no-extra-boolean-cast)": 1,
+    "eslint(no-restricted-imports)": 1
+  },
+  "apps/codeimage/src/components/CustomEditor/CustomEditorPreview.tsx": {
+    "codeimage(disable-directive-format)": 1,
+    "unused-disable-directive": 1
+  },
+  "apps/codeimage/src/components/CustomEditor/StaticCodeView.tsx": {
+    "codeimage(no-comments)": 2,
+    "codeimage(no-static-inline-style)": 1,
+    "eslint(no-restricted-imports)": 1
+  },
+  "apps/codeimage/src/components/CustomEditor/plugins/lineMarks/controls.ts": {
+    "codeimage(no-comments)": 7,
+    "eslint(max-lines)": 339,
+    "eslint(no-param-reassign)": 3,
+    "eslint(no-restricted-imports)": 1,
+    "typescript(no-non-null-assertion)": 1
+  },
+  "apps/codeimage/src/components/CustomEditor/plugins/lineMarks/diffImportEditors.ts": {
+    "codeimage(no-comments)": 1,
+    "eslint(no-restricted-imports)": 3
+  },
+  "apps/codeimage/src/components/CustomEditor/plugins/lineMarks/diffImportHistory.test.ts": {
+    "typescript(no-non-null-assertion)": 1
+  },
+  "apps/codeimage/src/components/CustomEditor/plugins/lineMarks/diffImportHistory.ts": {
+    "eslint(no-restricted-imports)": 1
+  },
+  "apps/codeimage/src/components/CustomEditor/plugins/lineMarks/gutter.test.ts": {
+    "eslint(no-restricted-imports)": 1
+  },
+  "apps/codeimage/src/components/CustomEditor/plugins/lineMarks/gutter.ts": {
+    "codeimage(no-comments)": 8,
+    "eslint(complexity)": 1,
+    "eslint(eqeqeq)": 1,
+    "eslint(max-lines)": 445,
+    "eslint(max-lines-per-function)": 2,
+    "eslint(no-nested-ternary)": 7,
+    "eslint(no-restricted-imports)": 1,
+    "typescript(no-non-null-assertion)": 2
+  },
+  "apps/codeimage/src/components/CustomEditor/plugins/lineMarks/index.ts": {
+    "eslint(no-restricted-imports)": 1
+  },
+  "apps/codeimage/src/components/CustomEditor/plugins/lineMarks/news.tsx": {
+    "codeimage(no-comments)": 5,
+    "eslint(no-restricted-imports)": 1,
+    "solid(reactivity)": 1
+  },
+  "apps/codeimage/src/components/CustomEditor/plugins/lineMarks/paste.ts": {
+    "codeimage(no-comments)": 1,
+    "eslint(no-restricted-imports)": 1
+  },
+  "apps/codeimage/src/components/CustomEditor/plugins/lineMarks/state.ts": {
+    "codeimage(no-comments)": 2,
+    "eslint(no-param-reassign)": 2,
+    "eslint(no-restricted-imports)": 1
+  },
+  "apps/codeimage/src/components/CustomEditor/staticTheme.ts": {
+    "codeimage(no-comments)": 3
+  },
+  "apps/codeimage/src/components/FeatureBadge/FeatureCheckBanner.tsx": {
+    "eslint(no-extra-boolean-cast)": 1,
+    "solid(components-return-once)": 5,
+    "typescript(no-non-null-assertion)": 1
+  },
+  "apps/codeimage/src/components/FeatureBadge/compatibility/types.ts": {
+    "codeimage(no-comments)": 60
+  },
+  "apps/codeimage/src/components/Frame/FittedWindow.tsx": {
+    "codeimage(no-comments)": 1,
+    "eslint(no-nested-ternary)": 1,
+    "eslint(no-restricted-imports)": 2,
+    "typescript(no-non-null-assertion)": 1
+  },
+  "apps/codeimage/src/components/Frame/Frame.tsx": {
+    "codeimage(no-comments)": 1,
+    "codeimage(no-static-inline-style)": 1,
+    "eslint(max-lines-per-function)": 1,
+    "eslint(no-restricted-imports)": 1,
+    "typescript(no-non-null-assertion)": 2
+  },
+  "apps/codeimage/src/components/Frame/FrameHandler.css.ts": {
+    "codeimage(no-comments)": 2
+  },
+  "apps/codeimage/src/components/Frame/FrameSignature.css.ts": {
+    "codeimage(no-comments)": 21
+  },
+  "apps/codeimage/src/components/Frame/FrameSignature.tsx": {
+    "codeimage(no-comments)": 9,
+    "typescript(no-non-null-assertion)": 1
+  },
+  "apps/codeimage/src/components/Frame/ManagedFrame.tsx": {
+    "typescript(no-non-null-assertion)": 1
+  },
+  "apps/codeimage/src/components/Frame/PreviewFrame.tsx": {
+    "codeimage(disable-directive-format)": 1,
+    "codeimage(no-comments)": 9,
+    "codeimage(no-static-inline-style)": 1,
+    "eslint(no-nested-ternary)": 2,
+    "eslint(no-restricted-imports)": 1,
+    "typescript(no-non-null-assertion)": 3,
+    "unused-disable-directive": 1
+  },
+  "apps/codeimage/src/components/Frame/platformIcons.ts": {
+    "codeimage(no-comments)": 6
+  },
+  "apps/codeimage/src/components/Frame/signatureColors.ts": {
+    "codeimage(no-comments)": 3
+  },
+  "apps/codeimage/src/components/Frame/signatureLayout.ts": {
+    "codeimage(no-comments)": 4
+  },
+  "apps/codeimage/src/components/Frame/signatureTone.ts": {
+    "codeimage(no-comments)": 3
+  },
+  "apps/codeimage/src/components/Presets/PresetUpdateDialog.tsx": {
+    "codeimage(no-static-inline-style)": 1
+  },
+  "apps/codeimage/src/components/PropertyEditor/EditorSidebar.css.ts": {
+    "codeimage(no-comments)": 1
+  },
+  "apps/codeimage/src/components/PropertyEditor/PanelRow.tsx": {
+    "codeimage(no-comments)": 1
+  },
+  "apps/codeimage/src/components/PropertyEditor/SuspenseEditorItem.tsx": {
+    "typescript(no-non-null-assertion)": 1
+  },
+  "apps/codeimage/src/components/Terminal/DynamicTerminal/DynamicTerminal.tsx": {
+    "codeimage(no-comments)": 2
+  },
+  "apps/codeimage/src/components/Terminal/MacOsTerminal/MacOsTerminal.tsx": {
+    "eslint(no-restricted-imports)": 1,
+    "import(no-cycle)": 1
+  },
+  "apps/codeimage/src/components/Terminal/MacOsTerminal/MacOsTerminalGrayTheme.tsx": {
+    "import(no-cycle)": 1
+  },
+  "apps/codeimage/src/components/Terminal/MacOsTerminal/MacOsTerminalOutlineTheme.tsx": {
+    "import(no-cycle)": 1
+  },
+  "apps/codeimage/src/components/Terminal/Tabs/Tab/DraggableWindowTab.tsx": {
+    "codeimage(disable-directive-format)": 1,
+    "solid(reactivity)": 1
+  },
+  "apps/codeimage/src/components/Terminal/Tabs/Tab/Tab.css.ts": {
+    "codeimage(no-comments)": 2
+  },
+  "apps/codeimage/src/components/Terminal/Tabs/TabName/TabName.tsx": {
+    "codeimage(no-comments)": 1,
+    "eslint(eqeqeq)": 1
+  },
+  "apps/codeimage/src/components/Terminal/Tabs/TerminalWindowTabList.tsx": {
+    "codeimage(no-comments)": 1,
+    "eslint(no-nested-ternary)": 2,
+    "import(no-cycle)": 2
+  },
+  "apps/codeimage/src/components/Terminal/Tabs/TerminalWindowTabListPreview.tsx": {
+    "import(no-cycle)": 1
+  },
+  "apps/codeimage/src/components/Terminal/Tabs/createTabTheme.ts": {
+    "codeimage(disable-directive-format)": 1,
+    "unused-disable-directive": 1
+  },
+  "apps/codeimage/src/components/Terminal/TerminalHost.tsx": {
+    "codeimage(disable-directive-format)": 1,
+    "codeimage(no-comments)": 2,
+    "eslint(no-restricted-imports)": 1,
+    "unicorn(no-useless-fallback-in-spread)": 1
+  },
+  "apps/codeimage/src/components/Terminal/WindowStyles/WindowStyles.css.ts": {
+    "codeimage(no-comments)": 2
+  },
+  "apps/codeimage/src/components/Terminal/WindowStyles/WindowStyles.tsx": {
+    "codeimage(no-comments)": 3,
+    "eslint(no-restricted-imports)": 1,
+    "import(no-cycle)": 2
+  },
+  "apps/codeimage/src/components/Terminal/WindowsTerminal/WindowsTerminal.tsx": {
+    "eslint(no-restricted-imports)": 1,
+    "import(no-cycle)": 1
+  },
+  "apps/codeimage/src/components/Terminal/terminal.css.ts": {
+    "codeimage(no-comments)": 3
+  },
+  "apps/codeimage/src/components/Terminal/windowPalette.ts": {
+    "codeimage(no-comments)": 4
+  },
+  "apps/codeimage/src/components/Toolbar/CopyAltTextButton.tsx": {
+    "eslint(no-restricted-imports)": 1
+  },
+  "apps/codeimage/src/components/Toolbar/GenerateLinkButton.tsx": {
+    "codeimage(no-comments)": 70,
+    "unicorn(no-empty-file)": 1
+  },
+  "apps/codeimage/src/components/Toolbar/SettingsDialog.tsx": {
+    "eslint(max-lines-per-function)": 1,
+    "eslint(no-restricted-imports)": 1
+  },
+  "apps/codeimage/src/components/Toolbar/ToolbarSettings.tsx": {
+    "codeimage(no-comments)": 1,
+    "codeimage(no-static-inline-style)": 2
+  },
+  "apps/codeimage/src/components/Toolbar/ToolbarSnippetName.tsx": {
+    "solid(reactivity)": 1,
+    "typescript(no-non-null-assertion)": 2
+  },
+  "apps/codeimage/src/components/Watermark/Watermark.tsx": {
+    "eslint(complexity)": 1,
+    "eslint(max-depth)": 2,
+    "eslint(max-lines-per-function)": 1,
+    "eslint(no-restricted-imports)": 3
+  },
+  "apps/codeimage/src/components/WhatsNew/NewDot.tsx": {
+    "codeimage(no-comments)": 11,
+    "eslint(no-restricted-imports)": 2
+  },
+  "apps/codeimage/src/components/WhatsNew/Nudge.tsx": {
+    "codeimage(no-comments)": 6,
+    "codeimage(no-document-query)": 1,
+    "eslint(max-lines-per-function)": 1,
+    "eslint(no-restricted-imports)": 1
+  },
+  "apps/codeimage/src/components/WhatsNew/Showcase.tsx": {
+    "codeimage(no-comments)": 4,
+    "codeimage(no-document-query)": 2,
+    "eslint(max-lines)": 324,
+    "eslint(max-lines-per-function)": 1,
+    "eslint(no-nested-ternary)": 1,
+    "eslint(no-restricted-imports)": 1
+  },
+  "apps/codeimage/src/components/WhatsNew/SparkleIcon.tsx": {
+    "codeimage(no-comments)": 1,
+    "codeimage(no-static-inline-style)": 1
+  },
+  "apps/codeimage/src/components/WhatsNew/WhatsNewHost.tsx": {
+    "codeimage(disable-directive-format)": 1,
+    "codeimage(no-comments)": 2,
+    "codeimage(no-document-query)": 1,
+    "eslint(no-restricted-imports)": 1
+  },
+  "apps/codeimage/src/components/WhatsNew/focus.ts": {
+    "codeimage(no-comments)": 2,
+    "codeimage(no-document-query)": 1
+  },
+  "apps/codeimage/src/components/WhatsNew/illustrations.css.ts": {
+    "codeimage(no-comments)": 52,
+    "codeimage(no-global-style)": 55,
+    "eslint(max-lines)": 1133
+  },
+  "apps/codeimage/src/components/WhatsNew/illustrations.tsx": {
+    "codeimage(no-comments)": 8,
+    "codeimage(no-static-inline-style)": 8,
+    "eslint(max-lines)": 551,
+    "eslint(max-lines-per-function)": 1,
+    "eslint(no-restricted-imports)": 1
+  },
+  "apps/codeimage/src/components/WhatsNew/motion.ts": {
+    "codeimage(no-comments)": 24
+  },
+  "apps/codeimage/src/components/WhatsNew/releaseDate.ts": {
+    "codeimage(no-comments)": 2,
+    "eslint(no-restricted-imports)": 1
+  },
+  "apps/codeimage/src/components/WhatsNew/whats-new.css.ts": {
+    "codeimage(no-comments)": 23,
+    "codeimage(no-global-style)": 16,
+    "eslint(max-lines)": 390
+  },
+  "apps/codeimage/src/core/altText.perf.ts": {
+    "eslint(no-console)": 1
+  },
+  "apps/codeimage/src/core/altText.ts": {
+    "codeimage(no-comments)": 2,
+    "eslint(no-restricted-imports)": 1
+  },
+  "apps/codeimage/src/core/animation/AnimatedCodeView.test.ts": {
+    "codeimage(no-comments)": 1,
+    "typescript(no-non-null-assertion)": 1
+  },
+  "apps/codeimage/src/core/animation/animation.perf.ts": {
+    "codeimage(no-comments)": 2,
+    "eslint(no-console)": 1
+  },
+  "apps/codeimage/src/core/animation/compile.test.ts": {
+    "typescript(no-non-null-assertion)": 1
+  },
+  "apps/codeimage/src/core/animation/compile.ts": {
+    "codeimage(no-comments)": 13
+  },
+  "apps/codeimage/src/core/animation/measure.test.ts": {
+    "codeimage(no-comments)": 2
+  },
+  "apps/codeimage/src/core/animation/measure.ts": {
+    "codeimage(no-comments)": 7
+  },
+  "apps/codeimage/src/core/animation/model.ts": {
+    "codeimage(no-comments)": 20
+  },
+  "apps/codeimage/src/core/animation/pair.test.ts": {
+    "codeimage(no-comments)": 1,
+    "typescript(no-non-null-assertion)": 5
+  },
+  "apps/codeimage/src/core/animation/pair.ts": {
+    "codeimage(no-comments)": 15,
+    "typescript(no-non-null-assertion)": 1
+  },
+  "apps/codeimage/src/core/animation/test-utils.ts": {
+    "codeimage(no-comments)": 7,
+    "eslint(no-nested-ternary)": 1,
+    "typescript(no-non-null-assertion)": 2
+  },
+  "apps/codeimage/src/core/animation/timeline.test.ts": {
+    "codeimage(no-comments)": 12
+  },
+  "apps/codeimage/src/core/animation/timeline.ts": {
+    "codeimage(no-comments)": 36,
+    "eslint(no-nested-ternary)": 1
+  },
+  "apps/codeimage/src/core/configuration.ts": {
+    "codeimage(no-comments)": 1
+  },
+  "apps/codeimage/src/core/configuration/terminal-themes.ts": {
+    "import(no-cycle)": 5
+  },
+  "apps/codeimage/src/core/constants/auth0Mock.ts": {
+    "codeimage(disable-directive-format)": 1
+  },
+  "apps/codeimage/src/core/constants/noop.ts": {
+    "codeimage(disable-directive-format)": 1,
+    "unused-disable-directive": 1
+  },
+  "apps/codeimage/src/core/constants/umami.ts": {
+    "eslint(no-console)": 3
+  },
+  "apps/codeimage/src/core/diff/mapLines.ts": {
+    "codeimage(no-comments)": 1,
+    "eslint(complexity)": 1
+  },
+  "apps/codeimage/src/core/diff/parseAnnotations.ts": {
+    "codeimage(no-comments)": 2,
+    "eslint(complexity)": 1,
+    "eslint(no-nested-ternary)": 2,
+    "eslint(no-restricted-imports)": 1
+  },
+  "apps/codeimage/src/core/diff/parseUnifiedDiff.ts": {
+    "codeimage(no-comments)": 3,
+    "eslint(complexity)": 1,
+    "eslint(no-restricted-imports)": 1
+  },
+  "apps/codeimage/src/core/directives/clickOutside.ts": {
+    "codeimage(disable-directive-format)": 1
+  },
+  "apps/codeimage/src/core/directives/exportExclude.ts": {
+    "codeimage(disable-directive-format)": 1
+  },
+  "apps/codeimage/src/core/directives/highlight.ts": {
+    "codeimage(disable-directive-format)": 2
+  },
+  "apps/codeimage/src/core/gif/decode.test-utils.ts": {
+    "codeimage(no-comments)": 3,
+    "eslint(complexity)": 1,
+    "typescript(no-non-null-assertion)": 3
+  },
+  "apps/codeimage/src/core/gif/encode.ts": {
+    "codeimage(no-comments)": 9
+  },
+  "apps/codeimage/src/core/helpers/create-ref.ts": {
+    "codeimage(no-comments)": 4
+  },
+  "apps/codeimage/src/core/helpers/mapToDictionary.ts": {
+    "codeimage(disable-directive-format)": 2
+  },
+  "apps/codeimage/src/core/hooks/createControlledDialog.ts": {
+    "codeimage(disable-directive-format)": 1,
+    "unused-disable-directive": 1
+  },
+  "apps/codeimage/src/core/hooks/isMobile.tsx": {
+    "codeimage(no-comments)": 1
+  },
+  "apps/codeimage/src/core/hooks/resizable.ts": {
+    "eslint(max-lines-per-function)": 1
+  },
+  "apps/codeimage/src/core/modules/dnd/ConstrainDragAxis.tsx": {
+    "typescript(no-non-null-assertion)": 1
+  },
+  "apps/codeimage/src/core/modules/localFontAccessApi/api.ts": {
+    "codeimage(no-comments)": 7
+  },
+  "apps/codeimage/src/core/modules/localFontAccessApi/font.ts": {
+    "codeimage(no-comments)": 2
+  },
+  "apps/codeimage/src/core/operators/selectSlice.ts": {
+    "codeimage(no-comments)": 1
+  },
+  "apps/codeimage/src/core/rasterize/domExport.test.ts": {
+    "codeimage(no-comments)": 1
+  },
+  "apps/codeimage/src/core/rasterize/index.test.ts": {
+    "codeimage(no-comments)": 1
+  },
+  "apps/codeimage/src/core/rasterize/sizing.test.ts": {
+    "codeimage(no-comments)": 2
+  },
+  "apps/codeimage/src/core/rasterize/takumi.test.ts": {
+    "codeimage(no-comments)": 1
+  },
+  "apps/codeimage/src/core/rasterize/takumi.ts": {
+    "codeimage(no-comments)": 18,
+    "eslint(max-lines)": 449,
+    "eslint(no-nested-ternary)": 1,
+    "typescript(no-non-null-assertion)": 1
+  },
+  "apps/codeimage/src/core/snapshot/StaticCodeView.test.ts": {
+    "codeimage(no-comments)": 2
+  },
+  "apps/codeimage/src/core/snapshot/tokenize.ts": {
+    "codeimage(no-comments)": 2
+  },
+  "apps/codeimage/src/core/video/encode.test.ts": {
+    "typescript(no-non-null-assertion)": 1,
+    "unicorn(no-useless-spread)": 2
+  },
+  "apps/codeimage/src/core/video/encode.ts": {
+    "codeimage(no-comments)": 4,
+    "eslint(no-nested-ternary)": 3
+  },
+  "apps/codeimage/src/core/video/formats.test.ts": {
+    "eslint(no-nested-ternary)": 1
+  },
+  "apps/codeimage/src/core/video/formats.ts": {
+    "codeimage(no-comments)": 10
+  },
+  "apps/codeimage/src/core/watermark/codemirror.ts": {
+    "codeimage(no-comments)": 1
+  },
+  "apps/codeimage/src/core/watermark/placement.ts": {
+    "eslint(no-nested-ternary)": 1
+  },
+  "apps/codeimage/src/core/watermark/scope.test.ts": {
+    "codeimage(no-comments)": 2,
+    "typescript(no-non-null-assertion)": 1
+  },
+  "apps/codeimage/src/core/watermark/scope.ts": {
+    "codeimage(no-comments)": 11
+  },
+  "apps/codeimage/src/data-access/client.ts": {
+    "codeimage(disable-directive-format)": 3,
+    "eslint(no-console)": 1
+  },
+  "apps/codeimage/src/hooks/createPrettierFormatter.ts": {
+    "codeimage(no-comments)": 2,
+    "eslint(complexity)": 1,
+    "eslint(no-async-promise-executor)": 1,
+    "eslint(no-extra-boolean-cast)": 1,
+    "unicorn(no-useless-fallback-in-spread)": 1
+  },
+  "apps/codeimage/src/hooks/export-tab-name.ts": {
+    "eslint(no-control-regex)": 1
+  },
+  "apps/codeimage/src/hooks/export-tabs.ts": {
+    "codeimage(no-comments)": 5
+  },
+  "apps/codeimage/src/hooks/use-export-animation.test.ts": {
+    "eslint(no-restricted-imports)": 2
+  },
+  "apps/codeimage/src/hooks/use-export-animation.ts": {
+    "codeimage(no-comments)": 3,
+    "eslint(no-restricted-imports)": 3
+  },
+  "apps/codeimage/src/hooks/use-export-image.test.ts": {
+    "codeimage(no-comments)": 1
+  },
+  "apps/codeimage/src/hooks/use-export-image.ts": {
+    "codeimage(no-comments)": 2,
+    "eslint(no-restricted-imports)": 2
+  },
+  "apps/codeimage/src/hooks/use-hotkey.ts": {
+    "codeimage(no-comments)": 2,
+    "eslint(no-restricted-imports)": 2
+  },
+  "apps/codeimage/src/hooks/use-local-fonts.test.ts": {
+    "codeimage(no-comments)": 1
+  },
+  "apps/codeimage/src/hooks/use-local-fonts.ts": {
+    "codeimage(no-comments)": 1
+  },
+  "apps/codeimage/src/i18n/signatures.ts": {
+    "codeimage(no-comments)": 1
+  },
+  "apps/codeimage/src/i18n/whatsNew.ts": {
+    "eslint(no-restricted-imports)": 1
+  },
+  "apps/codeimage/src/index.tsx": {
+    "codeimage(disable-directive-format)": 1,
+    "codeimage(no-comments)": 1,
+    "codeimage(no-document-query)": 3,
+    "eslint(no-console)": 1,
+    "solid(components-return-once)": 1
+  },
+  "apps/codeimage/src/mocks/projectMockHandlers.ts": {
+    "eslint(complexity)": 2
+  },
+  "apps/codeimage/src/mocks/signatureMockHandlers.ts": {
+    "codeimage(no-comments)": 1
+  },
+  "apps/codeimage/src/pages/Dashboard/components/CreateNewProjectButton/CreateNewProjectButton.tsx": {
+    "typescript(no-non-null-assertion)": 1
+  },
+  "apps/codeimage/src/pages/Dashboard/components/ProjectItem/ProjectItem.tsx": {
+    "solid(reactivity)": 1,
+    "typescript(no-non-null-assertion)": 1
+  },
+  "apps/codeimage/src/pages/Dashboard/components/ProjectList/ProjectEmptyListMessage.tsx": {
+    "codeimage(disable-directive-format)": 2,
+    "typescript(no-non-null-assertion)": 1
+  },
+  "apps/codeimage/src/pages/Dashboard/components/ProjectList/ProjectList.tsx": {
+    "typescript(no-non-null-assertion)": 1
+  },
+  "apps/codeimage/src/pages/Dashboard/components/ProjectToolbar/ProjectToolbar.tsx": {
+    "typescript(no-non-null-assertion)": 1
+  },
+  "apps/codeimage/src/pages/Dashboard/dashboard.state.ts": {
+    "codeimage(no-comments)": 1
+  },
+  "apps/codeimage/src/pages/NotFound/NotFoundPage.tsx": {
+    "codeimage(no-comments)": 1,
+    "codeimage(no-static-inline-style)": 1
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/EditingControls.tsx": {
+    "codeimage(no-comments)": 1
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/EditorHost.tsx": {
+    "codeimage(no-comments)": 1,
+    "typescript(no-non-null-assertion)": 1
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/FitFrame.tsx": {
+    "codeimage(no-comments)": 11,
+    "codeimage(no-static-inline-style)": 1
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/ReadOnlyNotice.tsx": {
+    "typescript(no-non-null-assertion)": 1
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/ThemeSwatch.tsx": {
+    "codeimage(no-comments)": 4
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/agent-tools/AgentTools.tsx": {
+    "codeimage(no-comments)": 1,
+    "solid(reactivity)": 2
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/agent-tools/FormatTabButton.tsx": {
+    "codeimage(no-comments)": 1,
+    "eslint(no-nested-ternary)": 1
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/agent-tools/ToolActivity.tsx": {
+    "codeimage(no-comments)": 10,
+    "codeimage(no-document-query)": 1,
+    "eslint(no-nested-ternary)": 2,
+    "solid(reactivity)": 1
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/agent-tools/activity.ts": {
+    "codeimage(no-comments)": 12,
+    "eslint(complexity)": 1,
+    "eslint(no-nested-ternary)": 1
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/agent-tools/adapters.ts": {
+    "codeimage(no-comments)": 4
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/agent-tools/format-tab.ts": {
+    "codeimage(no-comments)": 3
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/agent-tools/tool-activity.css.ts": {
+    "codeimage(no-comments)": 3
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/agent-tools/tools.test.ts": {
+    "typescript(no-non-null-assertion)": 2
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/agent-tools/tools.ts": {
+    "codeimage(no-comments)": 11,
+    "eslint(max-lines)": 605,
+    "eslint(max-lines-per-function)": 1
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/agent-tools/values.ts": {
+    "codeimage(no-comments)": 18,
+    "eslint(no-nested-ternary)": 1,
+    "unicorn(no-useless-length-check)": 1
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/command-menu/CommandMenu.tsx": {
+    "codeimage(no-comments)": 15,
+    "codeimage(no-document-query)": 1,
+    "codeimage(no-global-key-listener)": 1,
+    "eslint(max-lines)": 411,
+    "eslint(max-lines-per-function)": 1,
+    "eslint(no-restricted-imports)": 1,
+    "solid(reactivity)": 1
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/command-menu/command-menu.css.ts": {
+    "codeimage(no-comments)": 11
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/command-menu/commands.ts": {
+    "codeimage(no-comments)": 22,
+    "codeimage(no-document-query)": 1
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/command-menu/listed-model.ts": {
+    "codeimage(no-comments)": 7
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/command-menu/state.ts": {
+    "codeimage(no-comments)": 11,
+    "codeimage(no-document-query)": 1,
+    "eslint(no-restricted-imports)": 1
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/contract.ts": {
+    "codeimage(no-comments)": 3
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/controls/CanvasToolbar.tsx": {
+    "codeimage(no-comments)": 2
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/controls/ControlOverlay.tsx": {
+    "codeimage(no-comments)": 2,
+    "codeimage(no-document-query)": 1,
+    "eslint(max-lines-per-function)": 1,
+    "eslint(no-nested-ternary)": 4,
+    "import(no-cycle)": 1
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/controls/ControlRow.tsx": {
+    "codeimage(no-comments)": 11,
+    "eslint(complexity)": 1,
+    "eslint(max-lines-per-function)": 1,
+    "import(no-cycle)": 1,
+    "solid(reactivity)": 2
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/controls/PickerContent.tsx": {
+    "codeimage(no-comments)": 1,
+    "solid(components-return-once)": 1,
+    "solid(reactivity)": 2
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/controls/SavedSignatures.tsx": {
+    "codeimage(no-comments)": 2,
+    "eslint(max-lines-per-function)": 1,
+    "eslint(no-restricted-imports)": 1
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/controls/ShortcutHelp.tsx": {
+    "codeimage(no-document-query)": 1,
+    "codeimage(no-global-key-listener)": 1,
+    "eslint(max-lines-per-function)": 1,
+    "solid(reactivity)": 1
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/controls/SignatureFields.tsx": {
+    "codeimage(no-comments)": 11,
+    "eslint(max-lines)": 478,
+    "eslint(no-nested-ternary)": 1,
+    "eslint(no-restricted-imports)": 1,
+    "typescript(no-non-null-assertion)": 1
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/controls/WindowPreview.tsx": {
+    "codeimage(no-comments)": 1
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/controls/WindowStyleTiles.tsx": {
+    "codeimage(no-comments)": 3
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/controls/canvas-toolbar.css.ts": {
+    "codeimage(no-comments)": 2,
+    "codeimage(no-global-style)": 1
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/controls/controls.css.ts": {
+    "codeimage(no-comments)": 9,
+    "codeimage(no-global-style)": 2
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/controls/fields.tsx": {
+    "codeimage(no-comments)": 10,
+    "codeimage(no-document-query)": 1,
+    "eslint(no-restricted-imports)": 1,
+    "solid(reactivity)": 1
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/controls/mark-toolbar.ts": {
+    "codeimage(no-comments)": 2
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/controls/overlay-placement.ts": {
+    "codeimage(no-comments)": 1,
+    "codeimage(no-document-query)": 2,
+    "eslint(no-nested-ternary)": 1
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/controls/overlay.css.ts": {
+    "codeimage(no-comments)": 1,
+    "codeimage(no-global-style)": 4
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/controls/reveal-control.ts": {
+    "codeimage(no-comments)": 2,
+    "codeimage(no-document-query)": 1
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/controls/saved-signatures.css.ts": {
+    "codeimage(no-comments)": 3
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/controls/shortcut-help.css.ts": {
+    "codeimage(no-global-style)": 2
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/controls/shortcuts.ts": {
+    "codeimage(no-comments)": 2,
+    "eslint(no-restricted-imports)": 1
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/controls/signature.css.ts": {
+    "codeimage(no-comments)": 5,
+    "codeimage(no-global-style)": 2
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/frame-placeholder.css.ts": {
+    "codeimage(no-comments)": 2,
+    "codeimage(no-global-style)": 1
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/harness.tsx": {
+    "codeimage(no-comments)": 10,
+    "eslint(no-restricted-imports)": 1,
+    "typescript(no-non-null-assertion)": 1
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/local-ai/LocalAi.tsx": {
+    "codeimage(no-comments)": 22,
+    "codeimage(no-document-query)": 2,
+    "eslint(max-lines)": 416,
+    "solid(reactivity)": 3
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/local-ai/agent.test.ts": {
+    "codeimage(no-comments)": 1
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/local-ai/agent.ts": {
+    "codeimage(no-comments)": 20,
+    "eslint(complexity)": 1,
+    "eslint(max-depth)": 6,
+    "eslint(max-lines)": 312
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/local-ai/chrome-provider.test.ts": {
+    "codeimage(no-comments)": 1
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/local-ai/chrome-provider.ts": {
+    "codeimage(no-comments)": 10
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/local-ai/language-model.test.ts": {
+    "codeimage(no-comments)": 1
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/local-ai/language-model.ts": {
+    "codeimage(no-comments)": 19,
+    "eslint(no-console)": 1
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/local-ai/local-ai.css.ts": {
+    "codeimage(no-comments)": 13
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/local-ai/model.ts": {
+    "codeimage(no-comments)": 11
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/local-ai/prompt-api.ts": {
+    "codeimage(no-comments)": 6,
+    "eslint(no-nested-ternary)": 1
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/local-ai/providers.ts": {
+    "codeimage(no-comments)": 4
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/local-ai/requirements.test.ts": {
+    "typescript(no-non-null-assertion)": 1
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/local-ai/requirements.ts": {
+    "codeimage(no-comments)": 12,
+    "eslint(no-nested-ternary)": 2
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/local-ai/structured-provider.test.ts": {
+    "codeimage(no-comments)": 1
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/local-ai/structured-provider.ts": {
+    "codeimage(no-comments)": 9
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/localized/AspectRatioPicker.tsx": {
+    "typescript(no-non-null-assertion)": 1
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/localized/ColorPicker.tsx": {
+    "solid(reactivity)": 1
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/localized/ExperimentalFeatureTooltip.tsx": {
+    "eslint(no-restricted-imports)": 2
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/localized/FontPicker.tsx": {
+    "codeimage(no-comments)": 1,
+    "solid(reactivity)": 1
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/localized/FontSystemPicker.tsx": {
+    "codeimage(no-comments)": 4,
+    "codeimage(no-static-inline-style)": 4
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/localized/GitHubLoginButton.tsx": {
+    "eslint(no-restricted-imports)": 1
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/localized/ImagePickerInput.tsx": {
+    "codeimage(no-static-inline-style)": 2,
+    "solid(reactivity)": 1
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/localized/ImagePickerList.tsx": {
+    "codeimage(no-static-inline-style)": 1
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/localized/PresetSwitcher.tsx": {
+    "codeimage(no-comments)": 1,
+    "eslint(max-lines-per-function)": 1
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/localized/PresetTooltipContent.tsx": {
+    "codeimage(no-static-inline-style)": 1
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/model.tsx": {
+    "codeimage(no-comments)": 24,
+    "eslint(max-lines)": 711,
+    "eslint(max-lines-per-function)": 1,
+    "eslint(no-restricted-imports)": 1,
+    "typescript(no-non-null-assertion)": 1
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/places.ts": {
+    "codeimage(no-comments)": 2,
+    "eslint(no-restricted-imports)": 1
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/preview.ts": {
+    "codeimage(no-comments)": 8
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/registry.ts": {
+    "codeimage(no-comments)": 1
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/shell/ExportControl.tsx": {
+    "codeimage(no-comments)": 3,
+    "codeimage(no-document-query)": 2
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/shell/Header.tsx": {
+    "codeimage(no-comments)": 8,
+    "eslint(no-restricted-imports)": 1,
+    "typescript(no-non-null-assertion)": 1
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/shell/SettingsDialog.tsx": {
+    "codeimage(no-comments)": 12,
+    "eslint(max-lines-per-function)": 1,
+    "eslint(no-nested-ternary)": 1,
+    "eslint(no-restricted-imports)": 1,
+    "solid(reactivity)": 1
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/shell/commands.ts": {
+    "codeimage(no-comments)": 3
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/shell/export-actions.tsx": {
+    "codeimage(no-comments)": 3
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/shell/export-animation-dialog.tsx": {
+    "codeimage(no-comments)": 3,
+    "eslint(max-lines)": 560,
+    "eslint(max-lines-per-function)": 2,
+    "eslint(no-restricted-imports)": 2,
+    "typescript(no-non-null-assertion)": 1
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/shell/export-animation.tsx": {
+    "codeimage(no-comments)": 7,
+    "codeimage(no-static-inline-style)": 1,
+    "eslint(max-lines)": 375,
+    "eslint(max-lines-per-function)": 2,
+    "eslint(max-params)": 1,
+    "eslint(no-restricted-imports)": 6,
+    "typescript(no-non-null-assertion)": 2
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/shell/export-formats.ts": {
+    "codeimage(no-comments)": 8
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/shell/export-styles/choice-fields.css.ts": {
+    "codeimage(no-comments)": 2
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/shell/export-styles/choice-fields.tsx": {
+    "codeimage(no-comments)": 3,
+    "typescript(no-non-null-assertion)": 1
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/shell/export-styles/panel.css.ts": {
+    "codeimage(no-comments)": 1
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/shell/export-styles/panel.tsx": {
+    "codeimage(no-comments)": 2,
+    "eslint(no-restricted-imports)": 1
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/shell/export-styles/sheet.tsx": {
+    "codeimage(no-comments)": 2,
+    "eslint(max-lines-per-function)": 1,
+    "eslint(no-restricted-imports)": 1,
+    "typescript(no-non-null-assertion)": 1
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/shell/export.css.ts": {
+    "codeimage(no-comments)": 4
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/shell/export.tsx": {
+    "codeimage(no-comments)": 12,
+    "eslint(max-lines-per-function)": 1,
+    "eslint(no-nested-ternary)": 1
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/shell/header-actions.ts": {
+    "codeimage(no-comments)": 1
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/shell/header.css.ts": {
+    "codeimage(no-comments)": 10,
+    "codeimage(no-global-style)": 1
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/shell/icons.tsx": {
+    "codeimage(no-comments)": 14
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/shell/preferences.ts": {
+    "codeimage(no-comments)": 18,
+    "eslint(no-nested-ternary)": 1,
+    "eslint(no-restricted-imports)": 1
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/shell/previews.tsx": {
+    "codeimage(no-comments)": 4
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/shell/sections.tsx": {
+    "codeimage(no-comments)": 29,
+    "codeimage(no-static-inline-style)": 1,
+    "eslint(max-lines)": 997,
+    "eslint(max-lines-per-function)": 1,
+    "eslint(no-restricted-imports)": 2,
+    "solid(components-return-once)": 1,
+    "solid(reactivity)": 6,
+    "typescript(no-non-null-assertion)": 2
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/shell/settings-state.ts": {
+    "codeimage(no-comments)": 9,
+    "codeimage(no-document-query)": 2
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/shell/settings.css.ts": {
+    "codeimage(no-comments)": 38,
+    "codeimage(no-global-style)": 9,
+    "eslint(max-lines)": 602
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/snippet.css.ts": {
+    "codeimage(no-comments)": 1,
+    "codeimage(no-global-style)": 2
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/stage.tsx": {
+    "codeimage(no-comments)": 14
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/syntax.ts": {
+    "codeimage(no-comments)": 7
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/theme-styles/ModeIcon.tsx": {
+    "codeimage(no-comments)": 1
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/theme-styles/ThemePicker.tsx": {
+    "codeimage(disable-directive-format)": 2,
+    "codeimage(no-comments)": 8
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/theme-styles/aa-list/aa-list.css.ts": {
+    "codeimage(no-comments)": 1
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/theme-styles/browser.ts": {
+    "codeimage(no-comments)": 22
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/theme-styles/orb/orb.css.ts": {
+    "codeimage(no-comments)": 1
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/theme-styles/picker.css.ts": {
+    "codeimage(no-comments)": 10
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/theme-styles/style.ts": {
+    "codeimage(no-comments)": 4,
+    "typescript(no-non-null-assertion)": 1
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/theme-styles/window/window.css.ts": {
+    "codeimage(no-comments)": 2
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/theme-swatch.css.ts": {
+    "codeimage(no-comments)": 6
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/variants/dock/Sheet.tsx": {
+    "codeimage(no-comments)": 7
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/variants/dock/context.ts": {
+    "codeimage(no-comments)": 5
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/variants/dock/dock.css.ts": {
+    "codeimage(no-comments)": 38,
+    "codeimage(no-global-style)": 14,
+    "eslint(max-lines)": 456
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/variants/dock/fields.ts": {
+    "codeimage(no-comments)": 5
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/variants/dock/index.tsx": {
+    "codeimage(no-comments)": 26,
+    "codeimage(no-document-query)": 1,
+    "eslint(max-lines)": 504,
+    "eslint(max-lines-per-function)": 1,
+    "solid(reactivity)": 4
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/variants/dock/panels.tsx": {
+    "codeimage(no-comments)": 8,
+    "typescript(no-non-null-assertion)": 1
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/variants/sidebar/Accordion.tsx": {
+    "codeimage(no-comments)": 13,
+    "eslint(max-lines)": 420,
+    "eslint(max-lines-per-function)": 1,
+    "eslint(no-nested-ternary)": 2,
+    "solid(reactivity)": 1,
+    "typescript(no-non-null-assertion)": 1
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/variants/sidebar/Rail.tsx": {
+    "codeimage(no-comments)": 5,
+    "eslint(max-lines)": 456,
+    "eslint(max-lines-per-function)": 1,
+    "solid(reactivity)": 4,
+    "typescript(no-non-null-assertion)": 4
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/variants/sidebar/ThemesPanel.tsx": {
+    "codeimage(no-comments)": 1
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/variants/sidebar/accordion.css.ts": {
+    "codeimage(no-comments)": 21,
+    "codeimage(no-global-style)": 10,
+    "eslint(max-lines)": 310
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/variants/sidebar/controls.tsx": {
+    "codeimage(no-comments)": 2
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/variants/sidebar/index.tsx": {
+    "codeimage(no-comments)": 1
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/variants/sidebar/overlays.ts": {
+    "codeimage(no-comments)": 15,
+    "codeimage(no-document-query)": 1,
+    "eslint(complexity)": 1,
+    "eslint(no-nested-ternary)": 2
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/variants/sidebar/panels.css.ts": {
+    "codeimage(no-comments)": 3,
+    "codeimage(no-global-style)": 2
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/variants/sidebar/panels.tsx": {
+    "codeimage(no-comments)": 8,
+    "codeimage(no-static-inline-style)": 1
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/variants/sidebar/places.ts": {
+    "codeimage(no-comments)": 1
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/variants/sidebar/rail.css.ts": {
+    "codeimage(no-comments)": 10,
+    "codeimage(no-global-style)": 3,
+    "eslint(max-lines)": 306
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/verify-i18n.mjs": {
+    "codeimage(no-comments)": 1,
+    "codeimage(no-document-query)": 1,
+    "eslint(max-depth)": 14,
+    "eslint(max-lines)": 368,
+    "eslint(no-console)": 1
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/verify-locale-parity.mjs": {
+    "codeimage(no-comments)": 4,
+    "eslint(max-lines)": 327,
+    "eslint(no-console)": 4
+  },
+  "apps/codeimage/src/pages/UnifiedEditor/verify-review.mjs": {
+    "codeimage(no-comments)": 6,
+    "codeimage(no-document-query)": 8,
+    "codeimage(no-global-key-listener)": 1,
+    "eslint(max-depth)": 12,
+    "eslint(max-lines)": 658,
+    "eslint(no-console)": 3,
+    "eslint(no-unused-vars)": 1
+  },
+  "apps/codeimage/src/state/assets/AssetsImage.tsx": {
+    "codeimage(no-static-inline-style)": 1,
+    "solid(reactivity)": 1
+  },
+  "apps/codeimage/src/state/assets/assets.ts": {
+    "codeimage(disable-directive-format)": 1,
+    "codeimage(no-comments)": 1,
+    "eslint(no-async-promise-executor)": 1,
+    "unused-disable-directive": 1
+  },
+  "apps/codeimage/src/state/auth/auth0.ts": {
+    "codeimage(no-comments)": 1
+  },
+  "apps/codeimage/src/state/editor/activeEditor.ts": {
+    "codeimage(no-comments)": 3,
+    "eslint(no-async-promise-executor)": 1,
+    "eslint(no-extra-boolean-cast)": 1,
+    "eslint(no-param-reassign)": 1
+  },
+  "apps/codeimage/src/state/editor/animation.ts": {
+    "codeimage(no-comments)": 3,
+    "eslint(max-lines)": 432,
+    "eslint(max-lines-per-function)": 1,
+    "eslint(no-nested-ternary)": 1,
+    "typescript(no-non-null-assertion)": 1
+  },
+  "apps/codeimage/src/state/editor/animationEditStep.test.ts": {
+    "codeimage(no-comments)": 1
+  },
+  "apps/codeimage/src/state/editor/config.store.ts": {
+    "codeimage(disable-directive-format)": 1,
+    "codeimage(no-comments)": 1,
+    "eslint(no-nested-ternary)": 1
+  },
+  "apps/codeimage/src/state/editor/createEditorSync.ts": {
+    "codeimage(no-comments)": 1,
+    "eslint(max-lines-per-function)": 1,
+    "eslint(no-console)": 1
+  },
+  "apps/codeimage/src/state/editor/editor.ts": {
+    "codeimage(disable-directive-format)": 2,
+    "codeimage(no-comments)": 1,
+    "eslint(max-lines-per-function)": 1,
+    "unicorn(no-useless-fallback-in-spread)": 1
+  },
+  "apps/codeimage/src/state/editor/frame.ts": {
+    "codeimage(no-comments)": 1
+  },
+  "apps/codeimage/src/state/editor/index.ts": {
+    "import(no-cycle)": 1
+  },
+  "apps/codeimage/src/state/editor/model.ts": {
+    "codeimage(disable-directive-format)": 1,
+    "codeimage(no-comments)": 1,
+    "unused-disable-directive": 1
+  },
+  "apps/codeimage/src/state/editor/terminal.ts": {
+    "codeimage(disable-directive-format)": 1,
+    "codeimage(no-comments)": 2,
+    "import(no-cycle)": 2,
+    "unused-disable-directive": 1
+  },
+  "apps/codeimage/src/state/effects/onCopyToClipboard.tsx": {
+    "codeimage(disable-directive-format)": 1,
+    "codeimage(no-comments)": 1,
+    "typescript(no-non-null-assertion)": 2,
+    "unused-disable-directive": 1
+  },
+  "apps/codeimage/src/state/frame/avatar.ts": {
+    "codeimage(no-comments)": 5,
+    "eslint(no-nested-ternary)": 1
+  },
+  "apps/codeimage/src/state/frame/model.ts": {
+    "codeimage(no-comments)": 7,
+    "eslint(no-nested-ternary)": 1
+  },
+  "apps/codeimage/src/state/frame/signature.ts": {
+    "codeimage(no-comments)": 9
+  },
+  "apps/codeimage/src/state/frame/signatureEditor.ts": {
+    "codeimage(no-comments)": 2
+  },
+  "apps/codeimage/src/state/plugins/local-storage.ts": {
+    "codeimage(no-comments)": 2
+  },
+  "apps/codeimage/src/state/plugins/unique-id.ts": {
+    "codeimage(disable-directive-format)": 1,
+    "unused-disable-directive": 1
+  },
+  "apps/codeimage/src/state/presets/bridge.ts": {
+    "typescript(no-non-null-assertion)": 1
+  },
+  "apps/codeimage/src/state/presets/presets.ts": {
+    "eslint(max-lines-per-function)": 1
+  },
+  "apps/codeimage/src/state/signatures/bridge.ts": {
+    "codeimage(no-comments)": 4
+  },
+  "apps/codeimage/src/state/signatures/signatures.ts": {
+    "codeimage(no-comments)": 8
+  },
+  "apps/codeimage/src/state/signatures/types.ts": {
+    "codeimage(no-comments)": 1
+  },
+  "apps/codeimage/src/state/whats-new/decide.test.ts": {
+    "eslint(max-params)": 1
+  },
+  "apps/codeimage/src/state/whats-new/decide.ts": {
+    "codeimage(no-comments)": 8
+  },
+  "apps/codeimage/src/state/whats-new/registry.ts": {
+    "codeimage(no-comments)": 11
+  },
+  "apps/codeimage/src/state/whats-new/whats-new.store.test.ts": {
+    "codeimage(no-comments)": 4
+  },
+  "apps/codeimage/src/state/whats-new/whats-new.store.ts": {
+    "codeimage(no-comments)": 10,
+    "eslint(max-lines-per-function)": 1,
+    "eslint(no-restricted-imports)": 1
+  },
+  "apps/codeimage/src/sw.ts": {
+    "codeimage(no-comments)": 5
+  },
+  "apps/codeimage/src/theme/global.css.ts": {
+    "codeimage(no-comments)": 1,
+    "typescript(no-non-null-assertion)": 2
+  },
+  "apps/codeimage/src/ui/ConfirmDialog/RenameContentDialog.tsx": {
+    "codeimage(no-comments)": 1
+  },
+  "apps/codeimage/src/ui/DynamicSizedContainer/DynamicSizedContainer.tsx": {
+    "codeimage(disable-directive-format)": 1
+  },
+  "apps/codeimage/src/ui/SegmentedField/SegmentedField.tsx": {
+    "codeimage(no-comments)": 3
+  },
+  "apps/codeimage/src/umami.d.ts": {
+    "codeimage(no-comments)": 1
+  },
+  "apps/codeimage/src/workers/animation.worker.ts": {
+    "codeimage(no-comments)": 3,
+    "eslint(no-restricted-imports)": 4
+  },
+  "apps/codeimage/vite.config.ts": {
+    "codeimage(no-comments)": 2
+  },
+  "apps/website/src/components/Landing/ComingSoon/ComingSoon.tsx": {
+    "eslint(max-lines-per-function)": 1,
+    "solid(style-prop)": 3
+  },
+  "apps/website/src/components/Landing/EditorSteps/CodeEditor/CodeEditor.tsx": {
+    "typescript(no-non-null-assertion)": 2
+  },
+  "apps/website/src/components/Landing/EditorSteps/EditorScene/DynamicBackgroundExpansion/DynamicBackgroundExpansion.tsx": {
+    "eslint(no-nested-ternary)": 1
+  },
+  "apps/website/src/components/Landing/EditorSteps/EditorScene/EditorScene.tsx": {
+    "eslint(max-lines-per-function)": 1
+  },
+  "apps/website/src/components/Landing/EditorSteps/EditorScene/snippet-theme.ts": {
+    "codeimage(no-comments)": 1
+  },
+  "apps/website/src/components/Landing/EditorSteps/StepCard/StepCard.tsx": {
+    "solid(style-prop)": 1
+  },
+  "apps/website/src/components/Landing/EditorSteps/scene.tsx": {
+    "eslint(no-param-reassign)": 1
+  },
+  "apps/website/src/components/Landing/Projects/Projects.tsx": {
+    "solid(style-prop)": 1
+  },
+  "apps/website/src/components/Umami/UmamiScript.tsx": {
+    "solid(components-return-once)": 1
+  },
+  "apps/website/src/ui.ts": {
+    "codeimage(disable-directive-format)": 2,
+    "codeimage(no-comments)": 27
+  },
+  "apps/website/vite.config.ts": {
+    "codeimage(no-comments)": 1
+  },
+  "commitlint.config.js": {
+    "codeimage(no-comments)": 2
+  },
+  "packages/atomic-state/src/createStore.ts": {
+    "codeimage(disable-directive-format)": 1
+  },
+  "packages/atomic-state/src/experimental/effects/index.ts": {
+    "codeimage(disable-directive-format)": 3,
+    "unused-disable-directive": 3
+  },
+  "packages/atomic-state/src/experimental/store-types.ts": {
+    "codeimage(no-comments)": 18
+  },
+  "packages/config/src/lib/base/colors.ts": {
+    "codeimage(no-comments)": 6
+  },
+  "packages/config/src/lib/base/languages.ts": {
+    "eslint(max-lines)": 816
+  },
+  "packages/config/src/lib/types/language-def.ts": {
+    "codeimage(disable-directive-format)": 1
+  },
+  "packages/dom-export/src/lib/applyStyleFromOptions.ts": {
+    "eslint(eqeqeq)": 1
+  },
+  "packages/dom-export/src/lib/cloneNode.ts": {
+    "codeimage(disable-directive-format)": 1,
+    "codeimage(no-comments)": 3,
+    "eslint(eqeqeq)": 1,
+    "typescript(no-non-null-assertion)": 1,
+    "unused-disable-directive": 1
+  },
+  "packages/dom-export/src/lib/cloneStyle.ts": {
+    "codeimage(no-comments)": 11
+  },
+  "packages/dom-export/src/lib/dataurl.ts": {
+    "codeimage(disable-directive-format)": 2,
+    "codeimage(no-comments)": 2,
+    "eslint(eqeqeq)": 1,
+    "typescript(no-non-null-assertion)": 1
+  },
+  "packages/dom-export/src/lib/embedImages.ts": {
+    "codeimage(no-comments)": 1
+  },
+  "packages/dom-export/src/lib/embedResources.ts": {
+    "codeimage(disable-directive-format)": 2,
+    "eslint(max-params)": 1,
+    "unused-disable-directive": 1
+  },
+  "packages/dom-export/src/lib/embedWebFonts.ts": {
+    "codeimage(disable-directive-format)": 3,
+    "codeimage(no-comments)": 6,
+    "eslint(eqeqeq)": 6,
+    "eslint(max-lines)": 330,
+    "eslint(no-nested-ternary)": 1,
+    "eslint(no-param-reassign)": 1,
+    "unused-disable-directive": 3
+  },
+  "packages/dom-export/src/lib/getBlobFromURL.ts": {
+    "codeimage(disable-directive-format)": 1,
+    "codeimage(no-comments)": 5,
+    "eslint(eqeqeq)": 1
+  },
+  "packages/dom-export/src/lib/index.ts": {
+    "codeimage(no-comments)": 3,
+    "typescript(no-non-null-assertion)": 2
+  },
+  "packages/dom-export/src/lib/iosResourceFix.ts": {
+    "codeimage(no-comments)": 1
+  },
+  "packages/dom-export/src/lib/options.ts": {
+    "codeimage(no-comments)": 21
+  },
+  "packages/dom-export/src/lib/util.ts": {
+    "codeimage(disable-directive-format)": 3,
+    "codeimage(no-comments)": 11,
+    "unused-disable-directive": 3
+  },
+  "packages/dom-export/vitest.config.ts": {
+    "codeimage(no-comments)": 1
+  },
+  "packages/highlight/dev/global.css.ts": {
+    "codeimage(no-global-style)": 1
+  },
+  "packages/highlight/dev/themeStore.ts": {
+    "typescript(no-non-null-assertion)": 1
+  },
+  "packages/highlight/dev/vite.config.ts": {
+    "codeimage(no-comments)": 1
+  },
+  "packages/highlight/scripts/generate-theme.cts": {
+    "codeimage(disable-directive-format)": 2
+  },
+  "packages/highlight/src/lib/core/custom-theme.ts": {
+    "codeimage(no-comments)": 10
+  },
+  "packages/highlight/src/lib/plugins/highlight-style.ts": {
+    "codeimage(no-comments)": 10
+  },
+  "packages/highlight/src/lib/themes/auraDark/aura.ts": {
+    "codeimage(no-comments)": 1
+  },
+  "packages/highlight/src/lib/themes/materialVolcano/materialVolcano.ts": {
+    "codeimage(no-comments)": 1
+  },
+  "packages/highlight/src/lib/themes/nightOwl/nightOwl.ts": {
+    "codeimage(no-comments)": 1
+  },
+  "packages/highlight/src/lib/themes/vsCodeDark2026/vsCodeDark2026.ts": {
+    "codeimage(no-comments)": 2
+  },
+  "packages/highlight/src/lib/themes/vsCodeLight2026/vsCodeLight2026.ts": {
+    "codeimage(no-comments)": 2
+  },
+  "packages/highlight/test/vscode2026.test.ts": {
+    "codeimage(no-comments)": 1
+  },
+  "packages/secrets/src/detect.ts": {
+    "eslint(complexity)": 1,
+    "eslint(no-nested-ternary)": 1
+  },
+  "packages/secrets/src/rules.ts": {
+    "codeimage(no-comments)": 2
+  },
+  "packages/secrets/test/bench.ts": {
+    "eslint(no-console)": 1
+  },
+  "packages/ui/dev/global.css.ts": {
+    "codeimage(no-global-style)": 1
+  },
+  "packages/ui/src/lib/hooks/pagination/getLastPage.ts": {
+    "codeimage(no-comments)": 1
+  },
+  "packages/ui/src/lib/primitives/Badge/Badge.tsx": {
+    "codeimage(disable-directive-format)": 1,
+    "unused-disable-directive": 1
+  },
+  "packages/ui/src/lib/primitives/Box/Box.tsx": {
+    "codeimage(disable-directive-format)": 1,
+    "codeimage(no-comments)": 1
+  },
+  "packages/ui/src/lib/primitives/Box/Stack.css.ts": {
+    "codeimage(no-comments)": 1
+  },
+  "packages/ui/src/lib/primitives/Button/Button.css.ts": {
+    "codeimage(no-comments)": 2
+  },
+  "packages/ui/src/lib/primitives/Dropdown/index.ts": {
+    "codeimage(no-comments)": 1
+  },
+  "packages/ui/src/lib/primitives/Icon/RemoteSvgIcon.tsx": {
+    "codeimage(disable-directive-format)": 3,
+    "codeimage(no-comments)": 1
+  },
+  "packages/ui/src/lib/primitives/Icon/SvgIcon.tsx": {
+    "codeimage(disable-directive-format)": 2
+  },
+  "packages/ui/src/lib/primitives/SegmentedField/SegmentedField.css.ts": {
+    "codeimage(no-comments)": 1
+  },
+  "packages/ui/src/lib/primitives/Snackbar/patch-solid-toast.ts": {
+    "codeimage(disable-directive-format)": 1
+  },
+  "packages/ui/src/lib/primitives/Transition/Transition.tsx": {
+    "codeimage(no-comments)": 1
+  },
+  "packages/ui/src/lib/theme/base.css.ts": {
+    "codeimage(no-comments)": 1
+  },
+  "packages/ui/src/lib/theme/global2.css.ts": {
+    "codeimage(no-global-style)": 1
+  },
+  "packages/ui/src/lib/theme/sprinkles.css.ts": {
+    "codeimage(no-comments)": 1
+  },
+  "packages/ui/src/lib/themes/dark-theme.css.ts": {
+    "codeimage(no-comments)": 3
+  },
+  "packages/ui/src/lib/tokens/tokens.tsx": {
+    "codeimage(disable-directive-format)": 1
+  },
+  "packages/ui/src/lib/utils/factory.tsx": {
+    "codeimage(disable-directive-format)": 2,
+    "unused-disable-directive": 6
+  },
+  "packages/ui/tools/build.ts": {
+    "codeimage(no-comments)": 2,
+    "typescript(no-non-null-assertion)": 3
+  },
+  "packages/ui/tools/with-solid.ts": {
+    "codeimage(disable-directive-format)": 2,
+    "codeimage(no-comments)": 13,
+    "eslint(max-lines-per-function)": 1
+  },
+  "packages/ui/vite.config.ts": {
+    "codeimage(no-comments)": 1
+  },
+  "scripts/ignore-release.js": {
+    "codeimage(no-comments)": 1
+  },
+  "scripts/make-env.ts": {
+    "codeimage(no-comments)": 3,
+    "eslint(no-unused-vars)": 1
+  },
+  "scripts/parity/animation-defaults.ts": {
+    "typescript(no-non-null-assertion)": 1
+  },
+  "scripts/parity/animation-gif.ts": {
+    "codeimage(no-comments)": 44,
+    "eslint(complexity)": 1,
+    "eslint(max-depth)": 2,
+    "eslint(max-lines)": 1197,
+    "eslint(max-lines-per-function)": 2,
+    "eslint(max-params)": 1,
+    "eslint(no-nested-ternary)": 1,
+    "typescript(no-non-null-assertion)": 6
+  },
+  "scripts/parity/animation-preview-live.ts": {
+    "codeimage(no-comments)": 5,
+    "eslint(max-lines-per-function)": 1,
+    "typescript(no-non-null-assertion)": 2
+  },
+  "scripts/parity/animation-preview.ts": {
+    "codeimage(no-comments)": 30,
+    "eslint(max-lines)": 678,
+    "eslint(max-lines-per-function)": 1,
+    "typescript(no-non-null-assertion)": 6
+  },
+  "scripts/parity/export-matrix.ts": {
+    "codeimage(no-comments)": 2,
+    "eslint(max-depth)": 5
+  },
+  "scripts/parity/live-animate.ts": {
+    "codeimage(no-comments)": 8,
+    "eslint(max-depth)": 4,
+    "eslint(max-lines)": 988,
+    "typescript(no-non-null-assertion)": 19
+  },
+  "scripts/parity/new-editor-renderer.ts": {
+    "eslint(max-lines-per-function)": 1
+  },
+  "scripts/parity/rasterizers.ts": {
+    "codeimage(no-comments)": 2,
+    "eslint(complexity)": 1,
+    "eslint(max-depth)": 2,
+    "eslint(max-lines)": 1392,
+    "eslint(max-lines-per-function)": 3,
+    "eslint(max-params)": 1,
+    "typescript(no-non-null-assertion)": 4
+  },
+  "scripts/parity/signature-renderer.ts": {
+    "eslint(max-depth)": 1,
+    "eslint(max-lines-per-function)": 1
+  },
+  "scripts/prepare-api-deploy.mjs": {
+    "codeimage(no-comments)": 7
+  },
+  "scripts/sync-package.ts": {
+    "codeimage(no-comments)": 1
+  },
+  "scripts/vercel-output-build.ts": {
+    "codeimage(no-comments)": 2
+  },
+  "scripts/verify-p5-focus.cjs": {
+    "codeimage(no-comments)": 1,
+    "eslint(max-lines)": 321,
+    "eslint(max-lines-per-function)": 1,
+    "eslint(no-undef)": 20
+  },
+  "scripts/verify-p5-gutter.cjs": {
+    "codeimage(no-comments)": 1,
+    "eslint(max-lines)": 564,
+    "eslint(max-lines-per-function)": 1,
+    "eslint(no-nested-ternary)": 1,
+    "eslint(no-undef)": 26
+  },
+  "scripts/verify-p5-import-undo.cjs": {
+    "eslint(max-lines-per-function)": 1,
+    "eslint(no-undef)": 12
+  },
+  "scripts/verify-p5-layout.cjs": {
+    "eslint(max-depth)": 11,
+    "eslint(max-lines)": 346,
+    "eslint(max-lines-per-function)": 1,
+    "eslint(no-undef)": 9
+  }
+}
