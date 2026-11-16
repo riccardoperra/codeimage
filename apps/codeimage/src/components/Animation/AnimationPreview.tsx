@@ -96,12 +96,19 @@ export function AnimationPreview(
       terminal: terminal.state,
       showOnlyActiveTab: exportCanvas.get.showOnlyActiveTab,
     });
-    return {settings, tabs: [first, ...rest], style: codeStyle, key};
+    const scope = JSON.stringify({
+      tabNames: editor.state.editors.map(tab => tab.tab.tabName),
+      frame: frame.stateToPersist(),
+      target: frame.exportTarget()?.id,
+      terminal: terminal.state,
+      showOnlyActiveTab: exportCanvas.get.showOnlyActiveTab,
+    });
+    return {settings, tabs: [first, ...rest], style: codeStyle, key, scope};
   });
   const {measurement, snapshot} = createPreviewSnapshot(
     () => request(),
-    ({settings, tabs, style}) =>
-      measurePreview(owner, tabs, style, settings.header),
+    ({settings, tabs, style, scope}) =>
+      measurePreview(owner, tabs, style, settings.header, undefined, scope),
   );
   const planned = createMemo<PreviewPlan | undefined>(previous => {
     if (animation.resizing()) return previous;
