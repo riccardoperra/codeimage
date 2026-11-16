@@ -1,5 +1,15 @@
 # CodeImage agent rules
 
+Read [`DESIGN.md`](DESIGN.md) and [`apps/codeimage/src/pages/UnifiedEditor/README.md`](apps/codeimage/src/pages/UnifiedEditor/README.md) before changing the editor, and the plan in `docs/plans/` when the feature has one.
+
+## Setup
+
+- Use Node 24 (`fnm exec --using=v24.14.0 <command>`).
+- Install with `pnpm install --frozen-lockfile`, then run `pnpm libs:build` before the first typecheck. The app imports the built `@codeimage/*` packages.
+- App typecheck: `./node_modules/.bin/tsc --noEmit -p tsconfig.json` in `apps/codeimage`. Unit tests: `./node_modules/.bin/vitest run` there.
+
+## Lint
+
 Run `pnpm lint` before every push. CI runs the same command in the Lint job. It runs `scripts/check-structure.mjs`, then `scripts/lint.mjs`, which lints the whole repository and compares each file and rule with `lint-baseline.json`.
 
 ## How the baseline works
@@ -54,6 +64,9 @@ Nothing fails when these are skipped. Each one has been corrected more than once
 - Do not commit `pnpm-lock.yaml` or formatter changes unrelated to the task (e6855b25, f3ad0ea3). Call binaries in `node_modules/.bin` directly, because `pnpm exec` can rewrite the lockfile.
 - Give every icon button and field an accessible name (73d467c6, f9926590, 2656aedd).
 - Format only the files you touch with `oxfmt`. The repository does not use Prettier.
+- Change the CodeMirror editor through decorations, gutter markers, tooltips and CodeMirror event handlers, never by editing, querying or listening on its DOM. See "The code editor" in `DESIGN.md`.
+- Every visible string goes through the locale files, in English, Italian, German and Spanish.
+- A new API field must be named in its TypeBox schema, because fast-json-stringify drops unnamed fields, and accepted by the parser in `apps/api/src/modules/project/project.model.ts`.
 
 ## When the operator corrects you
 

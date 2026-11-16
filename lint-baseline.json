@@ -26,9 +26,9 @@
     "eslint(max-lines-per-function)": 2
   },
   ".agents/skills/verify-codeimage/scripts/audit.mjs": {
-    "codeimage(no-comments)": 20,
+    "codeimage(no-comments)": 18,
     "eslint(max-depth)": 1,
-    "eslint(max-lines)": 2590,
+    "eslint(max-lines)": 2508,
     "eslint(max-lines-per-function)": 9,
     "eslint(no-param-reassign)": 6
   },
@@ -211,7 +211,7 @@
   "apps/codeimage/src/components/CustomEditor/CustomEditor.tsx": {
     "codeimage(no-comments)": 4,
     "eslint(complexity)": 1,
-    "eslint(max-lines)": 333,
+    "eslint(max-lines)": 327,
     "eslint(max-lines-per-function)": 1,
     "eslint(no-extra-boolean-cast)": 1,
     "eslint(no-restricted-imports)": 1
@@ -224,13 +224,6 @@
     "codeimage(no-comments)": 2,
     "codeimage(no-static-inline-style)": 1,
     "eslint(no-restricted-imports)": 1
-  },
-  "apps/codeimage/src/components/CustomEditor/plugins/lineMarks/controls.ts": {
-    "codeimage(no-comments)": 7,
-    "eslint(max-lines)": 339,
-    "eslint(no-param-reassign)": 3,
-    "eslint(no-restricted-imports)": 1,
-    "typescript(no-non-null-assertion)": 1
   },
   "apps/codeimage/src/components/CustomEditor/plugins/lineMarks/diffImportEditors.ts": {
     "codeimage(no-comments)": 1,
@@ -245,23 +238,11 @@
   "apps/codeimage/src/components/CustomEditor/plugins/lineMarks/gutter.test.ts": {
     "eslint(no-restricted-imports)": 1
   },
-  "apps/codeimage/src/components/CustomEditor/plugins/lineMarks/gutter.ts": {
-    "codeimage(no-comments)": 8,
-    "eslint(complexity)": 1,
-    "eslint(eqeqeq)": 1,
-    "eslint(max-lines)": 445,
-    "eslint(max-lines-per-function)": 2,
-    "eslint(no-nested-ternary)": 7,
-    "eslint(no-restricted-imports)": 1,
-    "typescript(no-non-null-assertion)": 2
-  },
   "apps/codeimage/src/components/CustomEditor/plugins/lineMarks/index.ts": {
     "eslint(no-restricted-imports)": 1
   },
   "apps/codeimage/src/components/CustomEditor/plugins/lineMarks/news.tsx": {
-    "codeimage(no-comments)": 5,
-    "eslint(no-restricted-imports)": 1,
-    "solid(reactivity)": 1
+    "eslint(no-restricted-imports)": 1
   },
   "apps/codeimage/src/components/CustomEditor/plugins/lineMarks/paste.ts": {
     "codeimage(no-comments)": 1,
@@ -875,9 +856,6 @@
     "eslint(no-restricted-imports)": 1,
     "solid(reactivity)": 1
   },
-  "apps/codeimage/src/pages/UnifiedEditor/controls/mark-toolbar.ts": {
-    "codeimage(no-comments)": 2
-  },
   "apps/codeimage/src/pages/UnifiedEditor/controls/overlay-placement.ts": {
     "codeimage(no-comments)": 1,
     "codeimage(no-document-query)": 2,
@@ -1177,11 +1155,10 @@
     "codeimage(no-comments)": 5
   },
   "apps/codeimage/src/pages/UnifiedEditor/variants/dock/index.tsx": {
-    "codeimage(no-comments)": 26,
+    "codeimage(no-comments)": 25,
     "codeimage(no-document-query)": 1,
-    "eslint(max-lines)": 504,
-    "eslint(max-lines-per-function)": 1,
-    "solid(reactivity)": 4
+    "eslint(max-lines)": 487,
+    "eslint(max-lines-per-function)": 1
   },
   "apps/codeimage/src/pages/UnifiedEditor/variants/dock/panels.tsx": {
     "codeimage(no-comments)": 8,
@@ -1189,18 +1166,16 @@
   },
   "apps/codeimage/src/pages/UnifiedEditor/variants/sidebar/Accordion.tsx": {
     "codeimage(no-comments)": 13,
-    "eslint(max-lines)": 420,
+    "eslint(max-lines)": 418,
     "eslint(max-lines-per-function)": 1,
     "eslint(no-nested-ternary)": 2,
-    "solid(reactivity)": 1,
     "typescript(no-non-null-assertion)": 1
   },
   "apps/codeimage/src/pages/UnifiedEditor/variants/sidebar/Rail.tsx": {
     "codeimage(no-comments)": 5,
-    "eslint(max-lines)": 456,
+    "eslint(max-lines)": 454,
     "eslint(max-lines-per-function)": 1,
-    "solid(reactivity)": 4,
-    "typescript(no-non-null-assertion)": 4
+    "typescript(no-non-null-assertion)": 3
   },
   "apps/codeimage/src/pages/UnifiedEditor/variants/sidebar/ThemesPanel.tsx": {
     "codeimage(no-comments)": 1

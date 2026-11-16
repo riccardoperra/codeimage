@@ -1,11 +1,14 @@
 // @vitest-environment happy-dom
 import type * as solid from 'solid-js';
-import type {EditorView} from '@codemirror/view';
+import {EditorView} from '@codemirror/view';
+import {EditorSelection, EditorState} from '@codemirror/state';
+import {lineAtHeight} from '../../components/CustomEditor/plugins/lineMarks/controls';
 import {createRoot} from 'solid-js';
 import {expect, it, vi} from 'vitest';
 import type {WatermarkScope} from './scope';
 import {
   bindWatermarkExport,
+  codeRects,
   createWatermarkScope,
   prepareWatermark,
 } from './scope';
@@ -115,4 +118,67 @@ it('keeps measuring after an editor with a queued request is removed', async () 
   queued.write(queued.read());
   expect(events).toEqual(['read', 'write']);
   dispose();
+});
+
+it('measures live text through CodeMirror coordinates and leaves static markup to its reader', () => {
+  const view = new EditorView({
+    state: EditorState.create({doc: '  word  \n   \nlast one'}),
+    parent: document.body,
+  });
+  const coordinates = vi.spyOn(view, 'coordsAtPos').mockImplementation(pos => ({
+    left: pos * 10,
+    right: pos * 10,
+    top: 0,
+    bottom: 20,
+  }));
+  const staticRects = vi.fn(() => [{x: 1, y: 2, width: 3, height: 4}]);
+  try {
+    expect(codeRects({kind: 'codemirror', view}, staticRects)).toEqual([
+      {x: 20, y: 0, width: 40, height: 20},
+      {x: 130, y: 0, width: 40, height: 20},
+      {x: 180, y: 0, width: 30, height: 20},
+    ]);
+    expect(staticRects).not.toHaveBeenCalled();
+    coordinates.mockRestore();
+    const root = document.createElement('div');
+    root.innerHTML = '<div class="cm-line">static</div>';
+    expect(codeRects({kind: 'static', root}, staticRects)).toEqual([
+      {x: 1, y: 2, width: 3, height: 4},
+    ]);
+    expect(staticRects).toHaveBeenCalledOnce();
+  } finally {
+    view.destroy();
+  }
+});
+
+it('splits a live word that wraps onto the next row', () => {
+  const view = new EditorView({doc: 'abcdefgh', parent: document.body});
+  const row = (pos: number, side = 1) =>
+    pos > 4 || (pos === 4 && side > 0) ? 1 : 0;
+  vi.spyOn(view, 'coordsAtPos').mockImplementation((pos, side) => {
+    const left = (pos - row(pos, side) * 4) * 10;
+    const top = row(pos, side) * 20;
+    return {left, right: left, top, bottom: top + 20};
+  });
+  vi.spyOn(view, 'moveToLineBoundary').mockImplementation(start =>
+    EditorSelection.cursor(start.head < 4 ? 4 : 8),
+  );
+  try {
+    expect(codeRects({kind: 'codemirror', view}, () => [])).toEqual([
+      {x: 0, y: 0, width: 40, height: 20},
+      {x: 0, y: 20, width: 40, height: 20},
+    ]);
+  } finally {
+    view.destroy();
+  }
+});
+
+it('clamps gutter pointer positions past both ends of the document', () => {
+  const view = new EditorView({doc: 'one\ntwo\nthree', parent: document.body});
+  try {
+    expect(lineAtHeight(view, view.documentTop - 10000)).toBe(1);
+    expect(lineAtHeight(view, view.documentTop + 10000)).toBe(3);
+  } finally {
+    view.destroy();
+  }
 });

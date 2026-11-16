@@ -8,6 +8,15 @@ export const controls = style({
 // Descendants with their own visibility (theme cards, for example) stay hidden.
 globalStyle(`${controls}[data-editor-disabled] *`, {visibility: 'hidden'});
 
+export const popupHost = style({
+  position: 'absolute',
+  top: 0,
+  left: 0,
+  width: 0,
+  height: 0,
+  zIndex: 2,
+});
+
 export const notice = style({
   position: 'absolute',
   zIndex: 2,
