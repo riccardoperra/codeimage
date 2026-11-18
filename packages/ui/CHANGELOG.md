@@ -1,5 +1,13 @@
 # @codeimage/ui
 
+## 0.11.1
+
+### Patch Changes
+
+- [#702](https://github.com/riccardoperra/codeimage/pull/702) [`0eafcd5`](https://github.com/riccardoperra/codeimage/commit/0eafcd573594fdaabe86b8037b9ee5b971916082) Thanks [@riccardoperra](https://github.com/riccardoperra)! - Render saved projects to PNG, JPEG, WebP, or SVG in Node with Takumi, without a browser. The renderer server-renders the export frame from the app's components and P1's static code view.
+
+  Load remote SVG icons through a resource that also resolves during server rendering.
+
 ## 0.11.0
 
 ### Minor Changes

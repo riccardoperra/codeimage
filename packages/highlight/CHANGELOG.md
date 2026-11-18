@@ -1,5 +1,13 @@
 # @codeimage/highlight
 
+## 0.13.0
+
+### Minor Changes
+
+- [#730](https://github.com/riccardoperra/codeimage/pull/730) [`9ee98a9`](https://github.com/riccardoperra/codeimage/commit/9ee98a9d63b7ce2a005926214ed869e1605ff267) Thanks [@riccardoperra](https://github.com/riccardoperra)! - Add VSCode Dark 2026 and VSCode Light 2026 editor themes. Keep the original VSCode Dark colors under the VSCode Dark (classic) label.
+
+- [#732](https://github.com/riccardoperra/codeimage/pull/732) [`1d7183c`](https://github.com/riccardoperra/codeimage/commit/1d7183c600530df80a3cd97753f063fdb0cbbe2b) Thanks [@riccardoperra](https://github.com/riccardoperra)! - Add Card, Editor and Terminal window styles, an Accent wash surface, a theme-derived Hairline border and an Ambient frame suggestion. Persist surface choices in projects and presets, and expose generated keyword accents on built-in themes.
+
 ## 0.12.0
 
 ### Minor Changes

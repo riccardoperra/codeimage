@@ -1,5 +1,20 @@
 # @codeimage/highlight
 
+## 10.1.0
+
+### Minor Changes
+
+- [#702](https://github.com/riccardoperra/codeimage/pull/702) [`82f9d8e`](https://github.com/riccardoperra/codeimage/commit/82f9d8ecac523c8f5de44b0d5000e9cefd225e9f) Thanks [@riccardoperra](https://github.com/riccardoperra)! - Add the codeimage command to export source files or stdin with web presets, language inference, line ranges, themes, and image formats. Add `inferLanguageFromPath` to `@codeimage/config`.
+
+- [#698](https://github.com/riccardoperra/codeimage/pull/698) [`746c072`](https://github.com/riccardoperra/codeimage/commit/746c0726fad17bfcbc8a8ebb2a6c7a51cb78930c) Thanks [@riccardoperra](https://github.com/riccardoperra)! - Add undoable diff, highlight, and focus line marks to the web editor and image exports. Import unified diffs and Shiki annotations on paste, and persist marks with each project tab.
+
+- [#696](https://github.com/riccardoperra/codeimage/pull/696) [`4f73ae6`](https://github.com/riccardoperra/codeimage/commit/4f73ae6a2a96069a26f8fe2e2d1171faceccdd5e) Thanks [@riccardoperra](https://github.com/riccardoperra)! - Add exact social export sizes and an optional handle signature. Fit the whole code window inside each target, retain the existing watermark, and persist the target and signature in projects and presets.
+
+### Patch Changes
+
+- Updated dependencies [[`9ee98a9`](https://github.com/riccardoperra/codeimage/commit/9ee98a9d63b7ce2a005926214ed869e1605ff267), [`1d7183c`](https://github.com/riccardoperra/codeimage/commit/1d7183c600530df80a3cd97753f063fdb0cbbe2b)]:
+  - @codeimage/highlight@0.13.0
+
 ## 10.0.0
 
 ### Minor Changes
