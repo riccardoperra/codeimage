@@ -1,5 +1,5 @@
 import {createEffect, onCleanup, onMount} from 'solid-js';
-import {mountProjectMenu} from 'virtual:codeimage-solid2-project-menu';
+import {mountProjectMenu} from 'virtual:codeimage-solid2-islands';
 
 export function ProjectActionsMenu(props) {
   let target;

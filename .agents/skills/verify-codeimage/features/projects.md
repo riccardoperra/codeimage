@@ -57,3 +57,14 @@ CODEIMAGE_SOLID1_BRIDGE=1 VERIFY_AUDIT=1 VERIFY_CASES=solid1-bridge-project-menu
 ```
 
 The case creates a disposable MSW project, opens the menu by keyboard, checks Escape and focus, renames the project through the app dialog, clones it and follows the new URL, then deletes the original through the app dialog. It checks the mutation responses and verifies that the rename dialog blocks background clicks only while open. The dashboard and API use the normal app and its mock backend, and only the project actions menu goes through the probe.
+
+## Solid 2 read-only notice
+
+Run the focused CodeImage audit under Node 24.
+
+```sh
+VERIFY_AUDIT=1 VERIFY_CASES=solid2-read-only-notice VERIFY_BROWSER_CHANNEL=chrome \
+  node .agents/skills/verify-codeimage/scripts/verify.mjs
+```
+
+The case opens a read-only snippet, changes the locale on the existing banner, delays the clone response with MSW, and checks that the button disables until the request completes. It verifies one clone request, navigation to the editable clone, and removal of the island. Run `snippet-read-only` and `snippet-clone` to cover layout and export behavior.

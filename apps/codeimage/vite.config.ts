@@ -8,11 +8,11 @@ import {withStaticVercelPreview} from '../../scripts/vercel-output-build';
 
 const config: UserConfigExport = defineConfig(async ({mode}) => ({
   plugins: [
-    ...(mode !== 'render' && process.env.CODEIMAGE_SOLID1_BRIDGE === '1'
+    ...(mode !== 'render'
       ? [
-          (
-            await import('./experiments/solid1-bridge/vite.mjs')
-          ).projectMenuBridgeProbe(),
+          (await import('./experiments/solid1-bridge/vite.mjs')).editorIslands({
+            projectMenu: process.env.CODEIMAGE_SOLID1_BRIDGE === '1',
+          }),
         ]
       : []),
     vanillaExtractPlugin(

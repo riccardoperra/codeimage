@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import {auditReadOnlyIsland} from './read-only-island.mjs';
 import {auditSnippets} from './snippets.mjs';
 
 async function auditProjectMenuBridge({page}) {
@@ -105,6 +106,15 @@ async function auditProjectMenuBridge({page}) {
 
 export async function auditSavedProjects(options) {
   await auditSnippets(options);
+  if (
+    process.env.VERIFY_CASES?.split(',').some(
+      name => name.trim() === 'solid2-read-only-notice',
+    )
+  ) {
+    await options.feature('solid2-read-only-notice', () =>
+      auditReadOnlyIsland(options),
+    );
+  }
   const requested = process.env.VERIFY_CASES?.split(',').some(
     name => name.trim() === 'solid1-bridge-project-menu',
   );

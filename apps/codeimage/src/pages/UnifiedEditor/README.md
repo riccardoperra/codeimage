@@ -72,6 +72,8 @@ Tokens without a colour use the base text colour.
 Each layout renders `Canvas` once inside a container with a definite size.
 A snippet load uses the same frame placeholder as a lazy editor load.
 `ReadOnlyNotice` floats at the top of that container, outside the fitted frame.
+The Solid 1 editor resolves its labels and supplies the clone command.
+The banner mounts a Solid 2 root when the snippet becomes read-only. The Solid 2 root tracks the pending clone and uses the Vite bridge for the CodeUI button and its spinner.
 `EditingControls` hides and makes controls inert while loading, preserving the owner's layout.
 Read-only pages remove those controls and their containers so the canvas can take the space.
 Export waits for a snippet to load, so it cannot capture the previous document.

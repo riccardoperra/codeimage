@@ -27,7 +27,7 @@ async function dismissNews(page) {
   }
 }
 
-async function ready(page, kind = 'owner') {
+export async function ready(page, kind = 'owner') {
   await page.locator(`.unified-editor[data-page-state="${kind}"]`).waitFor();
   await code(page).waitFor();
   await page
@@ -63,7 +63,7 @@ async function navigate(page, path) {
   }, path);
 }
 
-async function createProject(page, base, options = {}) {
+export async function createProject(page, base, options = {}) {
   if (
     await page
       .getByRole('button', {name: /^Sign in(?: with GitHub)?$/})
@@ -108,7 +108,7 @@ async function createProject(page, base, options = {}) {
   return project;
 }
 
-async function makeReadOnly(page, id) {
+export async function makeReadOnly(page, id) {
   // Ownership is an MSW fixture, not a mutation of the editor's stores.
   await page.evaluate(async id => {
     const {db} = await import('/src/mocks/db.ts');

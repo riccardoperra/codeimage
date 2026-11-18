@@ -36,7 +36,9 @@ export const notice = style({
   boxSizing: 'border-box',
 });
 
-globalStyle(`${notice} button`, {minHeight: '36px', flexShrink: 0});
+export const noticeText = style({fontSize: themeVars.fontSize.sm});
+export const noticeButton = style({minHeight: '36px', flexShrink: 0});
+export const noticeIsland = style({display: 'contents'});
 
 export const canvas = style({
   selectors: {

@@ -44,3 +44,5 @@ export function mountProjectMenu(target, initialProps) {
     },
   };
 }
+
+export {mountReadOnlyNotice} from './read-only-host';

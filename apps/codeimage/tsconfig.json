@@ -16,7 +16,10 @@
     "paths": {
       "@codeimage/store/*": ["./src/state/*"],
       "@core/*": ["./src/core/*"],
-      "@ui/*": ["./src/ui/*"]
+      "@ui/*": ["./src/ui/*"],
+      "virtual:codeimage-solid2-islands": [
+        "./src/pages/UnifiedEditor/solid2-islands.d.ts"
+      ]
     }
   },
   "include": ["./src/**/*", "./scripts/**/*"]

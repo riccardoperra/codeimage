@@ -687,9 +687,6 @@
     "codeimage(no-comments)": 11,
     "codeimage(no-static-inline-style)": 1
   },
-  "apps/codeimage/src/pages/UnifiedEditor/ReadOnlyNotice.tsx": {
-    "typescript(no-non-null-assertion)": 1
-  },
   "apps/codeimage/src/pages/UnifiedEditor/ThemeSwatch.tsx": {
     "codeimage(no-comments)": 4
   },
@@ -1061,7 +1058,7 @@
   },
   "apps/codeimage/src/pages/UnifiedEditor/snippet.css.ts": {
     "codeimage(no-comments)": 1,
-    "codeimage(no-global-style)": 2
+    "codeimage(no-global-style)": 1
   },
   "apps/codeimage/src/pages/UnifiedEditor/stage.tsx": {
     "codeimage(no-comments)": 14
