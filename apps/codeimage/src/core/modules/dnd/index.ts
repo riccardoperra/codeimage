@@ -7,14 +7,13 @@ import {
   PointerSensor,
 } from '@dnd-kit/dom';
 import {Sortable, SortableKeyboardPlugin} from '@dnd-kit/dom/sortable';
+import {TabDragFeedback} from './TabDragFeedback';
 
 export function createTabDragManager() {
   return new DragDropManager({
     modifiers: [RestrictToHorizontalAxis],
     plugins: defaultPreset.plugins.map(plugin =>
-      plugin === Feedback
-        ? Feedback.configure({dropAnimation: null, keyboardTransition: null})
-        : plugin,
+      plugin === Feedback ? TabDragFeedback : plugin,
     ),
     sensors: [
       PointerSensor.configure({

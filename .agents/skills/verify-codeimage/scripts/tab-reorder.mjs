@@ -5,6 +5,19 @@ import {resolve} from 'node:path';
 
 const tabSelector = '[data-watermark-obstacle][id]:not([data-dnd-placeholder])';
 
+function tabPaint(tab) {
+  return tab.evaluate(element => {
+    const style = getComputedStyle(element);
+    return {
+      background: style.backgroundColor,
+      position: style.position,
+      shadow: style.boxShadow,
+      zoom: element.currentCSSZoom,
+      popover: element.hasAttribute('popover'),
+    };
+  });
+}
+
 async function reorderTabs({page, strip, firstId, secondId, out, label}) {
   const tabs = strip.locator(tabSelector);
   const tab = id => strip.locator(`${tabSelector}[id="${id}"]`);
@@ -46,6 +59,8 @@ async function reorderTabs({page, strip, firstId, secondId, out, label}) {
     true,
   );
 
+  await tab(secondId).press('Enter');
+  const paintBeforeDrag = await tabPaint(tab(secondId));
   const touch = process.env.VERIFY_TOUCH === '1';
   const from = await tab(secondId).boundingBox();
   const to = await tab(firstId).boundingBox();
@@ -69,6 +84,13 @@ async function reorderTabs({page, strip, firstId, secondId, out, label}) {
     }
     await target(firstId).waitFor();
     await expectOrder([secondId, firstId]);
+    assert.equal(await strip.locator('[data-dnd-placeholder]').count(), 0);
+    assert.deepEqual(await tabPaint(tab(secondId)), paintBeforeDrag);
+    assert.deepEqual(await tab(firstId).boundingBox(), to);
+    const moved = await tab(secondId).boundingBox();
+    assert.ok(moved);
+    assert.ok(Math.abs(moved.x - from.x - (end - x)) < 1);
+    assert.ok(Math.abs(moved.y - from.y) < 1);
     await page.screenshot({path: resolve(out, `${label}-dragging.png`)});
   } finally {
     if (touch) {
@@ -81,8 +103,8 @@ async function reorderTabs({page, strip, firstId, secondId, out, label}) {
   await dragging.waitFor({state: 'hidden'});
   await expectOrder([firstId, secondId]);
   assert.equal(
-    await strip.locator('[data-dnd-placeholder], [data-dnd-dragging]').count(),
-    0,
+    await tab(secondId).evaluate(element => element.style.translate),
+    '',
   );
   return touch ? 'emulated touch' : 'mouse';
 }
