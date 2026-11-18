@@ -490,6 +490,9 @@ importers:
       '@codeimage/secrets':
         specifier: workspace:*
         version: link:../../packages/secrets
+      '@codeimage/solid2-islands':
+        specifier: workspace:*
+        version: link:solid2/islands
       '@codeimage/ui':
         specifier: workspace:*
         version: link:../../packages/ui
@@ -755,15 +758,27 @@ importers:
 
   apps/codeimage/solid2/islands:
     devDependencies:
+      '@codeimage/config':
+        specifier: workspace:*
+        version: link:../../../../packages/config
       '@codeimage/vite-plugin-solid1-bridge':
         specifier: workspace:*
         version: link:../../../../packages/vite-plugin-solid1-bridge
+      '@codemirror/state':
+        specifier: catalog:next
+        version: 6.6.0
+      '@codemirror/view':
+        specifier: catalog:next
+        version: 6.40.0
       '@solidjs/vite-plugin':
         specifier: 3.0.0
         version: 3.0.0(@babel/core@7.29.13(supports-color@10.2.2))(@solidjs/web@2.0.0(solid-js@2.0.0))(solid-js@2.0.0)(vite@8.3.8(@types/node@25.9.9)(esbuild@0.28.2)(jiti@2.6.1)(sass@1.98.0)(terser@5.46.1)(tsx@4.23.15)(yaml@2.9.1))
       '@solidjs/web':
         specifier: 2.0.0
         version: 2.0.0(solid-js@2.0.0)
+      solid-codemirror:
+        specifier: 3.0.0
+        version: 3.0.0(@codemirror/state@6.6.0)(@codemirror/view@6.40.0)(solid-js@2.0.0)
       solid-js:
         specifier: 2.0.0
         version: 2.0.0
@@ -10667,6 +10682,14 @@ packages:
       '@codemirror/state': ^6.2.0
       '@codemirror/view': ^6.12.0
       solid-js: ^1.7.0
+
+  solid-codemirror@3.0.0:
+    resolution: {integrity: sha512-LW4cuHUtEPrTRZultY0osgifVAFGaOAPkqiIL3LUUeLwE3BMClQneU83OydN1onFnfXQS5dOlPvcwChsJCYHQg==}
+    engines: {node: '>=22.12.0'}
+    peerDependencies:
+      '@codemirror/state': ^6.6.0
+      '@codemirror/view': ^6.40.0
+      solid-js: ^2.0.0
 
   solid-headless@0.13.1:
     resolution: {integrity: sha512-FZJai49YmdBu6oEo8aJGPMQ1Qn8xiW0cnD6vNFDIQWMKJdXEUtDEwz0hTR9aZ7Epq3IkrZs+98E0vNiv1+pZpA==}
@@ -22286,6 +22309,12 @@ snapshots:
       solid-js: 1.9.12
     transitivePeerDependencies:
       - '@types/node'
+
+  solid-codemirror@3.0.0(@codemirror/state@6.6.0)(@codemirror/view@6.40.0)(solid-js@2.0.0):
+    dependencies:
+      '@codemirror/state': 6.6.0
+      '@codemirror/view': 6.40.0
+      solid-js: 2.0.0
 
   solid-headless@0.13.1(patch_hash=b49786ed140172dc3b664c30dae5e1b5bdb8b42e4a6e5c24cc54f663cffbd394)(solid-js@1.9.12):
     dependencies:

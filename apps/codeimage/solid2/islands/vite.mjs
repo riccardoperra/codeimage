@@ -23,6 +23,12 @@ const hostFactory = path(
 );
 const hostStyles = path('../../src/core/solid2-islands/island-host.css.ts');
 const islandsEntry = path('./islands-entry.mjs');
+const sharedModules = new Set([
+  '@codeimage/config',
+  '@codeimage/highlight/themes',
+  '@codemirror/state',
+  '@codemirror/view',
+]);
 
 const prebuiltVanillaCss = {
   name: 'codeimage-prebuilt-vanilla-css',
@@ -75,6 +81,7 @@ async function buildHost(islands) {
     ],
     build: {
       write: false,
+      rolldownOptions: {external: id => sharedModules.has(id)},
       lib: {
         entry: islandsEntry,
         formats: ['es'],
@@ -85,8 +92,9 @@ async function buildHost(islands) {
   const [chunk] = chunks;
   if (
     chunks.length !== 1 ||
-    chunk.imports.length ||
-    chunk.dynamicImports.length
+    [...chunk.imports, ...chunk.dynamicImports].some(
+      id => !sharedModules.has(id),
+    )
   ) {
     throw new Error(
       'The Solid 2 islands must compile to one standalone host module',

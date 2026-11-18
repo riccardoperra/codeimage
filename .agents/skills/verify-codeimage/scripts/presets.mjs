@@ -2,7 +2,22 @@ import assert from 'node:assert/strict';
 import {resolve} from 'node:path';
 import {writeFile} from 'node:fs/promises';
 import {isDeepStrictEqual} from 'node:util';
-export {auditPresets} from './preset-reopen.mjs';
+import {auditCodeMirrorPreview} from './codemirror-preview.mjs';
+import {auditPresets} from './preset-reopen.mjs';
+
+export async function auditPresetCases({feature, fresh, ...context}) {
+  await feature('presets', () => auditPresets(context));
+  const name = 'solid2-codemirror-preview';
+  await feature(name, () =>
+    fresh(
+      {name, layout: 'inspector', viewport: {width: 1440, height: 900}},
+      async ({page, doctor, section, editor}) => {
+        await doctor('/', 'editor', 'inspector');
+        return auditCodeMirrorPreview(page, section, editor);
+      },
+    ),
+  );
+}
 
 async function stored(page, key) {
   return page.evaluate(

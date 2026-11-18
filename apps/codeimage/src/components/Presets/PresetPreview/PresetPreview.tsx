@@ -1,5 +1,6 @@
 import {getAssetsStore} from '@codeimage/store/assets/assets';
 import type {Preset} from '@codeimage/store/presets/types';
+import {Dynamic} from 'solid-js/web';
 import CustomEditorPreview from '../../CustomEditor/CustomEditorPreview';
 import {DynamicTerminal} from '../../Terminal/DynamicTerminal/DynamicTerminal';
 import {ThemeBox} from '../../ThemeSwitcher/ThemeBox';
@@ -7,6 +8,7 @@ import {ThemeBox} from '../../ThemeSwitcher/ThemeBox';
 interface PresetPreviewProps {
   code: string;
   data: Preset['data'];
+  preview?: typeof CustomEditorPreview;
 }
 
 export function PresetPreview(props: PresetPreviewProps) {
@@ -46,7 +48,8 @@ export function PresetPreview(props: PresetPreviewProps) {
         alternativeTheme={props.data.terminal.alternativeTheme}
         themeId={props.data.editor.themeId}
       >
-        <CustomEditorPreview
+        <Dynamic
+          component={props.preview ?? CustomEditorPreview}
           themeId={props.data.editor.themeId}
           languageId={'typescript'}
           code={props.code}

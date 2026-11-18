@@ -2,10 +2,17 @@
   "name": "@codeimage/solid2-islands",
   "private": true,
   "type": "module",
+  "exports": {
+    "./CustomEditorPreview": "./CustomEditorPreview.tsx"
+  },
   "devDependencies": {
+    "@codeimage/config": "workspace:*",
     "@codeimage/vite-plugin-solid1-bridge": "workspace:*",
+    "@codemirror/state": "catalog:next",
+    "@codemirror/view": "catalog:next",
     "@solidjs/vite-plugin": "3.0.0",
     "@solidjs/web": "2.0.0",
+    "solid-codemirror": "3.0.0",
     "solid-js": "2.0.0",
     "vite": "catalog:next"
   }

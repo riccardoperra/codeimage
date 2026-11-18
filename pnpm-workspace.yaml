@@ -72,4 +72,5 @@ minimumReleaseAgeExclude:
   - '@fastify/swagger-ui@6.1.4'
   - fast-json-stringify@7.3.6
   - postcss@8.5.33
+  - solid-codemirror@3.0.0
   - sql-escaper@1.6.0

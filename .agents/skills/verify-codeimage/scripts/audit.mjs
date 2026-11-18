@@ -2,7 +2,7 @@
 import {animateTimelineCases} from './animate-timeline.mjs';
 import {createDoctor} from './health/doctor.mjs';
 import assert from 'node:assert/strict';
-import {auditPresets, auditPresetPersistence} from './presets.mjs';
+import {auditPresetCases, auditPresetPersistence} from './presets.mjs';
 import {auditLineMarks} from './audit-line-marks.mjs';
 import {auditLineMarksNews} from './audit-line-marks-news.mjs';
 import {verifyKeyboardScroll} from './keyboard-scroll.mjs';
@@ -550,7 +550,7 @@ export async function audit({page, context, base, out, server}) {
     assert.equal(downloads, 1);
     page.off('download', count);
   });
-  await feature('presets', () => auditPresets({page, doctor, editor, shot}));
+  await auditPresetCases({feature, fresh, page, doctor, editor, shot});
   await feature('preset-persistence', () =>
     auditPresetPersistence({fresh, out}),
   );

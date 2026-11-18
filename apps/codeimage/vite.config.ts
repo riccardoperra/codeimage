@@ -13,6 +13,7 @@ const config: UserConfigExport = defineConfig(async ({mode}) => ({
           (await import('./solid2/islands/vite.mjs')).editorIslands({
             islands: [
               {file: './src/pages/UnifiedEditor/shell/SettingsSearch.tsx'},
+              {file: './solid2/islands/CustomEditorPreview.tsx'},
             ],
           }),
         ]
@@ -125,6 +126,7 @@ const config: UserConfigExport = defineConfig(async ({mode}) => ({
       : undefined,
   ssr: mode === 'render' ? {noExternal: true} : undefined,
   optimizeDeps: {
+    exclude: ['@codeimage/solid2-islands/CustomEditorPreview'],
     include: ['@codemirror/state', '@codemirror/view', '@codemirror/language'],
   },
 }));

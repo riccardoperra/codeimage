@@ -1,4 +1,5 @@
 import {useI18n} from '@codeimage/locale';
+import CustomEditorPreview from '@codeimage/solid2-islands/CustomEditorPreview';
 import type {Preset} from '@codeimage/store/presets/types';
 import {Box, HStack, SvgIcon, Text} from '@codeimage/ui';
 import {
@@ -65,7 +66,11 @@ export function PresetUpdateDialog(
           </div>
           <div>
             <li class={styles.item}>
-              <PresetPreview code={exampleCode} data={props.presetToCompare} />
+              <PresetPreview
+                code={exampleCode}
+                data={props.presetToCompare}
+                preview={CustomEditorPreview}
+              />
               <Box display={'flex'} justifyContent={'center'} marginTop={4}>
                 <Text weight={'semibold'}>{t('presets.updatePreset.new')}</Text>
               </Box>
