@@ -27,7 +27,7 @@ import {ExperimentsIcon, SettingsIcon, GitHubIcon} from '../../shell/icons';
 import {editorLinks} from '../../shell/links';
 import {settings} from '../../shell/settings-state';
 import {claimHeaderActions} from '../../shell/header-actions';
-import {ownCompositeKeys} from './controls';
+import {handleRailPanelKey} from './controls';
 import {CloseIcon, CollapseIcon, SearchIcon} from './icons';
 import {PANELS} from './panels';
 import {PLACES} from './places';
@@ -288,13 +288,6 @@ export function Rail(props: VariantProps) {
     settle(nearest.target, offset);
   };
 
-  const onPanelKeyDown = (e: KeyboardEvent) => {
-    ownCompositeKeys(e);
-    if (e.key !== 'Escape' || e.defaultPrevented || e.cancelBubble) return;
-    e.stopPropagation();
-    close(true);
-  };
-
   onSettled(() => {
     const onQuery = (e: MediaQueryListEvent) => setIsPhone(e.matches);
     compactQuery.addEventListener('change', onQuery);
@@ -393,7 +386,7 @@ export function Rail(props: VariantProps) {
             class={styles.panel}
             data-wide={openPanel()?.wide ? '' : undefined}
             hidden={!openPanel()}
-            onKeyDown={onPanelKeyDown}
+            onKeyDown={event => handleRailPanelKey(event, panelEl, close)}
           >
             <div
               class={styles.panelGrabArea}

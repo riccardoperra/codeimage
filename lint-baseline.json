@@ -1048,7 +1048,7 @@
   },
   "apps/codeimage/src/pages/UnifiedEditor/variants/sidebar/Rail.tsx": {
     "codeimage(no-comments)": 5,
-    "eslint(max-lines)": 453,
+    "eslint(max-lines)": 447,
     "eslint(max-lines-per-function)": 1,
     "typescript(no-non-null-assertion)": 3
   },
@@ -1061,7 +1061,7 @@
     "eslint(max-lines)": 310
   },
   "apps/codeimage/src/pages/UnifiedEditor/variants/sidebar/controls.tsx": {
-    "codeimage(no-comments)": 2
+    "codeimage(no-comments)": 1
   },
   "apps/codeimage/src/pages/UnifiedEditor/variants/sidebar/index.tsx": {
     "codeimage(no-comments)": 1

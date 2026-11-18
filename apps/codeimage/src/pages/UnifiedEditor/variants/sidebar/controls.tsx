@@ -12,7 +12,16 @@ export function ownKeys(e: KeyboardEvent) {
 const COMPOSITE =
   '[role=radiogroup], [role=tablist], [role=listbox], [aria-haspopup=listbox]';
 
-/** Keeps arrow keys and typeahead inside segmented controls, selects and grids. */
-export function ownCompositeKeys(e: KeyboardEvent) {
-  if ((e.target as Element).closest?.(COMPOSITE)) ownKeys(e);
+export function handleRailPanelKey(
+  event: KeyboardEvent,
+  panel: HTMLElement,
+  close: (returnFocus: boolean) => void,
+) {
+  if (!event.composedPath().includes(panel)) return;
+  if (event.target instanceof Element && event.target.closest(COMPOSITE))
+    ownKeys(event);
+  if (event.key !== 'Escape' || event.defaultPrevented || event.cancelBubble)
+    return;
+  event.stopPropagation();
+  close(true);
 }

@@ -92,6 +92,8 @@ The cutover branch runs the app, router, locale, statebuilder, CodeMirror and wo
 
 The widget adapter snapshots field values and passes callbacks. Selected controls also accept DOM slots already rendered by the host. Solid providers and compound component trees stay under their own runtime. Restart Vite after changing registered bridge files or exports.
 
+The cutover passed the Node 24 production builds, app typecheck, lint, and the app, bridge, renderer and CLI suites. Chrome verified saved projects, read-only cloning, Settings and preset persistence, tab reordering, keyboard navigation in all three layouts, and real PNG, ZIP, GIF and MP4 downloads. CodeUI redesign adoption and the marketing site upgrade remain in P7 and P6.
+
 1. Switch the browser compiler, root, router, locale provider and store providers. Get a guest editor and one saved project to load and save.
 2. Port the editor, stores, CodeMirror, tabs and canvas in subsystem commits. Check persistence and export as soon as the relevant paths work.
 3. Bridge the remaining Solid 1 UI by widget or family. Exercise Settings, Export and compound overlays before expanding coverage.
