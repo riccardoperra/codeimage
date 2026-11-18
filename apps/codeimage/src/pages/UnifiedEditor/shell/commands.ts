@@ -21,6 +21,7 @@ import {
   SettingsIcon,
   ShareIcon,
   StackIcon,
+  SparklesIcon,
 } from './icons';
 import {
   COLOUR_MODES,
@@ -29,6 +30,7 @@ import {
   preferences,
   THEME_CARDS,
 } from './preferences';
+import {formattingCommands} from './formatting-settings';
 import {SECTIONS, settings} from './settings-state';
 import type {SectionId} from './settings-state';
 
@@ -38,6 +40,7 @@ const icon = (value: Component<IconProps>) =>
 const SECTION_ICONS: Record<SectionId, Component<IconProps>> = {
   general: GeneralIcon,
   appearance: AppearanceIcon,
+  formatting: SparklesIcon,
   export: ExportIcon,
   experiments: ExperimentsIcon,
   'whats-new': NewsIcon,
@@ -238,6 +241,7 @@ export function settingsCommands(extra: readonly Command[]): Command[] {
       current: mode.id === ui.get.themeMode,
       run: () => ui.setThemeMode(mode.id),
     })),
+    ...formattingCommands(),
     ...extra,
   ];
 }

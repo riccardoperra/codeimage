@@ -104,51 +104,53 @@ const $activeEditorState = () => {
       formatter,
       setFormatterName,
       canFormat: formatter.canFormat,
-      format(code = currentEditor()?.code ?? '') {
-        return new Promise(async r => {
-          try {
-            const result = await formatter.format(
-              code,
-              {
-                singleAttributePerLine: true,
-                trailingComma: 'none',
-                arrowParens: 'always',
-                bracketSpacing: true,
-                proseWrap: 'always',
-                printWidth: 90,
-              },
-              currentEditor()?.formatter ?? undefined,
-            );
+      async format(code = currentEditor()?.code ?? '') {
+        const editor = currentEditor();
+        if (!editor) return false;
+        const {id, code: original, languageId, formatter: parser} = editor;
+        const name = editor.tab?.tabName;
 
-            if (result !== currentEditor()?.code) {
-              setCode(result);
-              toast.success(
-                () => {
-                  const [t] = useI18n<AppLocaleEntries>();
-                  return t('canvas.formattedCode');
-                },
-                {
-                  position: 'bottom-center',
-                  theme: getUiStore().invertedThemeMode(),
-                },
-              );
-            }
-            r(true);
-          } catch (e) {
-            console.warn(e);
-            toast.error(
+        try {
+          const result = await formatter.format(code);
+          const index = state.editors.findIndex(entry => entry.id === id);
+          const latest = state.editors[index];
+          if (
+            !latest ||
+            latest.code !== original ||
+            latest.languageId !== languageId ||
+            latest.formatter !== parser ||
+            latest.tab?.tabName !== name
+          )
+            return false;
+
+          if (result !== latest.code) {
+            setEditors(index, 'code', result);
+            toast.success(
               () => {
                 const [t] = useI18n<AppLocaleEntries>();
-                return t('canvas.errorFormattedCode');
+                return t('canvas.formattedCode');
               },
               {
                 position: 'bottom-center',
                 theme: getUiStore().invertedThemeMode(),
               },
             );
-            r(false);
           }
-        });
+          return true;
+        } catch (error) {
+          console.warn(error);
+          toast.error(
+            () => {
+              const [t] = useI18n<AppLocaleEntries>();
+              return t('canvas.errorFormattedCode');
+            },
+            {
+              position: 'bottom-center',
+              theme: getUiStore().invertedThemeMode(),
+            },
+          );
+          return false;
+        }
       },
     };
   });

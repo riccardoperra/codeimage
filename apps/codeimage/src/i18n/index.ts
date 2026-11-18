@@ -1,3 +1,4 @@
+import {formattingLocale} from './formatting';
 import {whatsNewLocale} from './whatsNew';
 import {editorLocale} from './editor';
 import {secrets} from './secrets';
@@ -101,6 +102,7 @@ export const locale = {
     ...rendering.it,
     ...localAi.it,
     ...agentActivity.it,
+    ...formattingLocale.it,
     ...altText.it,
     ...lineMarksLocale.it,
     ...editorLocale.it,
@@ -190,6 +192,7 @@ export const locale = {
     ...rendering.en,
     ...localAi.en,
     ...agentActivity.en,
+    ...formattingLocale.en,
     ...altText.en,
     ...lineMarksLocale.en,
     ...editorLocale.en,
@@ -280,6 +283,7 @@ export const locale = {
     ...rendering.de,
     ...localAi.de,
     ...agentActivity.de,
+    ...formattingLocale.de,
     ...altText.de,
     ...lineMarksLocale.de,
     ...editorLocale.de,
@@ -369,6 +373,7 @@ export const locale = {
     ...rendering.es,
     ...localAi.es,
     ...agentActivity.es,
+    ...formattingLocale.es,
     ...altText.es,
     ...lineMarksLocale.es,
     ...editorLocale.es,

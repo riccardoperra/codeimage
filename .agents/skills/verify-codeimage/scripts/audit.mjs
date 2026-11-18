@@ -3,6 +3,7 @@ import {animateTimelineCases} from './animate-timeline.mjs';
 import {createDoctor} from './health/doctor.mjs';
 import assert from 'node:assert/strict';
 import {auditPresets, auditPresetPersistence} from './presets.mjs';
+import {auditFormatting} from './audit-formatting.mjs';
 import {auditLineMarks} from './audit-line-marks.mjs';
 import {auditLineMarksNews} from './audit-line-marks-news.mjs';
 import {verifyKeyboardScroll} from './keyboard-scroll.mjs';
@@ -736,25 +737,13 @@ export async function audit({page, context, base, out, server}) {
       0,
     );
   });
-  await feature('editor-options', async () => {
-    await editor().fill('const unchanged = 1;');
-    await section('code');
-    const language = page.locator('#sidebar-editor-language-trigger');
-    await language.click();
-    await page.getByRole('option', {name: 'Python', exact: true}).click();
-    assert.match(await language.innerText(), /Python/);
-    assert.equal(await editor().innerText(), 'const unchanged = 1;');
-    await language.click();
-    await page.getByRole('option', {name: /^Typescript$/i}).click();
-    assert.match(await language.innerText(), /Typescript/i);
-    await editor().fill('const value={answer:42}');
-    await page.getByRole('button', {name: 'Format code', exact: true}).click();
-    await page.waitForFunction(() =>
-      document
-        .querySelector('.cm-content[contenteditable="true"]')
-        ?.textContent.includes('const value ='),
-    );
-    assert.match(await editor().innerText(), /const value = \{.*answer: 42/);
+  await auditFormatting({
+    feature,
+    page,
+    editor,
+    section,
+    settings,
+    closeSettings,
   });
   await feature('preset-management', async () => {
     await doctor('/', 'editor', 'studio');
