@@ -1,5 +1,32 @@
 # @codeimage/api
 
+## 0.7.0
+
+### Minor Changes
+
+- [#736](https://github.com/riccardoperra/codeimage/pull/736) [`8893be7`](https://github.com/riccardoperra/codeimage/commit/8893be7e73e7ff6ccbb94bfb18d0b285eb147172) Thanks [@riccardoperra](https://github.com/riccardoperra)! - Add animation editing to the unified editor, with a resizable timeline,
+  per-transition easing, repeated steps, preview editing and saved header modes.
+
+- [#736](https://github.com/riccardoperra/codeimage/pull/736) [`22123f4`](https://github.com/riccardoperra/codeimage/commit/22123f42d4ce604896c5d292876616d037edb03b) Thanks [@riccardoperra](https://github.com/riccardoperra)! - Adds an Animate panel to the editor. With two or more tabs, it plays the morph from one tab to the next in place of the editor frame, with the same keyframes the export renders. Steps follow the tabs and can be reordered, and each step's hold, the transition, the easing, and the frame rate are saved with the project.
+
+- [#698](https://github.com/riccardoperra/codeimage/pull/698) [`746c072`](https://github.com/riccardoperra/codeimage/commit/746c0726fad17bfcbc8a8ebb2a6c7a51cb78930c) Thanks [@riccardoperra](https://github.com/riccardoperra)! - Add undoable diff, highlight, and focus line marks to the web editor and image exports. Import unified diffs and Shiki annotations on paste, and persist marks with each project tab.
+
+- [#717](https://github.com/riccardoperra/codeimage/pull/717) [`612d52d`](https://github.com/riccardoperra/codeimage/commit/612d52dcb9b5c9bcde331239b6219f898cf7a6fb) Thanks [@riccardoperra](https://github.com/riccardoperra)! - Organize the API into contract-driven modules with typed command and query buses, owner-scoped repositories, a shared error envelope, and request ids.
+
+- [#729](https://github.com/riccardoperra/codeimage/pull/729) [`24a636d`](https://github.com/riccardoperra/codeimage/commit/24a636d8271c9d5a6d40122ebb2879bdb057401f) Thanks [@riccardoperra](https://github.com/riccardoperra)! - Give the new editor's signature three styles (Minimal, Pill and Card), an optional platform icon, a Card avatar, three positions and ink that follows the background, all sized to the frame so they stay readable on social exports. Load the Card avatar from a public GitHub, Bluesky or Mastodon profile, or from an upload. Save up to three signatures per user, in the account or, for guests, in the browser, with one default for new snippets. Clicking the signature on the canvas opens its settings.
+
+- [#696](https://github.com/riccardoperra/codeimage/pull/696) [`4f73ae6`](https://github.com/riccardoperra/codeimage/commit/4f73ae6a2a96069a26f8fe2e2d1171faceccdd5e) Thanks [@riccardoperra](https://github.com/riccardoperra)! - Add exact social export sizes and an optional handle signature. Fit the whole code window inside each target, retain the existing watermark, and persist the target and signature in projects and presets.
+
+- [#732](https://github.com/riccardoperra/codeimage/pull/732) [`1d7183c`](https://github.com/riccardoperra/codeimage/commit/1d7183c600530df80a3cd97753f063fdb0cbbe2b) Thanks [@riccardoperra](https://github.com/riccardoperra)! - Add Card, Editor and Terminal window styles, an Accent wash surface, a theme-derived Hairline border and an Ambient frame suggestion. Persist surface choices in projects and presets, and expose generated keyword accents on built-in themes.
+
+### Patch Changes
+
+- [#717](https://github.com/riccardoperra/codeimage/pull/717) [`081ade6`](https://github.com/riccardoperra/codeimage/commit/081ade68ed2aff7f2bbd15eb6fee2161dc18bae6) Thanks [@riccardoperra](https://github.com/riccardoperra)! - Update backend dependencies and remove unused development and schema packages.
+
+- [#717](https://github.com/riccardoperra/codeimage/pull/717) [`b2a3630`](https://github.com/riccardoperra/codeimage/commit/b2a3630d5b252af37d03ceb1ae900b6f3b32c220) Thanks [@riccardoperra](https://github.com/riccardoperra)! - fix(api): check project ownership on update and rename
+- Updated dependencies [[`22123f4`](https://github.com/riccardoperra/codeimage/commit/22123f42d4ce604896c5d292876616d037edb03b), [`746c072`](https://github.com/riccardoperra/codeimage/commit/746c0726fad17bfcbc8a8ebb2a6c7a51cb78930c), [`6c77052`](https://github.com/riccardoperra/codeimage/commit/6c770522498310d34b59dacddd8b63bef5869134), [`24a636d`](https://github.com/riccardoperra/codeimage/commit/24a636d8271c9d5a6d40122ebb2879bdb057401f), [`4f73ae6`](https://github.com/riccardoperra/codeimage/commit/4f73ae6a2a96069a26f8fe2e2d1171faceccdd5e), [`1d7183c`](https://github.com/riccardoperra/codeimage/commit/1d7183c600530df80a3cd97753f063fdb0cbbe2b)]:
+  - @codeimage/prisma-models@0.1.1
+
 ## 0.6.0
 
 ### Minor Changes

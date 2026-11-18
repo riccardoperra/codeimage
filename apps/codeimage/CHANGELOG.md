@@ -1,5 +1,82 @@
 # @codeimage/app
 
+## 2.0.0
+
+### Major Changes
+
+- [#739](https://github.com/riccardoperra/codeimage/pull/739) [`10b26ce`](https://github.com/riccardoperra/codeimage/commit/10b26cec0efee60f6a652d328c0cd408319d44ec) Thanks [@riccardoperra](https://github.com/riccardoperra)! - Release CodeImage 2.0 with social export sizes, saved signatures, line marks, alt text, new window styles and the optional experimental Takumi export engine with automatic fallback. Introduce the shared editor layouts and a What’s new showcase with pointers to the controls.
+
+### Minor Changes
+
+- [#736](https://github.com/riccardoperra/codeimage/pull/736) [`8893be7`](https://github.com/riccardoperra/codeimage/commit/8893be7e73e7ff6ccbb94bfb18d0b285eb147172) Thanks [@riccardoperra](https://github.com/riccardoperra)! - Add animation editing to the unified editor, with a resizable timeline,
+  per-transition easing, repeated steps, preview editing and saved header modes.
+
+- [#781](https://github.com/riccardoperra/codeimage/pull/781) [`eb0ad10`](https://github.com/riccardoperra/codeimage/commit/eb0ad10ac2943851de4c96ae56078aea814877b9) Thanks [@riccardoperra](https://github.com/riccardoperra)! - Export code animations as GIF for READMEs and docs, with stable colours, merged holds, file-size estimates and MP4 fallback.
+
+- [#766](https://github.com/riccardoperra/codeimage/pull/766) [`700dbb4`](https://github.com/riccardoperra/codeimage/commit/700dbb45844253a51337ca21dbec37bb83d5544e) Thanks [@riccardoperra](https://github.com/riccardoperra)! - Export code animations as MP4 in the browser, with frame rate and size controls,
+  progress, cancellation, secrets review and file sharing where supported.
+
+- [#736](https://github.com/riccardoperra/codeimage/pull/736) [`22123f4`](https://github.com/riccardoperra/codeimage/commit/22123f42d4ce604896c5d292876616d037edb03b) Thanks [@riccardoperra](https://github.com/riccardoperra)! - Adds an Animate panel to the editor. With two or more tabs, it plays the morph from one tab to the next in place of the editor frame, with the same keyframes the export renders. Steps follow the tabs and can be reordered, and each step's hold, the transition, the easing, and the frame rate are saved with the project.
+
+- [#755](https://github.com/riccardoperra/codeimage/pull/755) [`a06e03b`](https://github.com/riccardoperra/codeimage/commit/a06e03b31c60082bba0104994c9e375d1e1a64a6) Thanks [@riccardoperra](https://github.com/riccardoperra)! - Add a labelled keyboard shortcuts button to the desktop canvas and move footer links into Settings.
+  Group Studio's Search, Settings, Experiments, and GitHub actions at the bottom of its rail.
+
+- [#755](https://github.com/riccardoperra/codeimage/pull/755) [`10c1366`](https://github.com/riccardoperra/codeimage/commit/10c1366e69a4baff77d0dd1ffdc878ae36cf9d73) Thanks [@riccardoperra](https://github.com/riccardoperra)! - Add a desktop header shortcut to Experiments and an Open experiments command.
+  Offer a temporary What's new header entry that reopens the latest announcement without resetting seen or dismissed state.
+
+- [#698](https://github.com/riccardoperra/codeimage/pull/698) [`746c072`](https://github.com/riccardoperra/codeimage/commit/746c0726fad17bfcbc8a8ebb2a6c7a51cb78930c) Thanks [@riccardoperra](https://github.com/riccardoperra)! - Add undoable diff, highlight, and focus line marks to the web editor and image exports. Import unified diffs and Shiki annotations on paste, and persist marks with each project tab.
+
+- [#693](https://github.com/riccardoperra/codeimage/pull/693) [`b71a02f`](https://github.com/riccardoperra/codeimage/commit/b71a02f6725ab1fc4d745908a9c256287c2e7ec4) Thanks [@riccardoperra](https://github.com/riccardoperra)! - Add a Copy alt text button that copies the snippet's language, tab name, line range, and code for use as image alt text.
+
+- [#731](https://github.com/riccardoperra/codeimage/pull/731) [`ca4c3b0`](https://github.com/riccardoperra/codeimage/commit/ca4c3b0ee3b117b2e0c532ac5863364de8dbb71b) Thanks [@riccardoperra](https://github.com/riccardoperra)! - Add an optional Takumi export engine in Settings, with a persisted renderer flag and automatic dom-export fallback.
+
+- [#695](https://github.com/riccardoperra/codeimage/pull/695) [`bca8d8f`](https://github.com/riccardoperra/codeimage/commit/bca8d8f32a62459e9245340b944d3b82b89fe745) Thanks [@riccardoperra](https://github.com/riccardoperra)! - Detect possible secrets in the editor and before export. Add undoable document redaction, session-only Ignore actions, and a shared secret detector.
+
+- [#729](https://github.com/riccardoperra/codeimage/pull/729) [`24a636d`](https://github.com/riccardoperra/codeimage/commit/24a636d8271c9d5a6d40122ebb2879bdb057401f) Thanks [@riccardoperra](https://github.com/riccardoperra)! - Give the new editor's signature three styles (Minimal, Pill and Card), an optional platform icon, a Card avatar, three positions and ink that follows the background, all sized to the frame so they stay readable on social exports. Load the Card avatar from a public GitHub, Bluesky or Mastodon profile, or from an upload. Save up to three signatures per user, in the account or, for guests, in the browser, with one default for new snippets. Clicking the signature on the canvas opens its settings.
+
+- [#696](https://github.com/riccardoperra/codeimage/pull/696) [`4f73ae6`](https://github.com/riccardoperra/codeimage/commit/4f73ae6a2a96069a26f8fe2e2d1171faceccdd5e) Thanks [@riccardoperra](https://github.com/riccardoperra)! - Add exact social export sizes and an optional handle signature. Fit the whole code window inside each target, retain the existing watermark, and persist the target and signature in projects and presets.
+
+- [`7009181`](https://github.com/riccardoperra/codeimage/commit/70091810b51427e3c0f2e98766e494a0b0a5299a) Thanks [@riccardoperra](https://github.com/riccardoperra)! - Export one image per tab as a ZIP, or share all images together on supported devices.
+
+- [#730](https://github.com/riccardoperra/codeimage/pull/730) [`9ee98a9`](https://github.com/riccardoperra/codeimage/commit/9ee98a9d63b7ce2a005926214ed869e1605ff267) Thanks [@riccardoperra](https://github.com/riccardoperra)! - Add VSCode Dark 2026 and VSCode Light 2026 editor themes. Keep the original VSCode Dark colors under the VSCode Dark (classic) label.
+
+- [#725](https://github.com/riccardoperra/codeimage/pull/725) [`b1a7171`](https://github.com/riccardoperra/codeimage/commit/b1a7171587d71c3d4f1b9bcca4b70f6acd3938c4) Thanks [@riccardoperra](https://github.com/riccardoperra)! - Replace the changelog dialog with a new "What's new": a small card announces a release without blocking the editor, a dot marks the control where each new feature lives, and Settings keeps the archive.
+
+- [#732](https://github.com/riccardoperra/codeimage/pull/732) [`1d7183c`](https://github.com/riccardoperra/codeimage/commit/1d7183c600530df80a3cd97753f063fdb0cbbe2b) Thanks [@riccardoperra](https://github.com/riccardoperra)! - Add Card, Editor and Terminal window styles, an Accent wash surface, a theme-derived Hairline border and an Ambient frame suggestion. Persist surface choices in projects and presets, and expose generated keyword accents on built-in themes.
+
+### Patch Changes
+
+- [#786](https://github.com/riccardoperra/codeimage/pull/786) [`f524e26`](https://github.com/riccardoperra/codeimage/commit/f524e26cd5c7b228f3119d3374b1167fd71fcd46) Thanks [@riccardoperra](https://github.com/riccardoperra)! - Export MP4 and GIF steps at their natural sizes on one canvas, without clipping or background seams when switching tabs or reloading the editor.
+
+- [#741](https://github.com/riccardoperra/codeimage/pull/741) [`4ca1db5`](https://github.com/riccardoperra/codeimage/commit/4ca1db5491963c4b63bd8674e562f44dc71551ef) Thanks [@riccardoperra](https://github.com/riccardoperra)! - Render the new editor's Card, Editor and Terminal windows, the wash surface, the hairline border and the Minimal, Pill and Card signatures in the CLI from the same frame component as the web export. Presets copied from the new UI keep their window and signature fields, and an avatar that cannot load draws initials.
+
+  Embed variable-weight font faces in browser exports, and lay out SVG exports at the display's pixel ratio in every Blink browser, headless Chromium included.
+
+- [#707](https://github.com/riccardoperra/codeimage/pull/707) [`caa0cd0`](https://github.com/riccardoperra/codeimage/commit/caa0cd0020b3772675dc999ad410ed3a72015ad0) Thanks [@riccardoperra](https://github.com/riccardoperra)! - Compiles two code steps into one keyframed scene, so a later export can morph one tab into the next. Tokens that both steps keep slide to their new place, removed tokens fade out, and new tokens fade in.
+
+  Plain Text tabs keep their blank lines in the static export. Before, a blank line in a tab without a language parser had no height, so the lines after it moved up.
+
+- [#775](https://github.com/riccardoperra/codeimage/pull/775) [`7d43431`](https://github.com/riccardoperra/codeimage/commit/7d434310db34bd4fda93b3c2a2791fc437d4091d) Thanks [@riccardoperra](https://github.com/riccardoperra)! - Keep the "New: Line marks" dot beside its line when the canvas moves. Before, opening a panel or moving the inspector could leave the dot over another control.
+
+- [#702](https://github.com/riccardoperra/codeimage/pull/702) [`0eafcd5`](https://github.com/riccardoperra/codeimage/commit/0eafcd573594fdaabe86b8037b9ee5b971916082) Thanks [@riccardoperra](https://github.com/riccardoperra)! - Render saved projects to PNG, JPEG, WebP, or SVG in Node with Takumi, without a browser. The renderer server-renders the export frame from the app's components and P1's static code view.
+
+  Load remote SVG icons through a resource that also resolves during server rendering.
+
+- [#736](https://github.com/riccardoperra/codeimage/pull/736) [`d3e7123`](https://github.com/riccardoperra/codeimage/commit/d3e7123e94fbe25d2849bb5e04ff52088d5c5518) Thanks [@riccardoperra](https://github.com/riccardoperra)! - Esc closes a popover while a segmented control inside it has the focus, such as the colour picker on its Gradient, Color, Custom control.
+
+- [`d22b637`](https://github.com/riccardoperra/codeimage/commit/d22b637b114723ad5f3e1c8fc75fced3be457561) Thanks [@riccardoperra](https://github.com/riccardoperra)! - Exports render from a static view of the snippet instead of a hidden second editor, so every line is exported and editing no longer leaves timers running. Line numbers sit on the same baseline as the code.
+
+- [#731](https://github.com/riccardoperra/codeimage/pull/731) [`a54ec86`](https://github.com/riccardoperra/codeimage/commit/a54ec861f4c7adff1daade90d117fdda5cee88d9) Thanks [@riccardoperra](https://github.com/riccardoperra)! - Connect the Takumi renderer preference to the new editor, keep social export scale summaries accurate, and load the font faces used by exported signatures.
+- Updated dependencies [[`8893be7`](https://github.com/riccardoperra/codeimage/commit/8893be7e73e7ff6ccbb94bfb18d0b285eb147172), [`22123f4`](https://github.com/riccardoperra/codeimage/commit/22123f42d4ce604896c5d292876616d037edb03b), [`081ade6`](https://github.com/riccardoperra/codeimage/commit/081ade68ed2aff7f2bbd15eb6fee2161dc18bae6), [`82f9d8e`](https://github.com/riccardoperra/codeimage/commit/82f9d8ecac523c8f5de44b0d5000e9cefd225e9f), [`4ca1db5`](https://github.com/riccardoperra/codeimage/commit/4ca1db5491963c4b63bd8674e562f44dc71551ef), [`ca114da`](https://github.com/riccardoperra/codeimage/commit/ca114dafddc614c54185e45c68bbec09ffd6121e), [`746c072`](https://github.com/riccardoperra/codeimage/commit/746c0726fad17bfcbc8a8ebb2a6c7a51cb78930c), [`612d52d`](https://github.com/riccardoperra/codeimage/commit/612d52dcb9b5c9bcde331239b6219f898cf7a6fb), [`6c77052`](https://github.com/riccardoperra/codeimage/commit/6c770522498310d34b59dacddd8b63bef5869134), [`b2a3630`](https://github.com/riccardoperra/codeimage/commit/b2a3630d5b252af37d03ceb1ae900b6f3b32c220), [`b7b9477`](https://github.com/riccardoperra/codeimage/commit/b7b9477c1779c3fc7f67518ac3279fbd550da49d), [`bca8d8f`](https://github.com/riccardoperra/codeimage/commit/bca8d8f32a62459e9245340b944d3b82b89fe745), [`0eafcd5`](https://github.com/riccardoperra/codeimage/commit/0eafcd573594fdaabe86b8037b9ee5b971916082), [`24a636d`](https://github.com/riccardoperra/codeimage/commit/24a636d8271c9d5a6d40122ebb2879bdb057401f), [`4f73ae6`](https://github.com/riccardoperra/codeimage/commit/4f73ae6a2a96069a26f8fe2e2d1171faceccdd5e), [`ec23c50`](https://github.com/riccardoperra/codeimage/commit/ec23c503ba508f697c20f70d7ee4e43c52d632bf), [`9ee98a9`](https://github.com/riccardoperra/codeimage/commit/9ee98a9d63b7ce2a005926214ed869e1605ff267), [`1d7183c`](https://github.com/riccardoperra/codeimage/commit/1d7183c600530df80a3cd97753f063fdb0cbbe2b)]:
+  - @codeimage/api@0.7.0
+  - @codeimage/prisma-models@0.1.1
+  - @codeimage/config@10.1.0
+  - @codeimage/render@0.2.0
+  - @codeimage/dom-export@1.12.1
+  - @codeimage/secrets@0.2.0
+  - @codeimage/ui@0.11.1
+  - @codeimage/highlight@0.13.0
+
 ## 1.10.0
 
 ### Minor Changes

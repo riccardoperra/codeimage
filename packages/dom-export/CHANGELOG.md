@@ -1,5 +1,16 @@
 # @codeimage/dom-export
 
+## 1.12.1
+
+### Patch Changes
+
+- [#741](https://github.com/riccardoperra/codeimage/pull/741) [`4ca1db5`](https://github.com/riccardoperra/codeimage/commit/4ca1db5491963c4b63bd8674e562f44dc71551ef) Thanks [@riccardoperra](https://github.com/riccardoperra)! - Render the new editor's Card, Editor and Terminal windows, the wash surface, the hairline border and the Minimal, Pill and Card signatures in the CLI from the same frame component as the web export. Presets copied from the new UI keep their window and signature fields, and an avatar that cannot load draws initials.
+
+  Embed variable-weight font faces in browser exports, and lay out SVG exports at the display's pixel ratio in every Blink browser, headless Chromium included.
+
+- [#708](https://github.com/riccardoperra/codeimage/pull/708) [`ec23c50`](https://github.com/riccardoperra/codeimage/commit/ec23c503ba508f697c20f70d7ee4e43c52d632bf) Thanks [@riccardoperra](https://github.com/riccardoperra)! - Preserve computed font sizes when cloning styles so exported text matches the preview.
+  Keep Chromium and Firefox SVG layout at the source display's pixel ratio to prevent extra text wrapping.
+
 ## 1.12.0
 
 ### Minor Changes
