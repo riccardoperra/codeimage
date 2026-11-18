@@ -2,7 +2,7 @@ import {OutlineTab} from './OutlineTab';
 import type {Context} from './OutlineRows';
 import {useI18n} from '@codeimage/locale';
 import {getEditorStore} from '@codeimage/store/editor';
-import {createSignal, For, onCleanup, onMount, untrack} from 'solid-js';
+import {createSignal, For, onSettled, untrack} from 'solid-js';
 import type {AppLocaleEntries} from '../../../i18n';
 import {registerRoot, timelineActions} from './actions';
 import {keyOf, type TimelineModel} from './model';
@@ -18,8 +18,7 @@ export function Outline(props: {model: TimelineModel}) {
   let root: HTMLDivElement | undefined;
   let list: HTMLDivElement | undefined;
   let ring: HTMLSpanElement | undefined;
-  onMount(() => registerRoot(root));
-  onCleanup(() => registerRoot(undefined));
+  onSettled(() => registerRoot(root));
   const [dragging, setDragging] = createSignal<string | null>(null);
   const selectedKey = () => {
     const value = animation.selection();

@@ -21,15 +21,14 @@ import {getActiveEditorStore} from '@codeimage/store/editor/activeEditor';
 import {getUiStore} from '@codeimage/store/ui';
 import {HStack, toast} from '@codeimage/ui';
 import {EditorView} from '@codemirror/view';
-import {Button} from '@codeui/kit';
+import {Button} from '@ui/legacy-controls';
 import {createCompartmentExtension, createEditorFocus} from 'solid-codemirror';
-import type {Accessor, JSX} from 'solid-js';
-import {batch, createEffect, createSignal, on, onCleanup} from 'solid-js';
-import {unwrap} from 'solid-js/store';
+import type {JSX} from '@solidjs/web';
+import {createEffect, createSignal, onSettled, snapshot} from 'solid-js';
 import type {AppLocaleEntries} from '../../i18n';
-import {MAX_EDITOR_TABS} from '../../state/editor/model';
-import {SparklesIcon} from '../Icons/SparklesIcon';
-import {createWatermarkCodeSource} from '../../core/watermark/codemirror';
+import {MAX_EDITOR_TABS} from '@codeimage/store/editor/model';
+import {FormatPasteToast} from './FormatPasteToast';
+import {createWatermarkCodeSource} from '@core/watermark/codemirror';
 import CustomEditor from './CustomEditor';
 import {createSecretsExtension} from './plugins/secrets';
 
@@ -71,57 +70,44 @@ export default function CanvasEditor(props: CanvasEditorProps) {
     editorView,
   );
   createEffect(
-    on([editorView, () => activeEditorStore.editor()?.id], ([view]) => {
-      if (view && !props.readOnly) secrets.refresh(view);
-    }),
+    () =>
+      [editorView(), activeEditorStore.editor()?.id, props.readOnly] as const,
+    ([view, , readOnly]) => {
+      if (view && !readOnly) secrets.refresh(view);
+    },
   );
   const {
     state: editorState,
-    actions: {setFocused, setActiveEditorView, setActiveEditorViewTabId},
+    actions: {setFocused},
   } = getRootEditorStore();
-  createEffect(() => setActiveEditorView(editorView()));
-  onCleanup(() => {
-    setActiveEditorView(undefined);
-    setActiveEditorViewTabId(undefined);
+
+  let pasteNotice: ReturnType<typeof setTimeout> | undefined;
+  let activeToastId: string | null = null;
+  onSettled(() => () => {
+    clearTimeout(pasteNotice);
+    if (activeToastId) toast.dismiss(activeToastId);
   });
 
   const {setFocused: editorSetFocused} = createEditorFocus(
-    editorView as Accessor<EditorView>,
-    focusing => setFocused(focusing),
+    editorView,
+    setFocused,
   );
-
   createEffect(
-    on(
-      editorView,
-      view => {
-        if (!view) return;
-        createEffect(
-          on(
-            () => editorState.options.focused,
-            isFocused => {
-              if (view && !view.hasFocus && isFocused) {
-                editorSetFocused(true);
-              }
-            },
-          ),
-        );
-      },
-      {defer: true},
-    ),
+    () => [editorView(), editorState.options.focused] as const,
+    ([view, focused]) => {
+      if (view && !view.hasFocus && focused) editorSetFocused(true);
+    },
   );
 
-  let activeToastId: string | null = null;
   createCompartmentExtension(
     [
       diffImportHistory,
       EditorView.updateListener.of(update => {
         for (const transaction of update.transactions)
           restoreDiffImport(transaction, snapshot => {
-            batch(() => {
-              const store = getRootEditorStore();
-              store.actions.setActiveEditorId(snapshot.activeEditorId);
-              store.actions.setEditors(structuredClone(snapshot.editors));
-            });
+            const store = getRootEditorStore();
+            store.actions.setActiveEditorId(snapshot.activeEditorId);
+            store.actions.setEditors(structuredClone(snapshot.editors));
             if (transaction.isUserEvent('undo') && activeToastId)
               toast.dismiss(activeToastId);
           });
@@ -131,11 +117,14 @@ export default function CanvasEditor(props: CanvasEditorProps) {
   );
 
   function showActionToast(render: (toastId: string) => JSX.Element) {
-    activeToastId = toast.success(activeToast => render(activeToast.id), {
-      position: 'bottom-center',
-      duration: 10000,
-      theme: getUiStore().invertedThemeMode(),
-    });
+    activeToastId = toast.success(
+      (activeToast: {id: string}) => render(activeToast.id),
+      {
+        position: 'bottom-center',
+        duration: 10000,
+        theme: getUiStore().invertedThemeMode(),
+      },
+    );
   }
 
   function importDiffFiles(
@@ -155,7 +144,7 @@ export default function CanvasEditor(props: CanvasEditorProps) {
     }
     const before = {
       activeEditorId: store.state.activeEditorId,
-      editors: structuredClone(unwrap(store.state.editors)),
+      editors: structuredClone(snapshot(store.state.editors)),
     };
     const after = diffImportEditors(
       before,
@@ -273,40 +262,20 @@ export default function CanvasEditor(props: CanvasEditorProps) {
           ));
           return true;
         }
-        setTimeout(() => {
+        clearTimeout(pasteNotice);
+        pasteNotice = setTimeout(() => {
           if (!activeEditorStore.canFormat()) {
             return;
           }
           activeToastId = toast.success(
-            activeToast => {
-              const onFormatCode = () => {
-                const localValue = view.state.doc.toString();
-                activeEditorStore.format(localValue);
-                toast.dismiss(activeToast.id);
-              };
-              const [t] = useI18n<AppLocaleEntries>();
-              return (
-                <div>
-                  <HStack
-                    spacing={5}
-                    display={'flex'}
-                    justifyContent={'spaceBetween'}
-                    alignItems={'center'}
-                  >
-                    <span>{t('canvas.pastedCode')}</span>
-                    <Button
-                      size={'xs'}
-                      theme={'primary'}
-                      leftIcon={<SparklesIcon size={'xs'} />}
-                      disabled={!activeEditorStore.canFormat()}
-                      onClick={onFormatCode}
-                    >
-                      Format
-                    </Button>
-                  </HStack>
-                </div>
-              );
-            },
+            (activeToast: {id: string}) => (
+              <FormatPasteToast
+                onFormat={() => {
+                  activeEditorStore.format(view.state.doc.toString());
+                  toast.dismiss(activeToast.id);
+                }}
+              />
+            ),
             {
               position: 'bottom-center',
               theme: getUiStore().invertedThemeMode(),

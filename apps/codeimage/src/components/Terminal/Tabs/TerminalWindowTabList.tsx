@@ -5,11 +5,10 @@ import type {VoidProps} from 'solid-js';
 import {
   createEffect,
   createSignal,
-  ErrorBoundary,
+  Errored,
   For,
-  onCleanup,
   Show,
-  Suspense,
+  Loading as LoadingBoundary,
 } from 'solid-js';
 import {createTabIcon} from '../../../hooks/use-tab-icon';
 import type {WindowStyle} from '../WindowStyles/WindowStyles';
@@ -104,42 +103,44 @@ function TerminalWindowTabListContent(
     }
   }
 
-  createEffect(() => {
-    if (props.readOnly || props.showOnlyActiveTab) return;
-    const dragManager = createTabDragManager();
-    dragManager.monitor.addEventListener('dragstart', ({operation}) =>
-      setDragSource(operation.source?.id),
-    );
-    dragManager.monitor.addEventListener('dragover', ({operation}) =>
-      setDropTarget(operation.target?.id),
-    );
-    let pendingDrop: number | undefined;
-    dragManager.monitor.addEventListener('dragend', event => {
-      pendingDrop = requestAnimationFrame(() => handleDragEnd(event));
-    });
-    setManager(dragManager);
-    onCleanup(() => {
-      if (pendingDrop !== undefined) cancelAnimationFrame(pendingDrop);
-      setManager(undefined);
-      setDragSource(undefined);
-      setDropTarget(undefined);
-      dragManager.destroy();
-    });
-  });
+  createEffect(
+    () => props.readOnly || !!props.showOnlyActiveTab,
+    disabled => {
+      if (disabled) return;
+      const dragManager = createTabDragManager();
+      dragManager.monitor.addEventListener('dragstart', ({operation}) =>
+        setDragSource(operation.source?.id),
+      );
+      dragManager.monitor.addEventListener('dragover', ({operation}) =>
+        setDropTarget(operation.target?.id),
+      );
+      let pendingDrop: number | undefined;
+      dragManager.monitor.addEventListener('dragend', event => {
+        pendingDrop = requestAnimationFrame(() => handleDragEnd(event));
+      });
+      setManager(dragManager);
+      return () => {
+        if (pendingDrop !== undefined) cancelAnimationFrame(pendingDrop);
+        setManager(undefined);
+        setDragSource(undefined);
+        setDropTarget(undefined);
+        dragManager.destroy();
+      };
+    },
+  );
 
   function handleTabNameChange(id: string, updatedName: string) {
     setTabName(id, updatedName, true);
   }
 
   return (
-    <ErrorBoundary
+    <Errored
       fallback={(e, reset) => {
-        // Try to render again the content since @floating-ui/dom is broken?
         setTimeout(() => reset(), 100);
         return <></>;
       }}
     >
-      <Suspense>
+      <LoadingBoundary>
         <div
           class={
             props.appearance
@@ -147,7 +148,7 @@ function TerminalWindowTabListContent(
               : styles.wrapper({accent: props.accent, lite: props.lite})
           }
           data-window-tabs={props.appearance}
-          data-accent-visible={props.accent}
+          data-accent-visible={String(props.accent)}
         >
           <div class={props.appearance ? modern.list : styles.tabListWrapper}>
             <For each={editors()}>
@@ -204,8 +205,8 @@ function TerminalWindowTabListContent(
             />
           </Show>
         </div>
-      </Suspense>
-    </ErrorBoundary>
+      </LoadingBoundary>
+    </Errored>
   );
 }
 
@@ -229,7 +230,7 @@ function StaticWindowTabs(props: TerminalWindowTabListProps) {
           : styles.wrapper({accent: props.accent, lite: props.lite})
       }
       data-window-tabs={props.appearance}
-      data-accent-visible={!props.appearance ? props.accent : undefined}
+      data-accent-visible={!props.appearance ? String(props.accent) : undefined}
     >
       <div class={props.appearance ? modern.list : styles.tabListWrapper}>
         <For each={tabs()}>

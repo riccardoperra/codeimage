@@ -1,11 +1,14 @@
 import type * as Solid from 'solid-js';
 import assert from 'node:assert/strict';
 import {test, vi} from 'vitest';
-import {createRoot, createSignal} from 'solid-js';
+import {createRoot, createSignal, flush} from 'solid-js';
 import type {EditorState} from './model';
 import {createAnimationStore} from './animation';
 vi.mock('solid-js', () =>
-  vi.importActual<typeof Solid>('solid-js/dist/solid.js'),
+  vi.importActual<typeof Solid>(
+    new URL('./dist/solid.js', import.meta.resolve('solid-js/package.json'))
+      .pathname,
+  ),
 );
 
 const tab = (id: string): EditorState => ({
@@ -16,8 +19,8 @@ const tab = (id: string): EditorState => ({
   marks: {lines: [{line: 1, kind: 'highlight'}], focusedLines: [1]},
   tab: {tabName: `${id}.ts`},
 });
-test('tabs always derive steps and timing updates persist independently of selection', () =>
-  createRoot(dispose => {
+test('tabs always derive steps and timing updates persist independently of selection', () => {
+  const {animation, setTabs, state, dispose} = createRoot(dispose => {
     const [tabs, setTabs] = createSignal([tab('a'), tab('b')]);
     const [active, setActive] = createSignal('a');
     const state = {
@@ -46,15 +49,20 @@ test('tabs always derive steps and timing updates persist independently of selec
         },
       },
     });
+    return {animation, setTabs, state, dispose};
+  });
+  try {
     const saves: unknown[] = [];
     animation.stateToPersist$.subscribe(value => saves.push(value));
     assert.equal(animation.stateToPersist().steps.length, 2);
     animation.actions.setOpen(true);
+    flush();
     assert.deepEqual(
       animation.settings().steps.map(s => s.id),
       ['a', 'b'],
     );
     setTabs([...state.editors, tab('c')]);
+    flush();
     assert.equal(animation.settings().steps.length, 3);
     const id = 'c';
     const count = saves.length;
@@ -66,19 +74,24 @@ test('tabs always derive steps and timing updates persist independently of selec
     );
     assert.equal(saves.length, count);
     animation.actions.setTransition(id, {ms: 321});
+    flush();
     assert.equal(saves.length, count + 1);
     animation.actions.applyToAll(id);
+    flush();
     assert.equal(animation.settings().transitionMs, 321);
     assert.equal(animation.settings().easing, 'strong');
     assert.ok(animation.settings().steps.every(s => !s.transition));
     animation.actions.setHeader({mode: 'title', title: ' hello '});
+    flush();
     assert.equal(animation.settings().header.title, 'hello');
     animation.actions.moveTab('c', 0);
+    flush();
     assert.deepEqual(
       animation.settings().steps.map(step => step.id),
       ['c', 'a', 'b'],
     );
     animation.actions.closeTab('b');
+    flush();
     assert.deepEqual(
       animation.settings().steps.map(step => step.id),
       ['c', 'a'],
@@ -86,11 +99,15 @@ test('tabs always derive steps and timing updates persist independently of selec
     assert.equal(animation.settings().steps[0].holdMs, 1234);
     animation.actions.select({stepId: id, kind: 'hold'});
     setTabs([state.editors[1]]);
+    flush();
     assert.deepEqual(
       animation.settings().steps.map(step => step.id),
       ['a'],
     );
     animation.actions.setFromPersistedState(animation.stateToPersist());
+    flush();
     assert.equal(animation.settings().header.mode, 'title');
+  } finally {
     dispose();
-  }));
+  }
+});

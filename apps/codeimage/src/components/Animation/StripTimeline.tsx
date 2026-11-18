@@ -1,8 +1,14 @@
 import {useI18n} from '@codeimage/locale';
 import {getEditorStore} from '@codeimage/store/editor';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
-import {createResizeObserver} from '@solid-primitives/resize-observer';
-import {createMemo, createSignal, For, onMount, Show, untrack} from 'solid-js';
+import {
+  createMemo,
+  createSignal,
+  For,
+  onSettled,
+  Show,
+  untrack,
+} from 'solid-js';
 import {timelineGeometry} from './timelineGeometry';
 import type {AppLocaleEntries} from '../../i18n';
 import {formatSeconds} from './format';
@@ -19,9 +25,11 @@ export function StripTimeline(props: {model: TimelineModel}) {
   let scroller!: HTMLDivElement;
   const [width, setWidth] = createSignal(0);
   const measure = () => setWidth(scroller.clientWidth - 8);
-  onMount(() => {
+  onSettled(() => {
     measure();
-    createResizeObserver(() => scroller, measure);
+    const observer = new ResizeObserver(measure);
+    observer.observe(scroller);
+    return () => observer.disconnect();
   });
   const axis = animation.durationMs;
   const geometry = createMemo(() =>
@@ -152,7 +160,7 @@ export function StripTimeline(props: {model: TimelineModel}) {
           ref={ruler}
           class={styles.ruler}
           role="slider"
-          tabIndex={0}
+          tabindex={0}
           aria-label={t('animation.playhead')}
           aria-valuemin={0}
           aria-valuemax={animation.durationMs()}

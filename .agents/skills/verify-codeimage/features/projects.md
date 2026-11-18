@@ -49,22 +49,22 @@ To isolate a snippet matrix lane, set `VERIFY_SNIPPET_LAYOUT=inspector`, `dock`,
 
 ## Bridged project actions
 
-Run the dashboard case on Node 24 to exercise the actual project actions through a separately compiled Solid 2 host.
+Run the dashboard case on Node 24 to exercise the Solid 1 project menu in the Solid 2 app.
 
 ```sh
 VERIFY_AUDIT=1 VERIFY_CASES=solid1-bridge-project-menu \
   VERIFY_BROWSER_CHANNEL=chrome node .agents/skills/verify-codeimage/scripts/verify.mjs
 ```
 
-The case creates a disposable MSW project, opens the menu by keyboard, checks Escape and focus, renames the project through the app dialog, clones it and follows the new URL, then deletes the original through the app dialog. It checks the mutation responses and verifies that the rename dialog blocks background clicks only while open. The dashboard keeps its dialogs and API calls in Solid 1. The project actions menu mounts through the same island factory as the editor islands.
+The case creates a disposable MSW project, opens the menu by keyboard, checks Escape and focus, renames the project through the app dialog, clones it and follows the new URL, then deletes the original through the app dialog. It checks the mutation responses and verifies that the rename dialog blocks background clicks only while open.
 
-## Solid 2 read-only notice
+## Read-only notice
 
 Run the focused CodeImage audit under Node 24.
 
 ```sh
-VERIFY_AUDIT=1 VERIFY_CASES=solid2-read-only-notice VERIFY_BROWSER_CHANNEL=chrome \
+VERIFY_AUDIT=1 VERIFY_CASES=read-only-notice VERIFY_BROWSER_CHANNEL=chrome \
   node .agents/skills/verify-codeimage/scripts/verify.mjs
 ```
 
-The case opens a read-only snippet, changes the locale on the existing banner, delays the clone response with MSW, and checks that the button disables until the request completes. It verifies one clone request, navigation to the editable clone, and removal of the island. Run `snippet-read-only` and `snippet-clone` to cover layout and export behavior.
+The case opens a read-only snippet, changes the locale on the existing banner, delays the clone response with MSW, and checks that the button disables until the request completes. It verifies one clone request, navigation to the editable clone, and removal of the banner. Run `snippet-read-only` and `snippet-clone` to cover layout and export behavior.

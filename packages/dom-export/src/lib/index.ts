@@ -1,4 +1,4 @@
-import {isIOS, isSafari} from '@solid-primitives/platform';
+import {isIOS, isSafari} from './platform';
 import {applyStyleFromOptions} from './applyStyleFromOptions';
 import {cloneNode} from './cloneNode';
 import {removeSandbox} from './cloneStyle';

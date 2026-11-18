@@ -1,30 +1,32 @@
 import {EditorConfigStore} from '@codeimage/store/editor/config.store';
-import {provideState} from 'statebuilder';
+import {useStore} from 'statebuilder';
 import {useI18n} from '@codeimage/locale';
 import {getAuth0State} from '@codeimage/store/auth/auth0';
 import {getExportCanvasStore} from '@codeimage/store/canvas';
 import {getFrameState} from '@codeimage/store/editor/frame';
 import {getUiStore} from '@codeimage/store/ui';
 import {RangeField} from '@codeimage/ui';
-import {Button, buttonStyles} from '@codeui/kit';
+import * as buttonStyles from '@codeui/kit/button-styles';
+import {Button} from '@ui/legacy-controls';
 import {appEnvironment} from '@core/configuration';
 import {getUmami} from '@core/constants/umami';
-import {RadioGroup} from '@kobalte/core/radio-group';
+import {RadioGroup} from '@ui/RadioGroup/RadioGroup';
 import {useNavigate} from '@solidjs/router';
 import {SegmentedField} from '@ui/SegmentedField/SegmentedField';
-import type {Component, JSX} from 'solid-js';
+import type {Component} from 'solid-js';
+import type {JSX} from '@solidjs/web';
 import {
   createMemo,
-  createResource,
   createSignal,
   For,
   Match,
   onCleanup,
-  onMount,
+  onSettled,
   Show,
   Switch,
 } from 'solid-js';
-import {Dynamic} from 'solid-js/web';
+import {createResource} from '@codeimage/store/plugins/create-resource';
+import {Dynamic} from '@solidjs/web';
 import {illustrations} from '../../../components/WhatsNew/illustrations';
 import {
   releaseDate,
@@ -37,8 +39,7 @@ import {ExportExtension} from '../../../hooks/use-export-image';
 import {EXPORT_SCALES, exportFormats, JPEG_QUALITY} from './export-formats';
 import type {AppLocaleEntries} from '../../../i18n';
 import {SwitchField} from '../controls/fields';
-import type {EditorControlsModel, ThemeEntry} from '../model';
-import {ThemeSwatch} from '../ThemeSwatch';
+import type {EditorControlsModel} from '../model';
 import {
   AboutIcon,
   AppearanceIcon,
@@ -51,7 +52,6 @@ import {
   NewsIcon,
   RestoreIcon,
 } from './icons';
-import type {ThemeCardsId} from './preferences';
 import {
   COLOUR_MODES,
   PANEL_NAVS,
@@ -75,6 +75,7 @@ import {ColourModeOrb, LayoutPreview, NavPreview} from './previews';
 import type {SectionId} from './settings-state';
 import {SECTIONS, settings} from './settings-state';
 import * as styles from './settings.css';
+import {ThemeCardsPreview} from './settings-theme-cards-preview';
 import {editorLinks, trackEditorLink} from './links';
 
 /** One setting: a title, a line that explains it, and its control. */
@@ -162,31 +163,6 @@ function ChoiceCards<T extends string>(props: {
   );
 }
 
-/** How one theme looks as a card of each style, drawn with the shared swatch. */
-function ThemeCardsPreview(props: {style: ThemeCardsId; theme: ThemeEntry}) {
-  return (
-    <Switch>
-      <Match when={props.style === 'window'}>
-        <ThemeSwatch
-          theme={props.theme}
-          variant="window"
-          size={48}
-          width={68}
-        />
-      </Match>
-      <Match when={props.style === 'orb'}>
-        <ThemeSwatch theme={props.theme} variant="syntax-orb" size={44} />
-      </Match>
-      <Match when={props.style === 'aa'}>
-        <span class={styles.listRow}>
-          <ThemeSwatch theme={props.theme} variant="aa" size={28} />
-          <span class={styles.listLine} />
-        </span>
-      </Match>
-    </Switch>
-  );
-}
-
 /** The kit's segmented control at the kit's height, as wide as its options need. */
 function Segmented<T extends string>(props: {
   value: T;
@@ -254,7 +230,7 @@ function modelStatus(t: Translate) {
 function ModelControl() {
   const [t] = useI18n<AppLocaleEntries>();
   // Each visit to Experiments asks Chrome again, so the row is never stale.
-  onMount(() => void languageModel.refresh());
+  onSettled(() => void languageModel.refresh());
   const downloading = () => {
     const state = languageModel.state();
     return state.kind === 'downloading' ? state : undefined;
@@ -482,7 +458,7 @@ function ModelRequirements() {
  */
 export function createSettingSections(model: EditorControlsModel) {
   const [t, {locale}] = useI18n<AppLocaleEntries>();
-  const config = provideState(EditorConfigStore);
+  const config = useStore(EditorConfigStore);
   const nameOf = (id: SectionId) =>
     t(SECTIONS.find(entry => entry.id === id)!.name);
   const ui = getUiStore();

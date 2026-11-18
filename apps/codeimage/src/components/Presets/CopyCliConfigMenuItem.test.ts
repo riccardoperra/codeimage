@@ -1,5 +1,5 @@
 import {createComponent} from 'solid-js';
-import {renderToString} from 'solid-js/web';
+import {renderToString} from '@solidjs/web';
 import {afterEach, expect, it, vi} from 'vitest';
 import type {PresetData} from '@codeimage/store/presets/types';
 import {createSignature} from '@codeimage/store/frame/model';
@@ -17,7 +17,7 @@ vi.mock('@codeimage/locale', () => ({
 vi.mock('@codeimage/ui', () => ({
   toast: {success: menu.success, error: menu.error},
 }));
-vi.mock('@codeui/kit', () => ({
+vi.mock('@ui/DropdownMenu', () => ({
   DropdownMenuItem: (props: {
     onClick: () => Promise<void>;
     children: string;

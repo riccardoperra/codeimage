@@ -1,7 +1,7 @@
 import {backgroundColorVar, Text} from '@codeimage/ui';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 import type {ParentComponent} from 'solid-js';
-import {mergeProps, Show} from 'solid-js';
+import {merge, Show} from 'solid-js';
 import * as styles from './ThemeSwitcher.css';
 
 interface ThemeBoxProps {
@@ -13,7 +13,7 @@ interface ThemeBoxProps {
 }
 
 export const ThemeBox: ParentComponent<ThemeBoxProps> = props => {
-  const propsWithDefault = mergeProps({showFooter: true}, props);
+  const propsWithDefault = merge({showFooter: true}, props);
 
   return (
     <div

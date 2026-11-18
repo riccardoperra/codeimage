@@ -118,7 +118,7 @@ export function createTimelineModel() {
     return out;
   });
   const steps = createMemo(() => tabs().flatMap(tab => tab.steps));
-  const tabIds = createMemo(() => tabs().map(tab => tab.editorId), undefined, {
+  const tabIds = createMemo(() => tabs().map(tab => tab.editorId), {
     equals: (a, b) => a.length === b.length && a.every((v, i) => v === b[i]),
   });
   const tabOf = (editorId: string) =>

@@ -1,13 +1,10 @@
 import {getRootEditorStore} from '@codeimage/store/editor';
 import {repositionTooltips} from '@codemirror/view';
-import {exportExclude as _exportExclude} from '@core/directives/exportExclude';
-import type {JSX, ParentProps} from 'solid-js';
-import {createSignal, onCleanup, onMount} from 'solid-js';
+import type {JSX} from '@solidjs/web';
+import type {ParentProps} from 'solid-js';
+import {createSignal, onSettled} from 'solid-js';
 import * as styles from '../../components/Frame/FrameHandler.css';
 import {canvas} from './snippet.css';
-
-const exportExclude = _exportExclude;
-void exportExclude;
 
 const GUTTER = 24;
 
@@ -29,7 +26,7 @@ export function FitFrame(props: ParentProps<FitFrameProps>) {
   const [scale, setScale] = createSignal(1);
   const [ready, setReady] = createSignal(false);
 
-  onMount(() => {
+  onSettled(() => {
     const available = {width: 0, height: 0};
     const natural = {width: 0, height: 0};
 
@@ -92,10 +89,10 @@ export function FitFrame(props: ParentProps<FitFrameProps>) {
     });
     observer.observe(wrapper);
     observer.observe(content);
-    onCleanup(() => {
+    return () => {
       cancelAnimationFrame(frame);
       observer.disconnect();
-    });
+    };
   });
 
   return (
@@ -116,7 +113,7 @@ export function FitFrame(props: ParentProps<FitFrameProps>) {
       >
         <div class={styles.content} ref={content}>
           <div
-            use:exportExclude={true}
+            data-export-exclude="true"
             class={styles.squaredBackgroundOverlay}
           />
           {props.children}

@@ -1,21 +1,24 @@
-import {useSelectContext} from '@kobalte/core/select';
 import {button as canvasButton} from '../../pages/UnifiedEditor/controls/canvas-toolbar.css';
 import {useI18n} from '@codeimage/locale';
 import {getEditorStore} from '@codeimage/store/editor';
-import {Select, TextField} from '@codeui/kit';
+import {TextField} from '@codeimage/ui';
 import type {AnimationHeader} from '@core/animation/model';
-import {createEffect, createSignal, onCleanup, Show} from 'solid-js';
+import {createEffect, createSignal, For, Show, untrack} from 'solid-js';
 import type {AppLocaleEntries} from '../../i18n';
 import * as styles from './AnimatePanel.css';
 export function HeaderField() {
   const {animation} = getEditorStore();
   const [t] = useI18n<AppLocaleEntries>();
-  const [title, setTitle] = createSignal(animation.settings().header.title);
-  createEffect(() => setTitle(animation.settings().header.title));
+  const currentTitle = () => animation.settings().header.title;
+  const [title, setTitle] = createSignal(untrack(currentTitle));
+  createEffect(currentTitle, value => {
+    setTitle(value);
+  });
   const modes: AnimationHeader['mode'][] = ['tab', 'title', 'tabs'];
   const label = (mode: AnimationHeader['mode']) =>
     t(`animation.header.${mode}`);
-  const setMode = (mode: AnimationHeader['mode'] | null) => {
+  const setMode = (value: string) => {
+    const mode = modes.find(mode => mode === value);
     if (mode && mode !== animation.settings().header.mode)
       animation.actions.setHeader({mode});
   };
@@ -23,9 +26,6 @@ export function HeaderField() {
     if (title().trim() !== animation.settings().header.title)
       animation.actions.setHeader({title: title()});
   };
-  // Keeps typed keys from the app's body hotkeys. Only around the text field:
-  // stopping a key here also stops Solid's delegated handlers, which the
-  // Select's keyboard navigation uses.
   const titleKeyDown = (event: KeyboardEvent) => {
     if (event.key === 'Escape') return;
     event.stopPropagation();
@@ -36,43 +36,33 @@ export function HeaderField() {
   };
   return (
     <div class={styles.header}>
-      <Select<AnimationHeader['mode']>
-        size="xs"
-        options={modes}
+      <select
+        class={`${styles.headerSelect} ${canvasButton}`}
         value={animation.settings().header.mode}
-        onChange={setMode}
-        itemLabel={label}
-        optionTextValue={label}
-        valueComponent={value => <HeaderValue label={label(value())} />}
+        onChange={event => setMode(event.currentTarget.value)}
         aria-label={t('animation.header.label')}
-        disallowEmptySelection
-      />
+      >
+        <For each={modes}>
+          {mode => <option value={mode}>{label(mode)}</option>}
+        </For>
+      </select>
       <Show when={animation.settings().header.mode === 'title'}>
-        <div
+        <label
           class={styles.title}
           onFocusOut={commitTitle}
-          on:keydown={titleKeyDown}
+          onKeyDown={titleKeyDown}
         >
+          <span class={styles.barTitleLabel}>
+            {t('animation.header.titleField')}
+          </span>
           <TextField
-            slotClasses={{label: styles.barTitleLabel}}
+            type="text"
             size="xs"
             value={title()}
             onChange={setTitle}
-            label={t('animation.header.titleField')}
           />
-        </div>
+        </label>
       </Show>
     </div>
   );
-}
-
-function HeaderValue(props: {label: string}) {
-  const select = useSelectContext();
-  createEffect(() => {
-    const trigger = select.triggerRef();
-    if (!trigger) return;
-    trigger.classList.add(canvasButton);
-    onCleanup(() => trigger.classList.remove(canvasButton));
-  });
-  return <>{props.label}</>;
 }

@@ -1,6 +1,7 @@
 import * as styles from './SegmentedField.css';
-import type {JSX, JSXElement} from 'solid-js';
-import {createMemo, createSignal, For, on, onCleanup, onMount} from 'solid-js';
+import type {JSX} from '@solidjs/web';
+import type {Element as JSXElement} from 'solid-js';
+import {createEffect, createMemo, createSignal, For} from 'solid-js';
 import clsx from 'clsx';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 import type {UseTextProps} from '../Text';
@@ -24,17 +25,20 @@ export function SegmentedField<T>(props: SegmentedFieldProps<T>): JSX.Element {
   const [container, setContainer] = createSignal<HTMLDivElement>();
   const [width, setWidth] = createSignal(0);
 
-  onMount(() => {
-    const containerValue = container();
-    if (containerValue) {
-      setWidth(containerValue.clientWidth);
-    }
+  createEffect(container, containerValue => {
+    if (!containerValue) return;
+    setWidth(containerValue.clientWidth);
 
-    const observer = new ResizeObserver(([entry]) =>
-      requestAnimationFrame(() => setWidth(entry.target.clientWidth)),
-    );
-    observer.observe(container() as HTMLElement);
-    return onCleanup(() => observer.disconnect());
+    let frame = 0;
+    const observer = new ResizeObserver(() => {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(() => setWidth(containerValue.clientWidth));
+    });
+    observer.observe(containerValue);
+    return () => {
+      cancelAnimationFrame(frame);
+      observer.disconnect();
+    };
   });
 
   const activeIndex = createMemo(() =>
@@ -49,14 +53,13 @@ export function SegmentedField<T>(props: SegmentedFieldProps<T>): JSX.Element {
       | undefined;
   });
 
-  const segmentWidth = createMemo(
-    on([width, activeItem], ([, activeItem]) => {
-      if (!activeItem) {
-        return `calc(100% / ${props.items.length})`;
-      }
-      return `${activeItem.clientWidth}px`;
-    }),
-  );
+  const segmentWidth = createMemo(() => {
+    width();
+    const item = activeItem();
+    return item
+      ? `${item.clientWidth}px`
+      : `calc(100% / ${props.items.length})`;
+  });
 
   const activeSegmentOffset = () => {
     const item = activeItem();

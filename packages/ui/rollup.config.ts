@@ -7,8 +7,7 @@ import withSolid from './tools/with-solid';
 const externals = [
   ...Object.keys(peerDependencies),
   ...Object.keys(dependencies),
-  'solid-js/web',
-  'solid-js/store',
+  '@solidjs/web',
   '@vanilla-extract/recipes/createRuntimeFn',
   '@vanilla-extract/sprinkles/createRuntimeSprinkles',
   'solid-use/props',

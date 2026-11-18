@@ -1,5 +1,5 @@
 import {EditorConfigStore} from '@codeimage/store/editor/config.store';
-import {provideState} from 'statebuilder';
+import {useStore} from 'statebuilder';
 import {useI18n} from '@codeimage/locale';
 import {detectSecrets} from '@codeimage/secrets';
 import {getRootEditorStore} from '@codeimage/store/editor';
@@ -11,14 +11,14 @@ import {altText} from '@core/altText';
 import {getUmami} from '@core/constants/umami';
 import {loadLanguage} from '@core/snapshot/tokenize';
 import {
-  batch,
+  flush,
   createComponent,
   createSignal,
   getOwner,
   runWithOwner,
 } from 'solid-js';
 import type {Accessor} from 'solid-js';
-import {render} from 'solid-js/web';
+import {mountOwnedView} from '@core/helpers/mount-owned-view';
 import {redactTabCode} from '../../../components/CustomEditor/plugins/secrets';
 import {PreviewFrame} from '../../../components/Frame/PreviewFrame';
 import type {EditorPageState} from '../page-state';
@@ -108,7 +108,7 @@ export function createExporter(
 ): Exporter {
   const editable = () => pageState().editable;
   const ready = () => pageState().ready;
-  const config = provideState(EditorConfigStore);
+  const config = useStore(EditorConfigStore);
   const [t] = useI18n<AppLocaleEntries>();
   const editor = getRootEditorStore();
   const owner = getOwner();
@@ -139,16 +139,12 @@ export function createExporter(
     const files = await renderTabFiles(tabs, async tab => {
       const language = await loadLanguage(tab.languageId, tab.tab.tabName);
       let frame: HTMLDivElement | undefined;
-      const dispose = render(
-        () =>
-          createComponent(PreviewFrame, {
-            tab,
-            language,
-            ref: el => (frame = el),
-          }),
-        document.createElement('div'),
-        undefined,
-        {owner},
+      const dispose = mountOwnedView(owner, document.createElement('div'), () =>
+        createComponent(PreviewFrame, {
+          tab,
+          language,
+          ref: el => (frame = el),
+        }),
       );
       try {
         return await exportImage({
@@ -303,7 +299,7 @@ export function createExporter(
     redactSecrets: () => {
       if (!editable()) return;
       getWhatsNew().seen('redact');
-      batch(() => {
+      flush(() => {
         editor.state.editors.forEach((tab, index) => {
           const redacted = redactTabCode(
             tab.code,

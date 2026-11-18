@@ -1,4 +1,4 @@
-import {trackTimelineInput} from '../../components/Animation/timeline/motion';
+import {createTimelineInputRef} from '../../components/Animation/timeline/input';
 import {getRootEditorStore} from '@codeimage/store/editor';
 import {repositionTooltips} from '@codemirror/view';
 import {getEditorSyncAdapter} from '@codeimage/store/editor/createEditorSync';
@@ -6,9 +6,15 @@ import {getWhatsNew} from '../../state/whats-new';
 import {WhatsNewHost} from '../../components/WhatsNew/WhatsNewHost';
 import {commandMenu} from './command-menu/state';
 import {settings} from './shell/settings-state';
-import type {JSX} from 'solid-js';
-import {createEffect, createMemo, For, on, Show} from 'solid-js';
-import {Dynamic} from 'solid-js/web';
+import type {JSX} from '@solidjs/web';
+import {
+  createEffect,
+  createMemo,
+  For,
+  Show,
+  createTrackedEffect,
+} from 'solid-js';
+import {Dynamic} from '@solidjs/web';
 import {AgentTools} from './agent-tools/AgentTools';
 import {ToolActivity} from './agent-tools/ToolActivity';
 import {createAgentTools, createEditorBrief} from './agent-tools/tools';
@@ -41,18 +47,17 @@ function Editor() {
   const model = createEditorControlsModel();
   const editor = getRootEditorStore();
   createEffect(
-    on(
-      adapter.snippetId,
-      () => {
-        commandMenu.close();
-        controlOverlay.close();
-        localAi.close();
-        model.endPreview();
-      },
-      {defer: true},
-    ),
+    adapter.snippetId,
+    () => {
+      commandMenu.close();
+      controlOverlay.close();
+      localAi.close();
+      model.endPreview();
+    },
+    {defer: true},
   );
   let page!: HTMLDivElement;
+  const markTimelineInput = createTimelineInputRef();
 
   const side = () =>
     preferences.layout() === 'sidebar' ? preferences.panelSide() : undefined;
@@ -62,7 +67,7 @@ function Editor() {
   // The sidebar's accordion reads its side from the layout root. The
   // attribute goes on the page below and on the root element the layout
   // renders into it, the one after the header.
-  createEffect(() => {
+  createTrackedEffect(() => {
     const value = side();
     preferences.layout();
     preferences.panelNav();
@@ -100,7 +105,7 @@ function Editor() {
         class={`unified-editor ${pageClass}`}
         ref={element => {
           page = element;
-          trackTimelineInput(element);
+          markTimelineInput(element);
         }}
         data-layout={preferences.layout()}
         data-page-state={pageState().kind}

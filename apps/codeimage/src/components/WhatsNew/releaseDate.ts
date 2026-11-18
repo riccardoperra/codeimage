@@ -1,5 +1,5 @@
 import {whatsNewLocale} from '../../i18n/whatsNew';
-import type {Release} from '../../state/whats-new';
+import type {Release} from '@codeimage/store/whats-new';
 
 // Read the registry date as UTC midnight, including west of UTC.
 export const releaseDate = (release: Release, locale: string) =>

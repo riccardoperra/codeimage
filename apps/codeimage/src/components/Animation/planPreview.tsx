@@ -20,9 +20,10 @@ import {
   type TimelineStep,
 } from '@core/animation/timeline';
 import {loadLanguage, tokenizeCode} from '@core/snapshot/tokenize';
-import type {JSX, Owner} from 'solid-js';
+import type {JSX} from '@solidjs/web';
+import type {Owner} from 'solid-js';
 import {runWithOwner} from 'solid-js';
-import {render} from 'solid-js/web';
+import {render} from '@solidjs/web';
 import StaticCodeView from '../CustomEditor/StaticCodeView';
 import {targetLayout} from '@core/animation/target-layout';
 import * as frameStyles from '../Frame/Frame.css';

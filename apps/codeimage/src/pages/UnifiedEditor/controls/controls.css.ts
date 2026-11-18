@@ -14,13 +14,20 @@ const focusRing = {
 /** Carries `data-control` for a row without adding a box to the layout. */
 export const row = style({display: 'contents'});
 
-// The kit has no switch: Kobalte's, drawn with the app's tokens.
-
 export const switchRoot = style({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'flex-end',
   width: '100%',
+});
+
+export const switchInput = style({
+  position: 'absolute',
+  width: '1px',
+  height: '1px',
+  clipPath: 'inset(50%)',
+  overflow: 'hidden',
+  whiteSpace: 'nowrap',
 });
 
 export const switchControl = style({

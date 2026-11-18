@@ -18,7 +18,7 @@ Source: `pages/UnifiedEditor/variants/sidebar/panels.tsx`, `pages/UnifiedEditor/
 
 Run `preset-management` to create a preset, rename it in the naming alertdialog, delete it through the menu and reload to assert absence. `preset-persistence` creates a Dracula preset with padding 128 and the watermark disabled, changes those choices, applies the preset, reloads, and checks the selected theme, padding, watermark and unchanged code. It also compares the persisted frame and terminal with the preset and the rendered window colours before and after reload. The same journey signs in, creates a saved snippet, applies the local preset, waits for its API save, reads it back and reloads again. Sharing and the limit remain separate coverage.
 
-Run `solid2-codemirror-preview` to open the preset update dialog twice and compare the Solid 1 saved preview with the Solid 2 current preview. The case checks the current theme's syntax colours, read-only keyboard behavior, teardown and the main editor's unchanged document.
+Run `codemirror-preview` to open the preset update dialog twice and compare its Old and New previews. The case checks the current theme's syntax colours, read-only keyboard behavior, and the main editor's unchanged document.
 
 Run `VERIFY_AUDIT=1 VERIFY_CASES=preset-persistence node .agents/skills/verify-codeimage/scripts/verify.mjs` with Node 24. Evidence includes before-apply, applied and after-reload screenshots plus the disposable context trace. The backend mode is MSW; the preset and local document use IndexedDB, and the saved snippet uses the project mock API. The journey returns an empty account-preset list at the HTTP boundary and reuses the guest preset. It does not certify account-preset synchronization.
 

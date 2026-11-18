@@ -1,4 +1,4 @@
-import type {PropsWithChildren} from 'solid-js';
+import type {ParentProps as PropsWithChildren} from 'solid-js';
 import {styled} from '../../utils';
 import type {FlexFieldVariants} from './FlexField.css';
 import {wrapper} from './FlexField.css';

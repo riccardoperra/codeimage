@@ -7,7 +7,7 @@ import type {
 import {getTerminalState} from '@codeimage/store/editor/terminal';
 import type {FrameState} from '@codeimage/store/frame/model';
 import type {Accessor} from 'solid-js';
-import {batch, createSignal} from 'solid-js';
+import {flush, createSignal} from 'solid-js';
 import {untrackCommand} from 'statebuilder/commands';
 
 /** Every value a control or a theme can change, as it was before a preview. */
@@ -110,7 +110,7 @@ export function createPreviewSession(): PreviewSession {
   // watchers. The batch runs inside them, so the effects a write triggers
   // (a language change resets the formatter) are not saved either.
   const quietly = (write: () => void) =>
-    untrackCommand(() => batch(write), false);
+    untrackCommand(() => flush(write), false);
 
   const end = () => {
     const snapshot = saved();

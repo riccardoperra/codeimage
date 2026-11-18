@@ -1,5 +1,5 @@
 import {useI18n} from '@codeimage/locale';
-import {IconButton} from '@codeui/kit';
+import {IconButton} from '@ui/legacy-controls';
 import type {AppLocaleEntries} from '../../../../i18n';
 import {SettingsIcon} from '../../shell/icons';
 import {settings} from '../../shell/settings-state';

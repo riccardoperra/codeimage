@@ -1,7 +1,7 @@
 import type {AppLocaleEntries} from '../../../i18n';
 import {useI18n} from '@codeimage/locale';
 import {getRootEditorStore} from '@codeimage/store/editor';
-import {Listbox} from '@codeui/kit';
+import {Listbox} from '@ui/legacy-listbox';
 import {SegmentedField} from '@ui/SegmentedField/SegmentedField';
 import {createSignal, Show} from 'solid-js';
 import {FontSystemPicker} from '../localized/FontSystemPicker';

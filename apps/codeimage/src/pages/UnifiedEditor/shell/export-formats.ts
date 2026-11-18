@@ -2,7 +2,7 @@ import type {LocaleKeys} from '@codeimage/locale';
 import {useI18n} from '@codeimage/locale';
 import {getExportCanvasStore} from '@codeimage/store/canvas';
 import {getFrameState} from '@codeimage/store/editor/frame';
-import {batch} from 'solid-js';
+import {flush} from 'solid-js';
 import type {Component} from 'solid-js';
 import {ExportExtension} from '../../../hooks/use-export-image';
 import type {AppLocaleEntries} from '../../../i18n';
@@ -77,7 +77,7 @@ export function savedExportChoice(): ExportChoice {
 
 export function saveExportChoice(choice: ExportChoice) {
   const store = getExportCanvasStore();
-  batch(() => {
+  flush(() => {
     store.set('extension', choice.extension);
     store.set('devicePixelRatio', choice.pixelRatio);
     store.set('jpegQuality', choice.quality);

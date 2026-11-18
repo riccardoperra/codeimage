@@ -1,16 +1,17 @@
 import {useI18n} from '@codeimage/locale';
 import {signatureEditor} from '@codeimage/store/frame/signatureEditor';
-import {Button, IconButton} from '@codeui/kit';
+import {Button, IconButton} from '@ui/legacy-controls';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 import {
   createMemo,
   createSignal,
   For,
   onCleanup,
-  onMount,
+  onSettled,
+  untrack,
   Show,
 } from 'solid-js';
-import {Dynamic} from 'solid-js/web';
+import {Dynamic} from '@solidjs/web';
 import {SparklesIcon} from '../../../../components/Icons/SparklesIcon';
 import {ShareButton} from '../../../../components/Toolbar/ShareButton';
 import type {AppLocaleEntries} from '../../../../i18n';
@@ -62,7 +63,7 @@ function RailActions() {
         type="button"
         class={styles.railButton}
         aria-haspopup="dialog"
-        aria-expanded={settings.isOpen()}
+        aria-expanded={settings.isOpen() ? 'true' : 'false'}
         data-settings-trigger
         onClick={() => settings.open()}
       >
@@ -194,9 +195,7 @@ export function Rail(props: VariantProps) {
     setStop('tall');
     if (place.group === 'signature') controlOverlay.open('signature');
   }
-  onMount(() => {
-    onCleanup(props.model.controls.register(revealControl));
-  });
+  onCleanup(untrack(() => props.model.controls.register(revealControl)));
   // Canvas clicks and the Frame row share the same signature editor.
   onCleanup(signatureEditor.register(() => controlOverlay.open('signature')));
 
@@ -296,7 +295,7 @@ export function Rail(props: VariantProps) {
     close(true);
   };
 
-  onMount(() => {
+  onSettled(() => {
     const onQuery = (e: MediaQueryListEvent) => setIsPhone(e.matches);
     compactQuery.addEventListener('change', onQuery);
 
@@ -312,10 +311,10 @@ export function Rail(props: VariantProps) {
     observer.observe(bodyEl);
     measure();
 
-    onCleanup(() => {
+    return () => {
       compactQuery.removeEventListener('change', onQuery);
       observer.disconnect();
-    });
+    };
   });
 
   return (
@@ -344,7 +343,7 @@ export function Rail(props: VariantProps) {
                     type="button"
                     class={styles.railButton}
                     aria-controls={PANEL_ID}
-                    aria-expanded={openId() === panel.id}
+                    aria-expanded={openId() === panel.id ? 'true' : 'false'}
                     onClick={() => toggle(panel)}
                   >
                     <span class={styles.railIcon}>

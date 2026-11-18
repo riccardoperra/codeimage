@@ -1,7 +1,8 @@
 import type {Observable, Observer, Subscription} from 'rxjs';
-import {from, skip, tap} from 'rxjs';
+import {Subject, tap} from 'rxjs';
 import type {Accessor} from 'solid-js';
-import {createSignal, observable} from 'solid-js';
+import {createSignal} from 'solid-js';
+import {createObservable} from '../../createObservable';
 
 export interface Effect<T> {
   (payload: T): void;
@@ -18,34 +19,33 @@ export interface Effect<T> {
 export function effect<T>(
   effectGeneratorCallback: (data: Observable<T>) => Observable<unknown>,
 ): Effect<T> {
-  const [value, notify] = createSignal<T | undefined>(undefined, {
-    equals: false,
-  });
+  const values = new Subject<T>();
   const [loading, setLoading] = createSignal(false);
 
   function dispatch(payload?: T | void) {
     setLoading(true);
-    notify(() => payload ?? undefined);
+    values.next(payload as T);
   }
 
-  // eslint-disable-next-line solid/reactivity
-  const valueNotifier$ = from(observable(value)).pipe(
-    skip(1),
-    tap(() => setLoading(false)),
-  ) as unknown as Observable<T>;
+  const valueNotifier$ = values.pipe(tap(() => setLoading(false)));
 
   const subscription = effectGeneratorCallback(valueNotifier$).subscribe();
 
-  // eslint-disable-next-line solid/reactivity
-  const loadingAccessor = Object.assign(
-    loading,
-    // eslint-disable-next-line solid/reactivity
-    from(observable(loading)) as Observable<boolean>,
-  );
+  const loading$ = createObservable(loading);
+  const loadingAccessor = new Proxy(loading, {
+    get(target, key) {
+      if (!Reflect.has(loading$, key)) return Reflect.get(target, key);
+      const value = Reflect.get(loading$, key);
+      return typeof value === 'function' ? value.bind(loading$) : value;
+    },
+  }) as Effect<T>['loading'];
 
   return Object.assign(dispatch, {
     watch: valueNotifier$.subscribe.bind(valueNotifier$),
-    dispose: () => subscription.unsubscribe(),
+    dispose: () => {
+      values.complete();
+      subscription.unsubscribe();
+    },
     loading: loadingAccessor,
   });
 }

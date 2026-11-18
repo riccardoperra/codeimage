@@ -1,7 +1,7 @@
-import type {ElementType} from '@solid-aria/types';
+import type {ValidComponent as ElementType} from '@solidjs/web';
 import clsx from 'clsx';
 import type {ParentProps} from 'solid-js';
-import {omitProps} from 'solid-use/props';
+import {omit} from 'solid-js';
 import type {ButtonProps} from '../Button/Button';
 import {Button} from '../Button/Button';
 import * as styles from './IconButton.css';
@@ -13,8 +13,7 @@ export function IconButton<T extends ElementType = 'button'>(
     clsx(styles.iconButton({size: props.size}), props.class);
 
   return (
-    // @ts-expect-error not valid type with TS>5.0
-    <Button {...omitProps(props, ['class', 'children'])} class={classes()}>
+    <Button {...omit(props, 'class', 'children')} class={classes()}>
       {props.children}
     </Button>
   );

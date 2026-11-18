@@ -1,9 +1,8 @@
 // @vitest-environment happy-dom
-import type * as solid from 'solid-js';
 import {EditorView} from '@codemirror/view';
 import {EditorSelection, EditorState} from '@codemirror/state';
 import {lineAtHeight} from '../../components/CustomEditor/plugins/lineMarks/controls';
-import {createRoot} from 'solid-js';
+import {createRoot, onCleanup} from 'solid-js';
 import {expect, it, vi} from 'vitest';
 import type {WatermarkScope} from './scope';
 import {
@@ -12,10 +11,6 @@ import {
   createWatermarkScope,
   prepareWatermark,
 } from './scope';
-
-vi.mock('solid-js', () =>
-  vi.importActual<typeof solid>('solid-js/dist/solid.js'),
-);
 
 // happy-dom has no FontFaceSet; every font is already loaded here.
 Object.defineProperty(document, 'fonts', {value: {ready: Promise.resolve()}});
@@ -29,16 +24,13 @@ function preview() {
   let scope!: WatermarkScope;
   const dispose = createRoot(dispose => {
     scope = createWatermarkScope();
-    bindWatermarkExport(target, scope);
+    onCleanup(bindWatermarkExport(target, scope));
     return dispose;
   });
   const placeWithWatermark = () =>
-    createRoot(disposeWatermark => {
-      scope.attach('measure', () => {
-        events.push('read');
-        return () => events.push('write');
-      });
-      return disposeWatermark;
+    scope.attach('measure', () => {
+      events.push('read');
+      return () => events.push('write');
     });
   return {target, events, scope, dispose, placeWithWatermark};
 }
@@ -52,7 +44,7 @@ it('resolves an export whose element has no preview', async () => {
 it('leaves a preview without a watermark untouched', async () => {
   const {target, scope, dispose} = preview();
   const fit = vi.fn();
-  createRoot(() => scope.attach('fit', fit));
+  scope.attach('fit', fit);
   await prepareWatermark(target);
   expect(fit).not.toHaveBeenCalled();
   dispose();
@@ -60,7 +52,7 @@ it('leaves a preview without a watermark untouched', async () => {
 
 it('fits the window before it measures and applies the placement', async () => {
   const {target, events, scope, dispose, placeWithWatermark} = preview();
-  createRoot(() => scope.attach('fit', () => events.push('fit')));
+  scope.attach('fit', () => events.push('fit'));
   placeWithWatermark();
   await prepareWatermark(target);
   expect(events).toEqual(['fit', 'read', 'write']);
@@ -103,10 +95,7 @@ it('keeps measuring after an editor with a queued request is removed', async () 
   const {events, scope, dispose, placeWithWatermark} = preview();
   const requestMeasure = vi.fn();
   const view = {requestMeasure} as unknown as EditorView;
-  const removeEditor = createRoot(dispose => {
-    scope.attach('code', {kind: 'codemirror', view});
-    return dispose;
-  });
+  const removeEditor = scope.attach('code', {kind: 'codemirror', view});
   placeWithWatermark();
   expect(requestMeasure).toHaveBeenCalled();
   const [queued] = requestMeasure.mock.lastCall!;

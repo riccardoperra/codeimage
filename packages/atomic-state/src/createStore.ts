@@ -1,6 +1,12 @@
-import {from as rxjsFrom, map, type Observable, Subject} from 'rxjs';
-import {createSignal, from, observable, type Accessor} from 'solid-js';
-import {createStore as coreCreateStore, unwrap} from 'solid-js/store';
+import {type Observable, Subject} from 'rxjs';
+import {
+  createSignal,
+  createStore as coreCreateStore,
+  snapshot,
+  type Accessor,
+} from 'solid-js';
+import {createObservable} from './createObservable';
+import {createPathSetter} from './createPathSetter';
 import type {SetStoreFunction} from './experimental/store-types';
 
 export type StoreEvent = {
@@ -16,7 +22,13 @@ export interface StoreInternals<T> {
 
 export const $STORE = Symbol('store-internals');
 
-export function createStore<T extends object>(initialState: T) {
+export function createStore<T extends object>(
+  initialState: T,
+): [
+  T & {accessor: Accessor<T>},
+  SetStoreFunction<T>,
+  {events$: Observable<StoreEvent>; state$: Observable<T>},
+] {
   const events$ = new Subject<StoreEvent>();
   const [store, internalSetStore] = coreCreateStore<T>(
     Object.assign(initialState, {
@@ -26,7 +38,7 @@ export function createStore<T extends object>(initialState: T) {
             return events$;
           },
           get $$setter() {
-            return internalSetStore;
+            return setStore;
           },
           $$isStore: true,
         };
@@ -38,19 +50,22 @@ export function createStore<T extends object>(initialState: T) {
   );
   const [signal, setSignal] = createSignal<symbol>();
 
-  const setStore = (...args: Parameters<SetStoreFunction<T>>) => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const returnValue = (internalSetStore as any)(...args);
+  const setStore = createPathSetter<T>(callback => {
+    internalSetStore(callback);
     setSignal(Symbol());
-    return returnValue;
+  });
+
+  const state$ = createObservable(() => {
+    signal();
+    return snapshot(store);
+  });
+
+  const storeAccessor = () => {
+    signal();
+    return store;
   };
 
-  const signal$ = rxjsFrom(observable(signal));
-  const state$ = signal$.pipe(map(() => unwrap(store)));
-
-  const storeAccessor = from(state$);
-
-  const storeWithAccessor = store as typeof store & {
+  const storeWithAccessor = store as T & {
     accessor: Accessor<T>;
   };
 
@@ -60,13 +75,6 @@ export function createStore<T extends object>(initialState: T) {
     {
       state$,
       events$: events$.asObservable(),
-    },
-  ] as [
-    typeof storeWithAccessor,
-    typeof internalSetStore,
-    {
-      events$: Observable<StoreEvent>;
-      state$: Observable<T>;
     },
   ];
 }

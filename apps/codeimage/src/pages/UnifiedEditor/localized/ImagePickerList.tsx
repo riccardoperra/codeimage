@@ -3,10 +3,10 @@ import {useI18n} from '@codeimage/locale';
 import type {PersistedAsset} from '@codeimage/store/assets/assets';
 import {AssetsImage} from '@codeimage/store/assets/AssetsImage';
 import {Box, HStack} from '@codeimage/ui';
-import {Button} from '@codeui/kit';
+import {Button} from '@ui/legacy-controls';
 import {SkeletonLine} from '@ui/Skeleton/Skeleton';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
-import {createSignal, For, Show, Suspense} from 'solid-js';
+import {createSignal, For, Show, Loading} from 'solid-js';
 import * as styles from '../../../components/PropertyEditor/controls/ImagePicker/ImagePicker.css';
 
 interface ImagePickerListProps {
@@ -24,7 +24,7 @@ export function ImagePickerList(props: ImagePickerListProps) {
         [styles.gridSize]: String(props.images?.length ?? 0),
       })}
     >
-      <Suspense>
+      <Loading>
         <For each={props.images.map(image => image.id)}>
           {assetId => (
             <ImagePickerListItem
@@ -35,7 +35,7 @@ export function ImagePickerList(props: ImagePickerListProps) {
             />
           )}
         </For>
-      </Suspense>
+      </Loading>
     </div>
   );
 }
@@ -85,7 +85,7 @@ interface ImagePickerAssetImageProps {
 
 function ImagePickerAssetImage(props: ImagePickerAssetImageProps) {
   return (
-    <Suspense fallback={<SkeletonLine width={'100%'} height={'100%'} />}>
+    <Loading fallback={<SkeletonLine width={'100%'} height={'100%'} />}>
       <div style={{height: '90px'}}>
         <AssetsImage
           class={styles.assetImagePreview}
@@ -94,7 +94,7 @@ function ImagePickerAssetImage(props: ImagePickerAssetImageProps) {
           assetId={props.assetId}
         />
       </div>
-    </Suspense>
+    </Loading>
   );
 }
 
@@ -130,12 +130,12 @@ function ImagePickerDeleteButton(props: ImagePickerDeleteButtonProps) {
         >
           {t('lineMarks.undo')}
         </Button>
-        <Button<'button'>
+        <Button
           block
           size={'xs'}
           aria-label={t('presets.deletePreset.label')}
           theme={'negative'}
-          onClick={e => {
+          onClick={(e: MouseEvent) => {
             props.onDelete();
             e.preventDefault();
             e.stopPropagation();

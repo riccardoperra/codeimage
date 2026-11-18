@@ -1,7 +1,7 @@
 import {useI18n} from '@codeimage/locale';
 import {getPresetsStore} from '@codeimage/store/presets/presets';
 import {Box, LoadingCircle, Text, VStack} from '@codeimage/ui';
-import {Button} from '@codeui/kit';
+import {Button} from '@ui/legacy-controls';
 import {createControlledDialog} from '@core/hooks/createControlledDialog';
 import {RenameContentDialog} from '@ui/ConfirmDialog/RenameContentDialog';
 import type {AppLocaleEntries} from '../../../i18n';

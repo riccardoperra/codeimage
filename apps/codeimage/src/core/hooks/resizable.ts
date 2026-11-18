@@ -1,14 +1,6 @@
-import {makeEventListenerStack} from '@solid-primitives/event-listener';
 import type {Accessor} from 'solid-js';
-import {
-  batch,
-  createEffect,
-  createSignal,
-  on,
-  onCleanup,
-  untrack,
-} from 'solid-js';
-import {createStore} from 'solid-js/store';
+import {flush, createEffect, createSignal, untrack} from 'solid-js';
+import {createStore} from 'solid-js';
 import {nonNullable} from '../constants/non-nullable';
 import {fitAspect} from '../helpers/aspectRatio';
 
@@ -126,23 +118,28 @@ export function createHorizontalResize(
         ratio: aspectRatio,
         height: newHeight,
       });
-      setState({
-        height: aspect.height,
-        width: aspect.width,
+      setState(draft => {
+        draft.height = aspect.height ?? newHeight;
+        draft.width = aspect.width ?? newWidth;
       });
     } else {
-      setState({width: newWidth});
+      setState(draft => {
+        draft.width = newWidth;
+      });
     }
     refreshing = false;
   };
 
   const resizeStart = (x: number): void =>
-    batch(() => {
+    flush(() => {
       setResizing(true);
 
       const initialWidth = (state.width || untrack(ref)?.offsetWidth) ?? 0;
 
-      setState({startWidth: initialWidth, startX: x});
+      setState(draft => {
+        draft.startWidth = initialWidth;
+        draft.startX = x;
+      });
     });
 
   const resizeEnd = (): boolean => setResizing(false);
@@ -150,72 +147,40 @@ export function createHorizontalResize(
   const width = () => state.width;
   const height = () => state.height;
 
+  createEffect(ref, element => {
+    if (!element) return;
+    const style = window.getComputedStyle(element, '0px');
+    setMinWidth(options?.minWidth || Number.parseFloat(style.minWidth) || 0);
+    setMaxWidth(options?.maxWidth || Number.parseFloat(style.maxWidth) || 0);
+  });
+
   createEffect(
-    on(ref, ref => {
-      if (!ref) {
-        return;
-      }
-
-      batch(() => {
-        setMinWidth(
-          options?.minWidth ||
-            Number(
-              window.getComputedStyle(ref, '0px').minWidth.split('px')[0],
-            ) ||
-            0,
-        );
-
-        setMaxWidth(
-          options?.maxWidth ||
-            Number(
-              window.getComputedStyle(ref, '0px').maxWidth.split('px')[0],
-            ) ||
-            0,
-        );
-      });
-
-      createEffect(
-        on(
-          () => options?.aspectRatio?.(),
-          ratio => {
-            if (!ratio) {
-              setState({height: 0});
-              return;
-            }
-            resizeMove(0);
-          },
-          {
-            defer: true,
-          },
-        ),
-      );
-    }),
+    () => [ref(), options?.aspectRatio?.()] as const,
+    ([element, ratio]) => {
+      if (!element) return;
+      if (ratio) resizeMove(0);
+      else
+        setState(draft => {
+          draft.height = 0;
+        });
+    },
+    {defer: true},
   );
 
   createEffect(
-    on(
-      () => ref()?.ownerDocument,
-      ownerDocument => {
-        if (!ownerDocument) return;
-        const [listen, clear] = makeEventListenerStack(ownerDocument);
-        createEffect(
-          on(resizing, resizing => {
-            const ownerDocument = ref()?.ownerDocument;
-            if (!ownerDocument) {
-              return;
-            }
-            if (resizing) {
-              listen('mousemove', onMouseMove, {passive: true});
-              listen('mouseup', onMouseUp);
-              listen('mouseleave', onMouseLeave);
-            } else {
-              clear();
-            }
-          }),
-        );
-        onCleanup(() => clear());
-      },
-    ),
+    () => [ref()?.ownerDocument, resizing()] as const,
+    ([ownerDocument, active]) => {
+      if (!ownerDocument || !active) return;
+      const listener = new AbortController();
+      const signal = listener.signal;
+      ownerDocument.addEventListener('mousemove', onMouseMove, {
+        passive: true,
+        signal,
+      });
+      ownerDocument.addEventListener('mouseup', onMouseUp, {signal});
+      ownerDocument.addEventListener('mouseleave', onMouseLeave, {signal});
+      return () => listener.abort();
+    },
   );
 
   return {

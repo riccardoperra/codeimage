@@ -1,7 +1,8 @@
 import {useI18n} from '@codeimage/locale';
-import {Button, IconButton, icons} from '@codeui/kit';
+import {icons} from '@ui/kit-icons';
+import {Button, IconButton} from '@ui/legacy-controls';
 import {onCleanup} from 'solid-js';
-import {Popover} from '@kobalte/core/popover';
+import {Popover} from '@ui/Popover';
 import type {AppLocaleEntries} from '../../../../i18n';
 import {DownloadIcon} from '../../../../components/Icons/Download';
 import type {ExportControlProps} from '../ExportControl';

@@ -3,7 +3,14 @@ import test from 'node:test';
 import {compileBridge} from '../dist/transform.js';
 
 const rules = new Map([
-  ['legacy-kit', {standalone: ['Button'], compound: ['Menu']}],
+  [
+    'legacy-kit',
+    {
+      standalone: ['Button', 'Field'],
+      compound: ['Menu'],
+      domProps: ['Field'],
+    },
+  ],
   ['legacy-menu', {compound: ['Root']}],
 ]);
 
@@ -32,6 +39,25 @@ test('rewrites a standalone import and keeps reactive props in the host', () => 
   );
   assert.doesNotMatch(host, /from 'legacy-kit'/);
   assert.match(legacy, /createLegacyMount\(Save\)/);
+});
+
+test('exports a configured widget alias while preserving non-component imports', () => {
+  const {host, legacy, exported} = compile(`
+    import {Field as LegacyField, tokens, type FieldProps} from 'legacy-kit';
+    export {LegacyField as Field, tokens, type FieldProps};
+  `);
+
+  assert.deepEqual(exported, ['mount0Component0']);
+  assert.match(host, /import \{tokens, type FieldProps\} from "legacy-kit";/);
+  assert.match(
+    host,
+    /const LegacyField = createSolid1Bridge\(mount0Component0, readWidgetProps\);/,
+  );
+  assert.match(
+    host,
+    /export \{LegacyField as Field, tokens, type FieldProps\}/,
+  );
+  assert.match(legacy, /import \{Field as LegacyField\} from "legacy-kit";/);
 });
 
 test('moves a compound subtree as a unit and captures its callbacks and text', () => {

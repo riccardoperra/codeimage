@@ -1,6 +1,6 @@
-import type {JSXElement} from 'solid-js';
-import {createMemo, createResource, Suspense} from 'solid-js';
-import {Loading} from '../Loader';
+import type {Element as JSXElement} from 'solid-js';
+import {createMemo, Loading} from 'solid-js';
+import {Loading as LoadingIndicator} from '../Loader';
 import type {SvgIconProps} from './SvgIcon';
 import {SvgIcon} from './SvgIcon';
 
@@ -43,24 +43,21 @@ function parseSvg(svgContent: string) {
 }
 
 export function RemoteSvgIcon(props: SvgExternalIconProps): JSXElement {
-  const content = createMemo(() => props.content);
-
-  // oxlint-disable-next-line solid/reactivity
-  const [data] = createResource(content, async content => {
-    const svgResponse =
-      typeof content === 'string'
-        ? await fetch(content).then(res => res.text())
-        : await content().then(e => e.default);
-    if (props.delay) {
-      // oxlint-disable-next-line solid/reactivity
-      await new Promise(r => setTimeout(r, props.delay));
-    }
-    return parseSvg(randomizeSvgUrlIds(svgResponse));
-  });
+  const data = createMemo(() => loadSvg(props.content, props.delay));
 
   return (
-    <Suspense fallback={<Loading size={props.size ?? 'md'} />}>
+    <Loading fallback={<LoadingIndicator size={props.size ?? 'md'} />}>
       <SvgIcon {...(data() || {})} size={props.size ?? 'md'} />
-    </Suspense>
+    </Loading>
   );
+}
+
+async function loadSvg(content: SvgExternalIconProps['content'], delay = 0) {
+  if (!content) return;
+  const source =
+    typeof content === 'string'
+      ? await fetch(content).then(response => response.text())
+      : (await content()).default;
+  if (delay) await new Promise(resolve => setTimeout(resolve, delay));
+  return parseSvg(randomizeSvgUrlIds(source));
 }

@@ -1,6 +1,6 @@
 import clsx from 'clsx';
-import type {PropsWithChildren, Ref} from 'solid-js';
-import {omitProps} from 'solid-use/props';
+import type {ParentProps as PropsWithChildren, Ref} from 'solid-js';
+import {omit} from 'solid-js';
 import {styled} from '../../utils';
 import type {DynamicNode, DynamicProps} from '../Box';
 import type {UseTextProps} from '../Text';
@@ -37,7 +37,7 @@ export function TextField(props: PropsWithChildren<TextFieldProps>) {
       )}
       onInput={onChange}
       onChange={onChange}
-      {...omitProps(props, ['class', 'type', 'value', 'onChange'])}
+      {...omit(props, 'class', 'type', 'value', 'onChange')}
     />
   );
 }

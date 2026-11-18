@@ -413,15 +413,23 @@ describe('renderSnapshot', {timeout: 30_000}, () => {
   });
 
   it('keeps every render independent of the previous one', async () => {
-    const first = withEditor({tabName: 'first.ts', code: 'const a = 1;'});
-    const second = withEditor({tabName: 'second.py', code: 'b = [1, 2]'});
-    const before = await renderSnapshot(first);
-    const other = await renderSnapshot(second);
-    const after = await renderSnapshot(first);
-    const concurrent = await Promise.all([
-      renderSnapshot(second),
-      renderSnapshot(first),
-    ]);
+    const first = {
+      ...withEditor({tabName: 'first.ts', code: 'const a = 1;'}),
+      frame: {...sampleDocument.frame, background: '#123456'},
+    };
+    const second = {
+      ...withEditor({tabName: 'second.py', code: 'b = [1, 2]'}),
+      frame: {...sampleDocument.frame, background: '#abcdef'},
+    };
+    const render = async (document: typeof first) => {
+      const {html} = await snapshotMarkup(document);
+      expect(html).toContain(document.frame.background);
+      return await renderSnapshot(document);
+    };
+    const before = await render(first);
+    const other = await render(second);
+    const after = await render(first);
+    const concurrent = await Promise.all([render(second), render(first)]);
     expect(other).not.toEqual(before);
     expect(after).toEqual(before);
     expect(concurrent).toEqual([other, before]);

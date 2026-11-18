@@ -1,6 +1,6 @@
 import * as styles from './RadioBlock.css';
 import type {RadioBlockVariants} from './RadioBlock.css';
-import type {JSXElement} from 'solid-js';
+import type {Element as JSXElement} from 'solid-js';
 import {Box} from '../Box';
 
 export type RadioBlockProps<T> = RadioBlockVariants & {

@@ -1,6 +1,7 @@
 import clsx from 'clsx';
-import type {JSX, ParentProps} from 'solid-js';
-import {omitProps} from 'solid-use/props';
+import type {JSX} from '@solidjs/web';
+import type {ParentProps} from 'solid-js';
+import {omit} from 'solid-js';
 import {styled} from '../../utils';
 import * as styles from './Badge.css';
 
@@ -20,10 +21,17 @@ export function Badge(props: ParentProps<BadgeProps>) {
       props.theme,
     );
 
-  const otherProps = omitProps(props, ['theme', 'variant', 'size', 'children']);
+  const otherProps = omit(
+    props,
+    'theme',
+    'variant',
+    'size',
+    'children',
+    'class',
+  );
 
   return (
-    <styled.div class={classes()} {...otherProps}>
+    <styled.div class={clsx(classes(), props.class)} {...otherProps}>
       {props.children}
     </styled.div>
   );

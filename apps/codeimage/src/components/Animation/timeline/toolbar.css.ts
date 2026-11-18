@@ -91,7 +91,7 @@ const shrink = keyframes({
 });
 const reducedFade = keyframes({from: {opacity: 0}, to: {opacity: 1}});
 const surface = {
-  transformOrigin: 'var(--kb-popper-content-transform-origin)',
+  transformOrigin: 'var(--kb-popover-content-transform-origin)',
   animation: `${shrink} 120ms ${curve.out} forwards`,
   selectors: {
     '&[data-expanded]': {animation: `${grow} 180ms ${curve.out}`},
@@ -139,12 +139,6 @@ export const danger = style({
   },
 });
 
-export const sheetOverlay = style({
-  position: 'fixed',
-  inset: 0,
-  zIndex: 43,
-  background: c.dialog.overlayBackgroundColor,
-});
 export const sheet = style({
   position: 'fixed',
   zIndex: 44,
@@ -161,7 +155,9 @@ export const sheet = style({
   color: c.baseText,
   boxShadow: c.dialog.panelShadow,
   fontSize: themeVars.fontSize.sm,
+  selectors: {'&[data-expanded], &[data-closed]': {width: '100%'}},
 });
+export const sheetBody = style({display: 'grid', gap: 16});
 export const sheetHead = style({
   display: 'flex',
   alignItems: 'center',
@@ -180,15 +176,25 @@ export const button = style({
 });
 export const actionIcon = style({width: 14, height: 14, flexShrink: 0});
 export const menuItem = style({
+  display: 'flex',
+  alignItems: 'center',
+  textAlign: 'start',
+  width: '100%',
+  minHeight: 32,
+  padding: '0 10px',
+  border: 0,
+  borderRadius: themeVars.borderRadius.md,
+  fontSize: 13,
+  gap: 8,
+  background: 'transparent',
+  color: 'inherit',
+  '@media': {[phone]: {minHeight: 40}},
   selectors: {
-    '[data-animation-steps-menu] &': {
-      minHeight: 32,
-      padding: '0 10px',
-      borderRadius: themeVars.borderRadius.md,
-      fontSize: 13,
-      gap: 8,
-      '@media': {[phone]: {minHeight: 40}},
+    '&:hover:not(:disabled), &:focus-visible': {
+      background: c.button.base.hoverColor,
+      outline: 'none',
     },
+    '&:disabled': {opacity: 0.45},
   },
 });
 export const menuIcon = style({

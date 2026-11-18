@@ -29,8 +29,12 @@ export async function auditCodeMirrorPreview(page, section, editor) {
     exact: true,
   });
   const dialog = getDialog('Update preset');
-  const island = dialog.locator('[data-solid2-island="custom-editor-preview"]');
-  const content = island.locator('.cm-content[contenteditable="false"]');
+  const preview = label =>
+    dialog.locator('li').filter({has: page.getByText(label, {exact: true})});
+  const codeSelector = '.cm-content[contenteditable="false"]';
+  const current = preview('New');
+  const content = current.locator(codeSelector);
+  const saved = preview('Old').locator(codeSelector);
   const code = 'function Code() {\n console.log()\n}';
   const initialDocument = await editor().innerText();
 
@@ -38,24 +42,25 @@ export async function auditCodeMirrorPreview(page, section, editor) {
     await menu.click();
     await page.getByRole('menuitem', {name: 'Update', exact: true}).click();
     await content.waitFor();
-    const legacyPreview = dialog.locator('.cm-content').first();
-    assert.equal(await dialog.locator('.cm-content').count(), 2);
+    await saved.waitFor();
+    assert.equal(await dialog.locator(codeSelector).count(), 2);
     assert.equal(await content.textContent(), code.replaceAll('\n', ''));
     const keyword = content
       .locator('.cm-line span')
       .filter({hasText: /^function$/});
     await keyword.waitFor();
-    await page.waitForFunction(() => {
-      const keywords = document.querySelectorAll(
-        '[data-solid2-island="custom-editor-preview"] .cm-line span',
-      );
-      return [...keywords].some(
-        element =>
-          element.textContent === 'function' &&
-          getComputedStyle(element).color === 'rgb(255, 121, 198)',
-      );
-    });
-    const oldKeyword = legacyPreview
+    await page.waitForFunction(
+      row => {
+        const keywords = row.querySelectorAll('.cm-line span');
+        return [...keywords].some(
+          element =>
+            element.textContent === 'function' &&
+            getComputedStyle(element).color === 'rgb(255, 121, 198)',
+        );
+      },
+      await current.elementHandle(),
+    );
+    const oldKeyword = saved
       .locator('.cm-line span')
       .filter({hasText: /^function$/});
     await oldKeyword.waitFor();
@@ -71,7 +76,7 @@ export async function auditCodeMirrorPreview(page, section, editor) {
       .getByRole('button', {name: 'Close', exact: true})
       .last()
       .click();
-    await island.waitFor({state: 'detached'});
+    await dialog.waitFor({state: 'hidden'});
   }
 
   assert.equal(await editor().innerText(), initialDocument);

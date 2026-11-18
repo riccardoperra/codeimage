@@ -6,6 +6,9 @@ import {exit, flip} from './motion';
 let root: HTMLElement | undefined;
 export const registerRoot = (element: HTMLElement | undefined) => {
   root = element;
+  return () => {
+    if (root === element) root = undefined;
+  };
 };
 
 const itemOf = (key: string) =>

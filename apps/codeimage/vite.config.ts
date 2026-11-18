@@ -2,21 +2,14 @@ import {vanillaExtractPlugin} from '@vanilla-extract/vite-plugin';
 import {fileURLToPath} from 'node:url';
 import type {Plugin, UserConfigExport} from 'vite';
 import {defineConfig} from 'vite';
-import solidPlugin from 'vite-plugin-solid';
+import solidPlugin from '@solidjs/vite-plugin';
 import tsconfigPaths from 'vite-tsconfig-paths';
 import {withStaticVercelPreview} from '../../scripts/vercel-output-build';
 
 const config: UserConfigExport = defineConfig(async ({mode}) => ({
   plugins: [
     ...(mode !== 'render'
-      ? [
-          (await import('./solid2/islands/vite.mjs')).editorIslands({
-            islands: [
-              {file: './src/pages/UnifiedEditor/shell/SettingsSearch.tsx'},
-              {file: './solid2/islands/CustomEditorPreview.tsx'},
-            ],
-          }),
-        ]
+      ? [(await import('./solid1/vite.mjs')).legacyWidgets()]
       : []),
     vanillaExtractPlugin(
       mode === 'render'
@@ -30,7 +23,6 @@ const config: UserConfigExport = defineConfig(async ({mode}) => ({
     solidPlugin({
       ssr: mode === 'render',
       solid: mode === 'render' ? {hydratable: false} : undefined,
-      extensions: ['.tsx', '.ts'],
     }),
     tsconfigPaths(),
     {
@@ -126,7 +118,6 @@ const config: UserConfigExport = defineConfig(async ({mode}) => ({
       : undefined,
   ssr: mode === 'render' ? {noExternal: true} : undefined,
   optimizeDeps: {
-    exclude: ['@codeimage/solid2-islands/CustomEditorPreview'],
     include: ['@codemirror/state', '@codemirror/view', '@codemirror/language'],
   },
 }));

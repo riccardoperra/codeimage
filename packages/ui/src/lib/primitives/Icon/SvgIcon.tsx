@@ -1,6 +1,7 @@
 import clsx from 'clsx';
-import type {JSX, ParentProps} from 'solid-js';
-import {splitProps} from 'solid-js';
+import type {JSX} from '@solidjs/web';
+import type {ParentProps} from 'solid-js';
+import {omit, Show} from 'solid-js';
 import type {SvgIconProps as _SvgIconProps} from './SvgIcon.css';
 import {svgIcon} from './SvgIcon.css';
 
@@ -9,20 +10,32 @@ export type SvgIconProps = _SvgIconProps &
 
 export function SvgIcon(props: SvgIconProps): JSX.Element {
   const classes = () => clsx(svgIcon({size: props.size}), props.class);
-  const [local, others] = splitProps(props, ['class', 'children', 'viewBox']);
+  const others = omit(props, 'class', 'children', 'innerHTML', 'viewBox');
+  const rawContent = () => ({innerHTML: props.innerHTML});
 
   return (
-    // eslint-disable-next-line solid/jsx-no-duplicate-props
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      fill="none"
-      class={classes()}
-      viewBox={local.viewBox}
-      // eslint-disable-next-line solid/no-innerhtml
-      innerHTML={props.innerHTML ?? undefined}
-      {...others}
+    <Show
+      when={typeof props.innerHTML === 'string'}
+      fallback={
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          class={classes()}
+          viewBox={props.viewBox}
+          {...others}
+        >
+          {props.children}
+        </svg>
+      }
     >
-      {props.children}
-    </svg>
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        class={classes()}
+        viewBox={props.viewBox}
+        {...others}
+        {...rawContent()}
+      />
+    </Show>
   );
 }

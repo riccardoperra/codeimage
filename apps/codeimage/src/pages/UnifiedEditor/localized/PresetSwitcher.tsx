@@ -7,15 +7,13 @@ import type {PresetData} from '@codeimage/store/presets/types';
 import {getUiStore} from '@codeimage/store/ui';
 import {Box, Text, toast} from '@codeimage/ui';
 import {
-  Button,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuPortal,
   DropdownMenuTrigger,
-  IconButton,
-  Tooltip,
-} from '@codeui/kit';
+} from '@ui/DropdownMenu';
+import {Button, IconButton, Tooltip} from '@ui/legacy-controls';
 import {getUmami} from '@core/constants/umami';
 import {formatDistanceToNow} from '@core/helpers/date';
 import {createControlledDialog} from '@core/hooks/createControlledDialog';
@@ -23,7 +21,7 @@ import {ConfirmDialog} from '@ui/ConfirmDialog/ConfirmDialog';
 import {RenameContentDialog} from '@ui/ConfirmDialog/RenameContentDialog';
 import clsx from 'clsx';
 import type {ParentComponent} from 'solid-js';
-import {ErrorBoundary, For, Show, Suspense} from 'solid-js';
+import {Errored, For, Show, Loading} from 'solid-js';
 import type {AppLocaleEntries} from '../../../i18n';
 import {CloudIcon} from '../../../components/Icons/CloudIcon';
 import {DotHorizontalIcon} from '../../../components/Icons/DotVertical';
@@ -94,7 +92,7 @@ export const PresetSwitcher: ParentComponent<ThemeSwitcherVariant> = props => {
       </div>
 
       <div class={styles.grid({orientation: props.orientation})}>
-        <Suspense
+        <Loading
           fallback={
             <>
               <ThemeBoxSkeleton />
@@ -126,15 +124,15 @@ export const PresetSwitcher: ParentComponent<ThemeSwitcherVariant> = props => {
               }
 
               return (
-                <Suspense fallback={<ThemeBoxSkeleton />}>
+                <Loading fallback={<ThemeBoxSkeleton />}>
                   <div>
                     <li
                       class={styles.item}
                       onClick={() => onSelectTheme(theme.data)}
                     >
-                      <ErrorBoundary fallback={<ThemeBoxSkeleton />}>
+                      <Errored fallback={<ThemeBoxSkeleton />}>
                         <PresetPreview code={exampleCode} data={theme.data} />
-                      </ErrorBoundary>
+                      </Errored>
 
                       <Box
                         display={'flex'}
@@ -149,12 +147,7 @@ export const PresetSwitcher: ParentComponent<ThemeSwitcherVariant> = props => {
                             </Text>
                           </Box>
                         </div>
-                        <div
-                          onClick={e => {
-                            e.preventDefault();
-                            e.stopImmediatePropagation();
-                          }}
-                        >
+                        <div>
                           <DropdownMenu>
                             <DropdownMenuTrigger
                               as={IconButton}
@@ -234,12 +227,12 @@ export const PresetSwitcher: ParentComponent<ThemeSwitcherVariant> = props => {
                           justifyContent={'flexEnd'}
                           paddingTop={3}
                         >
-                          <Button<'button'>
+                          <Button
                             theme={'secondary'}
                             block
                             size={'sm'}
                             leftIcon={<CloudIcon />}
-                            onClick={e => {
+                            onClick={(e: MouseEvent) => {
                               e.preventDefault();
                               e.stopPropagation();
                               presetsStore.actions.syncPreset(theme);
@@ -251,11 +244,11 @@ export const PresetSwitcher: ParentComponent<ThemeSwitcherVariant> = props => {
                       </Show>
                     </li>
                   </div>
-                </Suspense>
+                </Loading>
               );
             }}
           </For>
-        </Suspense>
+        </Loading>
       </div>
     </Box>
   );

@@ -5,9 +5,9 @@ import type {EditorView} from '@codemirror/view';
 import type {Accessor} from 'solid-js';
 import {
   createContext,
+  createEffect,
   createSignal,
-  onCleanup,
-  untrack,
+  flush,
   useContext,
 } from 'solid-js';
 
@@ -34,11 +34,11 @@ export interface WatermarkParts {
 
 export interface WatermarkScope {
   parts: Accessor<Partial<WatermarkParts>>;
-  /** Registers a part until the current owner is disposed. */
+  /** Registers a part and returns its detach function. */
   attach<K extends keyof WatermarkParts>(
     part: K,
     value: WatermarkParts[K],
-  ): void;
+  ): () => void;
   /** Schedules one measurement; repeated calls before it runs coalesce. */
   invalidate(): void;
   /** Settles the placement synchronously after fonts load, for an export. */
@@ -55,9 +55,9 @@ export function codeRects(
   staticRects: (line: Element) => Rect[],
 ): Rect[] {
   if (source.kind === 'static')
-    return Array.from(source.root.querySelectorAll(`.${WATERMARK.codeClass}`)).flatMap(
-      staticRects,
-    );
+    return Array.from(
+      source.root.querySelectorAll(`.${WATERMARK.codeClass}`),
+    ).flatMap(staticRects);
   const {view} = source;
   const rects: Rect[] = [];
   const push = (from: number, to: number) => {
@@ -94,7 +94,11 @@ export function codeRects(
 }
 
 export function createWatermarkScope(): WatermarkScope {
-  const [parts, setParts] = createSignal<Partial<WatermarkParts>>({});
+  const [parts, setParts] = createSignal<Partial<WatermarkParts>>(
+    {},
+    {ownedWrite: true},
+  );
+  let currentParts: Partial<WatermarkParts> = {};
   const requestKey = {};
   let job: object | undefined;
   let frame = 0;
@@ -106,7 +110,7 @@ export function createWatermarkScope(): WatermarkScope {
   };
 
   const invalidate = () => {
-    const {measure, code} = untrack(parts);
+    const {measure, code} = currentParts;
     if (job || !measure) return;
     const token = (job = {});
     const write = (apply: WritePlacement | undefined) => {
@@ -136,31 +140,32 @@ export function createWatermarkScope(): WatermarkScope {
   return {
     parts,
     attach(part, value) {
-      setParts(current => ({...current, [part]: value}));
+      currentParts = {...currentParts, [part]: value};
+      setParts(currentParts);
       restart();
-      onCleanup(() => {
-        setParts(current => {
-          if (current[part] !== value) return current;
-          const next = {...current};
-          delete next[part];
-          return next;
-        });
+      return () => {
+        if (currentParts[part] !== value) return;
+        const next = {...currentParts};
+        delete next[part];
+        currentParts = next;
+        setParts(next);
         restart();
-      });
+      };
     },
     invalidate,
     async prepare() {
       await document.fonts.ready;
-      const {fit, measure} = untrack(parts);
+      const {fit, measure} = currentParts;
       if (!measure) return;
       fit?.();
+      flush();
       cancel();
       measure()?.();
     },
   };
 }
 
-export const WatermarkContext = createContext<WatermarkScope>();
+export const WatermarkContext = createContext<WatermarkScope | null>(null);
 
 export function useWatermarkScope() {
   return useContext(WatermarkContext);
@@ -172,10 +177,29 @@ type ElementPart = {
     : never;
 }[keyof WatermarkParts];
 
-/** A ref that registers the element when the component renders inside a frame. */
+function watermarkRef(
+  register: (element: HTMLElement) => (() => void) | undefined,
+) {
+  const [node, setNode] = createSignal<HTMLElement>();
+  createEffect(node, element => {
+    if (element) return register(element);
+  });
+  return setNode;
+}
+
+export function createWatermarkRef(
+  scope: WatermarkScope | null | undefined,
+  part: ElementPart,
+) {
+  return watermarkRef(element => scope?.attach(part, element));
+}
+
 export function useWatermarkPart(part: ElementPart) {
-  const scope = useWatermarkScope();
-  return (element: HTMLElement) => scope?.attach(part, element);
+  return createWatermarkRef(useWatermarkScope(), part);
+}
+
+export function createStaticWatermarkRef(scope: WatermarkScope | null) {
+  return watermarkRef(root => scope?.attach('code', {kind: 'static', root}));
 }
 
 const exportScopes = new WeakMap<HTMLElement, WatermarkScope>();
@@ -186,9 +210,13 @@ export function bindWatermarkExport(
   scope: WatermarkScope,
 ) {
   exportScopes.set(target, scope);
-  onCleanup(() => {
+  return () => {
     if (exportScopes.get(target) === scope) exportScopes.delete(target);
-  });
+  };
+}
+
+export function createWatermarkExportRef(scope: WatermarkScope) {
+  return watermarkRef(element => bindWatermarkExport(element, scope));
 }
 
 export async function prepareWatermark(target: HTMLElement) {

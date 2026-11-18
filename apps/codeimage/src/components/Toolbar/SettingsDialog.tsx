@@ -1,6 +1,6 @@
 import {useI18n} from '@codeimage/locale';
 import {EditorConfigStore} from '@codeimage/store/editor/config.store';
-import {provideState} from 'statebuilder';
+import {useStore} from 'statebuilder';
 import {ExperimentalChip} from '@ui/ExperimentalChip/ExperimentalChip';
 import {getUiStore} from '@codeimage/store/ui';
 import {
@@ -15,14 +15,9 @@ import {
   themeVars,
   VStack,
 } from '@codeimage/ui';
-import {
-  Button,
-  Dialog,
-  DialogPanelContent,
-  DialogPanelFooter,
-  RadioList,
-  RadioListItem,
-} from '@codeui/kit';
+import {RadioGroup} from '@ui/RadioGroup/RadioGroup';
+import {Button} from '@ui/legacy-controls';
+import {Dialog, DialogPanelContent, DialogPanelFooter} from '@ui/Dialog';
 import {appEnvironment} from '@core/configuration';
 import {getUmami} from '@core/constants/umami';
 import type {ControlledDialogProps} from '@core/hooks/createControlledDialog';
@@ -37,7 +32,7 @@ type SettingsDialogProps = ControlledDialogProps;
 export function SettingsDialog(props: SettingsDialogProps) {
   const [page] = createSignal<'general' | 'account'>('general');
   const ui = getUiStore();
-  const config = provideState(EditorConfigStore);
+  const config = useStore(EditorConfigStore);
   const {locales} = appEnvironment;
   const modality = useModality();
 
@@ -154,7 +149,9 @@ export function SettingsDialog(props: SettingsDialogProps) {
                         type={'button'}
                         role={'switch'}
                         aria-label={t('rendering.useTakumi')}
-                        aria-checked={config.get.renderer === 'takumi'}
+                        aria-checked={
+                          config.get.renderer === 'takumi' ? 'true' : 'false'
+                        }
                         onClick={() => {
                           config.setRenderer(
                             config.get.renderer === 'takumi'
@@ -198,25 +195,27 @@ export function SettingsDialog(props: SettingsDialogProps) {
                     </HStack>
                   </FlexField>
                   <FlexField size={'lg'}>
-                    <RadioList
-                      label={'Locale'}
-                      size={'md'}
-                      onChange={locale => {
+                    <RadioGroup
+                      aria-label="Locale"
+                      onChange={value => {
+                        const locale = locales.find(item => item === value);
+                        if (!locale) return;
                         ui.setLocale(locale);
                         getUmami().track('change-app-language', {locale});
                       }}
                       value={ui.get.locale}
-                      orientation={'vertical'}
                     >
                       <For each={locales}>
                         {locale => (
-                          <RadioListItem
-                            label={t(`locales.${locale}`)}
-                            value={locale}
-                          />
+                          <RadioGroup.Item value={locale}>
+                            <RadioGroup.ItemInput />
+                            <RadioGroup.ItemLabel>
+                              {t(`locales.${locale}`)}
+                            </RadioGroup.ItemLabel>
+                          </RadioGroup.Item>
                         )}
                       </For>
-                    </RadioList>
+                    </RadioGroup>
                   </FlexField>
                 </VStack>
               </Match>

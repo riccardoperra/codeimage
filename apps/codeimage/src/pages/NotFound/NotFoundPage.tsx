@@ -1,7 +1,6 @@
 import {useI18n} from '@codeimage/locale';
 import {Box, Text} from '@codeimage/ui';
-import {Button} from '@codeui/kit';
-import {A as Link} from '@solidjs/router';
+import {Button} from '@ui/legacy-controls';
 import type {AppLocaleEntries} from '../../i18n';
 import * as styles from './NotFoundPage.css';
 
@@ -16,11 +15,10 @@ export default function NotFoundPage() {
         <Button
           size={'md'}
           theme={'primary'}
-          as={Link}
+          as="a"
           href={'/'}
           style={{'text-decoration': 'unset'}}
         >
-          {/*// TODO: remove text decoration add link*/}
           {t('notFound.goToHome')}
         </Button>
       </Box>

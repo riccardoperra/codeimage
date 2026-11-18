@@ -1,5 +1,7 @@
-import {createEffect, on, onCleanup, onMount, type Accessor} from 'solid-js';
+import {createEffect, onSettled} from 'solid-js';
+import type {Accessor} from 'solid-js';
 import {curve, reduceMotion} from '../../WhatsNew/motion';
+import {byPointer} from './input';
 
 export const timelineFor = {
   enter: 200,
@@ -30,28 +32,7 @@ export const timelineFor = {
 } as const;
 
 export {curve};
-let modality: 'pointer' | 'keyboard' = 'keyboard';
-if (typeof document !== 'undefined') {
-  document.documentElement.dataset.animateInput = modality;
-  document.addEventListener(
-    'pointerdown',
-    () => {
-      modality = 'pointer';
-      document.documentElement.dataset.animateInput = modality;
-    },
-    true,
-  );
-}
-export const byPointer = () => modality === 'pointer';
-let pointerToggle = false;
-export function markPointerToggle(event: MouseEvent) {
-  if (event.detail === 0) return;
-  pointerToggle = true;
-  setTimeout(() => {
-    pointerToggle = false;
-  });
-}
-export const toggledByPointer = () => pointerToggle;
+export {byPointer, toggledByPointer} from './input';
 export const reduced = () =>
   typeof matchMedia !== 'undefined' && matchMedia(reduceMotion).matches;
 
@@ -287,26 +268,22 @@ export function createIndicator(options: {
     ring.style.height = `${element.offsetHeight}px`;
     ring.style.transform = `translate(${x}px, ${y}px)`;
   };
-  createEffect(on(options.target, () => place(byPointer())));
+  createEffect(options.target, () => place(byPointer()));
   createEffect(
-    on(options.layout, () => requestAnimationFrame(() => place(false, false)), {
+    options.layout,
+    () => {
+      const frame = requestAnimationFrame(() => place(false, false));
+      return () => cancelAnimationFrame(frame);
+    },
+    {
       defer: true,
-    }),
+    },
   );
-  onMount(() => {
+  onSettled(() => {
     const observer = new ResizeObserver(() => place(false, false));
     const root = options.root();
     if (root) observer.observe(root);
-    onCleanup(() => observer.disconnect());
+    return () => observer.disconnect();
   });
   return {place};
-}
-
-export function trackTimelineInput(root: HTMLElement) {
-  const keyboard = () => {
-    modality = 'keyboard';
-    document.documentElement.dataset.animateInput = modality;
-  };
-  root.addEventListener('keydown', keyboard, true);
-  onCleanup(() => root.removeEventListener('keydown', keyboard, true));
 }

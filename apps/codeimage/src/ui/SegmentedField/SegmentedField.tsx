@@ -1,77 +1,124 @@
-import type {SegmentedControlProps} from '@codeui/kit';
-import {SegmentedControl, SegmentedControlItem} from '@codeui/kit';
-import type {JSX, JSXElement} from 'solid-js';
-import {For} from 'solid-js';
+import * as styles from '@codeui/kit/segmented-styles';
+import {type JSX} from '@solidjs/web';
+import clsx from 'clsx';
+import {
+  createEffect,
+  createSignal,
+  For,
+  type Element as JSXElement,
+} from 'solid-js';
 
-/**
- * TODO: port SegmentedControl with items support
- * @deprecated This is just a wrapper for @codeui/kit SegmentedControl
- */
 export interface SegmentedFieldItem<T> {
   label: string | JSXElement;
   value: T;
 }
 
-/**
- * TODO: port SegmentedControl with items support
- * @deprecated This is just a wrapper for @codeui/kit SegmentedControl
- */
 interface SegmentedFieldProps<T> {
   items: readonly SegmentedFieldItem<T>[];
   itemClass?: string;
   value: T;
   onChange?: (value: T) => void;
   onEscape?: () => void;
-  size?: SegmentedControlProps['size'];
+  size?: NonNullable<
+    Parameters<typeof styles.segmentedControlWrapper>[0]
+  >['size'];
   id?: string;
-
   adapt?: boolean;
   autoWidth?: boolean;
 }
 
-/**
- * TODO: port SegmentedControl with items support
- * @deprecated This is just a wrapper for @codeui/kit SegmentedControl
- */
 export function SegmentedField<T>(props: SegmentedFieldProps<T>): JSX.Element {
-  const nativeEscape = (event: KeyboardEvent) => {
-    if (event.key !== 'Escape' || !props.onEscape) return;
-    event.stopPropagation();
-    props.onEscape();
-  };
-  const value = (): string => {
-    const index = props.items.findIndex(item => item.value === props.value);
-    if (index === -1) return String(0);
-    return String(index);
-  };
-
-  const onChange = (value: string) => {
-    const index = parseInt(value, 10);
-    props.onChange?.(props.items[index]?.value);
-  };
-
-  const escapeProps = () =>
-    props.onEscape ? {'on:keydown': nativeEscape} : {};
-
+  const [list, setList] = createSignal<HTMLDivElement>();
+  const [position, setPosition] = createSignal({width: 0, offset: 0});
+  const selected = () =>
+    Math.max(
+      0,
+      props.items.findIndex(item => item.value === props.value),
+    );
+  const tabs = () =>
+    Array.from(
+      list()?.querySelectorAll<HTMLButtonElement>('[role="tab"]') ?? [],
+    );
+  createEffect(
+    () => [selected(), list()] as const,
+    ([index, element]) => {
+      if (!element) return;
+      const button =
+        element.querySelectorAll<HTMLButtonElement>('[role="tab"]')[index];
+      const resize = () => {
+        if (button)
+          setPosition({width: button.clientWidth, offset: button.offsetLeft});
+      };
+      resize();
+      const observer = new ResizeObserver(resize);
+      observer.observe(element);
+      if (button) observer.observe(button);
+      return () => observer.disconnect();
+    },
+  );
   return (
-    <SegmentedControl
-      value={value()}
-      onChange={onChange}
-      fluid={props.adapt}
-      autoWidth={props.adapt || props.autoWidth}
-      size={props.size ?? 'sm'}
+    <div
+      id={props.id}
+      data-cui="segmentedControl"
+      data-autoWidth={props.adapt || props.autoWidth ? '' : undefined}
+      class={styles.segmentedControlWrapper({
+        size: props.size ?? 'sm',
+        fluid: props.adapt,
+        theme: 'neutral',
+        variant: 'solid',
+      })}
     >
-      <For each={props.items}>
-        {(item, index) => (
-          <SegmentedControlItem
-            class={props.itemClass}
-            value={index().toString()}
-            {...escapeProps()}
-          >
-            {item.label}
-          </SegmentedControlItem>
-        )}
-      </For>
-    </SegmentedControl>
+      <div
+        role="tablist"
+        data-cui="segmentedControlList"
+        class={styles.list}
+        ref={setList}
+        onKeyDown={event => {
+          if (event.key === 'Escape' && props.onEscape) {
+            event.stopPropagation();
+            props.onEscape();
+            return;
+          }
+          const buttons = tabs();
+          if (!buttons.length) return;
+          const index = buttons.findIndex(button => button === event.target);
+          const destinations: Record<string, number> = {
+            ArrowLeft: (index + buttons.length - 1) % buttons.length,
+            ArrowRight: (index + 1) % buttons.length,
+            Home: 0,
+            End: buttons.length - 1,
+          };
+          if (!(event.key in destinations)) return;
+          event.preventDefault();
+          buttons[destinations[event.key]]?.focus();
+        }}
+      >
+        <For each={props.items}>
+          {(item, index) => (
+            <button
+              type="button"
+              role="tab"
+              aria-selected={index() === selected() ? 'true' : 'false'}
+              data-cui="segmentedControlItem"
+              data-selected={index() === selected() ? '' : undefined}
+              class={clsx(styles.segment, props.itemClass)}
+              tabindex={index() === selected() ? 0 : -1}
+              onClick={() => props.onChange?.(item.value)}
+            >
+              {item.label}
+            </button>
+          )}
+        </For>
+        <span
+          aria-hidden="true"
+          data-cui="segmentedControlIndicator"
+          class={styles.indicator}
+          style={{
+            width: `${position().width}px`,
+            transform: `translateX(${position().offset}px)`,
+          }}
+        />
+      </div>
+    </div>
   );
 }

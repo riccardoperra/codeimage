@@ -5,7 +5,8 @@
     "sourceMap": true,
     "jsx": "preserve",
     "resolveJsonModule": true,
-    "jsxImportSource": "solid-js",
-    "types": ["node"]
-  }
+    "jsxImportSource": "@solidjs/web",
+    "types": ["node", "vite/client"]
+  },
+  "include": ["./index.tsx"]
 }

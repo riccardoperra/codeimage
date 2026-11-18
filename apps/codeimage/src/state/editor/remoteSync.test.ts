@@ -36,3 +36,23 @@ test('a change to a project the user owns is saved to it', () => {
 test('a change to a project the user does not own is never sent', () => {
   assert.deepEqual(editSettings({readOnly: true}), []);
 });
+
+test('a queued edit is saved to its original project after navigation', () => {
+  const changes = new Subject<string>();
+  const saved: [string, string][] = [];
+  let id = 'project-1';
+  const subscription = remoteSaves(
+    changes,
+    {id: () => id, loggedIn: () => true, readOnly: () => false},
+    async (id, state) => {
+      saved.push([id, state]);
+    },
+    () => {},
+  ).subscribe();
+
+  changes.next('edited');
+  id = 'project-2';
+  vi.advanceTimersByTime(5000);
+  subscription.unsubscribe();
+  assert.deepEqual(saved, [['project-1', 'edited']]);
+});

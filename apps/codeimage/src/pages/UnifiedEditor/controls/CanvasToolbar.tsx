@@ -1,7 +1,7 @@
 import {createCanvasBar, type CanvasBarMode} from './canvas-bar';
 import {useI18n} from '@codeimage/locale';
 import {getEditorStore} from '@codeimage/store/editor';
-import {Button, IconButton, Tooltip} from '@codeui/kit';
+import {Button, IconButton, Tooltip} from '@ui/legacy-controls';
 import {createAsyncAction} from '@core/hooks/async-action';
 import {Show} from 'solid-js';
 import {HeaderField} from '../../../components/Animation/HeaderField';

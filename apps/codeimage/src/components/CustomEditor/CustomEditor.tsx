@@ -6,26 +6,26 @@ import type {AppLocaleEntries} from '../../i18n';
 import {getRootEditorStore} from '@codeimage/store/editor';
 import {getActiveEditorStore} from '@codeimage/store/editor/activeEditor';
 import {getThemeStore} from '@codeimage/store/theme/theme.store';
-import {EditorState, Transaction} from '@codemirror/state';
-import {isolateHistory} from '@codemirror/commands';
 import {EditorView, lineNumbers} from '@codemirror/view';
 import {EDITOR_BASE_SETUP} from './editorSetup';
-import {createCodeMirror, createEditorReadonly} from 'solid-codemirror';
+import {
+  createCodeMirror,
+  createEditorReadonly,
+  ExternalChange,
+} from 'solid-codemirror';
 import type {VoidProps} from 'solid-js';
 import {
   createEffect,
   createMemo,
-  createResource,
   createSignal,
   getOwner,
-  on,
-  onCleanup,
+  onSettled,
   Show,
   untrack,
 } from 'solid-js';
 import {baseEditorTheme, editorFontTheme} from './editorTheme';
 import {createTabIcon} from '../../hooks/use-tab-icon';
-import {formattedMarks} from './formattedMarks';
+import {updateEditorDocument} from './documentSync';
 import {lineMarksExtension} from './plugins/lineMarks';
 import {
   gutterMarkPointerDown,
@@ -53,6 +53,21 @@ const entryStyle = {
   'white-space': 'nowrap',
 } as const;
 
+async function loadLanguage(
+  language: (typeof SUPPORTED_LANGUAGES)[number] | undefined,
+  icon: ReturnType<ReturnType<typeof createTabIcon>>,
+) {
+  const extra = icon?.extraLanguage;
+  if (extra?.overrideParent) {
+    try {
+      return await extra.extension();
+    } catch {
+      return language?.plugin();
+    }
+  }
+  return language?.plugin();
+}
+
 interface CustomEditorProps {
   readOnly: boolean;
   onEditorViewChange?: (view: EditorView | undefined) => void;
@@ -60,38 +75,48 @@ interface CustomEditorProps {
 }
 
 export default function CustomEditor(props: VoidProps<CustomEditorProps>) {
-  const {themeArray: themes} = getThemeStore();
+  const {getThemeResource, themeArray: themes} = getThemeStore();
   const [t] = useI18n<AppLocaleEntries>();
   const owner = getOwner();
   const popupHost = useEditorPopupHost();
   const [entry, setEntry] = createSignal<HTMLElement>();
   const languages = SUPPORTED_LANGUAGES;
   const {
+    activeEditorView,
     state: editorState,
     computed: {selectedFont},
-    actions: {setActiveEditorViewTabId},
+    actions: {setActiveEditorView, setActiveEditorViewTabId},
   } = getRootEditorStore();
   const {editor} = getActiveEditorStore();
   const selectedLanguage = createMemo(() =>
     languages.find(language => language.id === editor()?.languageId),
   );
 
-  let syncing = false;
-  let activeId = untrack(() => editor()?.id);
+  const initial = untrack(editor);
+  let activeId = initial?.id;
+  const initialMarks = initial?.marks ?? {lines: [], focusedLines: []};
   const {
     editorView,
     ref: setRef,
     createExtension,
   } = createCodeMirror({
-    value: editor()?.code,
+    value: initial?.code,
+    extensions: [
+      EditorView.lineWrapping,
+      EditorView.contentAttributes.of({'aria-label': 'codeimage-editor'}),
+      baseEditorTheme,
+      trackSelection,
+      lineMarksField.init(state => marksValue(state.doc, initialMarks)),
+    ],
     onTransactionDispatched: tr => {
-      if (props.readOnly || syncing) return;
+      if (props.readOnly || tr.annotation(ExternalChange)) return;
       if (tr.docChanged || tr.effects.some(effect => effect.is(replaceMarks))) {
         const active = editor();
         if (active && tr.state.field(lineMarksField, false)) {
           const index = editorState.editors.findIndex(
             tab => tab.id === active.id,
           );
+          if (index < 0) return;
           getRootEditorStore().actions.setEditors(
             index,
             'marks',
@@ -101,57 +126,35 @@ export default function CustomEditor(props: VoidProps<CustomEditorProps>) {
       }
     },
     onValueChange: value => {
-      if (!syncing) props.onValueChange?.(value);
+      if (!props.readOnly) props.onValueChange?.(value);
     },
   });
 
-  createEffect(() => props.onEditorViewChange?.(editorView()));
-  createEffect(() => {
-    const view = editorView();
-    const element = entry();
-    if (view && element) onCleanup(attachLineMarkEntry(view, element));
-  });
-
-  const [currentLanguage] = createResource(selectedLanguage, ({plugin}) =>
-    plugin(),
+  createEffect(
+    () => [editorView(), props.onEditorViewChange] as const,
+    ([view, onChange]) => {
+      onChange?.(view);
+    },
   );
-
+  createEffect(
+    () => [editorView(), entry(), props.readOnly] as const,
+    ([view, element, readOnly]) => {
+      if (view && element && !readOnly)
+        return attachLineMarkEntry(view, element);
+    },
+  );
   const icon = createTabIcon(
     () => editor()?.tab.tabName ?? null,
     () => editor()?.languageId ?? '',
     true,
   );
-
-  const [currentExtraLanguage] = createResource(icon, iconDef => {
-    return iconDef?.extraLanguage
-      ?.extension()
-      .then(extension => {
-        return {
-          extension,
-          overrideParent: iconDef.extraLanguage?.overrideParent,
-        };
-      })
-      .catch(() => null);
-  });
-
+  const language = createMemo(() => loadLanguage(selectedLanguage(), icon()));
   const themeConfiguration = createMemo(
     () =>
-      themes().find(theme => theme()?.id === editorState.options.themeId)?.() ??
-      themes()[0](),
+      getThemeResource(editorState.options.themeId)?.[0]() ?? themes()[0]?.(),
   );
 
   createEditorReadonly(editorView, () => props.readOnly);
-  // Code that is not editable is not focusable either, and leaving the
-  // animation preview returns the focus to it.
-  createExtension(() =>
-    props.readOnly ? EditorView.contentAttributes.of({tabindex: '0'}) : [],
-  );
-  createExtension(EditorView.lineWrapping);
-  createExtension(() =>
-    EditorView.contentAttributes.of({
-      'aria-label': 'codeimage-editor',
-    }),
-  );
   createExtension(() =>
     editorFontTheme(
       selectedFont().name,
@@ -159,19 +162,7 @@ export default function CustomEditor(props: VoidProps<CustomEditorProps>) {
       editorState.options.enableLigatures,
     ),
   );
-  createExtension(() => {
-    const language = currentLanguage();
-    const extraLanguage = currentExtraLanguage();
-    if (!extraLanguage && !language) {
-      return [];
-    }
-    if (!extraLanguage) {
-      return language ?? [];
-    }
-    if (extraLanguage.overrideParent) {
-      return extraLanguage.extension ?? [];
-    }
-  });
+  createExtension(() => language());
 
   const lineNumberStart = createMemo(() => editor()?.lineNumberStart);
   createExtension(() => {
@@ -192,18 +183,12 @@ export default function CustomEditor(props: VoidProps<CustomEditorProps>) {
       : [];
   });
   createExtension(() => themeConfiguration()?.editorTheme || []);
-  createExtension(baseEditorTheme);
-  const initialMarks = untrack(
-    () => editor()?.marks ?? {lines: [], focusedLines: []},
-  );
   createExtension(() => {
-    // Names use the numbers the user sees, so a custom start shifts them too.
     const offset = editorState.options.showLineNumbers
       ? (lineNumberStart() ?? 1) - 1
       : 0;
     return lineMarksExtension(
       !props.readOnly,
-      initialMarks,
       {
         toolbar: t('lineMarks.toolbar'),
         highlight: t('lineMarks.highlight'),
@@ -224,7 +209,6 @@ export default function CustomEditor(props: VoidProps<CustomEditorProps>) {
       owner ?? undefined,
     );
   });
-  createExtension(() => EditorState.readOnly.of(props.readOnly));
   createExtension(() => (props.readOnly ? [] : popupTooltips(popupHost())));
   createExtension(
     createScriptAids(
@@ -233,102 +217,57 @@ export default function CustomEditor(props: VoidProps<CustomEditorProps>) {
     ),
   );
 
-  createExtension(trackSelection);
-
-  const reconfigureBaseSetup = createExtension(EDITOR_BASE_SETUP);
-
-  createEffect(
-    on(
-      () => props.readOnly,
-      readOnly => {
-        const extension = readOnly ? [] : EDITOR_BASE_SETUP;
-        reconfigureBaseSetup(extension);
-      },
-    ),
+  const configureHistory = createExtension(() =>
+    props.readOnly ? [] : EDITOR_BASE_SETUP,
   );
+  let publishedId: string | undefined;
+  let publishedView: EditorView | undefined;
+  const clearActiveView = () => {
+    if (publishedView && untrack(activeEditorView) === publishedView) {
+      setActiveEditorView(undefined);
+      setActiveEditorViewTabId(undefined);
+    }
+    publishedId = undefined;
+    publishedView = undefined;
+  };
+  onSettled(() => clearActiveView);
 
   createEffect(
-    on(
-      () => {
-        const tab = editor();
-        return {
-          view: editorView(),
-          id: tab?.id,
-          code: tab?.code,
-          marks:
-            props.readOnly && tab
-              ? {
-                  lines: tab.marks.lines.map(mark => ({
-                    line: mark.line,
-                    kind: mark.kind,
-                  })),
-                  focusedLines: [...tab.marks.focusedLines],
-                }
-              : null,
-        };
-      },
-      ({view, id, code, marks}) => {
-        if (
-          !view ||
-          !id ||
-          code === undefined ||
-          !view.state.field(lineMarksField, false)
-        )
-          return;
-        const changedTab = id !== activeId;
-        const current = view.state.doc.toString();
-        const changedCode = code !== current;
-        if (!changedTab && !changedCode && !marks) {
-          setActiveEditorViewTabId(id);
-          return;
-        }
-        if (!changedTab && changedCode && !props.readOnly) {
-          // Format rewrites the stored code; map marks by line and keep the step undoable.
-          const previous = readMarks(view.state);
-          view.dispatch({
-            changes: {from: 0, to: view.state.doc.length, insert: code},
-            effects: replaceMarks.of(
-              marksValue(
-                EditorState.create({doc: code}).doc,
-                formattedMarks(previous, current, code),
-              ),
-            ),
-            annotations: isolateHistory.of('full'),
-          });
-          return;
-        }
-        const tabMarks = marks ??
-          editor()?.marks ?? {lines: [], focusedLines: []};
-        const doc = changedCode
-          ? EditorState.create({doc: code}).doc
-          : view.state.doc;
-        syncing = true;
-        try {
-          if (changedTab && !props.readOnly) reconfigureBaseSetup([]);
-          view.dispatch({
-            changes: changedCode
-              ? {from: 0, to: view.state.doc.length, insert: code}
-              : undefined,
-            effects: replaceMarks.of(marksValue(doc, tabMarks)),
-            selection: changedTab ? {anchor: 0} : undefined,
-            annotations: Transaction.addToHistory.of(false),
-          });
-          if (changedTab && !props.readOnly)
-            reconfigureBaseSetup(EDITOR_BASE_SETUP);
-          activeId = id;
-          view.requestMeasure();
-        } finally {
-          syncing = false;
-        }
-        setActiveEditorViewTabId(id);
-      },
-    ),
+    () => {
+      const tab = editor();
+      const readMarks = () => ({
+        lines:
+          tab?.marks.lines.map(mark => ({line: mark.line, kind: mark.kind})) ??
+          [],
+        focusedLines: tab ? [...tab.marks.focusedLines] : [],
+      });
+      return {
+        view: editorView(),
+        id: tab?.id,
+        code: tab?.code,
+        readOnly: props.readOnly,
+        marks: props.readOnly ? readMarks() : untrack(readMarks),
+      };
+    },
+    input => {
+      activeId = updateEditorDocument(input, activeId, configureHistory);
+      if (!input.view || !activeId) {
+        clearActiveView();
+        return;
+      }
+      if (publishedId !== activeId || publishedView !== input.view) {
+        publishedId = activeId;
+        publishedView = input.view;
+        setActiveEditorView(input.view);
+        setActiveEditorViewTabId(activeId);
+      }
+    },
   );
 
   return (
     <code class={`language-${selectedLanguage()?.id ?? 'default'}`}>
       <Show when={!props.readOnly}>
-        <span ref={setEntry} tabIndex={0} style={entryStyle} />
+        <span ref={setEntry} tabindex={0} style={entryStyle} />
       </Show>
       <div ref={setRef} />
     </code>

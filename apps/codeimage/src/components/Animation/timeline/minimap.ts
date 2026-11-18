@@ -3,11 +3,10 @@ import {
   createEffect,
   createMemo,
   createSignal,
-  on,
   onCleanup,
-  onMount,
-  type Accessor,
+  onSettled,
 } from 'solid-js';
+import type {Accessor} from 'solid-js';
 import type {TimelineGeometry} from '../timelineGeometry';
 import type {ListViewport, TimelineModel} from './model';
 
@@ -94,7 +93,7 @@ export function createListViewport(
 ) {
   const {animation} = getEditorStore();
   let expected: number | null = null;
-  onMount(() => {
+  onSettled(() => {
     const element = root();
     if (!element) return;
     const viewport = {element, axis};
@@ -121,7 +120,7 @@ export function createListViewport(
     });
     element.addEventListener('pointerover', over);
     element.addEventListener('pointerleave', leave);
-    onCleanup(() => {
+    return () => {
       element.removeEventListener('scroll', scrolled);
       element.removeEventListener('wheel', model.markUserScroll);
       element.removeEventListener('touchmove', model.markUserScroll);
@@ -129,7 +128,7 @@ export function createListViewport(
       element.removeEventListener('pointerleave', leave);
       leave();
       if (model.viewport() === viewport) model.setViewport(undefined);
-    });
+    };
   });
   const current = createMemo(
     () =>
@@ -145,7 +144,8 @@ export function createListViewport(
     return state === 'playing' || state === 'scrubbing';
   });
   createEffect(
-    on([current, following], ([stepId, follow]) => {
+    () => [current(), following()] as const,
+    ([stepId, follow]) => {
       const viewport = model.viewport();
       if (!stepId || !viewport || (follow && model.followPaused())) return;
       const item = viewport.element.querySelector(
@@ -167,7 +167,7 @@ export function createListViewport(
       if (Math.abs(next - scroll) < 1) return;
       expected = next;
       scrollTo(viewport, next);
-    }),
+    },
   );
 }
 
@@ -192,23 +192,27 @@ export function createMinimap(
   const schedule = () => {
     frame ||= requestAnimationFrame(measure);
   };
-  createEffect(on(geometry, schedule));
-  createEffect(() => {
-    const viewport = model.viewport();
+  createEffect(geometry, schedule);
+  createEffect(model.viewport, viewport => {
     schedule();
     if (!viewport) return;
     const {element} = viewport;
     const observer = new ResizeObserver(schedule);
     observer.observe(element);
     for (const child of element.children) observer.observe(child);
-    const settle = new MutationObserver(() => setTimeout(schedule, 320));
+    let settleTimeout: ReturnType<typeof setTimeout>;
+    const settle = new MutationObserver(() => {
+      clearTimeout(settleTimeout);
+      settleTimeout = setTimeout(schedule, 320);
+    });
     settle.observe(element, {childList: true, subtree: true});
     element.addEventListener('scroll', schedule, {passive: true});
-    onCleanup(() => {
+    return () => {
+      clearTimeout(settleTimeout);
       observer.disconnect();
       settle.disconnect();
       element.removeEventListener('scroll', schedule);
-    });
+    };
   });
   onCleanup(() => cancelAnimationFrame(frame));
   return {

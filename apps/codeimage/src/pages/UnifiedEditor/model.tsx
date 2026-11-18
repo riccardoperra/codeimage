@@ -25,7 +25,7 @@ import {appEnvironment} from '@core/configuration';
 import {shadowsLabel} from '@core/configuration/shadow';
 import {AVAILABLE_TERMINAL_THEMES} from '@core/configuration/terminal-themes';
 import {getUmami} from '@core/constants/umami';
-import {createMemo, createSelector} from 'solid-js';
+import {createMemo} from 'solid-js';
 import type {Accessor, Component} from 'solid-js';
 import {
   createAmbientBackground,
@@ -296,9 +296,8 @@ export function createEditorControlsModel(): EditorControlsModel {
   const themeStore = getThemeStore();
   const shadows = createMemo(shadowsLabel);
   const session = createPreviewSession();
-  const isActiveTheme = createSelector(
-    () => session.saved()?.options.themeId ?? editor.state.options.themeId,
-  );
+  const isActiveTheme = (id: string) =>
+    id === (session.saved()?.options.themeId ?? editor.state.options.themeId);
   const choice = <K extends 'segmented' | 'select', T extends OptionValue>(
     kind: K,
     spec: ChoiceSpec<T>,

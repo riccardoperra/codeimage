@@ -9,5 +9,7 @@ export {createDerivedObservable} from './createDerivedObservable';
 export {createStoreAutoSetters} from './createStoreSetters';
 export {createDerivedSetter} from './createDerivedSetter';
 export {createTrackObserver, emitWhenTracked} from './createTrackObserver';
+export {createPathSetter} from './createPathSetter';
+export type {SetStoreFunction} from './experimental/store-types';
 
 export * from './experimental';

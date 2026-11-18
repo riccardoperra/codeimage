@@ -1,12 +1,15 @@
 import type {UnifiedWhere} from '../../pages/UnifiedEditor/places';
 import type * as registry from './registry';
 import type * as solid from 'solid-js';
-import {createRoot} from 'solid-js';
+import {createRoot, flush} from 'solid-js';
 import {expect, expectTypeOf, it, vi} from 'vitest';
 import {createWhatsNew} from './whats-new.store';
 
 vi.mock('solid-js', () =>
-  vi.importActual<typeof solid>('solid-js/dist/solid.js'),
+  vi.importActual<typeof solid>(
+    new URL('./dist/solid.js', import.meta.resolve('solid-js/package.json'))
+      .pathname,
+  ),
 );
 vi.mock('./registry', async importOriginal => {
   const original = await importOriginal<typeof registry>();
@@ -53,9 +56,11 @@ it('shows one dot per place and gives the next export item its turn within the t
     expect(app.store.dotAt('export')).toBe('tabs');
     expect(shown()).toEqual(['tabs', 'layouts']);
     app.store.seen('tabs');
+    flush();
     expect(app.store.dotAt('export')).toBe('command-menu');
     expect(shown()).toEqual(['command-menu', 'layouts', 'theme-cards']);
     app.store.seen('command-menu');
+    flush();
     expect(app.store.dotAt('export')).toBeUndefined();
     expect(shown()).toEqual(['layouts', 'theme-cards']);
   } finally {
@@ -112,9 +117,11 @@ it('places the release controls and the shared line-marks UI in registry order',
   expect(app.store.dotAt('editor:line-marks')).toBe('marks');
   expect(app.store.dotAt('control:window.style')).toBeUndefined();
   app.store.seen('marks');
+  flush();
   expect(app.store.dotAt('control:signature.saved')).toBe('signature');
   expect(app.store.dotAt('control:window.style')).toBeUndefined();
   app.store.seen('layouts');
+  flush();
   expect(app.store.dotAt('control:window.style')).toBe('window-styles');
   expect(app.store.dotAt('editor:line-mark')).toBeUndefined();
   app.dispose();

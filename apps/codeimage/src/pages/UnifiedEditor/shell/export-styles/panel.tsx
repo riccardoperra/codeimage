@@ -1,6 +1,7 @@
 import {useI18n} from '@codeimage/locale';
-import {Button, IconButton, icons} from '@codeui/kit';
-import {Popover} from '@kobalte/core/popover';
+import {icons} from '@ui/kit-icons';
+import {Button, IconButton} from '@ui/legacy-controls';
+import {Popover} from '@ui/Popover';
 import {createSignal, For, Show} from 'solid-js';
 import {DownloadIcon} from '../../../../components/Icons/Download';
 import {NewDot} from '../../../../components/WhatsNew/NewDot';

@@ -5,9 +5,9 @@ import {getFrameState} from '@codeimage/store/editor/frame';
 import {getTerminalState} from '@codeimage/store/editor/terminal';
 import {generateUid} from '@codeimage/store/plugins/unique-id';
 import {appEnvironment} from '@core/configuration';
-import {createEffect, on} from 'solid-js';
-import {unwrap} from 'solid-js/store';
-import {makePlugin} from 'statebuilder';
+import {createEffect} from 'solid-js';
+import {snapshot} from 'solid-js';
+import {createPlugin} from 'statebuilder';
 import * as api from '../../data-access/preset';
 import {useIdb} from '../../hooks/use-indexed-db';
 import type {Preset, PresetData, PresetsArray} from './types';
@@ -16,24 +16,22 @@ export const userLimit = import.meta.env.VITE_PRESET_LIMIT;
 export const guestLimit = import.meta.env.VITE_PRESET_LIMIT_GUEST;
 
 export const withPresetBridge = (idbKey: string) =>
-  makePlugin(
+  createPlugin(
     store => {
       const idb = useIdb();
       const useInMemoryStore = () => !getAuth0State().loggedIn();
       function persistToIdb(data: PresetsArray) {
-        return idb.set(idbKey, unwrap(data)).then();
+        return idb.set(idbKey, snapshot(data)).then();
       }
 
       createEffect(
-        on(
-          store,
-          resource => {
-            if (useInMemoryStore()) {
-              persistToIdb(resource ?? []);
-            }
-          },
-          {defer: true},
-        ),
+        store,
+        resource => {
+          if (useInMemoryStore()) {
+            persistToIdb(resource ?? []);
+          }
+        },
+        {defer: true},
       );
       const getPresetDataFromState = () => {
         const frameState = getFrameState().stateToPersist();

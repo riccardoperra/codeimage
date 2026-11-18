@@ -1,4 +1,4 @@
-import {isIOS, isSafari} from '@solid-primitives/platform';
+import {isIOS, isSafari} from './platform';
 import {clonePseudoElements} from './clonePseudoElements';
 import {copyFont, copyUserComputedStyleFast} from './cloneStyle';
 import {getBlobFromURL} from './getBlobFromURL';

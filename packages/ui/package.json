@@ -68,15 +68,12 @@
     "@vanilla-extract/recipes": "^0.4.0",
     "@vanilla-extract/sprinkles": "^1.5.2",
     "clsx": "^1.2.1",
-    "solid-headless": "^0.13.0",
-    "solid-js": "catalog:next",
-    "solid-use": "^0.7.2"
+    "solid-js": "catalog:solid2",
+    "@solidjs/web": "catalog:solid2"
   },
   "dependencies": {
-    "@codeimage/locale": "workspace:*",
     "@floating-ui/core": "^1.5.0",
     "@floating-ui/dom": "^1.5.3",
-    "@motionone/solid": "^10.16.2",
     "@rollup/plugin-typescript": "^12.3.0",
     "@solid-aria/types": "^0.1.4",
     "@solid-aria/utils": "^0.2.1",
@@ -88,14 +85,13 @@
     "@vanilla-extract/private": "^1.0.9",
     "@vanilla-extract/recipes": "^0.5.7",
     "@vanilla-extract/sprinkles": "^1.6.5",
-    "clsx": "^2.1.1",
-    "solid-headless": "^0.13.1",
-    "solid-toast": "^0.5.0",
-    "solid-use": "^0.9.1"
+    "clsx": "^2.1.1"
   },
   "devDependencies": {
     "@rollup/plugin-babel": "^7.0.0",
     "@rollup/plugin-node-resolve": "^16.0.3",
+    "@solidjs/compiler": "catalog:solid2",
+    "@solidjs/vite-plugin": "catalog:solid2",
     "@types/node": "catalog:next",
     "@vanilla-extract/rollup-plugin": "^1.5.3",
     "@vanilla-extract/vite-plugin": "^5.2.1",
@@ -110,7 +106,8 @@
     "rollup-plugin-import-css": "^4.2.0",
     "rollup-plugin-terser": "^7.0.2",
     "rollup-preset-solid": "^3.0.0",
-    "solid-js": "catalog:next",
+    "solid-js": "catalog:solid2",
+    "@solidjs/web": "catalog:solid2",
     "typescript": "^6.0.2",
     "vite": "catalog:next",
     "vite-plugin-dts": "catalog:next",

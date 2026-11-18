@@ -1,10 +1,10 @@
 import {useI18n} from '@codeimage/locale';
 import {HStack, Text} from '@codeimage/ui';
-import {Dialog, DialogPanelContent, DialogPanelFooter} from '@codeui/kit';
-import {Button} from '@codeui/kit';
+import {Dialog, DialogPanelContent, DialogPanelFooter} from '@ui/Dialog';
+import {Button} from '@ui/legacy-controls';
 import type {ControlledDialogProps} from '@core/hooks/createControlledDialog';
-import type {JSXElement, VoidProps} from 'solid-js';
-import {mergeProps} from 'solid-js';
+import type {Element as JSXElement, VoidProps} from 'solid-js';
+import {merge} from 'solid-js';
 import type {AppLocaleEntries} from '../../i18n';
 
 interface ConfirmDialogProps extends ControlledDialogProps {
@@ -18,7 +18,7 @@ export function ConfirmDialog(
   props: VoidProps<ConfirmDialogProps>,
 ): JSXElement {
   const [t] = useI18n<AppLocaleEntries>();
-  const propsWithDefault = mergeProps({actionType: 'primary'} as const, props);
+  const propsWithDefault = merge({actionType: 'primary'} as const, props);
   return (
     <Dialog
       size={'xs'}

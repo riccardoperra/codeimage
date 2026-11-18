@@ -1,13 +1,6 @@
-import {createResizeObserver} from '@solid-primitives/resize-observer';
-import {
-  createEffect,
-  createSignal,
-  onMount,
-  onCleanup,
-  untrack,
-  type ParentProps,
-  type JSX,
-} from 'solid-js';
+import {createEffect, createSignal, onSettled, untrack} from 'solid-js';
+import type {ParentProps} from 'solid-js';
+import type {JSX} from '@solidjs/web';
 import type {WatermarkScope} from '../../core/watermark/scope';
 import {WatermarkContext} from '../../core/watermark/scope';
 
@@ -69,10 +62,19 @@ export function FittedWindow(
     scale: 1,
   });
   const placement = () => props.placement ?? measured();
-  const fit = () => {
-    const box = viewport();
-    const fitted = content();
-    if (!box || !fitted || !props.active || props.placement) return;
+  const readFit = () => ({
+    box: viewport(),
+    fitted: content(),
+    active: props.active,
+    placement: props.placement,
+  });
+  const fitWindow = ({
+    box,
+    fitted,
+    active,
+    placement,
+  }: ReturnType<typeof readFit>) => {
+    if (!box || !fitted || !active || placement) return;
     const next = fittedPlacement(
       {width: box.clientWidth, height: box.clientHeight},
       {
@@ -91,19 +93,27 @@ export function FittedWindow(
     setMeasured(next);
     watermark.invalidate();
   };
-  createResizeObserver(viewport, fit);
-  createResizeObserver(content, fit);
-  createEffect(fit);
-  onMount(() => {
-    watermark.attach('fit', fit);
-    if (props.placement) return;
-    const observer = new MutationObserver(fit);
-    observer.observe(content()!, {
+  const fit = () => fitWindow(untrack(readFit));
+  createEffect(readFit, fitWindow);
+  onSettled(() => {
+    const {box, fitted, placement} = untrack(readFit);
+    if (!box || !fitted) return;
+    const detach = watermark.attach('fit', fit);
+    if (placement) return detach;
+    const resizeObserver = new ResizeObserver(fit);
+    resizeObserver.observe(box);
+    resizeObserver.observe(fitted);
+    const mutationObserver = new MutationObserver(fit);
+    mutationObserver.observe(fitted, {
       subtree: true,
       childList: true,
       characterData: true,
     });
-    onCleanup(() => observer.disconnect());
+    return () => {
+      resizeObserver.disconnect();
+      mutationObserver.disconnect();
+      detach();
+    };
   });
 
   return (
@@ -141,9 +151,7 @@ export function FittedWindow(
               : {display: 'contents', transform: 'none'}
         }
       >
-        <WatermarkContext.Provider value={watermark}>
-          {props.children}
-        </WatermarkContext.Provider>
+        <WatermarkContext value={watermark}>{props.children}</WatermarkContext>
       </div>
     </div>
   );

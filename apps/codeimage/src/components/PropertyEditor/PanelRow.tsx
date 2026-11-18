@@ -1,5 +1,5 @@
 import {Box, Text} from '@codeimage/ui';
-import type {FlowComponent, JSXElement} from 'solid-js';
+import type {FlowComponent, Element as JSXElement} from 'solid-js';
 import {Show} from 'solid-js';
 import * as styles from './EditorSidebar.css';
 import {panelRowContent} from './EditorSidebar.css';

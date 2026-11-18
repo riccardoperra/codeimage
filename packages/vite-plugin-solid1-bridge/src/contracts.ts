@@ -3,6 +3,7 @@ import type {PluginOption} from 'vite';
 export interface LegacyModuleRule {
   standalone?: readonly string[];
   compound?: readonly string[];
+  domProps?: readonly string[];
 }
 
 export interface LegacyBuildOptions {
@@ -13,6 +14,7 @@ export interface LegacyBuildOptions {
 export interface Solid1BridgeOptions {
   entries: readonly string[];
   optionalEntries?: readonly string[];
+  cssLayer?: string;
   modules: Readonly<Record<string, LegacyModuleRule>>;
   legacyComponents?: readonly string[];
   legacy: LegacyBuildOptions;

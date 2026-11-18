@@ -8,7 +8,7 @@
     "jsx": "preserve",
     "moduleResolution": "bundler",
     "resolveJsonModule": true,
-    "jsxImportSource": "solid-js",
+    "jsxImportSource": "@solidjs/web",
     "types": ["node"]
   },
   "include": ["./src"]

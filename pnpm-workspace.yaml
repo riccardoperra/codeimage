@@ -27,6 +27,14 @@ patchedDependencies:
   tinykeys: patches/tinykeys.patch
 
 catalogs:
+  solid2:
+    '@solidjs/compiler': 2.0.0
+    '@solidjs/router': 2.0.0
+    '@solidjs/vite-plugin': 3.0.0
+    '@solidjs/web': 2.0.0
+    solid-codemirror: 3.0.0
+    solid-js: 2.0.0
+    statebuilder: 0.9.0-alpha.1
   next:
     '@codemirror/autocomplete': '^6.20.1'
     '@codemirror/commands': '^6.10.3'
@@ -73,4 +81,5 @@ minimumReleaseAgeExclude:
   - fast-json-stringify@7.3.6
   - postcss@8.5.33
   - solid-codemirror@3.0.0
+  - statebuilder@0.9.0-alpha.1
   - sql-escaper@1.6.0

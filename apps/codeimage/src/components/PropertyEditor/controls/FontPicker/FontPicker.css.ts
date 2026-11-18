@@ -1,5 +1,5 @@
 import {textFieldStyles, themeVars} from '@codeimage/ui';
-import {responsiveStyle, themeTokens} from '@codeui/kit';
+import {responsiveStyle, themeTokens} from '@codeui/kit/foundation';
 import {createVar, style} from '@vanilla-extract/css';
 
 export const input = style([

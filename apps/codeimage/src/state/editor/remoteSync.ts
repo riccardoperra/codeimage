@@ -1,10 +1,13 @@
 import {
+  concatMap,
   debounceTime,
   EMPTY,
   filter,
   from,
+  groupBy,
+  map,
+  mergeMap,
   type Observable,
-  switchMap,
   tap,
 } from 'rxjs';
 
@@ -21,15 +24,21 @@ export function remoteSaves<T>(
   setPending: (pending: boolean) => void,
 ): Observable<unknown> {
   return changes$.pipe(
-    debounceTime(150),
-    filter(() => project.loggedIn() && !project.readOnly()),
-    tap(() => setPending(true)),
-    debounceTime(3000),
-    tap(() => setPending(false)),
-    switchMap(state => {
-      const id = project.id();
-      if (!id) return EMPTY;
-      return from(save(id, state));
-    }),
+    map(state => ({state, id: project.id()})),
+    filter(change => !!change.id && project.loggedIn() && !project.readOnly()),
+    groupBy(change => change.id),
+    mergeMap(changes =>
+      changes.pipe(
+        debounceTime(150),
+        tap(({id}) => {
+          if (project.id() === id) setPending(true);
+        }),
+        debounceTime(3000),
+        tap(({id}) => {
+          if (project.id() === id) setPending(false);
+        }),
+        concatMap(({id, state}) => (id ? from(save(id, state)) : EMPTY)),
+      ),
+    ),
   );
 }

@@ -1,10 +1,8 @@
-import type {Observable} from 'rxjs';
-import {from} from 'rxjs';
-import {createMemo, observable} from 'solid-js';
+import {createMemo} from 'solid-js';
+import {createObservable} from './createObservable';
 
 export function createDerivedObservable<T>(selector: () => T) {
   const memoized = createMemo(selector);
-  const observable$ = observable(memoized);
-  const rxjsState$ = from(observable$ as unknown as Observable<T>);
+  const rxjsState$ = createObservable(memoized);
   return [rxjsState$, memoized] as const;
 }

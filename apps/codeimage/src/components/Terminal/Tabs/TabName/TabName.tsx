@@ -1,10 +1,25 @@
 import type {LanguageIconDefinition} from '@codeimage/config';
 import {SUPPORTED_LANGUAGES} from '@codeimage/config';
-import {highlight as _highlight} from '@core/directives/highlight';
-import {Combobox} from '@kobalte/core';
-import {createResizeObserver} from '@solid-primitives/resize-observer';
-import type {JSXElement} from 'solid-js';
-import {createEffect, createMemo, createSignal} from 'solid-js';
+import {useI18n} from '@codeimage/locale';
+import {
+  autoUpdate,
+  computePosition,
+  flip,
+  offset,
+  shift,
+} from '@floating-ui/dom';
+import {Portal} from '@solidjs/web';
+import {
+  createEffect,
+  createMemo,
+  createSignal,
+  createUniqueId,
+  For,
+  onSettled,
+  Show,
+  untrack,
+} from 'solid-js';
+import type {AppLocaleEntries} from '../../../../i18n';
 import {TabIcon} from '../TabIcon/TabIcon';
 import * as styles from './TabName.css';
 
@@ -14,157 +29,220 @@ interface TabNameProps {
   onValueChange?: (value: string) => void;
 }
 
-const highlight = _highlight;
-void highlight;
+const suffix = /\.[0-9a-z.]+$/i;
+const editableSuffix = /\.[0-9a-z.]*$/i;
+const iconsByExtension = new Map<string, LanguageIconDefinition>();
+for (const icon of SUPPORTED_LANGUAGES.flatMap(language => language.icons)) {
+  if (!iconsByExtension.has(icon.extension))
+    iconsByExtension.set(icon.extension, icon);
+}
+const icons = [...iconsByExtension.values()];
 
-const icons = SUPPORTED_LANGUAGES.flatMap(language => language.icons);
+function fileExtension(value: string) {
+  return suffix.exec(value)?.[0].slice(1).toLowerCase() ?? '';
+}
 
-const uniqueIcons = icons.filter(
-  (icon, index, self) =>
-    index === self.findIndex(i => i.extension === icon.extension),
-);
+function OptionLabel(props: {extension: string; match: string}) {
+  const start = () =>
+    props.match ? props.extension.toLowerCase().indexOf(props.match) : -1;
+  return (
+    <span class={styles.tabText}>
+      <Show when={start() >= 0} fallback={props.extension}>
+        {props.extension.slice(0, start())}
+        <span class={styles.highlightedText}>
+          {props.extension.slice(start(), start() + props.match.length)}
+        </span>
+        {props.extension.slice(start() + props.match.length)}
+      </Show>
+    </span>
+  );
+}
 
-export default function TabName(props: TabNameProps): JSXElement {
-  let hiddenTextEl!: HTMLInputElement;
-  let inputEl!: HTMLInputElement;
-  let portal!: HTMLDivElement;
+function positionSuggestions([visible, reference, popup]: readonly [
+  boolean,
+  HTMLInputElement | undefined,
+  HTMLDivElement | undefined,
+]) {
+  if (!visible || !reference || !popup) return;
+  let enabled = true;
+  const position = () => {
+    void computePosition(reference, popup, {
+      placement: 'bottom-end',
+      strategy: 'fixed',
+      middleware: [offset(-2), flip(), shift({padding: 8})],
+    }).then(({x, y}) => {
+      if (!enabled) return;
+      popup.style.left = `${x}px`;
+      popup.style.top = `${y}px`;
+      popup.style.visibility = 'visible';
+    });
+  };
+  const stop = autoUpdate(reference, popup, position);
+  return () => {
+    enabled = false;
+    stop();
+  };
+}
+
+function observeWidth(
+  node: HTMLSpanElement | undefined,
+  setWidth: (width: number) => void,
+) {
+  if (!node) return;
+  const observer = new ResizeObserver(([entry]) => {
+    if (entry) setWidth(entry.contentRect.width);
+  });
+  observer.observe(node);
+  return () => observer.disconnect();
+}
+
+export default function TabName(props: TabNameProps) {
+  const [t] = useI18n<AppLocaleEntries>();
+  const id = createUniqueId();
+  const [shown, setShown] = createSignal(false);
+  const [active, setActive] = createSignal(-1);
   const [width, setWidth] = createSignal(0);
-  const textWithDotExtension = /\.([0-9a-z.]?)+$/i;
-  const gap = 8;
-  const placeholder = 'Untitled';
-
-  const computedWidth = () => width() + gap;
-
-  const inputStyle = () => ({
-    width: `${computedWidth()}px`,
+  const [control, setControl] = createSignal<HTMLInputElement>();
+  const [list, setList] = createSignal<HTMLDivElement>();
+  const optionsByExtension = new Map<string, HTMLElement>();
+  let hiddenText: HTMLSpanElement | undefined;
+  const extension = createMemo(() => fileExtension(props.value ?? ''));
+  const options = createMemo(() => {
+    const value = props.value ?? '';
+    if (!value || value.endsWith('.')) return icons;
+    const match = extension();
+    return match ? icons.filter(icon => icon.extension.includes(match)) : [];
   });
+  const open = () => shown() && !props.readonly && options().length > 0;
+  const optionId = (item: LanguageIconDefinition) => `${id}-${item.extension}`;
 
-  const onChange = (value: string): void => {
-    if (props.onValueChange) {
-      props.onValueChange(value);
+  onSettled(() => observeWidth(hiddenText, setWidth));
+
+  createEffect(() => [open(), control(), list()] as const, positionSuggestions);
+
+  createEffect(
+    () => options()[active()]?.extension,
+    item => {
+      if (item)
+        optionsByExtension.get(item)?.scrollIntoView({block: 'nearest'});
+    },
+  );
+
+  function select(item: LanguageIconDefinition) {
+    const value = props.value ?? '';
+    const next = editableSuffix.test(value)
+      ? value.replace(editableSuffix, item.extension)
+      : value + item.extension;
+    props.onValueChange?.(next);
+    setShown(false);
+    setActive(-1);
+    if (next.startsWith('.'))
+      onSettled(() => untrack(control)?.setSelectionRange(0, 0));
+  }
+
+  function handleKeyDown(event: KeyboardEvent) {
+    if (event.key === 'Escape' && open()) {
+      event.preventDefault();
+      event.stopPropagation();
+      setShown(false);
+      setActive(-1);
+      return;
     }
-  };
-
-  const onSelectItem = (item: LanguageIconDefinition | null) => {
-    if (!item) return;
-    const sanitizedExtension = item.extension.replace('.', '');
-    const value = getFormattedValue(sanitizedExtension);
-    onChange(value);
-
-    // Move cursor before the extension dot in order to continue writing when contains only extension
-    if (value.startsWith('.')) {
-      queueMicrotask(() => {
-        const cursorPosition = value.indexOf(item.extension);
-        inputEl.setSelectionRange(cursorPosition, cursorPosition);
-      });
+    const items = options();
+    if (props.readonly || !items.length) return;
+    if (event.key === 'Enter' && open()) {
+      const item = items[active()];
+      if (!item) return;
+      event.preventDefault();
+      event.stopPropagation();
+      select(item);
+      return;
     }
-  };
-
-  const getExtensionByInputValue = (inputValue: string | undefined | null) => {
-    if (!inputValue) return '';
-    const extension = /\.[0-9a-z.]+$/i.exec(inputValue);
-    return (extension ? extension[0] : '').replace('.', '');
-  };
-
-  const extension = createMemo(() => getExtensionByInputValue(props.value));
-
-  const isMatched = (option: LanguageIconDefinition, inputValue: string) => {
-    if (!inputValue) return true;
-    const currentExtension = getExtensionByInputValue(inputValue);
-    if (!currentExtension && inputValue.endsWith('.')) {
-      return true;
-    }
-    if (!currentExtension) return false;
-    return option.extension.includes(currentExtension);
-  };
-
-  const getFormattedValue = (value: string) => {
-    const sanitizedValue = props.value || '';
-    const hasDot = textWithDotExtension.test(sanitizedValue);
-    if (!hasDot) {
-      return `${sanitizedValue}.${value}`;
-    }
-    return sanitizedValue.replace(textWithDotExtension, `.${value}`);
-  };
-
-  const selectedItem = createMemo(() => {
-    return uniqueIcons.find(uniqueIcon => extension() == uniqueIcon.extension);
-  });
-
-  const hiddenText = () => props.value || placeholder;
-
-  const adjustPopperPositionerStyle = () => {
-    setTimeout(() => {
-      const popperPositioner = portal.querySelector('[data-popper-positioner]');
-      if (popperPositioner) {
-        (popperPositioner as HTMLElement).style.transition =
-          `transform 150ms ease-in-out`;
-      }
-    }, 200);
-  };
-
-  createEffect(() => {
-    setWidth(hiddenTextEl.clientWidth);
-    createResizeObserver(
-      () => hiddenTextEl,
-      ({width}) => setWidth(width),
-      {box: 'content-box'},
+    if (event.key !== 'ArrowDown' && event.key !== 'ArrowUp') return;
+    event.preventDefault();
+    event.stopPropagation();
+    if (!open()) setShown(true);
+    const index = active();
+    const step = event.key === 'ArrowDown' ? 1 : -1;
+    setActive(
+      index === -1 && step < 0
+        ? items.length - 1
+        : (index + step + items.length) % items.length,
     );
-  });
+  }
 
   return (
-    <Combobox.Root
-      value={selectedItem()}
-      onChange={onSelectItem}
-      optionLabel={'name'}
-      optionTextValue={'name'}
-      optionValue={'extension'}
-      disallowEmptySelection={true}
-      placement={'bottom-start'}
-      gutter={-2}
-      shift={width() - 10}
-      onOpenChange={isOpen => {
-        if (isOpen) {
-          adjustPopperPositionerStyle();
+    <div class={styles.control} aria-label={t('frame.tabName')}>
+      <input
+        ref={setControl}
+        value={props.value ?? ''}
+        readonly={props.readonly}
+        placeholder={t('animation.untitledTab')}
+        class={styles.input}
+        style={{width: `${width() + 8}px`}}
+        role="combobox"
+        aria-label={t('frame.tabName')}
+        aria-autocomplete="list"
+        aria-expanded={open() ? 'true' : 'false'}
+        aria-controls={open() ? id : undefined}
+        aria-activedescendant={
+          open() && options()[active()]
+            ? optionId(options()[active()])
+            : undefined
         }
-      }}
-      itemComponent={props => {
-        return (
-          <Combobox.Item
-            item={props.item}
-            class={styles.tabHintDropdownItemContent}
+        onInput={event => {
+          props.onValueChange?.(event.currentTarget.value);
+          setShown(true);
+          setActive(-1);
+        }}
+        onFocus={() => setShown(true)}
+        onBlur={() => {
+          setShown(false);
+          setActive(-1);
+        }}
+        onKeyDown={handleKeyDown}
+      />
+      <span
+        ref={node => {
+          hiddenText = node;
+        }}
+        class={styles.inlineHiddenItem}
+      >
+        {props.value || t('animation.untitledTab')}
+      </span>
+      <Show when={open()}>
+        <Portal>
+          <div
+            ref={setList}
+            id={id}
+            role="listbox"
+            aria-label={t('frame.tabName')}
+            class={styles.tabHint}
+            data-export-exclude="true"
           >
-            <Combobox.ItemLabel class={styles.tabHintDropdownItemLabel}>
-              <TabIcon delay={0} content={props.item.rawValue.content} />
-              <div use:highlight={extension()} class={styles.tabText}>
-                {props.item.rawValue.extension}
-              </div>
-            </Combobox.ItemLabel>
-          </Combobox.Item>
-        );
-      }}
-      placeholder={placeholder}
-      options={uniqueIcons}
-      triggerMode={'focus'}
-      defaultFilter={isMatched}
-    >
-      <Combobox.Control class={styles.control} aria-label="Tab name">
-        <Combobox.Input
-          ref={inputEl}
-          value={props.value}
-          class={styles.input}
-          style={inputStyle()}
-          onInput={el => onChange(el.currentTarget.value)}
-        />
-        <div ref={hiddenTextEl} class={styles.inlineHiddenItem}>
-          {hiddenText()}
-        </div>
-      </Combobox.Control>
-      <Combobox.Portal ref={portal}>
-        <Combobox.Content class={styles.tabHint}>
-          <Combobox.Listbox class={styles.listbox} />
-        </Combobox.Content>
-      </Combobox.Portal>
-    </Combobox.Root>
+            <For each={options()}>
+              {(option, index) => (
+                <div
+                  ref={node => optionsByExtension.set(option.extension, node)}
+                  id={optionId(option)}
+                  role="option"
+                  aria-selected={active() === index() ? 'true' : 'false'}
+                  class={styles.tabHintDropdownItemContent}
+                  onMouseEnter={() => setActive(index())}
+                  onPointerDown={event => event.preventDefault()}
+                  onClick={() => select(option)}
+                >
+                  <TabIcon delay={0} content={option.content} />
+                  <OptionLabel
+                    extension={option.extension}
+                    match={extension()}
+                  />
+                </div>
+              )}
+            </For>
+          </div>
+        </Portal>
+      </Show>
+    </div>
   );
 }

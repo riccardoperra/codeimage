@@ -8,13 +8,11 @@ import type {EditorState} from '@codeimage/store/editor/model';
 import type {Language} from '@codemirror/language';
 import {loadLanguage} from '@core/snapshot/tokenize';
 import {getThemeStore} from '@codeimage/store/theme/theme.store';
-import {dispatchCopyToClipboard} from '@codeimage/store/effects/onCopyToClipboard';
-import {createRef} from '@core/helpers/create-ref';
 import type {ParentProps, Ref, VoidProps} from 'solid-js';
-import {createMemo, createResource, onMount, Show, Suspense} from 'solid-js';
-import {Portal} from 'solid-js/web';
-import {provideState} from 'statebuilder';
-import {isKeyOwnedByFocus, useHotkey} from '../../hooks/use-hotkey';
+import {createMemo, Show, Loading} from 'solid-js';
+import {createResource} from '@codeimage/store/plugins/create-resource';
+import {Portal} from '@solidjs/web';
+import {useStore} from 'statebuilder';
 import * as styles from './Frame.css';
 import {FrameSkeleton} from './FrameSkeleton';
 import {FrameView} from './FrameView';
@@ -26,14 +24,14 @@ export interface PreviewFrameProps {
 }
 
 function PreviewPortal(props: ParentProps) {
-  const config = provideState(EditorConfigStore);
+  const config = useStore(EditorConfigStore);
   return (
     <Portal>
       <div
         data-dev-mode={config.get.devMode ? '' : undefined}
         class={styles.previewPortal}
       >
-        <Suspense fallback={<FrameSkeleton />}>{props.children}</Suspense>
+        <Loading fallback={<FrameSkeleton />}>{props.children}</Loading>
       </div>
     </Portal>
   );
@@ -43,13 +41,12 @@ function PreviewPortal(props: ParentProps) {
 // frame draws with.
 export function useFrameCodeStyle() {
   const editor = getRootEditorStore();
-  const theme = createMemo(() => {
-    const themes = getThemeStore().themeArray();
-    return (
-      themes.find(theme => theme()?.id === editor.state.options.themeId)?.() ??
-      themes[0]()
-    );
-  });
+  const {getThemeResource, themeArray} = getThemeStore();
+  const theme = createMemo(
+    () =>
+      getThemeResource(editor.state.options.themeId)?.[0]() ??
+      themeArray()[0]?.(),
+  );
   return {
     theme,
     fontFamily: () => editor.computed.selectedFont().name,
@@ -60,9 +57,6 @@ export function useFrameCodeStyle() {
 }
 
 export function PreviewFrame(props: VoidProps<PreviewFrameProps>) {
-  const config = provideState(EditorConfigStore);
-  let ref!: HTMLDivElement;
-  const editor = getRootEditorStore();
   const tab = () => props.tab ?? getActiveEditorStore().editor();
   const [language] = createResource(
     () => {
@@ -75,20 +69,6 @@ export function PreviewFrame(props: VoidProps<PreviewFrameProps>) {
     {initialValue: null},
   );
   const {theme} = useFrameCodeStyle();
-  const filterHotKey = () =>
-    editor.state.options.focused || isKeyOwnedByFocus();
-
-  onMount(() => {
-    useHotkey(document.body, {
-      // eslint-disable-next-line solid/reactivity
-      'Control+C': () => {
-        if (filterHotKey()) return;
-        if (!ref) return;
-        dispatchCopyToClipboard({ref, renderer: config.get.renderer});
-      },
-    });
-  });
-
   const media = createFrameMedia(() => getFrameState().store);
   const exportCanvas = getExportCanvasStore();
   return (
@@ -96,7 +76,7 @@ export function PreviewFrame(props: VoidProps<PreviewFrameProps>) {
       <Show when={theme()}>
         {theme => (
           <FrameView
-            ref={createRef<'div'>(props, el => (ref = el))}
+            ref={props.ref}
             tab={props.tab}
             theme={theme()}
             media={media()}

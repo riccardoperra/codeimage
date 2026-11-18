@@ -1,7 +1,7 @@
 import {useI18n} from '@codeimage/locale';
 import {isAssetUrl} from '@codeimage/store/assets/assets';
 import {FlexField, VStack} from '@codeimage/ui';
-import {TextField} from '@codeui/kit';
+import {TextField} from '@ui/legacy-controls';
 import type {SegmentedFieldItem} from '@ui/SegmentedField/SegmentedField';
 import {SegmentedField} from '@ui/SegmentedField/SegmentedField';
 import type {Accessor, VoidProps} from 'solid-js';
@@ -10,8 +10,8 @@ import {
   createMemo,
   createSignal,
   For,
-  on,
-  onMount,
+  onSettled,
+  untrack,
   Show,
 } from 'solid-js';
 import {ColorPickerPresetItem} from '../../../components/PropertyEditor/controls/ColorPicker/ColorPickerPresetItem';
@@ -35,7 +35,12 @@ export function ColorPickerPopover(props: VoidProps<ColorPickerPopoverProps>) {
   const [internalColor, setInternalColor] = createSignal<string>();
   const [mode, setMode] = createSignal(ColorPickerSelectionMode.gradient);
   const [, {tUnsafe}] = useI18n();
-  createEffect(on(() => props.value ?? '', setInternalColor));
+  createEffect(
+    () => props.value ?? '',
+    value => {
+      setInternalColor(value);
+    },
+  );
 
   const modalities: Accessor<SegmentedFieldItem<ColorPickerSelectionMode>[]> =
     createMemo(() => [
@@ -53,11 +58,15 @@ export function ColorPickerPopover(props: VoidProps<ColorPickerPopoverProps>) {
       },
     ]);
 
-  onMount(() => {
-    if (isAssetUrl(props.value)) {
+  onSettled(() => {
+    const {value, colors} = untrack(() => ({
+      value: props.value,
+      colors: props.colors,
+    }));
+    if (isAssetUrl(value)) {
       setMode(ColorPickerSelectionMode.background);
     } else {
-      if (props.colors?.includes(props.value ?? '')) {
+      if (colors?.includes(value ?? '')) {
         setMode(ColorPickerSelectionMode.color);
       } else {
         setMode(ColorPickerSelectionMode.gradient);

@@ -1,4 +1,4 @@
-import {icons} from '@codeui/kit';
+import {icons} from '@ui/kit-icons';
 import {For} from 'solid-js';
 import {ThemeSwatch} from '../../ThemeSwatch';
 import type {ThemeListProps} from '../ThemePicker';

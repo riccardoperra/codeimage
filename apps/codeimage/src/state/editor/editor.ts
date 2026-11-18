@@ -5,6 +5,8 @@ import {
 } from './initialState';
 export {getInitialEditorState, getInitialEditorUiOptions} from './initialState';
 import type * as ApiTypes from '@codeimage/api/api-types';
+import type {SetStoreFunction} from '@codeimage/atomic-state';
+import {createPathSetter} from '@codeimage/atomic-state';
 import {SUPPORTED_LANGUAGES} from '@codeimage/config';
 import {EditorConfigStore} from '@codeimage/store/editor/config.store';
 import {provideAppState} from '@codeimage/store/index';
@@ -15,9 +17,8 @@ import {
 import type {PresetData} from '@codeimage/store/presets/types';
 import type {EditorView} from '@codemirror/view';
 import {from, map, shareReplay} from 'rxjs';
-import {createSelector, createSignal} from 'solid-js';
-import type {SetStoreFunction} from 'solid-js/store';
-import {defineStore, provideState} from 'statebuilder';
+import {createSignal} from 'solid-js';
+import {defineStore, useStore} from 'statebuilder';
 import {createCommand, withProxyCommands} from 'statebuilder/commands';
 import type {EditorState, PersistedEditorState} from './model';
 import {MAX_EDITOR_TABS} from './model';
@@ -46,38 +47,36 @@ export function createEditorsStore() {
   );
 
   const store = provideAppState(config);
+  const setState = createPathSetter(store.set);
 
-  const configStore = provideState(EditorConfigStore);
+  const configStore = useStore(EditorConfigStore);
 
   const editorUpdateCommand = createCommand('editorUpdate').withPayload<void>();
 
   store
-    .hold(store.commands.setActiveEditorId, (activeEditorId, {set}) =>
-      set('activeEditorId', activeEditorId),
+    .hold(store.commands.setActiveEditorId, activeEditorId =>
+      setState('activeEditorId', activeEditorId),
     )
-    .hold(store.commands.setFocused, (focused, {set}) =>
-      set('options', 'focused', focused),
+    .hold(store.commands.setFocused, focused =>
+      setState('options', 'focused', focused),
     )
-    .hold(store.commands.setFocused, (focused, {set}) =>
-      set('options', 'focused', focused),
+    .hold(store.commands.setFontId, fontId =>
+      setState('options', 'fontId', fontId),
     )
-    .hold(store.commands.setFontId, (fontId, {set}) =>
-      set('options', 'fontId', fontId),
+    .hold(store.commands.setThemeId, themeId =>
+      setState('options', 'themeId', themeId),
     )
-    .hold(store.commands.setThemeId, (themeId, {set}) =>
-      set('options', 'themeId', themeId),
+    .hold(store.commands.setFontWeight, fontWeight =>
+      setState('options', 'fontWeight', fontWeight),
     )
-    .hold(store.commands.setFontWeight, (fontWeight, {set}) =>
-      set('options', 'fontWeight', fontWeight),
+    .hold(store.commands.setShowLineNumbers, showLineNumbers =>
+      setState('options', 'showLineNumbers', showLineNumbers),
     )
-    .hold(store.commands.setShowLineNumbers, (showLineNumbers, {set}) =>
-      set('options', 'showLineNumbers', showLineNumbers),
-    )
-    .hold(store.commands.setEnableLigatures, (enable, {set}) =>
-      set('options', 'enableLigatures', enable),
+    .hold(store.commands.setEnableLigatures, enable =>
+      setState('options', 'enableLigatures', enable),
     )
     .hold(store.commands.setFromPreset, presetData => {
-      store.set('options', presetData);
+      setState('options', presetData);
       store.dispatch(editorUpdateCommand, void 0);
     })
     .hold(store.commands.setFromPersistedState, (persistedState, {state}) => {
@@ -93,26 +92,26 @@ export function createEditorsStore() {
         }));
       return {
         options: {...state.options, ...persistedState.options},
-        activeEditorId: editors[0].id,
-        editors: editors.map(editor => {
-          return {
-            code: editor.code,
-            languageId: editor.languageId,
-            tab: {tabName: editor.tabName},
-            id: editor.id,
-            lineNumberStart: editor.lineNumberStart,
-            marks: editor.marks ?? {lines: [], focusedLines: []},
-          };
-        }),
+        activeEditorId: editors[0]?.id ?? defaultId,
+        editors: editors.length
+          ? editors.map(editor => {
+              return {
+                code: editor.code,
+                languageId: editor.languageId,
+                tab: {tabName: editor.tabName},
+                id: editor.id,
+                lineNumberStart: editor.lineNumberStart,
+                marks: editor.marks ?? {lines: [], focusedLines: []},
+              };
+            })
+          : [getInitialEditorState()],
       };
     });
 
-  const isActive = createSelector(() => store.get.activeEditorId);
-  const setEditors: SetStoreFunction<EditorState[]> = (...args: unknown[]) => {
-    // TODO: add derived state store
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    return (store.set as any)('editors', ...args);
-  };
+  const isActive = (id: string) => store.get.activeEditorId === id;
+  const updateEditors = (update: (state: EditorState[]) => void) =>
+    store.set(state => update(state.editors));
+  const setEditors = createPathSetter<EditorState[]>(updateEditors);
 
   const mapToStateToPersistState = (
     state: typeof store.get,
@@ -148,7 +147,7 @@ export function createEditorsStore() {
       editorUpdateCommand,
     ]),
   ).pipe(
-    map(() => store()),
+    map(() => store.peek()),
     map(mapToStateToPersistState),
     shareReplay({refCount: true, bufferSize: 1}),
   );
@@ -176,7 +175,7 @@ export function createEditorsStore() {
         },
       };
     setEditors(editors => [...editors, editor]);
-    if (active) store.set('activeEditorId', id);
+    if (active) setState('activeEditorId', id);
     store.dispatch(editorUpdateCommand, void 0);
   };
 
@@ -193,14 +192,15 @@ export function createEditorsStore() {
     const newActiveEditor = store.get.editors[currentIndex - 1];
     const updatedEditors = store.get.editors.filter(editor => editor.id !== id);
     if ($isActive) {
-      store.set('activeEditorId', newActiveEditor?.id ?? updatedEditors[0]?.id);
+      setState('activeEditorId', newActiveEditor?.id ?? updatedEditors[0]?.id);
     }
     setEditors(updatedEditors);
     store.dispatch(editorUpdateCommand, void 0);
   };
 
   const setTabName = (id: string, name: string, updateLanguage: boolean) => {
-    const index = store.get.editors.findIndex(tab => isActive(tab.id));
+    const index = store.get.editors.findIndex(tab => tab.id === id);
+    if (index < 0) return;
     setEditors(index, 'tab', 'tabName', name);
     if (updateLanguage) {
       const matches = SUPPORTED_LANGUAGES.filter(language => {
@@ -248,27 +248,25 @@ export function createEditorsStore() {
           }) as EditorState,
       ),
     );
-    store.set('activeEditorId', item.editorTabs[0].id);
-    store.set('options', item.editorOptions);
+    setState('activeEditorId', item.editorTabs[0].id);
+    setState('options', item.editorOptions);
     store.dispatch(editorUpdateCommand, void 0);
   };
 
-  const setEditorsWithCommand: SetStoreFunction<EditorState[]> = (
-    ...args: unknown[]
-  ) => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (setEditors as any)(...args);
-    store.dispatch(editorUpdateCommand, void 0);
-  };
+  const setEditorsWithCommand: SetStoreFunction<EditorState[]> =
+    createPathSetter(update => {
+      updateEditors(update);
+      store.dispatch(editorUpdateCommand, void 0);
+    });
 
   return {
     get state() {
       return store.get;
     },
-    setState: store.set,
+    setState,
     isActive,
     stateToPersist() {
-      const state = store();
+      const state = store.peek();
       return mapToStateToPersistState(state);
     },
     stateToPersist$,
@@ -289,7 +287,7 @@ export function createEditorsStore() {
       ...store.actions,
       setFontId(fontId: string) {
         store.actions.setFontId(fontId);
-        const value = selectedFont();
+        const value = configuredFonts().find(font => font.id === fontId);
         if (
           !!value &&
           !value.types

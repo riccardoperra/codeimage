@@ -1,15 +1,10 @@
 import {backgroundColorVar, Box, colorVar} from '@codeimage/ui';
 import {javascript} from '@codemirror/lang-javascript';
-import type {Extension} from '@codemirror/state';
 import {EditorView, lineNumbers} from '@codemirror/view';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
-import {
-  createCodeMirror,
-  createEditorControlledValue,
-  createEditorReadonly,
-} from 'solid-codemirror';
+import {createCodeMirror, createEditorControlledValue} from 'solid-codemirror';
 import type {VoidProps} from 'solid-js';
-import {createEffect, on, onMount} from 'solid-js';
+import {untrack} from 'solid-js';
 import type {CustomTheme} from '../../src/lib/core';
 import {editor} from './Editor.css';
 
@@ -18,48 +13,45 @@ interface CustomEditorPreviewProps {
   theme: CustomTheme;
 }
 
+const previewEditorBaseTheme = EditorView.theme({
+  '&': {
+    textAlign: 'left',
+    fontSize: '16px',
+    background: 'transparent',
+  },
+  '.cm-gutters': {
+    backgroundColor: 'transparent',
+    border: 'none',
+  },
+  '.cm-line': {
+    padding: '0 2px 6px 16px',
+  },
+  '.cm-content *': {
+    fontFamily: `Jetbrains Mono, monospace`,
+    fontWeight: 400,
+    fontVariantLigatures: 'normal',
+  },
+});
+
 export default function Editor(props: VoidProps<CustomEditorPreviewProps>) {
-  const {editorView, ref: setEditorRef, createExtension} = createCodeMirror();
-  createEditorControlledValue(editorView, () => props.code);
-  createEditorReadonly(editorView, () => false);
-
-  const previewEditorBaseTheme = () =>
-    EditorView.theme({
-      '&': {
-        textAlign: 'left',
-        fontSize: '16px',
-        background: 'transparent',
-      },
-      '.cm-gutters': {
-        backgroundColor: 'transparent',
-        border: 'none',
-      },
-      '.cm-line': {
-        padding: '0 2px 6px 16px',
-      },
-      '.cm-content *': {
-        fontFamily: `Jetbrains Mono, monospace`,
-        fontWeight: 400,
-        fontVariantLigatures: 'normal',
-      },
-    });
-
-  const extensions = (): Extension => {
-    return [
-      previewEditorBaseTheme(),
-      props.theme.editorTheme,
+  const {
+    editorView,
+    ref: setEditorRef,
+    createExtension,
+  } = createCodeMirror({
+    value: untrack(() => props.code),
+    extensions: [
+      previewEditorBaseTheme,
       lineNumbers(),
       EditorView.lineWrapping,
       javascript({
         jsx: true,
         typescript: true,
       }),
-    ];
-  };
-
-  const reconfigure = createExtension(extensions());
-
-  createEffect(on(extensions, extensions => reconfigure(extensions)));
+    ],
+  });
+  createEditorControlledValue(editorView, () => props.code);
+  createExtension(() => props.theme.editorTheme);
 
   return (
     <Box
@@ -69,14 +61,7 @@ export default function Editor(props: VoidProps<CustomEditorPreviewProps>) {
         [colorVar]: props.theme.properties.terminal.text,
       })}
     >
-      <div
-        aria-readonly={true}
-        ref={el => {
-          onMount(() => {
-            setEditorRef(el);
-          });
-        }}
-      />
+      <div ref={setEditorRef} />
     </Box>
   );
 }

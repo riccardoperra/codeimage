@@ -217,7 +217,6 @@ export const videoProgress = style({
 
 export const videoProgressFill = style({
   height: '100%',
-  width: 'var(--kb-progress-fill-width)',
   background: c.baseText,
 });
 

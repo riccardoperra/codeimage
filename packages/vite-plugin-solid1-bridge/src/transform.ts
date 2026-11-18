@@ -1,5 +1,4 @@
 import {createRequire} from 'node:module';
-import {dirname, resolve} from 'node:path';
 import {parse} from '@babel/parser';
 import type {
   Binding,
@@ -10,6 +9,7 @@ import type {
 } from '@babel/traverse';
 import type {CaptureKind, LegacyModuleRule} from './contracts.js';
 import {componentsId, runtimeId, stylesId} from './ids.js';
+import {renderImport} from './imports.js';
 
 const {
   default: traverse,
@@ -248,15 +248,7 @@ export function compileBridge(
       );
     declarations.add(declaration);
   }
-  for (const declaration of declarations) {
-    for (const specifier of declaration.specifiers) {
-      if (!imports.has(specifier.local.name)) {
-        throw new Error(
-          `Legacy import ${specifier.local.name} was not moved into a bridge`,
-        );
-      }
-    }
-  }
+  const moved = new Set(imports.keys());
 
   const exported = [
     ...standalone.values(),
@@ -266,19 +258,7 @@ export function compileBridge(
   const familyMounts = exported.slice(standalone.size);
   const legacy = [
     "import {createLegacyMount} from './mount.js';",
-    ...[...declarations].map(node => {
-      const {start, end} = span(node);
-      if (!node.source.value.startsWith('.')) return code.slice(start, end);
-      const source = span(node.source);
-      const specifier = JSON.stringify(
-        resolve(dirname(file), node.source.value),
-      );
-      return (
-        code.slice(start, source.start) +
-        specifier +
-        code.slice(source.end, end)
-      );
-    }),
+    ...[...declarations].map(node => renderImport(node, moved, code, file)),
     ...Array.from(
       standalone,
       ([name, mount]) => `export const ${mount} = createLegacyMount(${name});`,
@@ -289,13 +269,16 @@ export function compileBridge(
     ),
   ].join('\n');
   const hostImports = [
-    `import {createSolid1Bridge, readIslandValue} from '${runtimeId}';`,
+    `import {createSolid1Bridge, readIslandValue, readWidgetProps} from '${runtimeId}';`,
     `import {${exported.join(', ')}} from '${componentsId}';`,
     `import '${stylesId}';`,
-    ...Array.from(
-      standalone,
-      ([name, mount]) => `const ${name} = createSolid1Bridge(${mount});`,
-    ),
+    ...Array.from(standalone, ([name, mount]) => {
+      const component = imports.get(name);
+      const passesDom =
+        component &&
+        modules.get(component.source)?.domProps?.includes(component.imported);
+      return `const ${name} = createSolid1Bridge(${mount}${passesDom ? ', readWidgetProps' : ''});`;
+    }),
     ...familyMounts.map(
       (mount, index) =>
         `const BridgedFamily${index} = createSolid1Bridge(${mount}, props => ({values: props.values}));`,
@@ -303,7 +286,18 @@ export function compileBridge(
   ].join('\n');
   const edits = [
     ...ranges,
-    ...[...declarations].map(node => ({...span(node), replacement: ''})),
+    ...[...declarations].map(node => ({
+      ...span(node),
+      replacement: renderImport(
+        node,
+        new Set(
+          node.specifiers
+            .map(s => s.local.name)
+            .filter(name => !moved.has(name)),
+        ),
+        code,
+      ),
+    })),
   ];
   return {
     host: hostImports + '\n' + replaceRanges(code, edits),

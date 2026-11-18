@@ -1,14 +1,13 @@
 import {Box, FadeInOutTransition} from '@codeimage/ui';
 import {
-  createEffect,
   createSignal,
-  onCleanup,
-  onMount,
+  onSettled,
   Show,
   untrack,
+  createTrackedEffect,
 } from 'solid-js';
-import {Portal} from 'solid-js/web';
-import type {JSX} from 'solid-js';
+import {Portal} from '@solidjs/web';
+import type {JSX} from '@solidjs/web';
 import {
   placeWatermark,
   canHostWatermarkFrame,
@@ -184,16 +183,17 @@ function MountedWatermark(props: {darkMode: boolean}) {
     return reading && (() => untrack(() => write(reading)));
   };
 
-  onMount(() => {
-    scope.attach('measure', measure);
+  onSettled(() => {
+    const detach = scope.attach('measure', measure);
     document.fonts.addEventListener('loadingdone', scope.invalidate);
     void document.fonts.ready.then(scope.invalidate);
-    onCleanup(() =>
-      document.fonts.removeEventListener('loadingdone', scope.invalidate),
-    );
+    return () => {
+      detach();
+      document.fonts.removeEventListener('loadingdone', scope.invalidate);
+    };
   });
 
-  createEffect(() => {
+  createTrackedEffect(() => {
     const {frame, window, content, header, background, signature, code} =
       scope.parts();
     const resize = new ResizeObserver(scope.invalidate);
@@ -217,11 +217,11 @@ function MountedWatermark(props: {darkMode: boolean}) {
         });
     const scroller = frame ?? window;
     scroller?.addEventListener('scroll', scope.invalidate, true);
-    onCleanup(() => {
+    return () => {
       resize.disconnect();
       mutation.disconnect();
       scroller?.removeEventListener('scroll', scope.invalidate, true);
-    });
+    };
   });
 
   const logo = () => (
@@ -253,7 +253,7 @@ function MountedWatermark(props: {darkMode: boolean}) {
         {mark => (
           <Portal
             mount={mark().host}
-            ref={element => {
+            ref={(element: HTMLDivElement) => {
               element.style.display = 'contents';
             }}
           >

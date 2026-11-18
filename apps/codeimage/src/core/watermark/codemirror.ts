@@ -11,9 +11,9 @@ export function createWatermarkCodeSource(
 ) {
   const scope = useWatermarkScope();
   if (!scope) return;
-  createEffect(() => {
-    const current = view();
-    if (current) scope.attach('code', {kind: 'codemirror', view: current});
+  createEffect(view, current => {
+    if (current)
+      return scope.attach('code', {kind: 'codemirror', view: current});
   });
   createCompartmentExtension(
     ViewPlugin.define(() => ({

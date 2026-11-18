@@ -1,10 +1,11 @@
 import {useI18n} from '@codeimage/locale';
 import type {AppLocaleEntries} from '../../i18n';
-import {Button, Dialog, IconButton, icons, Tooltip} from '@codeui/kit';
-import {Dialog as KDialog} from '@kobalte/core/dialog';
-import {createEffect, For, onCleanup, onMount, Show, untrack} from 'solid-js';
-import {Dynamic} from 'solid-js/web';
-import {getWhatsNew, type RELEASES} from '../../state/whats-new';
+import {Button, IconButton, Tooltip} from '@ui/legacy-controls';
+import {icons} from '@ui/kit-icons';
+import {Dialog, DialogTitle} from '@ui/Dialog';
+import {For, onCleanup, Show, untrack, createTrackedEffect} from 'solid-js';
+import {Dynamic} from '@solidjs/web';
+import {getWhatsNew, type RELEASES} from '@codeimage/store/whats-new';
 import {illustrations} from './illustrations';
 import {
   curve,
@@ -15,6 +16,7 @@ import {
   showcaseAt,
 } from './motion';
 import {releaseDate, releaseTitle} from './releaseDate';
+import {ShowcaseAccessories} from './ShowcaseAccessories';
 import * as styles from './whats-new.css';
 
 const at = (start: number) => ({'--whats-new-at': ms(start)});
@@ -24,7 +26,6 @@ const cardAt = (index: number, count: number) => {
   return {
     ...at(start),
     '--whats-new-play-at': ms(play),
-    // A full row, pairs, then three thirds tile both six and eight cards.
     '--whats-new-span': index === 0 ? 6 : index < count - 3 ? 3 : 2,
   };
 };
@@ -74,21 +75,6 @@ export function Showcase(props: {
     );
     void exit.finished.then(finish).catch(() => {});
   };
-  onMount(() => {
-    const panel = title.closest('[role="dialog"], [role="alertdialog"]');
-    // Escape belongs to the sheet, including while a tooltip or exit is active.
-    const interrupt = (event: Event) => {
-      if (!(event instanceof KeyboardEvent) || event.key !== 'Escape') return;
-      event.preventDefault();
-      event.stopPropagation();
-      if (closing) {
-        closing = false;
-      }
-      close(true);
-    };
-    panel?.addEventListener('keydown', interrupt, true);
-    onCleanup(() => panel?.removeEventListener('keydown', interrupt, true));
-  });
   const minimize = (event: MouseEvent) => {
     if (minimizing || closing) return;
     const keyboard = fromKeyboard(event);
@@ -129,8 +115,6 @@ export function Showcase(props: {
   });
   onCleanup(() =>
     requestAnimationFrame(() => {
-      // An announcement has no opener for the modal to restore focus to.
-      // A reveal may already have focused its target in the meantime.
       if (document.activeElement === document.body)
         [...document.querySelectorAll<HTMLElement>('button:not([disabled])')]
           .find(
@@ -144,7 +128,7 @@ export function Showcase(props: {
     }),
   );
   const [t, {locale}] = useI18n<AppLocaleEntries>();
-  createEffect(() =>
+  createTrackedEffect(() =>
     props.release.highlights.forEach(highlight =>
       news.opened(highlight.id, 'showcase'),
     ),
@@ -153,12 +137,18 @@ export function Showcase(props: {
     <Dialog
       size="xl"
       open
+      onEscapeKeyDown={event => {
+        event.preventDefault();
+        event.stopPropagation();
+        closing = false;
+        close(true);
+      }}
       onOpenChange={open => {
         if (!open) close(false);
       }}
     >
       <div ref={title} class={styles.sheetTitle}>
-        <KDialog.Title>{t('editor.whatsNew')}</KDialog.Title>
+        <DialogTitle>{t('editor.whatsNew')}</DialogTitle>
         <div class={styles.headerActions}>
           <Tooltip content={t('whatsNew.minimize')}>
             <IconButton
@@ -184,7 +174,7 @@ export function Showcase(props: {
             </IconButton>
           </Tooltip>
           <IconButton
-            onClick={event => close(fromKeyboard(event))}
+            onClick={(event: MouseEvent) => close(fromKeyboard(event))}
             aria-label={t('common.close')}
             size="xs"
             theme="secondary"
@@ -245,7 +235,7 @@ export function Showcase(props: {
                           <Button
                             size="sm"
                             theme="secondary"
-                            onClick={event =>
+                            onClick={(event: MouseEvent) =>
                               close(fromKeyboard(event), () =>
                                 news.showMe(located().id, 'showcase'),
                               )
@@ -262,57 +252,20 @@ export function Showcase(props: {
             )}
           </For>
         </div>
-        <section class={styles.accessories} aria-labelledby="whats-new-also">
-          <h3 id="whats-new-also" class={styles.alsoTitle}>
-            {t('whatsNew.alsoNew')}
-          </h3>
-          <For
-            each={props.release.highlights.filter(
-              highlight => 'accessory' in highlight,
-            )}
-          >
-            {highlight => (
-              <article class={styles.accessory} data-highlight={highlight.id}>
-                <div class={styles.accessoryThumb}>
-                  <Dynamic
-                    component={illustrations[highlight.id]}
-                    mode="thumb"
-                  />
-                </div>
-                <div class={styles.accessoryCopy}>
-                  <h4 class={styles.accessoryTitle}>
-                    {t(`whatsNew.highlights.${highlight.id}.title`)}
-                  </h4>
-                  <p class={styles.accessoryBody}>
-                    {t(`whatsNew.highlights.${highlight.id}.body`)}
-                  </p>
-                </div>
-                <Show
-                  when={
-                    highlight.where !== null && news.canShowMe(highlight.id)
-                  }
-                >
-                  <Button
-                    size="sm"
-                    theme="secondary"
-                    onClick={event =>
-                      close(fromKeyboard(event), () =>
-                        news.showMe(highlight.id, 'showcase'),
-                      )
-                    }
-                  >
-                    {t('whatsNew.showMe')}
-                  </Button>
-                </Show>
-              </article>
-            )}
-          </For>
-        </section>
+        <ShowcaseAccessories
+          release={props.release}
+          reveal={(id, event) =>
+            close(fromKeyboard(event), () => news.showMe(id, 'showcase'))
+          }
+        />
         <footer
           class={`${styles.sheetFooter} ${styles.fade}`}
           style={at(showcaseAt.footer)}
         >
-          <Button theme="primary" onClick={event => close(fromKeyboard(event))}>
+          <Button
+            theme="primary"
+            onClick={(event: MouseEvent) => close(fromKeyboard(event))}
+          >
             {t('whatsNew.start')}
           </Button>
           <a

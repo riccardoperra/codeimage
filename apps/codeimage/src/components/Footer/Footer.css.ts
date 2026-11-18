@@ -1,4 +1,4 @@
-import {responsiveStyle} from '@codeui/kit';
+import {responsiveStyle} from '@codeui/kit/foundation';
 import {style} from '@vanilla-extract/css';
 import {themeVars} from '@codeimage/ui';
 

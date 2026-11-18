@@ -1,8 +1,7 @@
-import type {ElementType} from '@solid-aria/types';
+import type {ValidComponent as ElementType} from '@solidjs/web';
 import clsx from 'clsx';
-import type {ButtonProps as ShButtonProps} from 'solid-headless';
-import type {JSXElement, ParentProps} from 'solid-js';
-import {Show, splitProps} from 'solid-js';
+import type {Element as JSXElement, ParentProps} from 'solid-js';
+import {Show, omit} from 'solid-js';
 import type {CustomComponentProps} from '../../utils';
 import {styled} from '../../utils';
 import {LoadingCircle} from '../Loader';
@@ -15,48 +14,47 @@ export type ButtonProps<T extends ElementType = 'button'> =
     {
       leftIcon?: JSXElement;
       loading?: boolean;
-    } & ShButtonProps<T> &
-      styles.ButtonVariants
+    } & styles.ButtonVariants
   >;
 
 export function Button<T extends ElementType = 'button'>(
   props: ParentProps<ButtonProps<T>>,
 ): JSXElement {
-  const [local, others] = splitProps(props, [
+  const others = omit(
+    props,
     'as',
     'class',
     'loading',
     'pill',
-    'loading',
     'block',
     'theme',
     'variant',
     'size',
     'children',
     'leftIcon',
-  ]);
+  );
   const classes = () =>
     clsx(
       styles.buttonVariant({
-        pill: local.pill,
-        block: local.block,
-        theme: local.theme,
-        variant: local.variant,
-        size: local.size || ('sm' as ButtonSizes),
-        loading: local.loading,
+        pill: props.pill,
+        block: props.block,
+        theme: props.theme,
+        variant: props.variant,
+        size: props.size || ('sm' as ButtonSizes),
+        loading: props.loading,
       }),
-      local.class,
+      props.class,
     );
 
   return (
-    <styled.button as={local.as ?? 'button'} class={classes()} {...others}>
-      <Show when={!!local.leftIcon && !local.loading}>
-        <span class={styles.buttonIcon}>{local.leftIcon}</span>
+    <styled.button as={props.as ?? 'button'} class={classes()} {...others}>
+      <Show when={!!props.leftIcon && !props.loading}>
+        <span class={styles.buttonIcon}>{props.leftIcon}</span>
       </Show>
-      <Show when={local.loading}>
-        <LoadingCircle class={styles.buttonIcon} size={local.size ?? 'sm'} />
+      <Show when={props.loading}>
+        <LoadingCircle class={styles.buttonIcon} size={props.size ?? 'sm'} />
       </Show>
-      {local.children}
+      {props.children}
     </styled.button>
   );
 }

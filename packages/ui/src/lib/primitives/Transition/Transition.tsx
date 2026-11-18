@@ -1,82 +1,78 @@
-import type {ElementType} from '@solid-aria/types';
-import type {TransitionChildProps, TransitionProps} from 'solid-headless';
-import {Transition, TransitionChild} from 'solid-headless';
-import type {JSXElement} from 'solid-js';
+import type {ParentProps} from 'solid-js';
+import {createEffect, createSignal, onSettled, Show, untrack} from 'solid-js';
 import * as styles from './Transition.css';
 
-type FadeInOutTransitionProps<T extends ElementType> =
-  | ({childTransition: true} & TransitionChildProps<T>)
-  | ({childTransition?: boolean; show: boolean} & TransitionProps<T>);
+interface TransitionProps extends ParentProps {
+  show: boolean;
+  afterLeave?: () => void;
+  class?: string;
+}
 
-/**
- * @deprecated Should convert to motion animation
- */
-export function FadeInOutTransition<T extends ElementType>(
-  props: FadeInOutTransitionProps<T>,
-): JSXElement {
+interface FadeProps extends TransitionProps {
+  duration: number;
+  transitionClass: string;
+}
+
+function Fade(props: FadeProps) {
+  const [mounted, setMounted] = createSignal(untrack(() => props.show));
+  const [animated, setAnimated] = createSignal(false);
+
+  onSettled(() => {
+    setAnimated(true);
+  });
+
+  createEffect(
+    () => [props.show, props.duration, props.afterLeave] as const,
+    ([show, duration, afterLeave], previous) => {
+      if (show) {
+        setMounted(true);
+        return;
+      }
+      if (!previous?.[0]) return;
+      const delay = matchMedia('(prefers-reduced-motion: reduce)').matches
+        ? 0
+        : duration;
+      const timeout = setTimeout(() => {
+        setMounted(false);
+        afterLeave?.();
+      }, delay);
+      return () => clearTimeout(timeout);
+    },
+  );
+
+  const phase = () => {
+    if (!animated()) return;
+    return props.show ? 'enter' : 'leave';
+  };
+
   return (
-    <>
-      {props.childTransition ? (
-        <TransitionChild
-          {...props}
-          enter={styles.fadeInOut.enter}
-          enterTo={styles.fadeInOut.enterTo}
-          enterFrom={styles.fadeInOut.enterFrom}
-          leave={styles.fadeInOut.leave}
-          leaveTo={styles.fadeInOut.leaveTo}
-          leaveFrom={styles.fadeInOut.leaveFrom}
-        >
-          {props.children}
-        </TransitionChild>
-      ) : (
-        <Transition
-          {...props}
-          show={props.show}
-          enter={styles.fadeInOut.enter}
-          enterTo={styles.fadeInOut.enterTo}
-          enterFrom={styles.fadeInOut.enterFrom}
-          leave={styles.fadeInOut.leave}
-          leaveTo={styles.fadeInOut.leaveTo}
-          leaveFrom={styles.fadeInOut.leaveFrom}
-        >
-          {props.children}
-        </Transition>
-      )}
-    </>
+    <Show when={mounted()}>
+      <div
+        class={[props.transitionClass, props.class].filter(Boolean).join(' ')}
+        data-transition={phase()}
+      >
+        {props.children}
+      </div>
+    </Show>
   );
 }
 
-export function FadeInOutWithScaleTransition<T extends ElementType>(
-  props: FadeInOutTransitionProps<T>,
-): JSXElement {
+export function FadeInOutTransition(props: TransitionProps) {
   return (
-    <>
-      {props.childTransition ? (
-        <TransitionChild
-          {...props}
-          enter={styles.fadeInOutWithScale.enter}
-          enterTo={styles.fadeInOutWithScale.enterTo}
-          enterFrom={styles.fadeInOutWithScale.enterFrom}
-          leave={styles.fadeInOutWithScale.leave}
-          leaveTo={styles.fadeInOutWithScale.leaveTo}
-          leaveFrom={styles.fadeInOutWithScale.leaveFrom}
-        >
-          {props.children}
-        </TransitionChild>
-      ) : (
-        <Transition
-          {...props}
-          show={props.show}
-          enter={styles.fadeInOutWithScale.enter}
-          enterTo={styles.fadeInOutWithScale.enterTo}
-          enterFrom={styles.fadeInOutWithScale.enterFrom}
-          leave={styles.fadeInOutWithScale.leave}
-          leaveTo={styles.fadeInOutWithScale.leaveTo}
-          leaveFrom={styles.fadeInOutWithScale.leaveFrom}
-        >
-          {props.children}
-        </Transition>
-      )}
-    </>
+    <Fade
+      {...props}
+      duration={styles.fadeDuration}
+      transitionClass={styles.fadeInOut}
+    />
+  );
+}
+
+export function FadeInOutWithScaleTransition(props: TransitionProps) {
+  return (
+    <Fade
+      {...props}
+      duration={styles.scaleDuration}
+      transitionClass={styles.fadeInOutWithScale}
+    />
   );
 }

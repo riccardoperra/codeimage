@@ -268,7 +268,7 @@ export async function audit({page, context, base, out, server}) {
   await feature('tabs-classic', () =>
     auditTabs({page, out, editor, shot, windowStyle, unzipSync}, 'macOS'),
   );
-  await feature('solid2-settings-search', () => auditSettingsSearch(page));
+  await feature('settings-search', () => auditSettingsSearch(page));
   await feature('settings', async () => {
     await settings('appearance');
     await page

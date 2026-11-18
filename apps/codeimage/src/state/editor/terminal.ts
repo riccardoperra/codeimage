@@ -1,4 +1,5 @@
 import {parseSurface, parseWindowType} from '@core/configuration/windowTypes';
+import {createPathSetter} from '@codeimage/atomic-state';
 import {getEditorStore} from '@codeimage/store/editor';
 import type {
   PersistedTerminalState,
@@ -117,7 +118,9 @@ export function createTerminalState() {
       };
     })
     .hold(store.commands.setBorder, (value, {set}) => {
-      set('borderType', value);
+      set(state => {
+        state.borderType = value;
+      });
     });
 
   const mapToStateToPersistState = (
@@ -156,16 +159,16 @@ export function createTerminalState() {
       store.commands.setFromPreset,
     ]),
   ).pipe(
-    map(() => store()),
+    map(() => store.peek()),
     map(mapToStateToPersistState),
   );
 
   return {
     state: store.get,
-    setState: store.set,
+    setState: createPathSetter(store.set),
     stateToPersist$,
     stateToPersist() {
-      const state = store();
+      const state = store.peek();
       return mapToStateToPersistState(state);
     },
     ...store.actions,

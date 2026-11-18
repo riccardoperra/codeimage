@@ -20,12 +20,9 @@ export const island = style({
     '(max-width: 768px)': {padding: 12, width: 'calc(100% - 16px)', gap: 8},
   },
 });
-globalStyle(
-  `${island} [data-cui="button"], ${island} [data-cui="icon-button"], ${island} [aria-haspopup="listbox"]`,
-  {
-    '@media': {'(max-width: 768px)': {minHeight: 40, minWidth: 40}},
-  },
-);
+globalStyle(`${island} [data-animation-transport] button`, {
+  '@media': {'(max-width: 768px)': {minHeight: 40, minWidth: 40}},
+});
 export const transport = style({
   minWidth: 0,
   display: 'flex',
@@ -58,7 +55,38 @@ export const header = style({
   gap: 8,
   minWidth: 0,
 });
-export const title = style({width: 160, minWidth: 0});
+export const headerSelect = style({
+  minHeight: 28,
+  paddingInline: 8,
+  borderRadius: themeVars.borderRadius.md,
+  border: 0,
+  color: c.baseText,
+  background: c.button.base.backgroundColor,
+  font: 'inherit',
+  cursor: 'pointer',
+  selectors: {
+    '&:focus-visible': {outline: `2px solid ${c.primary}`, outlineOffset: 1},
+  },
+  '@media': {'(max-width: 768px)': {minHeight: 40}},
+});
+export const title = style({
+  display: 'grid',
+  gap: 4,
+  width: 160,
+  minWidth: 0,
+});
+export const barTitleLabel = style({
+  selectors: {
+    '[data-bar-transport] &': {
+      position: 'absolute',
+      width: '1px',
+      height: '1px',
+      overflow: 'hidden',
+      clip: 'rect(0 0 0 0)',
+      whiteSpace: 'nowrap',
+    },
+  },
+});
 export const desktopHeader = style({
   '@media': {'(max-width: 768px)': {display: 'none'}},
 });
@@ -196,17 +224,5 @@ export const durationButton = style({
       },
     },
     '[data-animation-step-sheet] &': {minHeight: 40},
-  },
-});
-export const barTitleLabel = style({
-  selectors: {
-    '[data-bar-transport] &': {
-      position: 'absolute',
-      width: '1px',
-      height: '1px',
-      overflow: 'hidden',
-      clip: 'rect(0 0 0 0)',
-      whiteSpace: 'nowrap',
-    },
   },
 });

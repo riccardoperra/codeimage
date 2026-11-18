@@ -1,10 +1,11 @@
 import type {AppLocaleEntries} from '../../../i18n';
 import {useI18n} from '@codeimage/locale';
-import {Button, TextField} from '@codeui/kit';
+import {TextField} from '@codeimage/ui';
+import {Button} from '@ui/legacy-controls';
 import {SegmentedField} from '@ui/SegmentedField/SegmentedField';
 import type {Component} from 'solid-js';
-import {createEffect, onCleanup, onMount, Show} from 'solid-js';
-import {Dynamic} from 'solid-js/web';
+import {onCleanup, onSettled, untrack, Show} from 'solid-js';
+import {Dynamic} from '@solidjs/web';
 import type {EditorControlsModel, ThemeEntry} from '../model';
 import type {Stage} from '../stage';
 import {AaList} from './aa-list';
@@ -58,8 +59,8 @@ export function ThemePicker(props: ThemePickerProps) {
     releaseEscape: props.releaseEscape,
   });
   onCleanup(() => props.model.endPreview());
-  onMount(() => {
-    if (props.autofocus) browser.focusSelected();
+  onSettled(() => {
+    if (untrack(() => props.autofocus)) browser.focusSelected();
   });
 
   const showAll = () => {
@@ -72,7 +73,7 @@ export function ThemePicker(props: ThemePickerProps) {
       <div class={styles.tools}>
         <div
           class={styles.search}
-          on:keydown={(event: KeyboardEvent) => {
+          onKeyDown={(event: KeyboardEvent) => {
             if (event.key === 'ArrowDown') {
               event.preventDefault();
               browser.focusFirst();
@@ -84,14 +85,10 @@ export function ThemePicker(props: ThemePickerProps) {
           }}
         >
           <TextField
-            size={props.size ?? 'sm'}
+            size={props.size === 'md' ? 'base' : 'sm'}
             placeholder={t('themeSwitcher.search')}
-            // The kit labels its root, not the input.
-            ref={input =>
-              createEffect(() =>
-                input.setAttribute('aria-label', t('editor.searchThemes')),
-              )
-            }
+            type="text"
+            aria-label={t('editor.searchThemes')}
             value={browser.query()}
             onChange={browser.setQuery}
           />

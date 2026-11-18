@@ -1,10 +1,10 @@
 import {useI18n} from '@codeimage/locale';
 import {SvgIcon} from '@codeimage/ui';
-import {Button, IconButton} from '@codeui/kit';
+import {Button, IconButton} from '@ui/legacy-controls';
 import {useModality} from '@core/hooks/isMobile';
 import {useWebshare} from '@core/hooks/use-webshare';
 import type {Component} from 'solid-js';
-import {createMemo, onMount, Show} from 'solid-js';
+import {createMemo, Show} from 'solid-js';
 import {isKeyOwnedByFocus, useHotkey} from '../../hooks/use-hotkey';
 import type {AppLocaleEntries} from '../../i18n';
 import {ShareIcon} from '../Icons/ShareIcon';
@@ -41,11 +41,7 @@ export const ShareButton: Component<ShareButtonProps> = props => {
     await onShare();
   }
 
-  onMount(() => {
-    useHotkey(document.body, {
-      'Control+Shift+C': enterEvent,
-    });
-  });
+  useHotkey(document.body, {'Control+Shift+C': enterEvent});
 
   return (
     <Show when={canShare()}>

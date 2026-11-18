@@ -1,8 +1,8 @@
 import assert from 'node:assert/strict';
 import type {EditorState} from '@codeimage/store/editor/model';
 import {createComponent, type ParentProps} from 'solid-js';
-import {renderToString} from 'solid-js/web';
-import type * as SolidWeb from 'solid-js/web';
+import {renderToString} from '@solidjs/web';
+import type * as SolidWeb from '@solidjs/web';
 import {test, vi} from 'vitest';
 import {PreviewFrame} from './PreviewFrame';
 
@@ -43,13 +43,13 @@ vi.mock('@codeimage/store/editor/terminal', () => ({
 const loaded = vi.hoisted(() => () => ({id: 'stub', editorTheme: []}));
 const themes = vi.hoisted(() => ({list: [loaded] as (() => unknown)[]}));
 vi.mock('@codeimage/store/theme/theme.store', () => ({
-  getThemeStore: () => ({themeArray: () => themes.list}),
+  getThemeStore: () => ({
+    getThemeResource: () => undefined,
+    themeArray: () => themes.list,
+  }),
 }));
-vi.mock('@codeimage/store/effects/onCopyToClipboard', () => ({
-  dispatchCopyToClipboard: vi.fn(),
-}));
-vi.mock('statebuilder', () => ({provideState: () => ({get: {}})}));
-vi.mock('solid-js/web', async importOriginal => ({
+vi.mock('statebuilder', () => ({useStore: () => ({get: {}})}));
+vi.mock('@solidjs/web', async importOriginal => ({
   ...(await importOriginal<typeof SolidWeb>()),
   Portal: (props: ParentProps) => props.children,
 }));

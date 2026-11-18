@@ -3,11 +3,14 @@ import assert from 'node:assert/strict';
 import {EditorState} from '@codemirror/state';
 import {EditorView} from '@codemirror/view';
 import type * as Solid from 'solid-js';
-import {createRoot, createSignal} from 'solid-js';
+import {createRoot, createSignal, flush} from 'solid-js';
 import {test, vi} from 'vitest';
 import {createAnimationStore} from './animation';
 vi.mock('solid-js', () =>
-  vi.importActual<typeof Solid>('solid-js/dist/solid.js'),
+  vi.importActual<typeof Solid>(
+    new URL('./dist/solid.js', import.meta.resolve('solid-js/package.json'))
+      .pathname,
+  ),
 );
 
 test('edit step waits for a reused view to synchronize and preserves read-only code', () => {
@@ -45,20 +48,24 @@ test('edit step waits for a reused view to synchronize and preserves read-only c
         setEditors: () => undefined,
       },
     });
-    animation.actions.setOpen(true);
     return {animation, setViewId, dispose};
   });
   try {
+    fixture.animation.actions.setOpen(true);
+    flush();
     fixture.animation.actions.editStep(1, 'X');
+    flush();
     assert.equal(view.state.doc.toString(), 'first');
     view.setState(EditorState.create({doc: 'second'}));
     fixture.setViewId('b');
+    flush();
     assert.equal(view.state.doc.toString(), 'Xsecond');
     assert.ok(view.hasFocus);
     fixture.animation.actions.editStep(0, 'stale');
     fixture.animation.actions.seek(100);
     view.setState(EditorState.create({doc: 'first'}));
     fixture.setViewId('a');
+    flush();
     assert.equal(view.state.doc.toString(), 'first');
     view.setState(
       EditorState.create({
@@ -67,6 +74,7 @@ test('edit step waits for a reused view to synchronize and preserves read-only c
       }),
     );
     fixture.animation.actions.editStep(0, 'Y');
+    flush();
     assert.equal(view.state.doc.toString(), 'read only');
     assert.ok(view.hasFocus);
   } finally {

@@ -7,7 +7,7 @@ import {auditPresets} from './preset-reopen.mjs';
 
 export async function auditPresetCases({feature, fresh, ...context}) {
   await feature('presets', () => auditPresets(context));
-  const name = 'solid2-codemirror-preview';
+  const name = 'codemirror-preview';
   await feature(name, () =>
     fresh(
       {name, layout: 'inspector', viewport: {width: 1440, height: 900}},

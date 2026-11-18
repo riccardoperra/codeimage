@@ -1,7 +1,9 @@
-import {icons, Link} from '@codeui/kit';
+import {icons} from '@ui/kit-icons';
+import {Link} from '@ui/legacy-controls';
 import {browser} from '@core/hooks/createPlatformProps';
 import {Alert} from '@ui/Alert/Alert';
-import {createResource, Match, Show, Suspense, Switch} from 'solid-js';
+import {createResource} from '@codeimage/store/plugins/create-resource';
+import {Match, Show, Loading, Switch} from 'solid-js';
 import {CloseIcon} from '../Icons/CloseIcon';
 import {ExclamationAltIcon} from '../Icons/Exclamation';
 import ChromeUrl from './browserSvgs/chrome.png';
@@ -35,7 +37,7 @@ export function FeatureCheckBanner(props: UnsupportedFeatureBannerProps) {
         </Show>
       </span>
       <div class={styles.supportedTableGridContainer}>
-        <Suspense>
+        <Loading>
           <Show when={api()}>
             {api => (
               <SupportedTableCompatGrid
@@ -43,7 +45,7 @@ export function FeatureCheckBanner(props: UnsupportedFeatureBannerProps) {
               />
             )}
           </Show>
-        </Suspense>
+        </Loading>
       </div>
       <Show when={props.compatibilityTableLink}>
         {link => (

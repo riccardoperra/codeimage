@@ -21,6 +21,7 @@ const virtualIds = new Set([componentsId, runtimeId, stylesId]);
 export function solid1Bridge({
   entries,
   optionalEntries = [],
+  cssLayer,
   modules,
   legacy,
   legacyComponents = [],
@@ -33,7 +34,6 @@ export function solid1Bridge({
   return {
     name: 'vite-plugin-solid1-bridge',
     enforce: 'pre',
-    apply: 'build',
     configResolved(config) {
       root = config.root;
     },
@@ -85,7 +85,8 @@ export function solid1Bridge({
         buildLegacy(legacy, [...sources.values()], source),
       );
       const result = await bundle;
-      return id === '\0' + stylesId ? result.css : result.js;
+      if (id !== '\0' + stylesId) return result.js;
+      return cssLayer ? `@layer ${cssLayer} {\n${result.css}\n}` : result.css;
     },
     transform(_code, id) {
       const compiled = sources.get(normalizePath(id));

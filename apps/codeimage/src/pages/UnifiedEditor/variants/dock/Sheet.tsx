@@ -1,8 +1,8 @@
 import type {AppLocaleEntries} from '../../../../i18n';
 import {useI18n} from '@codeimage/locale';
-import {Dialog} from '@kobalte/core/dialog';
-import {createEffect, createMemo, createSignal, on, Show} from 'solid-js';
-import {Dynamic} from 'solid-js/web';
+import {Dialog} from '@ui/Dialog/parts';
+import {createEffect, createMemo, createSignal, Show} from 'solid-js';
+import {Dynamic} from '@solidjs/web';
 import {sidebarTheme} from '../../../../components/PropertyEditor/EditorSidebar.css';
 import {closeOnEscape, useDock} from './context';
 import * as styles from './dock.css';
@@ -49,15 +49,13 @@ export function Sheet(props: SheetProps) {
   const inBar = (target: EventTarget | null) =>
     target instanceof Node && !!props.bar()?.contains(target);
 
-  createEffect(
-    on(dock.panel, panel => {
-      if (!panel) return;
-      queueMicrotask(() => {
-        if (!content || content.contains(document.activeElement)) return;
-        (content.querySelector<HTMLElement>(FOCUSABLE) ?? content).focus();
-      });
-    }),
-  );
+  createEffect(dock.panel, panel => {
+    if (!panel) return;
+    queueMicrotask(() => {
+      if (!content || content.contains(document.activeElement)) return;
+      (content.querySelector<HTMLElement>(FOCUSABLE) ?? content).focus();
+    });
+  });
 
   let drag:
     | {pointer: number; y: number; time: number; moved: number}
@@ -155,7 +153,7 @@ export function Sheet(props: SheetProps) {
               onInteractOutside={event => {
                 if (!event.defaultPrevented) dismissedOutside = true;
               }}
-              on:keydown={closeOnEscape(dock.close)}
+              onKeyDown={closeOnEscape(dock.close)}
             >
               <button
                 type="button"

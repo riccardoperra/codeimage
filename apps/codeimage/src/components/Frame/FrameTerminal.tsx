@@ -43,6 +43,7 @@ export function createFrameTerminal(props: VoidProps<FrameViewProps>) {
       borderType={terminal.borderType}
       surface={terminal.surface}
       themeId={editor.state.options.themeId}
+      theme={props.theme}
     >
       {props.code ?? (
         <Show when={staticCode()}>

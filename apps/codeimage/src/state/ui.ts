@@ -1,8 +1,11 @@
-import {provideAppState} from '@codeimage/store/index';
-import {withLocalStorage} from '@codeimage/store/plugins/local-storage';
-import {createEffect, createSignal, on} from 'solid-js';
+import {exposeStorePaths, provideAppState} from '@codeimage/store/index';
+import {
+  readLocalState,
+  withLocalStorage,
+} from '@codeimage/store/plugins/local-storage';
+import {createEffect, createMemo, createSignal} from 'solid-js';
 import type {Store} from 'statebuilder';
-import {defineStore, makePlugin} from 'statebuilder';
+import {defineStore, createPlugin} from 'statebuilder';
 
 type Theme = 'light' | 'dark';
 
@@ -16,80 +19,67 @@ const initialState: GlobalUiState = {
   locale: 'en',
 };
 
-const withUiThemeModeListener = makePlugin.typed<Store<GlobalUiState>>()(
+const withUiThemeModeListener = createPlugin.typed<Store<GlobalUiState>>()(
   store => {
-    const [theme, setTheme] = createSignal<Theme>();
-
-    function getPreferredColorScheme(): Theme {
-      if (window.matchMedia) {
-        if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-          return 'dark';
-        } else {
-          return 'light';
-        }
-      }
-      return 'light';
-    }
-
-    function updateThemeMode(theme: GlobalUiState['themeMode']): void {
-      if (theme === 'system') {
-        setTheme(getPreferredColorScheme());
-      } else {
-        setTheme(theme);
-      }
-    }
-
-    function updateColorScheme(): void {
-      updateThemeMode(store.get.themeMode);
-    }
+    const query =
+      typeof window === 'undefined'
+        ? undefined
+        : window.matchMedia?.('(prefers-color-scheme: dark)');
+    const [dark, setDark] = createSignal(query?.matches ?? false);
 
     createEffect(
-      on(
-        () => store.get.themeMode,
-        theme => {
-          if ('matchMedia' in window) {
-            if (theme === 'system') {
-              window
-                .matchMedia(`(prefers-color-scheme: dark)`)
-                .addEventListener('change', updateColorScheme);
-            } else {
-              window
-                .matchMedia(`(prefers-color-scheme: dark)`)
-                .removeEventListener('change', updateColorScheme);
-            }
-          }
-          updateThemeMode(theme);
-        },
-      ),
+      () => store.get.themeMode,
+      theme => {
+        if (theme !== 'system' || !query) return;
+        const update = () => setDark(query.matches);
+        update();
+        query.addEventListener('change', update);
+        return () => query.removeEventListener('change', update);
+      },
     );
 
     return {
-      currentTheme: theme,
+      currentTheme: createMemo<Theme>(() => {
+        if (store.get.themeMode !== 'system') return store.get.themeMode;
+        return dark() ? 'dark' : 'light';
+      }),
     };
   },
   {name: 'withUiThemeModeListener'},
 );
 
-export const $uiStore = defineStore(() => initialState)
-  .extend(withLocalStorage('@store/ui'))
+export const $uiStore = defineStore(() =>
+  readLocalState('@store/ui', initialState),
+)
+  .extend(withLocalStorage<GlobalUiState>('@store/ui'))
   .extend(withUiThemeModeListener)
-  .extend(store => {
-    return {
-      setLocale(locale: string): void {
-        store.set('locale', () => locale);
-      },
-      setThemeMode(themeMode: GlobalUiState['themeMode']): void {
-        store.set('themeMode', themeMode);
-      },
-      toggleThemeMode(): void {
-        store.set('themeMode', mode => (mode === 'light' ? 'dark' : 'light'));
-      },
-      invertedThemeMode() {
-        return store.currentTheme() === 'light' ? 'dark' : 'light';
-      },
-    };
-  });
+  .extend(store => ({
+    setLocale(locale: string): void {
+      store.set(state => {
+        state.locale = locale;
+      });
+    },
+    setThemeMode(themeMode: GlobalUiState['themeMode']): void {
+      store.set(state => {
+        state.themeMode = themeMode;
+      });
+    },
+    toggleThemeMode(): void {
+      store.set(state => {
+        state.themeMode = state.themeMode === 'light' ? 'dark' : 'light';
+      });
+    },
+    invertedThemeMode() {
+      return store.currentTheme() === 'light' ? 'dark' : 'light';
+    },
+  }));
+
+function createUiStore() {
+  return exposeStorePaths(provideAppState($uiStore));
+}
+
+let uiStore: ReturnType<typeof createUiStore> | undefined;
 
 export function getUiStore() {
-  return provideAppState($uiStore);
+  return (uiStore ??= createUiStore());
 }

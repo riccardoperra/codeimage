@@ -1,6 +1,6 @@
 import {useI18n} from '@codeimage/locale';
 import {LoadingCircle, toast} from '@codeimage/ui';
-import {Button} from '@codeui/kit';
+import {Button} from '@ui/legacy-controls';
 import {createAsyncAction} from '@core/hooks/async-action';
 import {useNavigate} from '@solidjs/router';
 import {PlusIcon} from '../../../../components/Icons/PlusIcon';
@@ -9,7 +9,7 @@ import {getDashboardState} from '../../dashboard.state';
 
 export function CreateNewProjectButton() {
   const navigate = useNavigate();
-  const dashboard = getDashboardState()!;
+  const dashboard = getDashboardState();
   const [t] = useI18n<AppLocaleEntries>();
   const [data, {notify}] = createAsyncAction(createNew);
 

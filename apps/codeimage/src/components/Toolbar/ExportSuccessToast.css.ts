@@ -1,4 +1,4 @@
-import {buttonStyles} from '@codeui/kit';
+import * as buttonStyles from '@codeui/kit/button-styles';
 import {style} from '@vanilla-extract/css';
 
 export const content = style({

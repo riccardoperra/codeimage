@@ -1,10 +1,9 @@
 import {provideAppState} from '@codeimage/store/index';
 import {generateUid} from '@codeimage/store/plugins/unique-id';
 import {withIndexedDbPlugin} from '@codeimage/store/plugins/withIndexedDbPlugin';
-import {createEventBus} from '@solid-primitives/event-bus';
+import {createResource} from '@codeimage/store/plugins/create-resource';
 import type {Accessor} from 'solid-js';
-import {createEffect, createMemo, createResource, on, untrack} from 'solid-js';
-import {unwrap} from 'solid-js/store';
+import {createMemo, untrack} from 'solid-js';
 import {defineStore} from 'statebuilder';
 import type {AssetId, AssetLinkId} from './assetIds';
 import {
@@ -41,8 +40,7 @@ export interface PersistedLink extends BaseAsset {
 
 export const AssetsStore = defineStore<PersistedAsset[]>(() => [])
   .extend(withIndexedDbPlugin<PersistedAsset[]>('assets', []))
-  .extend(store => {
-    const bus = createEventBus<boolean>();
+  .extend((store, context) => {
     const cache = new WeakMap<PersistedAsset, string>();
     const generateAssetId = (): AssetId => `${assetPrefix}${generateUid()}`;
     const generateAssetLinkId = (link: string): AssetLinkId =>
@@ -55,34 +53,24 @@ export const AssetsStore = defineStore<PersistedAsset[]>(() => [])
       return urlCreator.createObjectURL(blob);
     };
 
-    const hydrated = new Promise<boolean>(resolve => {
-      bus.listen(() => {
-        resolve(true);
-        bus.clear();
-      });
+    let disposed = false;
+    context.onDispose(() => {
+      disposed = true;
     });
-
-    store.idb.get().then(data => {
-      const dataWithUpdatedUrls = data.map(value => {
-        switch (value.type) {
-          case 'file':
-            return Object.assign(value, {url: resolve(value.data, value.type)});
-          default:
-            return value;
-        }
-      });
-      store.set(() => dataWithUpdatedUrls);
-      bus.emit(true);
-    });
-
-    createEffect(
-      on(store, assetsMap => {
-        const unwrappedValue = unwrap(assetsMap);
-        store.idb.set(unwrappedValue).catch(e => {
-          console.error(`Error while synchronizing db 'assets' key: ${e}`);
+    const hydrated = store.idb.get().then(data => {
+      if (disposed) return;
+      const restored = data.map(value =>
+        value.type === 'file'
+          ? {...value, url: resolve(value.data, value.fileType)}
+          : value,
+      );
+      store.set(() => restored);
+      context.onSet(assets => {
+        store.idb.set(assets).catch(error => {
+          console.error("Error while synchronizing db 'assets' key", error);
         });
-      }),
-    );
+      });
+    });
 
     return {
       isAssetUrl,

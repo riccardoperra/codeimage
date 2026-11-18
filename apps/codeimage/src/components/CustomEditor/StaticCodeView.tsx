@@ -3,9 +3,12 @@ import type {CustomTheme} from '@codeimage/highlight';
 import type {TabMarks} from '@codeimage/store/editor/model';
 import type {Language} from '@codemirror/language';
 import {tokenizeCode} from '@core/snapshot/tokenize';
-import {createEffect, createMemo, For, on, Show} from 'solid-js';
-import {isServer} from 'solid-js/web';
-import {useWatermarkScope} from '../../core/watermark/scope';
+import {createEffect, createMemo, For, Show} from 'solid-js';
+import {isServer} from '@solidjs/web';
+import {
+  createStaticWatermarkRef,
+  useWatermarkScope,
+} from '@core/watermark/scope';
 import {getStaticTheme, mountStaticTheme} from './staticTheme';
 import './plugins/lineMarks/marks.css';
 
@@ -32,6 +35,7 @@ export default function StaticCodeView(props: StaticCodeViewProps) {
     lines().slice(0, props.lineLimit ?? lines().length);
   const theme = createMemo(() => getStaticTheme(props.theme));
   const watermark = useWatermarkScope();
+  const codeRef = createStaticWatermarkRef(watermark);
   const marks = createMemo(
     () =>
       new Map(
@@ -49,24 +53,26 @@ export default function StaticCodeView(props: StaticCodeViewProps) {
       ),
   );
   createEffect(
-    on(
-      () => [
-        lines(),
-        theme(),
-        marks(),
-        focused(),
-        props.fontFamily,
-        props.fontWeight,
-        props.enableLigatures,
-        props.showLineNumbers,
-        props.lineNumberStart,
-      ],
-      () => watermark?.invalidate(),
-    ),
+    () => [
+      lines(),
+      theme(),
+      marks(),
+      focused(),
+      props.fontFamily,
+      props.fontWeight,
+      props.enableLigatures,
+      props.showLineNumbers,
+      props.lineNumberStart,
+    ],
+    () => watermark?.invalidate(),
   );
   const hasDiff = () =>
     Array.from(marks().values()).some(kind => kind !== 'highlight');
-  if (!isServer) createEffect(() => mountStaticTheme(document, props.theme));
+  if (!isServer)
+    createEffect(
+      () => props.theme,
+      theme => mountStaticTheme(document, theme),
+    );
   const ligatures = () => (props.enableLigatures ? 'normal' : 'none');
   // CodeMirror sizes the gutter for the largest line number with as many digits as the line count.
   const gutterSpacer = () => {
@@ -104,17 +110,19 @@ export default function StaticCodeView(props: StaticCodeViewProps) {
                 <For each={visibleLines()}>
                   {(_, index) => (
                     <div
-                      class="cm-gutterElement"
-                      classList={{
-                        'cm-lineMarkDim':
-                          focused().size > 0 && !focused().has(index() + 1),
-                        'cm-lineMark-added':
-                          marks().get(index() + 1) === 'added',
-                        'cm-lineMark-removed':
-                          marks().get(index() + 1) === 'removed',
-                        'cm-lineMark-highlight':
-                          marks().get(index() + 1) === 'highlight',
-                      }}
+                      class={[
+                        'cm-gutterElement',
+                        {
+                          'cm-lineMarkDim':
+                            focused().size > 0 && !focused().has(index() + 1),
+                          'cm-lineMark-added':
+                            marks().get(index() + 1) === 'added',
+                          'cm-lineMark-removed':
+                            marks().get(index() + 1) === 'removed',
+                          'cm-lineMark-highlight':
+                            marks().get(index() + 1) === 'highlight',
+                        },
+                      ]}
                       style={{'grid-row': `${index() + 1}`}}
                     >
                       {props.lineNumberStart + index()}
@@ -126,7 +134,7 @@ export default function StaticCodeView(props: StaticCodeViewProps) {
           </Show>
           <div
             class={`cm-content cm-lineWrapping ${styles.content}`}
-            ref={root => watermark?.attach('code', {kind: 'static', root})}
+            ref={codeRef}
           >
             <For each={visibleLines()}>
               {(line, index) => (

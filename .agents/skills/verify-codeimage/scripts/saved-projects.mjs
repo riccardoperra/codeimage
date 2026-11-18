@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import {auditReadOnlyIsland} from './read-only-island.mjs';
+import {auditReadOnlyNotice} from './read-only-notice.mjs';
 import {auditSnippets} from './snippets.mjs';
 
 async function auditProjectMenuBridge({page}) {
@@ -25,8 +25,7 @@ async function auditProjectMenuBridge({page}) {
     const row = page
       .getByRole('listitem')
       .filter({has: page.locator(`a[href="/${project.id}"]`)});
-    const bridge = row.locator('[data-solid2-island="project-menu"]');
-    const trigger = bridge.getByRole('button', {name: 'Menu', exact: true});
+    const trigger = row.getByRole('button', {name: 'Menu', exact: true});
     const menu = page.locator(
       '[role="menu"][data-cui="dropdown-menu-content"]',
     );
@@ -34,12 +33,7 @@ async function auditProjectMenuBridge({page}) {
     const focused = page.locator(':focus');
     await trigger.press('ArrowDown');
     await rename.and(focused).waitFor();
-    assert.equal(
-      await menu.evaluate(
-        element => !element.closest('[data-solid2-island="project-menu"]'),
-      ),
-      true,
-    );
+    assert.equal(await menu.evaluate(element => !element.closest('li')), true);
     await page.keyboard.press('Escape');
     await menu.waitFor({state: 'detached'});
     await trigger.and(focused).waitFor();
@@ -110,7 +104,7 @@ export async function auditSavedProjects(options) {
     name.trim(),
   );
   for (const [name, audit] of [
-    ['solid2-read-only-notice', auditReadOnlyIsland],
+    ['read-only-notice', auditReadOnlyNotice],
     ['solid1-bridge-project-menu', auditProjectMenuBridge],
   ]) {
     if (!requested?.includes(name)) continue;

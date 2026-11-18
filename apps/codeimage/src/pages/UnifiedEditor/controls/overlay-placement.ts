@@ -1,4 +1,3 @@
-import {onCleanup} from 'solid-js';
 import type {ControlId} from '../model';
 
 /** Keep the editor over its panel or above the dock without resizing the canvas. */
@@ -74,8 +73,8 @@ export function placeControlOverlay(
   if (anchor) observer.observe(anchor);
   window.addEventListener('resize', place);
   place();
-  onCleanup(() => {
+  return () => {
     observer.disconnect();
     window.removeEventListener('resize', place);
-  });
+  };
 }

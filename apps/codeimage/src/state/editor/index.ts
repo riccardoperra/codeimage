@@ -2,8 +2,10 @@ import {createAnimationStore} from '@codeimage/store/editor/animation';
 import {createEditorsStore} from '@codeimage/store/editor/editor';
 import {getFrameState} from '@codeimage/store/editor/frame';
 import {createTerminalState} from '@codeimage/store/editor/terminal';
+import {getAppStateContainer} from '@codeimage/store/index';
+export {AppStateProvider as EditorStoreProvider} from '@codeimage/store/index';
 import {getThemeStore} from '@codeimage/store/theme/theme.store';
-import {createEffect, createSignal, on} from 'solid-js';
+import {createEffect, createSignal} from 'solid-js';
 import {untrackCommand} from 'statebuilder/commands';
 
 export function createEditorStore() {
@@ -17,7 +19,8 @@ export function createEditorStore() {
   const [resource] = registry.getThemeResource('fleetDark');
 
   createEffect(
-    on(resource, async resource => {
+    () => resource.latest,
+    resource => {
       if (resource) {
         untrackCommand(() => {
           if (!terminal.state.background) {
@@ -32,7 +35,7 @@ export function createEditorStore() {
         }, false);
         setInitialized(true);
       }
-    }),
+    },
   );
 
   return {
@@ -44,16 +47,20 @@ export function createEditorStore() {
   };
 }
 
-let store: ReturnType<typeof createEditorStore>;
-const editorStore = () => {
-  if (!store) store = createEditorStore();
-  return store;
-};
+const editorStores = new WeakMap<
+  ReturnType<typeof getAppStateContainer>,
+  ReturnType<typeof createEditorStore>
+>();
 
 export function getEditorStore() {
-  return editorStore();
+  const container = getAppStateContainer();
+  const existing = editorStores.get(container);
+  if (existing) return existing;
+  const store = createEditorStore();
+  editorStores.set(container, store);
+  return store;
 }
 
 export function getRootEditorStore() {
-  return editorStore().editor;
+  return getEditorStore().editor;
 }

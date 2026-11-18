@@ -2,11 +2,12 @@ import type {AppLocaleEntries} from '../../../i18n';
 import {useI18n} from '@codeimage/locale';
 import {EditorConfigStore} from '@codeimage/store/editor/config.store';
 import {FlexField, VStack} from '@codeimage/ui';
-import {icons, Listbox} from '@codeui/kit';
+import {Listbox} from '@ui/legacy-listbox';
+import {icons} from '@ui/kit-icons';
 import {DynamicSizedContainer} from '@ui/DynamicSizedContainer/DynamicSizedContainer';
 import {SegmentedField} from '@ui/SegmentedField/SegmentedField';
 import {createSignal, Match, Switch} from 'solid-js';
-import {provideState} from 'statebuilder';
+import {useStore} from 'statebuilder';
 import {SidebarPopover} from '../../../components/PropertyEditor/SidebarPopover/SidebarPopover';
 import {SidebarPopoverTitle} from './SidebarPopoverTitle';
 import * as styles from '../../../components/PropertyEditor/controls/FontPicker/FontPicker.css';
@@ -27,7 +28,7 @@ export function FontPicker(props: FontPickerProps) {
   const [t] = useI18n<AppLocaleEntries>();
   const [open, setOpen] = createSignal(false);
   const [mode, setMode] = createSignal<FontPickerModality>('default');
-  const configState = provideState(EditorConfigStore);
+  const configState = useStore(EditorConfigStore);
   const webListboxItems = () =>
     configState.get.fonts
       .filter(font => font.type === 'web')

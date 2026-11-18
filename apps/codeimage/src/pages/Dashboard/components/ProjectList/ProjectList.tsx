@@ -1,6 +1,6 @@
 import {Box} from '@codeimage/ui';
-import {Pagination} from '@codeui/kit';
-import {ErrorBoundary, For, Index, Show, Suspense, untrack} from 'solid-js';
+import {Pagination} from '@ui/legacy-controls';
+import {Errored, For, Repeat, Show} from 'solid-js';
 import {getDashboardState} from '../../dashboard.state';
 import {ProjectItem} from '../ProjectItem/ProjectItem';
 import {ProjectItemSkeleton} from '../ProjectItemSkeleton/ProjectItemSkeleton';
@@ -9,44 +9,43 @@ import {ProjectErrorListFallback} from './ProjectErrorListFallback';
 import * as styles from './ProjectList.css';
 
 export function ProjectList() {
-  const dashboard = getDashboardState()!;
+  const dashboard = getDashboardState();
   const {paginationState} = dashboard;
 
-  const listIsEmpty = () => {
-    return !dashboard.data.error && dashboard.filteredData()?.length === 0;
-  };
-
-  const reloadList = (err: unknown, reset: () => void) => {
-    dashboard.refetch();
-    reset();
-  };
-
-  const ProjectSkeletons = () => {
-    const count = untrack(dashboard.data).length;
-    const list = Array.from({length: count || 5});
-    return <Index each={list}>{() => <ProjectItemSkeleton />}</Index>;
-  };
-
   return (
-    <ErrorBoundary
-      fallback={(err, reset) => (
-        <ProjectErrorListFallback onReload={() => reloadList(err, reset)} />
+    <Errored
+      fallback={(_, reset) => (
+        <ProjectErrorListFallback
+          onReload={() => {
+            void dashboard.refetch();
+            reset();
+          }}
+        />
       )}
     >
-      <Suspense
+      <Show
+        when={dashboard.data.error === undefined}
         fallback={
-          <ul class={styles.gridList}>
-            <ProjectSkeletons />
-          </ul>
+          <ProjectErrorListFallback onReload={() => void dashboard.refetch()} />
         }
       >
-        <Show when={!listIsEmpty()} fallback={<ProjectEmptyListMessage />}>
-          <ul class={styles.gridList}>
-            <For each={dashboard.pagedData()}>
-              {item => <ProjectItem item={item} />}
-            </For>
-          </ul>
-          <Show when={paginationState.hasOnePage} keyed={false}>
+        <Show
+          when={!dashboard.data.loading || dashboard.data.latest.length > 0}
+          fallback={
+            <ul class={styles.gridList}>
+              <Repeat count={5}>{() => <ProjectItemSkeleton />}</Repeat>
+            </ul>
+          }
+        >
+          <Show
+            when={dashboard.filteredData().length > 0}
+            fallback={<ProjectEmptyListMessage />}
+          >
+            <ul class={styles.gridList}>
+              <For each={dashboard.pagedData()}>
+                {item => <ProjectItem item={item} />}
+              </For>
+            </ul>
             <Box display={'flex'} justifyContent={'center'}>
               <Pagination
                 page={paginationState.page()}
@@ -56,7 +55,7 @@ export function ProjectList() {
             </Box>
           </Show>
         </Show>
-      </Suspense>
-    </ErrorBoundary>
+      </Show>
+    </Errored>
   );
 }

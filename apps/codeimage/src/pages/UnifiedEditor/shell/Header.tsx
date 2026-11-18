@@ -2,10 +2,10 @@ import type {AppLocaleEntries} from '../../../i18n';
 import {useI18n} from '@codeimage/locale';
 import {getAuth0State} from '@codeimage/store/auth/auth0';
 import {getEditorSyncAdapter} from '@codeimage/store/editor/createEditorSync';
-import {Button, buttonStyles, IconButton, Link} from '@codeui/kit';
+import * as buttonStyles from '@codeui/kit/button-styles';
+import {Button, IconButton, Link} from '@ui/legacy-controls';
 import {useModality} from '@core/hooks/isMobile';
-import {A as LocalLink} from '@solidjs/router';
-import {createEffect, createSignal, onCleanup, Show, untrack} from 'solid-js';
+import {createSignal, Show, untrack, createTrackedEffect} from 'solid-js';
 import {CodeImageLogoV2} from '../../../components/Icons/CodeImageLogoV2';
 import {CollectionIcon} from '../../../components/Icons/Collection';
 import {ShareButton} from '../../../components/Toolbar/ShareButton';
@@ -53,8 +53,8 @@ export function Header(props: {stage: Stage}) {
       </div>
       <Show when={loggedIn() && modality === 'full'}>
         <Link
-          as={LocalLink}
-          href={'/dashboard'}
+          as="a"
+          href="/"
           class={buttonStyles.button({
             theme: 'secondary',
             variant: 'ghost',
@@ -146,7 +146,7 @@ function WhatsNewButton() {
   const [present, setPresent] = createSignal(false);
   let button: HTMLButtonElement | undefined;
 
-  createEffect(() => {
+  createTrackedEffect(() => {
     const visible = news.headerEntry();
     const pointer = untrack(news.interaction) === 'pointer';
     let animation: Animation | undefined;
@@ -178,10 +178,10 @@ function WhatsNewButton() {
         };
       });
     }
-    onCleanup(() => {
+    return () => {
       cancelled = true;
       animation?.cancel();
-    });
+    };
   });
 
   return (

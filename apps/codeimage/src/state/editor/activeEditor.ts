@@ -4,8 +4,7 @@ import {getRootEditorStore} from '@codeimage/store/editor';
 import {getUiStore} from '@codeimage/store/ui';
 import {toast} from '@codeimage/ui';
 import {appEnvironment} from '@core/configuration';
-import {clamp, isNonNullable} from '@solid-primitives/utils';
-import {createEffect, createMemo, createRoot, on} from 'solid-js';
+import {createEffect, createRoot} from 'solid-js';
 import {createPrettierFormatter} from '../../hooks/createPrettierFormatter';
 import type {AppLocaleEntries} from '../../i18n';
 
@@ -55,9 +54,8 @@ const $activeEditorState = () => {
         currentEditorIndex(),
         'lineNumberStart',
         // TODO Already done by @codeui/kit but I don't feel safe about this component I made
-        clamp(
-          lineNumberStart,
-          appEnvironment.lineNumbers.min,
+        Math.min(
+          Math.max(lineNumberStart, appEnvironment.lineNumbers.min),
           appEnvironment.lineNumbers.max,
         ),
       );
@@ -72,29 +70,18 @@ const $activeEditorState = () => {
       () => currentEditor()?.formatter ?? null,
     );
 
-    // On each tab editor change, it will listen for name and languageId updates
-    // in order to update the formatter with the default one.
-    let unsubscribe: (() => void) | undefined = undefined;
-    createEffect(() => {
-      const editor = currentEditorIndex();
-      if (!!unsubscribe) unsubscribe();
-      if (!isNonNullable(editor) || editor === -1) return;
-      createRoot(dispose => {
-        unsubscribe = dispose;
-        const name = createMemo(() => currentEditor()?.tab?.tabName);
-        const languageId = createMemo(() => currentEditor()?.languageId);
-        createEffect(
-          on([name, languageId], () => {
-            const defaultFormatter = formatter.availableFormatters()[0];
-            setEditors(
-              currentEditorIndex(),
-              'formatter',
-              defaultFormatter?.parser ?? null,
-            );
-          }),
-        );
-      });
-    });
+    createEffect(
+      () => ({
+        id: currentEditor()?.id,
+        parser: formatter.availableFormatters()[0]?.parser ?? null,
+      }),
+      ({id, parser}) => {
+        const index = state.editors.findIndex(editor => editor.id === id);
+        if (index >= 0 && state.editors[index].formatter !== parser) {
+          setEditors(index, 'formatter', parser);
+        }
+      },
+    );
 
     return {
       editor: currentEditor,

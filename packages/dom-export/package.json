@@ -75,14 +75,6 @@
     "type": "git",
     "url": "git+https://github.com/riccardoperra/codeimage-export.git"
   },
-  "dependencies": {
-    "@solid-primitives/platform": "^0.2.1",
-    "solid-js": "catalog:next"
-  },
-  "peerDependencies": {
-    "@solid-primitives/platform": "^0.0.101",
-    "solid-js": "catalog:next"
-  },
   "engines": {
     "node": ">=24"
   }

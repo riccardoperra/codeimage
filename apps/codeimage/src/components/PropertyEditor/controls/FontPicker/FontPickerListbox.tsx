@@ -1,4 +1,4 @@
-import type {Listbox} from '@codeui/kit';
+import type {ListboxProps} from '@ui/legacy-listbox';
 
 interface FontPickerListboxProps {
   onEsc: () => void;
@@ -39,7 +39,9 @@ export const createFontPickerListboxProps = (props: FontPickerListboxProps) => {
     get value() {
       return [props.value];
     },
-    // @ts-expect-error TODO: Fix iterable types
-    onChange: values => props.onChange(values.keys().next().value),
-  } satisfies Parameters<typeof Listbox<Item>>[0];
+    onChange: values => {
+      const option = values.values().next().value;
+      if (option !== undefined) props.onChange(option);
+    },
+  } satisfies ListboxProps<Item>;
 };

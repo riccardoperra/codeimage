@@ -7,9 +7,12 @@ import {
   createRoot,
   createSignal,
   onCleanup,
-  onMount,
+  onSettled,
+  getOwner,
+  runWithOwner,
 } from 'solid-js';
 import type {Decision, Facts} from './decide';
+import {createLocationRegistry} from './locations';
 import {
   decide,
   holds,
@@ -108,19 +111,14 @@ export function createWhatsNew(
   const [interaction, setInteraction] = createSignal<
     'pointer' | 'keyboard' | null
   >(null);
-  const [locations, setLocations] = createSignal<
-    ReadonlyMap<
-      Place | Where,
-      (item: string | undefined) => void | Promise<void>
-    >
-  >(new Map());
+  const locations = createLocationRegistry();
   const decision = createMemo(() =>
     decide(loaded() ? RELEASES : [], facts(), now()),
   );
   const headerEntry = createMemo(
     () => decision().headerEntry && !announcement(),
   );
-  const pending = createMemo(() => decision().announcement, null, {
+  const pending = createMemo(() => decision().announcement, {
     equals: (a, b) =>
       a?.release.id === b?.release.id && a?.surface === b?.surface,
   });
@@ -131,14 +129,7 @@ export function createWhatsNew(
 
   const bound = (id: LocatedHighlightId) => {
     const where = whereOf(id);
-    if (where === null) return;
-    return [...locations()]
-      .filter(([place]) => holds(place, where))
-      .sort(([a], [b]) => b.length - a.length)
-      .map(([place, reveal]) => ({
-        reveal,
-        item: where === place ? undefined : where.slice(place.length + 1),
-      }))[0];
+    if (where !== null) return locations.find(where);
   };
 
   // idb-keyval opens the database synchronously, so a browser that refuses
@@ -146,25 +137,25 @@ export function createWhatsNew(
   const attempt = <T>(work: () => Promise<T>) => Promise.resolve().then(work);
 
   async function load() {
-    setNow(clock());
     try {
       const raw = await attempt(() => storage.get('whats-new'));
-      setFacts(current => mergeFacts(current, parseFacts(raw)));
+      const updated = setFacts(current => mergeFacts(current, parseFacts(raw)));
       const current = announcement();
       if (
         current?.entry === 'automatic' &&
-        facts().dismissed.has(current.release.id)
+        updated.dismissed.has(current.release.id)
       ) {
         setAnnouncement(null);
       } else if (
         current?.entry === 'automatic' &&
-        facts().minimized.has(current.release.id)
+        updated.minimized.has(current.release.id)
       ) {
         setAnnouncement({...current, surface: 'nudge'});
       }
     } catch {
       // No stored facts: the worst case is one repeated announcement.
     } finally {
+      setNow(clock());
       setLoaded(true);
     }
   }
@@ -205,26 +196,36 @@ export function createWhatsNew(
     },
     announce(watchQuiet, preview) {
       if (preview) {
-        setAnnouncement({
-          surface: preview,
-          release: RELEASES[0],
-          entry: 'preview',
+        onSettled(() => {
+          setAnnouncement({
+            surface: preview,
+            release: RELEASES[0],
+            entry: 'preview',
+          });
         });
         return announcement;
       }
-      createEffect(() => {
-        const release = pending();
-        if (!release || announcement()) return;
-        const quiet = watchQuiet();
-        createEffect(() => {
-          if (!quiet()) return;
-          setAnnouncement({...release, entry: 'automatic'});
-          track('shown', {
-            surface: release.surface,
-            release: release.release.id,
-          });
-        });
-      });
+      const owner = getOwner();
+      createEffect(
+        () => (!announcement() ? pending() : undefined),
+        release => {
+          if (!release) return;
+          return runWithOwner(owner, () =>
+            createRoot(dispose => {
+              const quiet = watchQuiet();
+              createEffect(quiet, ready => {
+                if (!ready) return;
+                setAnnouncement({...release, entry: 'automatic'});
+                track('shown', {
+                  surface: release.surface,
+                  release: release.release.id,
+                });
+              });
+              return dispose;
+            }),
+          );
+        },
+      );
       return announcement;
     },
     dismiss(keyboard = false) {
@@ -279,24 +280,7 @@ export function createWhatsNew(
         if (request === revealRequest) setRevealed(id);
       });
     },
-    bindLocation(where, reveal) {
-      onMount(() => {
-        if (locations().has(where)) {
-          if (import.meta.env.DEV)
-            throw new Error(`What's new place "${where}" already has an owner`);
-          return;
-        }
-        setLocations(current => new Map(current).set(where, reveal));
-      });
-      onCleanup(() =>
-        setLocations(current => {
-          if (current.get(where) !== reveal) return current;
-          const next = new Map(current);
-          next.delete(where);
-          return next;
-        }),
-      );
-    },
+    bindLocation: locations.bind,
   };
 }
 

@@ -1,6 +1,7 @@
 import {useI18n} from '@codeimage/locale';
 import type {LocaleKeys} from '@codeimage/locale';
-import {Button, Listbox} from '@codeui/kit';
+import {Listbox} from '@ui/legacy-listbox';
+import {Button} from '@ui/legacy-controls';
 import {SegmentedField} from '@ui/SegmentedField/SegmentedField';
 import {createSignal, For, Match, Show, Switch} from 'solid-js';
 import type {Component} from 'solid-js';
@@ -37,7 +38,7 @@ function ThemesPanel() {
     list.scrollLeft += event.deltaY;
   };
   return (
-    <div class={`${styles.panel} ${styles.themes}`} on:wheel={onWheel}>
+    <div class={`${styles.panel} ${styles.themes}`} onWheel={onWheel}>
       <dock.ThemePicker
         size={dock.compact() ? 'md' : 'sm'}
         autofocus

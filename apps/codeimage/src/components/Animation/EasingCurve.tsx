@@ -21,7 +21,7 @@ export function EasingCurve(props: {
     <svg
       viewBox="0 0 100 100"
       class={`${props.glyph ? styles.glyph : styles.curve} ${props.class ?? ''}`}
-      aria-hidden={props.label ? undefined : true}
+      aria-hidden={props.label ? undefined : 'true'}
       role={props.label ? 'img' : undefined}
       aria-label={props.label}
     >

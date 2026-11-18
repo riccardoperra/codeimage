@@ -9,20 +9,19 @@ import {AssetsImage} from '@codeimage/store/assets/AssetsImage';
 import {getRootEditorStore} from '@codeimage/store/editor';
 import {dispatchUpdateTheme} from '@codeimage/store/effects/onThemeChange';
 import {Box, FadeInOutTransition} from '@codeimage/ui';
-import {exportExclude as _exportExclude} from '@core/directives/exportExclude';
 import {useModality} from '@core/hooks/isMobile';
 import {createHorizontalResize} from '@core/hooks/resizable';
-import {createResizeObserver} from '@solid-primitives/resize-observer';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 import type {ParentComponent} from 'solid-js';
-import {batch, createEffect, on, onCleanup, onMount, Show} from 'solid-js';
+import {flush, createEffect, Show} from 'solid-js';
 import {useI18n} from '@codeimage/locale';
 import {signatureEditor} from '@codeimage/store/frame/signatureEditor';
 import type {AppLocaleEntries} from '../../i18n';
-import {createWatermarkScope} from '../../core/watermark/scope';
+import {
+  createWatermarkRef,
+  createWatermarkScope,
+} from '../../core/watermark/scope';
 import * as styles from './Frame.css';
-
-export const exportExclude = _exportExclude;
 
 interface FrameProps {
   background: string | AssetId | null | undefined;
@@ -62,7 +61,9 @@ export const Frame: ParentComponent<FrameProps> = props => {
 
   const assetsStore = getAssetsStore();
   const watermark = createWatermarkScope();
-  createEffect(on(() => props.signature?.position, watermark.invalidate));
+  const frameRef = createWatermarkRef(watermark, 'frame');
+  const backgroundRef = createWatermarkRef(watermark, 'background');
+  createEffect(() => props.signature?.position, watermark.invalidate);
   const scale = () =>
     signatureScale(
       target()?.resolution[0] ?? (width() || props.measuredWidth || 0),
@@ -83,36 +84,36 @@ export const Frame: ParentComponent<FrameProps> = props => {
   const roundedWidth = () => `${Math.floor(width())}px`;
   const modality = useModality();
 
-  onMount(() => {
-    const refValue = ref();
-    if (!refValue) return;
+  createEffect(
+    () => [ref(), props.onWidthChange, props.onHeightChange] as const,
+    ([refValue, onWidthChange, onHeightChange]) => {
+      if (!refValue) return;
 
-    let frame = 0;
-    const observer = new ResizeObserver(entries => {
-      const size = entries[0]?.borderBoxSize[0];
-      if (!size) return;
-      cancelAnimationFrame(frame);
-      frame = requestAnimationFrame(() =>
-        batch(() => {
-          props.onWidthChange(size.inlineSize);
-          props.onHeightChange(size.blockSize);
-        }),
-      );
-    });
-    observer.observe(refValue, {box: 'border-box'});
-    onCleanup(() => {
-      cancelAnimationFrame(frame);
-      observer.disconnect();
-    });
-
-    const preview = refValue.querySelector('[data-preview]');
-    createResizeObserver(
-      () => preview,
-      () => {
+      let frame = 0;
+      const observer = new ResizeObserver(entries => {
+        const size = entries[0]?.borderBoxSize[0];
+        if (!size) return;
+        cancelAnimationFrame(frame);
+        frame = requestAnimationFrame(() =>
+          flush(() => {
+            onWidthChange(size.inlineSize);
+            onHeightChange(size.blockSize);
+          }),
+        );
+      });
+      observer.observe(refValue, {box: 'border-box'});
+      const preview = refValue.querySelector('[data-preview]');
+      const previewObserver = new ResizeObserver(() => {
         if (!target()) refresh();
-      },
-    );
-  });
+      });
+      if (preview) previewObserver.observe(preview);
+      return () => {
+        cancelAnimationFrame(frame);
+        observer.disconnect();
+        previewObserver.disconnect();
+      };
+    },
+  );
 
   const borderRadius = () => {
     const radius = props.radius;
@@ -135,7 +136,7 @@ export const Frame: ParentComponent<FrameProps> = props => {
       <div
         ref={element => {
           setRef(element);
-          watermark.attach('frame', element);
+          frameRef(element);
         }}
         class={styles.container}
         data-watermark-frame
@@ -154,7 +155,7 @@ export const Frame: ParentComponent<FrameProps> = props => {
         <div
           data-frame-content
           class={styles.overlay}
-          ref={element => watermark.attach('background', element)}
+          ref={backgroundRef}
           data-watermark-background
           style={assignInlineVars({
             [styles.frameVars.backgroundColor]: assetsStore.isAssetUrl(
@@ -190,7 +191,7 @@ export const Frame: ParentComponent<FrameProps> = props => {
         </div>
 
         <Show when={modality === 'full' && !props.readOnly && !target()}>
-          <div class={styles.dragControls} use:exportExclude={true}>
+          <div class={styles.dragControls} data-export-exclude="true">
             <div class={styles.dragControlLeft} onMouseDown={onResizeStart} />
             <div class={styles.dragControlRight} onMouseDown={onResizeStart} />
           </div>
@@ -210,15 +211,12 @@ export const Frame: ParentComponent<FrameProps> = props => {
               : undefined
           }
           editLabel={t('signature.edit')}
-          markRef={element => watermark.attach('signature', element)}
+          watermark={watermark}
         />
       </div>
 
       <FadeInOutTransition show={resizing()}>
-        <Box
-          class={styles.resizeLine}
-          ref={el => exportExclude(el, () => true)}
-        >
+        <Box class={styles.resizeLine} data-export-exclude="true">
           <Box class={styles.resizeBadge}>{roundedWidth()}</Box>
           <hr class={styles.resizeLineDivider} />
         </Box>

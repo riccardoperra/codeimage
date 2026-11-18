@@ -88,7 +88,9 @@ The published `statebuilder@0.9.0-alpha.1` declares `solid-js: ^2.0.0`. A strict
 
 ## P5. Switch the CodeImage app to Solid 2
 
-Start the cutover branch with one Solid 2 browser graph for CodeImage code. Compile the remaining Solid 1 CodeUI and Kobalte widgets in the bridge's legacy graph. A legacy widget owns its context, trigger, popup, and cleanup. Pass plain props and callbacks when Solid 2 calls it. If a widget depends on app context, arbitrary Solid 2 children, or renderer state, port that widget or move the boundary to a complete subtree.
+The cutover branch runs the app, router, locale, statebuilder, CodeMirror and workspace UI on Solid 2. The [legacy build](../../apps/codeimage/solid1/vite.mjs) registers the project menu and a [set of CodeUI controls](../../apps/codeimage/src/ui/legacy-controls.ts). They share one Solid 1 runtime. Each legacy widget owns its context, trigger, popup and cleanup. The settings dialog, editor overlays and menus that compose app state render in Solid 2. The renderer uses a separate Solid 2 build and creates editor state for each render request.
+
+The widget adapter snapshots field values and passes callbacks. Selected controls also accept DOM slots already rendered by the host. Solid providers and compound component trees stay under their own runtime. Restart Vite after changing registered bridge files or exports.
 
 1. Switch the browser compiler, root, router, locale provider and store providers. Get a guest editor and one saved project to load and save.
 2. Port the editor, stores, CodeMirror, tabs and canvas in subsystem commits. Check persistence and export as soon as the relevant paths work.

@@ -11,15 +11,14 @@ import {dispatchRandomTheme} from '@codeimage/store/effects/onThemeChange';
 import {TERMINAL_SHADOWS} from '@core/configuration/shadow';
 import {useModality} from '@core/hooks/isMobile';
 import {
-  createEffect,
-  createResource,
   createSignal,
   lazy,
   onCleanup,
-  onMount,
   Show,
-  Suspense,
+  Loading,
+  createTrackedEffect,
 } from 'solid-js';
+import {createResource} from '@codeimage/store/plugins/create-resource';
 import type {Accessor, Component} from 'solid-js';
 import {untrackCommand} from 'statebuilder/commands';
 import {FrameSkeleton} from '../../components/Frame/FrameSkeleton';
@@ -86,7 +85,7 @@ const previewCode =
 function ThemePreview(props: {theme: ThemeEntry}) {
   const terminal = getTerminalState();
   return (
-    <Suspense fallback={<ThemeBoxSkeleton />}>
+    <Loading fallback={<ThemeBoxSkeleton />}>
       <TerminalHost
         themeClass={themeBoxTerminalHost}
         textColor={props.theme.colors.text}
@@ -109,7 +108,7 @@ function ThemePreview(props: {theme: ThemeEntry}) {
           code={previewCode}
         />
       </TerminalHost>
-    </Suspense>
+    </Loading>
   );
 }
 
@@ -123,7 +122,7 @@ function ThemePreview(props: {theme: ThemeEntry}) {
 function FramePlaceholder(props: {frame: Accessor<HTMLElement | undefined>}) {
   const [size, setSize] = createSignal<{width: number; height: number}>();
   const [settled, setSettled] = createSignal(false);
-  createEffect(() => {
+  createTrackedEffect(() => {
     const element = props.frame();
     if (!element) return;
     let frame = 0;
@@ -145,11 +144,11 @@ function FramePlaceholder(props: {frame: Accessor<HTMLElement | undefined>}) {
       fontsReady = true;
       measure();
     });
-    onCleanup(() => {
+    return () => {
       disposed = true;
       cancelAnimationFrame(frame);
       observer.disconnect();
-    });
+    };
   });
   return (
     <div
@@ -191,7 +190,7 @@ export function createStage(pageState: Accessor<EditorPageState>): Stage {
     Canvas: () => {
       const [pillHost, setPillHost] = createSignal<HTMLDivElement>();
       const [popupHost, setPopupHost] = createSignal<HTMLDivElement>();
-      onMount(() => getExportCanvasStore().initCanvas(exportRef));
+      getExportCanvasStore().initCanvas(exportRef);
       const [fontsReady] = createResource(exportRef, element => {
         // Layout starts loading the preview's code font before awaiting it.
         element.getBoundingClientRect();
@@ -201,7 +200,7 @@ export function createStage(pageState: Accessor<EditorPageState>): Stage {
       // export copy renders into a portal, so its place in the tree is free.
       return (
         <div ref={setPillHost} class={shortcutStyles.canvas}>
-          <EditorPopupHost.Provider value={popupHost}>
+          <EditorPopupHost value={popupHost}>
             <FitFrame
               onScaleChange={setScale}
               overlay={<ReadOnlyNotice state={pageState()} />}
@@ -209,17 +208,17 @@ export function createStage(pageState: Accessor<EditorPageState>): Stage {
               <SuspenseEditorItem
                 fallback={<FramePlaceholder frame={exportRef} />}
               >
-                <Suspense fallback={<FramePlaceholder frame={exportRef} />}>
+                <Loading fallback={<FramePlaceholder frame={exportRef} />}>
                   <Show when={fontsReady()}>
                     <AnimationPreview pillHost={pillHost()}>
                       <ManagedFrame />
                     </AnimationPreview>
                   </Show>
-                </Suspense>
+                </Loading>
               </SuspenseEditorItem>
               <PreviewFrame ref={setExportRef} />
             </FitFrame>
-          </EditorPopupHost.Provider>
+          </EditorPopupHost>
           <div ref={setPopupHost} class={snippetStyles.popupHost} />
           <Show when={!compact() && pageState().kind !== 'read-only'}>
             <ShortcutHelp canvas={pillHost} editable={pageState().editable} />

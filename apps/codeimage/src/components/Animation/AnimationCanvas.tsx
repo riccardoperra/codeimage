@@ -3,8 +3,9 @@ import type {CustomTheme} from '@codeimage/highlight';
 import {isAssetUrl} from '@codeimage/store/assets/assetIds';
 import type {FrameState} from '@codeimage/store/frame/model';
 import {parseToRgb, rgb} from 'polished';
-import type {JSX, ParentProps} from 'solid-js';
-import {Show, splitProps} from 'solid-js';
+import type {JSX} from '@solidjs/web';
+import type {ParentProps} from 'solid-js';
+import {Show, omit} from 'solid-js';
 
 export function animationMatte(theme: CustomTheme): string {
   const {red, green, blue} = parseToRgb(theme.properties.terminal.main);
@@ -24,43 +25,44 @@ export type AnimationCanvasProps = ParentProps<
 >;
 
 export function AnimationCanvas(props: AnimationCanvasProps) {
-  const [local, rest] = splitProps(props, [
+  const rest = omit(
+    props,
     'width',
     'height',
     'matte',
     'frame',
     'image',
     'children',
-  ]);
+  );
   return (
     <div
       {...rest}
       style={{
         position: 'relative',
         overflow: 'hidden',
-        width: `${local.width}px`,
-        height: `${local.height}px`,
-        'background-color': local.matte,
+        width: `${props.width}px`,
+        height: `${props.height}px`,
+        'background-color': props.matte,
       }}
     >
-      <Show when={local.frame.visible && local.frame.opacity > 0}>
+      <Show when={props.frame.visible && props.frame.opacity > 0}>
         <div
           data-video-background
           style={{
             position: 'absolute',
             inset: 0,
-            background: isAssetUrl(local.frame.background)
+            background: isAssetUrl(props.frame.background)
               ? undefined
-              : (local.frame.background ?? undefined),
-            opacity: local.frame.opacity / 100,
+              : (props.frame.background ?? undefined),
+            opacity: props.frame.opacity / 100,
           }}
         >
-          <Show when={isAssetUrl(local.frame.background) && local.image}>
+          <Show when={isAssetUrl(props.frame.background) && props.image}>
             {src => <img src={src()} class={styles.backgroundImage} />}
           </Show>
         </div>
       </Show>
-      {local.children}
+      {props.children}
     </div>
   );
 }

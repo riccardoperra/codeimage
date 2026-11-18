@@ -1,8 +1,8 @@
 import {getAuth0State} from '@codeimage/store/auth/auth0';
 import {generateUid} from '@codeimage/store/plugins/unique-id';
-import {createEffect, on} from 'solid-js';
-import {unwrap} from 'solid-js/store';
-import {makePlugin} from 'statebuilder';
+import {createEffect} from 'solid-js';
+import {snapshot} from 'solid-js';
+import {createPlugin} from 'statebuilder';
 import * as api from '../../data-access/signature';
 import {useIdb} from '../../hooks/use-indexed-db';
 import type {FrameSignature} from '../frame/model';
@@ -22,25 +22,23 @@ export function toSignatureData(signature: FrameSignature): SignatureData {
 }
 
 export const withSignatureBridge = (idbKey: string) =>
-  makePlugin(
+  createPlugin(
     store => {
       const idb = useIdb();
       const useInMemoryStore = () => !getAuth0State().loggedIn();
       function persistToIdb(data: SavedSignaturesArray) {
-        return idb.set(idbKey, unwrap(data)).then();
+        return idb.set(idbKey, snapshot(data)).then();
       }
 
       // A guest's signatures live in IndexedDB; an account's in the API.
       createEffect(
-        on(
-          store,
-          resource => {
-            if (useInMemoryStore()) {
-              void persistToIdb(resource ?? []);
-            }
-          },
-          {defer: true},
-        ),
+        store,
+        resource => {
+          if (useInMemoryStore()) {
+            void persistToIdb(resource ?? []);
+          }
+        },
+        {defer: true},
       );
 
       // One default per user: making one the default clears the others.

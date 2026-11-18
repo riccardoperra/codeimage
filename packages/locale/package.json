@@ -31,11 +31,10 @@
     "dev": "chokidar \"src/**/*.{ts,tsx}\" -c \"pnpm build\""
   },
   "dependencies": {
-    "@solid-primitives/i18n": "1.2.4",
-    "solid-js": "catalog:next"
+    "solid-js": "catalog:solid2"
   },
   "peerDependencies": {
-    "solid-js": "catalog:next"
+    "solid-js": "catalog:solid2"
   },
   "devDependencies": {
     "oxfmt": "catalog:next",
@@ -43,8 +42,7 @@
     "rimraf": "catalog:next",
     "typescript": "^6.0.2",
     "vite": "catalog:next",
-    "vite-plugin-dts": "catalog:next",
-    "vite-plugin-solid": "catalog:next"
+    "vite-plugin-dts": "catalog:next"
   },
   "engines": {
     "node": ">=24"

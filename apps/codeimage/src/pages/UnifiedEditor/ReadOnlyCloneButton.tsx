@@ -1,5 +1,5 @@
 import {LoadingCircle} from '@codeimage/ui';
-import {Button} from '@codeui/kit';
+import {Button} from '@ui/legacy-controls';
 
 export function ReadOnlyCloneButton(props: {
   label: string;

@@ -9,17 +9,14 @@
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "jsx": "preserve",
-    "jsxImportSource": "solid-js",
-    "types": ["vite/client"],
+    "jsxImportSource": "@solidjs/web",
+    "types": ["vite/client", "node"],
     "verbatimModuleSyntax": true,
     "lib": ["ESNext", "dom", "dom.iterable", "es2019", "WebWorker"],
     "paths": {
       "@codeimage/store/*": ["./src/state/*"],
       "@core/*": ["./src/core/*"],
-      "@ui/*": ["./src/ui/*"],
-      "virtual:codeimage-solid2-islands": [
-        "./src/pages/UnifiedEditor/solid2-islands.d.ts"
-      ]
+      "@ui/*": ["./src/ui/*"]
     }
   },
   "include": ["./src/**/*", "./scripts/**/*"]

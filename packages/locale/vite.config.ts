@@ -1,7 +1,6 @@
 import {defineConfig} from 'vite';
 import path from 'path';
 import dts from 'vite-plugin-dts';
-import solidPlugin from 'vite-plugin-solid';
 
 export default defineConfig({
   build: {
@@ -13,9 +12,9 @@ export default defineConfig({
     },
     cssCodeSplit: true,
     rollupOptions: {
-      external: ['solid-js', '@solid-primitives/i18n'],
+      external: ['solid-js'],
       output: {},
     },
   },
-  plugins: [solidPlugin(), dts()],
+  plugins: [dts()],
 });

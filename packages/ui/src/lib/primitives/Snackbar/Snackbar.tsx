@@ -1,8 +1,6 @@
-import clsx from 'clsx';
-import {Toast} from 'solid-headless';
-import type {JSX} from 'solid-js';
+import type {JSX} from '@solidjs/web';
 import {createSignal, Show} from 'solid-js';
-import {Dynamic} from 'solid-js/web';
+import {Dynamic} from '@solidjs/web';
 import {Box} from '../Box';
 import {Button} from '../Button';
 import {ButtonSizes} from '../Button/Button.css';
@@ -11,7 +9,7 @@ import {Text} from '../Text';
 import {FadeInOutWithScaleTransition} from '../Transition';
 import * as styles from './Snackbar.css';
 import type {SnackbarData} from './SnackbarHost';
-import {toast} from './SnackbarHost';
+import {toast} from './toast-state';
 
 export function SnackBar(props: SnackbarData & {id: string}): JSX.Element {
   const [isOpen, setIsOpen] = createSignal(true);
@@ -26,7 +24,7 @@ export function SnackBar(props: SnackbarData & {id: string}): JSX.Element {
       afterLeave={() => toast.remove(props.id)}
     >
       <Box as={props.wrapper ?? 'div'}>
-        <Toast class={clsx(styles.snackbar)}>
+        <div class={styles.snackbar} role="status">
           <Text size={'sm'} weight={'semibold'}>
             {typeof props.message === 'string' ? (
               props.message
@@ -48,6 +46,7 @@ export function SnackBar(props: SnackbarData & {id: string}): JSX.Element {
                 pill
                 variant={'solid'}
                 theme={'secondary'}
+                aria-label="Close"
                 onClick={dismiss}
               >
                 <SvgIcon
@@ -67,7 +66,7 @@ export function SnackBar(props: SnackbarData & {id: string}): JSX.Element {
               </Button>
             </Box>
           </Show>
-        </Toast>
+        </div>
       </Box>
     </FadeInOutWithScaleTransition>
   );

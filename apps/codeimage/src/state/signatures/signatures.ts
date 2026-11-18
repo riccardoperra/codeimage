@@ -35,7 +35,10 @@ async function fetchInitialState(): Promise<SavedSignaturesArray> {
 
 const toastPosition = {position: 'top-center'} as const;
 
-const SignatureStoreDefinition = experimental__defineResource(fetchInitialState)
+const SignatureStoreDefinition = experimental__defineResource(
+  fetchInitialState,
+  {initialValue: []},
+)
   .extend(withEntityPlugin<SavedSignaturesArray>())
   .extend(withIndexedDbPlugin<SavedSignaturesArray>(idbKey, []))
   .extend(withSignatureBridge(idbKey))

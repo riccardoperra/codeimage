@@ -1,6 +1,6 @@
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 import type {Component, Ref} from 'solid-js';
-import {omitProps} from 'solid-use/props';
+import {omit} from 'solid-js';
 import {styled} from '../../utils';
 import type {DynamicNode, DynamicProps} from '../Box';
 import type {UseTextProps} from '../Text';
@@ -36,7 +36,7 @@ export const RangeField: Component<RangeFieldProps> = props => {
       onInput={onChange}
       onChange={onChange}
       type={'range'}
-      {...omitProps(props, ['class', 'type', 'value', 'onChange'])}
+      {...omit(props, 'class', 'type', 'value', 'onChange')}
       style={assignInlineVars({
         [styles.rangeVars.rangeProgress]: progress(),
       })}

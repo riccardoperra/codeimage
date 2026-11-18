@@ -1,10 +1,17 @@
 import {useI18n} from '@codeimage/locale';
 import {getFrameState} from '@codeimage/store/editor/frame';
 import {displayHandle} from '@codeimage/store/frame/signature';
-import {Button, IconButton, icons} from '@codeui/kit';
-import {Dialog, Content as DialogContent} from '@kobalte/core/dialog';
-import {createEffect, createSignal, For, Show, onCleanup} from 'solid-js';
-import {Dynamic} from 'solid-js/web';
+import {icons} from '@ui/kit-icons';
+import {Button} from '@ui/legacy-controls';
+import {Dialog, Content as DialogContent} from '@ui/Dialog/parts';
+import {
+  createSignal,
+  For,
+  Show,
+  onCleanup,
+  createTrackedEffect,
+} from 'solid-js';
+import {Dynamic} from '@solidjs/web';
 import {
   PanelRow,
   TwoColumnPanelRow,
@@ -93,6 +100,8 @@ export function PickerField(props: {control: Control; id: string}) {
 /** One bounded editor for controls that need more room than a row. */
 export function ControlOverlay(props: {model: EditorControlsModel}) {
   const [t] = useI18n<AppLocaleEntries>();
+  const [panel, setPanel] = createSignal<HTMLDivElement>();
+  const [body, setBody] = createSignal<HTMLDivElement>();
   onCleanup(controlOverlay.close);
   const control = () => {
     const id = target();
@@ -102,36 +111,36 @@ export function ControlOverlay(props: {model: EditorControlsModel}) {
     props.model.sections.find(section => section.id === 'signature');
   const title = () =>
     target() === 'signature' ? signature()?.label() : control()?.label();
-  const enhanceColorPicker = (element: HTMLDivElement) => {
-    createEffect(() => {
-      const value = control();
-      if (value?.kind !== 'background') return;
-      value.value();
-      const enhance = () => {
-        element
-          .querySelector('input')
-          ?.setAttribute('aria-label', t('editor.colorOrGradient'));
-        for (const item of element.querySelectorAll<HTMLElement>(
-          'div[title]',
-        )) {
-          item.setAttribute('role', 'button');
-          item.tabIndex = 0;
-          item.setAttribute(
-            'aria-label',
-            t('editor.backgroundFill', {value: item.title}),
-          );
-          item.setAttribute(
-            'aria-pressed',
-            String(item.title === value.value()),
-          );
-        }
-      };
-      const observer = new MutationObserver(enhance);
-      observer.observe(element, {childList: true, subtree: true});
-      enhance();
-      onCleanup(() => observer.disconnect());
-    });
-  };
+  createTrackedEffect(() => {
+    const element = body();
+    if (!element || !target()) return;
+    const value = control();
+    if (value?.kind !== 'background') return;
+    value.value();
+    const enhance = () => {
+      element
+        .querySelector('input')
+        ?.setAttribute('aria-label', t('editor.colorOrGradient'));
+      for (const item of element.querySelectorAll<HTMLElement>('div[title]')) {
+        item.setAttribute('role', 'button');
+        item.tabIndex = 0;
+        item.setAttribute(
+          'aria-label',
+          t('editor.backgroundFill', {value: item.title}),
+        );
+        item.setAttribute('aria-pressed', String(item.title === value.value()));
+      }
+    };
+    const observer = new MutationObserver(enhance);
+    observer.observe(element, {childList: true, subtree: true});
+    enhance();
+    return () => observer.disconnect();
+  });
+  createTrackedEffect(() => {
+    const active = target();
+    const element = panel();
+    if (active && element) return placeControlOverlay(element, opener, active);
+  });
   const chooseFill = (event: KeyboardEvent) => {
     if (
       (event.key === 'Enter' || event.key === ' ') &&
@@ -176,28 +185,18 @@ export function ControlOverlay(props: {model: EditorControlsModel}) {
         <DialogContent
           id="editor-control-overlay"
           class={styles.content}
-          ref={element => placeControlOverlay(element, opener, target())}
+          ref={setPanel}
           data-control-overlay={target()}
           onCloseAutoFocus={restoreFocus}
-          on:keydown={closeOnEscape}
+          onKeyDown={closeOnEscape}
         >
           <div class={styles.header}>
             <Dialog.Title class={styles.title}>{title()}</Dialog.Title>
-            <Dialog.CloseButton
-              as={IconButton}
-              size="sm"
-              theme="secondary"
-              variant="ghost"
-              aria-label={t('common.close')}
-            >
+            <Dialog.CloseButton size="sm" ghost aria-label={t('common.close')}>
               <icons.CloseIcon />
             </Dialog.CloseButton>
           </div>
-          <div
-            class={styles.body}
-            ref={enhanceColorPicker}
-            onKeyDown={chooseFill}
-          >
+          <div class={styles.body} ref={setBody} onKeyDown={chooseFill}>
             <Show
               when={target() === 'signature'}
               fallback={

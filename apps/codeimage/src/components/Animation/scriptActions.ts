@@ -8,7 +8,7 @@ import type {
 } from '@codeimage/store/editor/model';
 import {createRandomId} from '@codeimage/store/plugins/unique-id';
 import {setLineMarks} from '../CustomEditor/plugins/lineMarks/state';
-import {batch} from 'solid-js';
+import {flush} from 'solid-js';
 
 type Store = ReturnType<typeof getEditorStore>;
 export type LineAction = 'enter' | 'leave' | 'focus';
@@ -20,7 +20,7 @@ function saveMarks(store: Store, editorId: string, marks: TabMarks) {
   if (index < 0) return;
   const view = store.editor.activeEditorView();
   if (view && store.editor.activeEditorViewTabId() === editorId)
-    batch(() => setLineMarks(view, marks));
+    flush(() => setLineMarks(view, marks));
   else store.editor.actions.setEditors(index, 'marks', marks);
 }
 
@@ -46,7 +46,7 @@ export function addScriptStep(store: Store, editorId: string) {
       return [];
     }),
   };
-  batch(() => {
+  flush(() => {
     saveMarks(store, editorId, {
       ...tab.marks,
       lines: tab.marks.lines.filter(mark => mark.kind === 'highlight'),
@@ -73,7 +73,7 @@ export function deleteScriptStep(store: Store, editorId: string, step: number) {
       selected && selected.stepId !== script.steps[step - 1]
         ? selected.stepId
         : next.steps[Math.max(0, step - 2)];
-  batch(() => {
+  flush(() => {
     const {script: _, ...marks} = tab.marks;
     saveMarks(store, editorId, {...marks, ...(next ? {script: next} : {})});
     selectStep(store, selectedId);

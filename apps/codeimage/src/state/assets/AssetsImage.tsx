@@ -1,15 +1,16 @@
 import {getAssetsStore} from '@codeimage/store/assets/assets';
 import {Box, LoadingCircle, VStack} from '@codeimage/ui';
-import type {JSX, JSXElement, VoidProps} from 'solid-js';
-import {createEffect, ErrorBoundary, splitProps, Suspense} from 'solid-js';
+import type {JSX} from '@solidjs/web';
+import type {VoidProps} from 'solid-js';
+import {createEffect, Errored, omit, Show} from 'solid-js';
 import {ExclamationIcon} from '../../components/Icons/Exclamation';
 
 interface AssetsImageProps {
   assetId: string;
   onError?: () => void;
   onLoad?: () => void;
-  fallback?: JSXElement;
-  errorFallback?: JSXElement;
+  fallback?: JSX.Element;
+  errorFallback?: JSX.Element;
 }
 
 export function AssetsImage(
@@ -17,23 +18,31 @@ export function AssetsImage(
     AssetsImageProps & Omit<JSX.IntrinsicElements['img'], 'onError' | 'onLoad'>
   >,
 ) {
-  const [local, others] = splitProps(props, ['fallback', 'errorFallback']);
+  const others = omit(
+    props,
+    'fallback',
+    'errorFallback',
+    'onError',
+    'onLoad',
+    'assetId',
+  );
   const store = getAssetsStore();
   const [resolve] = store.loadAsync(() => props.assetId);
 
-  createEffect(() => {
-    switch (resolve.state) {
-      case 'errored':
-        return props.onError?.();
-      case 'ready':
-        return props.onLoad?.();
-    }
-  });
+  createEffect(
+    () => {
+      if (resolve.state === 'errored') return props.onError;
+      if (resolve.state === 'ready') return props.onLoad;
+    },
+    notify => {
+      notify?.();
+    },
+  );
 
   return (
-    <ErrorBoundary
+    <Errored
       fallback={
-        local.errorFallback || (
+        props.errorFallback || (
           <VStack
             spacing={2}
             display={'flex'}
@@ -49,9 +58,10 @@ export function AssetsImage(
         )
       }
     >
-      <Suspense
+      <Show
+        when={!resolve.loading}
         fallback={
-          local.fallback || (
+          props.fallback || (
             <Box
               display={'flex'}
               alignItems={'center'}
@@ -73,7 +83,7 @@ export function AssetsImage(
           }}
           {...others}
         />
-      </Suspense>
-    </ErrorBoundary>
+      </Show>
+    </Errored>
   );
 }

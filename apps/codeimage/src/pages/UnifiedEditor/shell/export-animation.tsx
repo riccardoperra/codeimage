@@ -33,8 +33,8 @@ import {
   type AnimationFormat,
 } from '@core/video/formats';
 import type {AnimationExport} from '@core/video/protocol';
-import {createSignal, getOwner, runWithOwner} from 'solid-js';
-import {render} from 'solid-js/web';
+import {createSignal, getOwner} from 'solid-js';
+import {mountOwnedView} from '@core/helpers/mount-owned-view';
 
 const yieldToEditor = () =>
   new Promise<void>(resolve => setTimeout(resolve, 0));
@@ -258,7 +258,7 @@ export function animationSnapshot() {
         );
         const mount = document.createElement('div');
         host.append(mount);
-        const dispose = runWithOwner(owner, () => render(view, mount));
+        const dispose = mountOwnedView(owner, mount, view);
         if (dispose) disposers.push(dispose);
         await yieldToEditor();
         setCodeReady(true);

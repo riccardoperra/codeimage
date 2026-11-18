@@ -1,8 +1,10 @@
+import type {JSX} from '@solidjs/web';
+import clsx from 'clsx';
 import type {Component, VoidProps} from 'solid-js';
-import type {ToastHandler} from 'solid-toast';
-import {toast as $toast, Toaster as ToasterV2} from 'solid-toast';
-import type {AugmentedToastHandler} from './patch-solid-toast';
-import {createPatch} from './patch-solid-toast';
+import {createComponent, For} from 'solid-js';
+import {FadeInOutWithScaleTransition} from '../Transition';
+import type {ToastEntry} from './toast-state';
+import {positions, toast, toastEntries} from './toast-state';
 import * as styles from './Snackbar.css';
 
 export interface SnackbarData {
@@ -12,39 +14,67 @@ export interface SnackbarData {
   wrapper?: Component;
 }
 
-type Toast = typeof $toast;
-
-let toast: {
-  success: AugmentedToastHandler;
-  error: AugmentedToastHandler;
-  custom: AugmentedToastHandler;
-  default: ToastHandler;
-  remove: Toast['remove'];
-  dismiss: Toast['dismiss'];
-};
-
 interface SnackbarHostProps {
   containerClassName?: string;
 }
 
-export function SnackbarHost(props: VoidProps<SnackbarHostProps>) {
-  toast = {
-    success: createPatch($toast, 'success'),
-    error: createPatch($toast, 'error'),
-    custom: createPatch($toast, 'custom'),
-    default: $toast,
-    remove: $toast.remove,
-    dismiss: $toast.dismiss,
-  };
+export function SnackbarHost(props: VoidProps<SnackbarHostProps>): JSX.Element {
   return (
-    <ToasterV2
-      containerClassName={props.containerClassName}
-      toastOptions={{
-        className: styles.snackbar,
-        style: {},
-      }}
-    />
+    <div class={clsx(styles.hostWrapper, props.containerClassName)}>
+      <For each={positions}>
+        {position => (
+          <div class={clsx(styles.host, styles.position[position])}>
+            <For
+              each={toastEntries().filter(entry => entry.position === position)}
+              keyed={entry => entry.id}
+            >
+              {entry => (
+                <FadeInOutWithScaleTransition show={entry().visible}>
+                  <div data-codeimage-theme={entry().theme}>
+                    <div
+                      role="status"
+                      aria-live="polite"
+                      class={clsx(
+                        styles.snackbar,
+                        styles.toastItem,
+                        entry().className,
+                      )}
+                      style={entry().style}
+                    >
+                      {entry().icon ?? icon(entry().kind)}
+                      <div class={styles.message}>{message(entry())}</div>
+                    </div>
+                  </div>
+                </FadeInOutWithScaleTransition>
+              )}
+            </For>
+          </div>
+        )}
+      </For>
+    </div>
   );
+}
+
+function message(entry: ToastEntry) {
+  const {message} = entry;
+  return typeof message === 'function'
+    ? createComponent(message, entry)
+    : message;
+}
+
+function icon(kind: string) {
+  if (kind === 'success')
+    return (
+      <span class={styles.success} aria-hidden="true">
+        ✓
+      </span>
+    );
+  if (kind === 'error')
+    return (
+      <span class={styles.error} aria-hidden="true">
+        ×
+      </span>
+    );
 }
 
 export {toast};

@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import {draculaTheme} from '@codeimage/highlight/dracula';
 import {tokenize} from '@core/snapshot/tokenize';
 import {createComponent} from 'solid-js';
-import {renderToString} from 'solid-js/web';
+import {renderToString} from '@solidjs/web';
 import {test} from 'vitest';
 import AnimatedCodeView from '../../components/CustomEditor/AnimatedCodeView';
 import {compileScene} from './compile';

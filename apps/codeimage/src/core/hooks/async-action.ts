@@ -1,5 +1,10 @@
-import type {Accessor, Resource, ResourceActions} from 'solid-js';
-import {createResource, createSignal, mergeProps} from 'solid-js';
+import type {Accessor} from 'solid-js';
+import type {
+  Resource,
+  ResourceActions,
+} from '@codeimage/store/plugins/create-resource';
+import {createResource} from '@codeimage/store/plugins/create-resource';
+import {createSignal, merge} from 'solid-js';
 
 interface AsyncResourceActions<T, R> extends ResourceActions<R | undefined> {
   notify: (value?: T) => void;
@@ -16,16 +21,16 @@ export function createAsyncAction<T, R>(
     },
   );
 
-  const [resource, _resourceActions] = createResource(
-    notifier || internalNotifier,
-    async args => fetcher(args as T),
-  );
+  const [resource, _resourceActions] = createResource<
+    T | symbol | undefined,
+    R
+  >(notifier || internalNotifier, async args => fetcher(args as T));
 
   const notify = (value?: T) => {
     return setNotifier(() => value ?? Symbol());
   };
 
-  const resourceActions = mergeProps(
+  const resourceActions = merge(
     {
       notify,
     },

@@ -1,9 +1,10 @@
 import {useI18n} from '@codeimage/locale';
 import {getRootEditorStore} from '@codeimage/store/editor';
-import {Button, IconButton, icons} from '@codeui/kit';
-import {Dialog, Content as DialogContent} from '@kobalte/core/dialog';
+import {icons} from '@ui/kit-icons';
+import {Button} from '@ui/legacy-controls';
+import {Dialog, Content as DialogContent} from '@ui/Dialog/parts';
 import type {Accessor} from 'solid-js';
-import {createSignal, For, Show, onCleanup, onMount} from 'solid-js';
+import {createSignal, untrack, For, Show, onCleanup, onSettled} from 'solid-js';
 import {
   autoUpdate,
   computePosition,
@@ -43,8 +44,9 @@ export function ShortcutHelp(props: {
   bindEditorShortcuts(() => props.editable);
   onCleanup(commandMenu.beforeOpen(close));
   onCleanup(close);
-  onMount(() => {
-    const canvas = props.canvas?.();
+  onSettled(() => {
+    const canvas = untrack(() => props.canvas?.());
+    let resize: ResizeObserver | undefined;
     if (canvas && trigger) {
       const measure = () => {
         const frame = canvas.querySelector<HTMLElement>('[data-fit-scale]');
@@ -69,11 +71,11 @@ export function ShortcutHelp(props: {
       if (frame) observer.observe(frame);
       observer.observe(trigger);
       measure();
-      onCleanup(() => observer.disconnect());
+      resize = observer;
     }
     const keydown = (event: KeyboardEvent) => {
       if (
-        !props.editable ||
+        !untrack(() => props.editable) ||
         event.key !== shortcutHelpKey ||
         event.metaKey ||
         event.ctrlKey ||
@@ -90,7 +92,10 @@ export function ShortcutHelp(props: {
       setOpen(value => !value);
     };
     window.addEventListener('keydown', keydown);
-    onCleanup(() => window.removeEventListener('keydown', keydown));
+    return () => {
+      resize?.disconnect();
+      window.removeEventListener('keydown', keydown);
+    };
   });
   return (
     <span
@@ -145,10 +150,8 @@ export function ShortcutHelp(props: {
             <div class={styles.header}>
               <Dialog.Title>{t('shortcut.buttonAction')}</Dialog.Title>
               <Dialog.CloseButton
-                as={IconButton}
                 size="sm"
-                theme="secondary"
-                variant="ghost"
+                ghost
                 aria-label={t('common.close')}
               >
                 <icons.CloseIcon />

@@ -1,26 +1,27 @@
-import type {PolymorphicProps} from '@kobalte/core';
-import type {AlertRootProps as KAlertRootProps} from '@kobalte/core/alert';
-import {Alert as KAlert} from '@kobalte/core/alert';
 import clsx from 'clsx';
-import type {JSXElement, ValidComponent} from 'solid-js';
-import {Match, Show, splitProps, Switch} from 'solid-js';
+import type {Element as JSXElement} from 'solid-js';
+import type {JSX} from '@solidjs/web';
+import {Match, Show, Switch, omit} from 'solid-js';
 import {CloseIcon} from '../../components/Icons/CloseIcon';
 import {ExclamationAltIcon} from '../../components/Icons/Exclamation';
 import {HintOutlineIcon} from '../../components/Icons/Hint';
 import * as styles from './Alert.css';
 
-type AlertProps<T extends ValidComponent = 'div'> = KAlertRootProps<T> &
+type AlertProps = JSX.HTMLAttributes<HTMLDivElement> &
   styles.AlertVariants & {
     showIcon?: boolean;
     icon?: JSXElement;
   };
 
-export function Alert<T extends ValidComponent = 'div'>(
-  props: PolymorphicProps<T, AlertProps>,
-) {
-  const [local, others] = splitProps(
-    props as PolymorphicProps<'div', AlertProps>,
-    ['theme', 'children', 'class', 'icon', 'showIcon'],
+export function Alert(props: AlertProps) {
+  const others = omit(
+    props,
+    'theme',
+    'fluid',
+    'children',
+    'class',
+    'icon',
+    'showIcon',
   );
 
   const rootClass = () =>
@@ -30,14 +31,14 @@ export function Alert<T extends ValidComponent = 'div'>(
     });
 
   return (
-    <KAlert class={clsx(local.class, rootClass())} {...others}>
-      <Show when={local.showIcon}>
+    <div role="alert" class={clsx(props.class, rootClass())} {...others}>
+      <Show when={props.showIcon}>
         <span class={styles.alertIcon}>
-          {local.icon ? local.icon : <AlertIcon type={local.theme} />}
+          {props.icon ? props.icon : <AlertIcon type={props.theme} />}
         </span>
       </Show>
       <span>{props.children}</span>
-    </KAlert>
+    </div>
   );
 }
 

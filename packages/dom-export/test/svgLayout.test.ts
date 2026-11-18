@@ -2,7 +2,7 @@ import {afterEach, describe, expect, it, vi} from 'vitest';
 import {nodeToDataURL} from '../src/lib/util';
 
 const platform = vi.hoisted(() => ({isBlink: true, isFirefox: false}));
-vi.mock('@solid-primitives/platform', () => platform);
+vi.mock('../src/lib/platform', () => platform);
 
 describe('SVG layout', () => {
   afterEach(() => {

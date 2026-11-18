@@ -10,8 +10,7 @@ export async function closeSettingsDialog(page) {
 async function checkSearch(page) {
   const trigger = page.locator('[data-settings-trigger]:visible').first();
   const panel = page.locator('[data-settings]');
-  const island = panel.locator('[data-solid2-island="settings-search"]');
-  const input = island.getByRole('textbox', {name: 'Search settings'});
+  const input = panel.getByRole('textbox', {name: 'Search settings'});
   const focused = page.locator(':focus');
   const general = panel.locator('[data-settings-section="general"]');
 
@@ -35,7 +34,7 @@ async function checkSearch(page) {
   await input.press('ArrowDown');
   await general.and(focused).waitFor();
   await general.press('Escape');
-  await island.waitFor({state: 'detached'});
+  await panel.waitFor({state: 'hidden'});
   await trigger.and(focused).waitFor();
 }
 

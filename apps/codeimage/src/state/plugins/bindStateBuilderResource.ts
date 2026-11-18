@@ -1,26 +1,27 @@
+import type {Setter} from 'solid-js';
+import type {GenericStoreApi} from 'statebuilder';
+import {create} from 'statebuilder';
+import {createResource} from './create-resource';
 import type {
   ResourceFetcher,
   ResourceOptions,
-  Setter,
   Resource as InternalResource,
-} from 'solid-js';
-import {createResource} from 'solid-js';
-import type {GenericStoreApi} from 'statebuilder';
-import {create} from 'statebuilder';
+} from './create-resource';
 
 export type Resource<T> = GenericStoreApi<T, Setter<T>> & InternalResource<T>;
 
 function makeResource<T>(
-  resourceFetcher: ResourceFetcher<true, T, true>,
-  options?: ResourceOptions<T, true>,
+  resourceFetcher: ResourceFetcher<true, T>,
+  options: ResourceOptions<T> & {initialValue: T},
 ): Resource<T> {
-  const [state, {mutate, refetch}] = createResource(
+  const [state, {mutate, refetch, peek}] = createResource(
     resourceFetcher,
-    options ?? {},
+    options,
   );
 
   Reflect.set(state, 'refetch', refetch);
   Reflect.set(state, 'set', mutate);
+  Reflect.set(state, 'peek', peek);
 
   return state as unknown as Resource<T>;
 }
