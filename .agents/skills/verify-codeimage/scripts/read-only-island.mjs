@@ -22,7 +22,7 @@ async function pauseClone(page, id) {
 export async function auditReadOnlyIsland({page, base}) {
   const project = await createProject(page, base);
   await makeReadOnly(page, project.id);
-  const island = page.locator('[data-solid2-read-only-notice]');
+  const island = page.locator('[data-solid2-island="read-only-notice"]');
   const banner = island.locator('[data-read-only-banner]');
   await banner.waitFor();
   await banner.getByRole('button', {name: 'Clone', exact: true}).waitFor();

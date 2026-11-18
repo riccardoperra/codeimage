@@ -1,7 +1,7 @@
-import {render} from '@solidjs/web';
 import {createSignal, flush} from 'solid-js';
 import {ReadOnlyCloneButton} from '../../src/pages/UnifiedEditor/ReadOnlyCloneButton';
 import type {ReadOnlyNoticeProps} from '../../src/pages/UnifiedEditor/read-only-notice-props';
+import {createSolid2Mount} from './create-solid2-mount';
 
 function ReadOnlyNotice(props: ReadOnlyNoticeProps) {
   const [pending, setPending] = createSignal(false);
@@ -31,28 +31,4 @@ function ReadOnlyNotice(props: ReadOnlyNoticeProps) {
   );
 }
 
-export function mountReadOnlyNotice(
-  target: HTMLElement,
-  initialProps: ReadOnlyNoticeProps,
-) {
-  const [props, setProps] = createSignal(initialProps);
-  const dispose = render(
-    () => (
-      <ReadOnlyNotice
-        title={props().title}
-        cloneLabel={props().cloneLabel}
-        bannerClass={props().bannerClass}
-        titleClass={props().titleClass}
-        buttonClass={props().buttonClass}
-        onClone={props().onClone}
-      />
-    ),
-    target,
-  );
-  return {
-    update(nextProps: ReadOnlyNoticeProps) {
-      setProps(nextProps);
-    },
-    dispose,
-  };
-}
+export const mountReadOnlyNotice = createSolid2Mount(ReadOnlyNotice);
