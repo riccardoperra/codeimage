@@ -4,6 +4,7 @@ import {createSignal} from 'solid-js';
 export const SECTIONS = [
   {id: 'general', name: 'editor.general'},
   {id: 'appearance', name: 'editor.appearance'},
+  {id: 'formatting', name: 'formatting.title'},
   {id: 'export', name: 'toolbar.export'},
   {id: 'experiments', name: 'editor.experiments'},
   {id: 'whats-new', name: 'editor.whatsNew'},

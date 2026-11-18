@@ -2,16 +2,12 @@ import {EditorConfigStore} from '@codeimage/store/editor/config.store';
 import {provideState} from 'statebuilder';
 import {useI18n} from '@codeimage/locale';
 import {getAuth0State} from '@codeimage/store/auth/auth0';
-import {getExportCanvasStore} from '@codeimage/store/canvas';
-import {getFrameState} from '@codeimage/store/editor/frame';
 import {getUiStore} from '@codeimage/store/ui';
-import {RangeField} from '@codeimage/ui';
 import {Button, buttonStyles} from '@codeui/kit';
 import {appEnvironment} from '@core/configuration';
 import {getUmami} from '@core/constants/umami';
 import {RadioGroup} from '@kobalte/core/radio-group';
 import {useNavigate} from '@solidjs/router';
-import {SegmentedField} from '@ui/SegmentedField/SegmentedField';
 import type {Component, JSX} from 'solid-js';
 import {
   createMemo,
@@ -32,9 +28,6 @@ import {
 } from '../../../components/WhatsNew/releaseDate';
 import {getWhatsNew, RELEASES} from '../../../state/whats-new';
 import type {HighlightId} from '../../../state/whats-new';
-import {CopyAltTextButton} from '../../../components/Toolbar/CopyAltTextButton';
-import {ExportExtension} from '../../../hooks/use-export-image';
-import {EXPORT_SCALES, exportFormats, JPEG_QUALITY} from './export-formats';
 import type {AppLocaleEntries} from '../../../i18n';
 import {SwitchField} from '../controls/fields';
 import type {EditorControlsModel, ThemeEntry} from '../model';
@@ -45,7 +38,6 @@ import {
   CheckIcon,
   CloseIcon,
   ExperimentsIcon,
-  ExportIcon,
   ExternalIcon,
   GeneralIcon,
   NewsIcon,
@@ -75,6 +67,9 @@ import {ColourModeOrb, LayoutPreview, NavPreview} from './previews';
 import type {SectionId} from './settings-state';
 import {SECTIONS, settings} from './settings-state';
 import * as styles from './settings.css';
+import {createExportSection} from './export-settings';
+import {createFormattingSection} from './formatting-settings';
+import {Segmented} from './settings-segmented';
 import {editorLinks, trackEditorLink} from './links';
 
 /** One setting: a title, a line that explains it, and its control. */
@@ -184,25 +179,6 @@ function ThemeCardsPreview(props: {style: ThemeCardsId; theme: ThemeEntry}) {
         </span>
       </Match>
     </Switch>
-  );
-}
-
-/** The kit's segmented control at the kit's height, as wide as its options need. */
-function Segmented<T extends string>(props: {
-  value: T;
-  onChange: (value: T) => void;
-  items: readonly {label: string; value: T}[];
-}) {
-  return (
-    <div class={styles.segmented} data-count={props.items.length}>
-      <SegmentedField
-        adapt
-        size={'sm'}
-        value={props.value}
-        onChange={props.onChange}
-        items={props.items}
-      />
-    </div>
   );
 }
 
@@ -791,134 +767,6 @@ export function createSettingSections(model: EditorControlsModel) {
     ]),
   } satisfies SettingSection;
 
-  // Every row reads and writes the production export store, the one that
-  // today's export popover and dialog share, so there is one value for each.
-  const exportStore = getExportCanvasStore();
-  const target = () => getFrameState().exportTarget();
-  const exportSection = {
-    id: 'export' as const,
-    get name() {
-      return nameOf('export');
-    },
-    icon: ExportIcon,
-    get intro() {
-      return t('editor.exportHint');
-    },
-    groups: createMemo(() => [
-      {
-        title: t('editor.image'),
-        rows: [
-          {
-            id: 'export-format' as const,
-            title: t('editor.format'),
-            description: () =>
-              exportStore.get.extension === ExportExtension.jpeg
-                ? t('editor.jpegHint')
-                : t('editor.formatHint'),
-            control: () => (
-              <Segmented
-                value={exportStore.get.extension}
-                onChange={value => exportStore.set('extension', value)}
-                items={exportFormats.map(format => ({
-                  label: format.name,
-                  value: format.extension,
-                }))}
-              />
-            ),
-          },
-          ...(exportStore.get.extension === ExportExtension.jpeg
-            ? [
-                {
-                  id: 'export-quality' as const,
-                  title: t('export.quality'),
-                  description: () =>
-                    t('editor.qualityHint', {
-                      quality: String(exportStore.get.jpegQuality),
-                    }),
-                  control: () => (
-                    <div class={styles.range}>
-                      <RangeField
-                        value={exportStore.get.jpegQuality}
-                        onChange={value =>
-                          exportStore.set('jpegQuality', value)
-                        }
-                        min={JPEG_QUALITY.min}
-                        max={JPEG_QUALITY.max}
-                        step={JPEG_QUALITY.step}
-                      />
-                    </div>
-                  ),
-                },
-              ]
-            : []),
-          {
-            id: 'export-scale' as const,
-            title: t('export.pixelRatio'),
-            description: () =>
-              target()
-                ? t('editor.targetPixels', {
-                    name: target() ? t(`frame.targets.${target()!.id}`) : '',
-                    resolution: target()?.resolution.join(' × ') ?? '',
-                  })
-                : t('editor.imagePixels', {
-                    resolution: exportStore.canvasResolution(),
-                  }),
-            control: () => (
-              <Show
-                when={!target()}
-                fallback={
-                  <span class={styles.value}>
-                    {getFrameState().exportPixelRatio(
-                      exportStore.get.devicePixelRatio,
-                    )}
-                    x
-                  </span>
-                }
-              >
-                <Segmented
-                  value={String(exportStore.get.devicePixelRatio)}
-                  onChange={value =>
-                    exportStore.set('devicePixelRatio', Number(value))
-                  }
-                  items={EXPORT_SCALES.map(scale => ({
-                    label: `${scale}x`,
-                    value: String(scale),
-                  }))}
-                />
-              </Show>
-            ),
-          },
-          {
-            id: 'export-alt-text' as const,
-            title: t('altText.copy'),
-            description: () => t('altText.hint'),
-            small: true,
-            control: () => <CopyAltTextButton />,
-          },
-        ],
-      },
-      {
-        title: t('editor.tabs'),
-        rows: [
-          {
-            id: 'export-active-tab' as const,
-            title: t('exportTabs.showOnlyActiveTab'),
-            description: () => t('editor.activeTabHint'),
-            small: true,
-            control: () => (
-              <SwitchField
-                id="settings-export-active-tab"
-                label={t('exportTabs.showOnlyActiveTab')}
-                checked={exportStore.get.showOnlyActiveTab}
-                onChange={exportStore.setShowOnlyActiveTab}
-              />
-            ),
-          },
-        ],
-      },
-    ]),
-  } satisfies SettingSection;
-
   const library = {
     id: 'whats-new' as const,
     get name() {
@@ -1053,7 +901,8 @@ export function createSettingSections(model: EditorControlsModel) {
   return [
     general,
     appearance,
-    exportSection,
+    createFormattingSection(),
+    createExportSection(),
     experiments,
     library,
     about,
