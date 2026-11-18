@@ -5,6 +5,7 @@ import {fileURLToPath} from 'node:url';
 import {solid1Bridge} from '@codeimage/vite-plugin-solid1-bridge';
 import solid2 from '@solidjs/vite-plugin';
 import {build, normalizePath} from 'vite';
+import {islandMounts, islandWrapper, registerIslands} from './registry.mjs';
 
 const path = name =>
   normalizePath(fileURLToPath(new URL(name, import.meta.url)));
@@ -16,10 +17,12 @@ const menu = path(
 const fromApp = createRequire(new URL('../../package.json', import.meta.url));
 
 const readOnlyHost = path('./read-only-host.tsx');
-const settingsSearchHost = path('./settings-search-host.tsx');
 const cloneButton = '../../src/pages/UnifiedEditor/ReadOnlyCloneButton';
-const settingsSearchField =
-  '../../src/pages/UnifiedEditor/shell/SettingsSearchField';
+const hostFactory = path(
+  '../../src/core/solid2-islands/create-solid2-island.tsx',
+);
+const hostStyles = path('../../src/core/solid2-islands/island-host.css.ts');
+const islandsEntry = path('./islands-entry.mjs');
 
 const prebuiltVanillaCss = {
   name: 'codeimage-prebuilt-vanilla-css',
@@ -31,19 +34,36 @@ const prebuiltVanillaCss = {
   },
 };
 
-async function buildHost() {
+async function buildHost(islands) {
   const solid1 = fromApp('vite-plugin-solid');
   const {vanillaExtractPlugin} = fromApp('@vanilla-extract/vite-plugin');
   const [{output}] = await build({
     root: path('./'),
     configFile: false,
+    resolve: {dedupe: ['solid-js', '@solidjs/web']},
     plugins: [
+      {
+        name: 'codeimage-solid2-islands-entry',
+        resolveId(id) {
+          if (id === islandsEntry) return id;
+        },
+        load(id) {
+          if (id === islandsEntry) {
+            return islandMounts(
+              islands,
+              path('./create-solid2-mount.ts'),
+              path('./editor-host.ts'),
+            );
+          }
+        },
+      },
       solid1Bridge({
-        entries: [readOnlyHost, settingsSearchHost, menu],
+        entries: [readOnlyHost, menu],
+        optionalEntries: [...islands.keys()],
         modules: {
           '@codeui/kit': {compound: ['DropdownMenu']},
           [cloneButton]: {standalone: ['ReadOnlyCloneButton']},
-          [settingsSearchField]: {standalone: ['SettingsSearchField']},
+          './SettingsSearchField': {standalone: ['SettingsSearchField']},
         },
         legacyComponents: ['../../../../components/Icons/DotVertical'],
         legacy: {
@@ -56,7 +76,7 @@ async function buildHost() {
     build: {
       write: false,
       lib: {
-        entry: path('./editor-host.ts'),
+        entry: islandsEntry,
         formats: ['es'],
       },
     },
@@ -87,7 +107,8 @@ async function buildHost() {
   };
 }
 
-export function editorIslands() {
+export function editorIslands({islands: entries}) {
+  const islands = registerIslands(path('../../'), entries);
   let host;
   return {
     name: 'codeimage-solid2-islands',
@@ -99,8 +120,11 @@ export function editorIslands() {
       if (id === moduleId || id === stylesId) return '\0' + id;
     },
     async load(id) {
+      const island = islands.get(id);
+      if (island)
+        return islandWrapper(island, moduleId, hostFactory, hostStyles);
       if (id !== '\0' + moduleId && id !== '\0' + stylesId) return;
-      host ??= buildHost();
+      host ??= buildHost(islands);
       const result = await host;
       return id === '\0' + stylesId
         ? result.css

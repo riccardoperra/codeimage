@@ -20,7 +20,7 @@ import type {SettingGroup, SettingRow, SettingSection} from './sections';
 import {createSettingSections} from './sections';
 import {settings} from './settings-state';
 import * as styles from './settings.css';
-import SettingsSearchIsland from './SettingsSearchIsland';
+import SettingsSearch from './SettingsSearch';
 
 function Row(props: {row: SettingRow}) {
   const [t] = useI18n<AppLocaleEntries>();
@@ -166,7 +166,7 @@ function Panel(props: {sections: readonly SettingSection[]}) {
         }
       }}
     >
-      <SettingsSearchIsland
+      <SettingsSearch
         label={t('editor.searchSettings')}
         query={query()}
         size={modality === 'full' ? 'sm' : 'md'}

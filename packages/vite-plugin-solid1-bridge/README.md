@@ -17,6 +17,8 @@ solid1Bridge({
 
 `entries` names source files relative to the Vite root. `standalone` replaces named component imports with generated adapters. `compound` moves a root and its JSX subtree together so the parts share their Solid 1 context. `legacyComponents` optionally allows specific additional import specifiers in those subtrees. Add the legacy project's CSS transforms to `legacy.plugins` as needed.
 
+Use `optionalEntries` for Solid 2 files that may have no matching legacy imports. Required `entries` still fail the build when no bridge rule matches.
+
 The plugin provides `virtual:solid1-bridge` for the Solid 2 runtime, builds one shared browser module for generated Solid 1 mounts, and passes legacy CSS through Vite. The default bridge forwards flat props, text children, and callbacks. Compounds capture primitive values and callbacks from the host. Unsupported spreads in compounds, dynamic `as`, and cross-runtime refs require an explicit adapter. Module rules apply to named imports in the configured files.
 
 The plugin supports client builds. It does not transform SSR or provide development HMR. CodeImage's opt-in probe embeds a client build into the existing dashboard's dev or client build.

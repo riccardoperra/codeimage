@@ -12,6 +12,7 @@ export interface LegacyBuildOptions {
 
 export interface Solid1BridgeOptions {
   entries: readonly string[];
+  optionalEntries?: readonly string[];
   modules: Readonly<Record<string, LegacyModuleRule>>;
   legacyComponents?: readonly string[];
   legacy: LegacyBuildOptions;

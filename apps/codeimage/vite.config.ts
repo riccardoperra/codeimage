@@ -9,7 +9,13 @@ import {withStaticVercelPreview} from '../../scripts/vercel-output-build';
 const config: UserConfigExport = defineConfig(async ({mode}) => ({
   plugins: [
     ...(mode !== 'render'
-      ? [(await import('./solid2/islands/vite.mjs')).editorIslands()]
+      ? [
+          (await import('./solid2/islands/vite.mjs')).editorIslands({
+            islands: [
+              {file: './src/pages/UnifiedEditor/shell/SettingsSearch.tsx'},
+            ],
+          }),
+        ]
       : []),
     vanillaExtractPlugin(
       mode === 'render'

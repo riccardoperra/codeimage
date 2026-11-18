@@ -20,6 +20,7 @@ const virtualIds = new Set([componentsId, runtimeId, stylesId]);
 
 export function solid1Bridge({
   entries,
+  optionalEntries = [],
   modules,
   legacy,
   legacyComponents = [],
@@ -38,31 +39,40 @@ export function solid1Bridge({
     },
     async buildStart() {
       bundle = undefined;
+      const files = new Map<string, boolean>();
+      for (const entry of optionalEntries)
+        files.set(normalizePath(resolve(root, entry)), false);
+      for (const entry of entries)
+        files.set(normalizePath(resolve(root, entry)), true);
       const compiled = await Promise.all(
-        entries.map(async (entry, key): Promise<[string, CompiledBridge]> => {
-          const file = normalizePath(resolve(root, entry));
-          this.addWatchFile(file);
-          const code = await readFile(file, 'utf8');
-          try {
-            const result = compileBridge(code, {
-              key,
-              file,
-              modules: rules,
-              legacyComponents,
-            });
-            if (!result)
-              throw new Error('No configured bridge components found');
-            return [file, result];
-          } catch (error) {
-            const detail =
-              error instanceof Error ? error.message : String(error);
-            throw new Error(`Cannot bridge ${file}: ${detail}`, {
-              cause: error,
-            });
-          }
-        }),
+        [...files].map(
+          async (
+            [file, required],
+            key,
+          ): Promise<[string, CompiledBridge] | undefined> => {
+            this.addWatchFile(file);
+            const code = await readFile(file, 'utf8');
+            try {
+              const result = compileBridge(code, {
+                key,
+                file,
+                modules: rules,
+                legacyComponents,
+              });
+              if (!result && required)
+                throw new Error('No configured bridge components found');
+              if (result) return [file, result];
+            } catch (error) {
+              const detail =
+                error instanceof Error ? error.message : String(error);
+              throw new Error(`Cannot bridge ${file}: ${detail}`, {
+                cause: error,
+              });
+            }
+          },
+        ),
       );
-      sources = new Map(compiled);
+      sources = new Map(compiled.filter(result => result !== undefined));
     },
     resolveId(id) {
       if (virtualIds.has(id)) return '\0' + id;
