@@ -44,5 +44,3 @@ export function mountProjectMenu(target, initialProps) {
     },
   };
 }
-
-export * from './editor-host';

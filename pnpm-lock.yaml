@@ -753,7 +753,7 @@ importers:
         specifier: ^7.4.0
         version: 7.4.0
 
-  apps/codeimage/experiments/solid1-bridge:
+  apps/codeimage/solid2/islands:
     devDependencies:
       '@codeimage/vite-plugin-solid1-bridge':
         specifier: workspace:*

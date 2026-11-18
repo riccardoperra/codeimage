@@ -52,8 +52,35 @@ export async function auditSettingsSearch(page) {
       await checkSearch(page);
       checks.push(size.width);
     }
-    return {viewports: checks};
+    await page.setViewportSize(viewport);
+    return {viewports: checks, ...(await auditSettingsAssets(page))};
   } finally {
     await page.setViewportSize(viewport);
   }
+}
+
+async function auditSettingsAssets(page) {
+  const fontFamilies = ['Inter', 'Inter var'];
+  const fontsLoaded = await page.evaluate(
+    async families =>
+      Promise.all(
+        families.map(async family => {
+          const faces = await document.fonts.load(`500 16px "${family}"`);
+          return faces.some(face => face.status === 'loaded');
+        }),
+      ),
+    fontFamilies,
+  );
+  assert.deepEqual(fontsLoaded, [true, true]);
+
+  const trigger = page.locator('[data-settings-trigger]:visible').first();
+  const triggerIcon = await trigger.locator('svg').boundingBox();
+  assert.ok(triggerIcon && triggerIcon.width >= 16);
+  await trigger.click();
+  const close = page.getByRole('button', {name: 'Close', exact: true});
+  const closeIcon = await close.locator('svg').boundingBox();
+  assert.ok(closeIcon && closeIcon.width >= 16);
+  await closeSettingsDialog(page);
+
+  return {fontFamilies, iconWidths: [triggerIcon.width, closeIcon.width]};
 }

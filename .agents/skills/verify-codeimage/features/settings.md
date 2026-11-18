@@ -18,7 +18,7 @@ Source: `pages/UnifiedEditor/shell/SettingsDialog.tsx`, `shell/sections.tsx`, `s
 
 Run `settings-persistence` for Dock and Orb persisted across navigation to `/` without query overrides. It checks checked radios after reload, Restore defaults and the visible no-results message. Restore defaults resets layout and theme cards and switches the rendering engine back off Takumi; it leaves panel side unchanged.
 
-Run `solid2-settings-search` at desktop and phone widths. It uses `/` to focus the search input, finds Export scale, clears the query with Escape, moves focus to the sections with ArrowDown, and checks that closing the dialog detaches the search island and restores focus to the opener.
+Run `solid2-settings-search` at desktop and phone widths. It uses `/` to focus the search input, finds Export scale, clears the query with Escape, moves focus to the sections with ArrowDown, and checks that closing the dialog detaches the search island and restores focus to the opener. It also loads both Inter font families and checks that the Settings and Close icons keep their width.
 
 ## Gotchas
 

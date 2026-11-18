@@ -1,5 +1,21 @@
 import {themeVars} from '@codeimage/ui';
 import {globalFontFace, globalStyle} from '@vanilla-extract/css';
+import interItalic from 'inter-ui/variable/InterVariable-Italic.woff2?url';
+import interNormal from 'inter-ui/variable/InterVariable.woff2?url';
+
+for (const family of ['Inter', 'Inter var']) {
+  for (const [fontStyle, url] of [
+    ['normal', interNormal],
+    ['italic', interItalic],
+  ]) {
+    globalFontFace(family, {
+      fontDisplay: 'swap',
+      fontStyle,
+      fontWeight: '100 900',
+      src: `url("${url}") format("woff2")`,
+    });
+  }
+}
 
 globalStyle('body', {
   fontFamily: 'Inter, system-ui, -apple-system, sans-serif',

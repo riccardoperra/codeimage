@@ -835,7 +835,7 @@ export async function audit({page, context, base, out, server}) {
   await feature('animation-gif-step-size', mp4.stepSizeGif);
   for (const [name, run] of animateTimelineCases({fresh, out}))
     await feature(name, run);
-  await auditSavedProjects({feature, doctor, context, base, out, page});
+  await auditSavedProjects({feature, fresh, doctor, context, base, out, page});
   await feature('projects', async () => {
     await page
       .getByRole('button', {name: 'Sign in with GitHub', exact: true})

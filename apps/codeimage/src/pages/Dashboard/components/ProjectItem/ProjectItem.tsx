@@ -15,7 +15,7 @@ import type {VoidProps} from 'solid-js';
 import {For, Show} from 'solid-js';
 import type {AppLocaleEntries} from '../../../../i18n';
 import {getDashboardState} from '../../dashboard.state';
-import {ProjectActionsMenu} from './ProjectActionsMenu';
+import {ProjectActionsMenuIsland} from './ProjectActionsMenuIsland';
 import * as styles from './ProjectItem.css';
 
 interface ProjectItemProps {
@@ -119,7 +119,7 @@ export function ProjectItem(props: VoidProps<ProjectItemProps>) {
         </Text>
 
         <div>
-          <ProjectActionsMenu
+          <ProjectActionsMenuIsland
             renameLabel={t('dashboard.renameProject.dropdownLabel')}
             duplicateLabel={t('dashboard.cloneProject.dropdownLabel')}
             deleteLabel={t('dashboard.deleteProject.dropdownLabel')}

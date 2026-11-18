@@ -9,11 +9,7 @@ import {withStaticVercelPreview} from '../../scripts/vercel-output-build';
 const config: UserConfigExport = defineConfig(async ({mode}) => ({
   plugins: [
     ...(mode !== 'render'
-      ? [
-          (await import('./experiments/solid1-bridge/vite.mjs')).editorIslands({
-            projectMenu: process.env.CODEIMAGE_SOLID1_BRIDGE === '1',
-          }),
-        ]
+      ? [(await import('./solid2/islands/vite.mjs')).editorIslands()]
       : []),
     vanillaExtractPlugin(
       mode === 'render'

@@ -25,7 +25,7 @@ async function auditProjectMenuBridge({page}) {
     const row = page
       .getByRole('listitem')
       .filter({has: page.locator(`a[href="/${project.id}"]`)});
-    const bridge = row.locator('[data-solid2-project-menu]');
+    const bridge = row.locator('[data-solid2-island="project-menu"]');
     const trigger = bridge.getByRole('button', {name: 'Menu', exact: true});
     const menu = page.locator(
       '[role="menu"][data-cui="dropdown-menu-content"]',
@@ -36,7 +36,7 @@ async function auditProjectMenuBridge({page}) {
     await rename.and(focused).waitFor();
     assert.equal(
       await menu.evaluate(
-        element => !element.closest('[data-solid2-project-menu]'),
+        element => !element.closest('[data-solid2-island="project-menu"]'),
       ),
       true,
     );
@@ -106,22 +106,22 @@ async function auditProjectMenuBridge({page}) {
 
 export async function auditSavedProjects(options) {
   await auditSnippets(options);
-  if (
-    process.env.VERIFY_CASES?.split(',').some(
-      name => name.trim() === 'solid2-read-only-notice',
-    )
-  ) {
-    await options.feature('solid2-read-only-notice', () =>
-      auditReadOnlyIsland(options),
-    );
-  }
-  const requested = process.env.VERIFY_CASES?.split(',').some(
-    name => name.trim() === 'solid1-bridge-project-menu',
+  const requested = process.env.VERIFY_CASES?.split(',').map(name =>
+    name.trim(),
   );
-  if (requested) {
-    assert.equal(process.env.CODEIMAGE_SOLID1_BRIDGE, '1');
-    await options.feature('solid1-bridge-project-menu', () =>
-      auditProjectMenuBridge(options),
+  for (const [name, audit] of [
+    ['solid2-read-only-notice', auditReadOnlyIsland],
+    ['solid1-bridge-project-menu', auditProjectMenuBridge],
+  ]) {
+    if (!requested?.includes(name)) continue;
+    await options.feature(name, () =>
+      options.fresh(
+        {name, layout: 'inspector', viewport: {width: 1440, height: 900}},
+        async ({page, doctor}) => {
+          await doctor('/', 'editor', 'inspector');
+          return audit({page, base: options.base});
+        },
+      ),
     );
   }
 }

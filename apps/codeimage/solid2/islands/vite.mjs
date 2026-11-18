@@ -1,3 +1,4 @@
+import {existsSync} from 'node:fs';
 import {readFile} from 'node:fs/promises';
 import {createRequire} from 'node:module';
 import {fileURLToPath} from 'node:url';
@@ -20,7 +21,17 @@ const cloneButton = '../../src/pages/UnifiedEditor/ReadOnlyCloneButton';
 const settingsSearchField =
   '../../src/pages/UnifiedEditor/shell/SettingsSearchField';
 
-async function buildHost(projectMenu) {
+const prebuiltVanillaCss = {
+  name: 'codeimage-prebuilt-vanilla-css',
+  enforce: 'pre',
+  load(id) {
+    if (id.endsWith('.vanilla.css') && existsSync(id)) {
+      return readFile(id, 'utf8');
+    }
+  },
+};
+
+async function buildHost() {
   const solid1 = fromApp('vite-plugin-solid');
   const {vanillaExtractPlugin} = fromApp('@vanilla-extract/vite-plugin');
   const [{output}] = await build({
@@ -28,11 +39,7 @@ async function buildHost(projectMenu) {
     configFile: false,
     plugins: [
       solid1Bridge({
-        entries: [
-          readOnlyHost,
-          settingsSearchHost,
-          ...(projectMenu ? [menu] : []),
-        ],
+        entries: [readOnlyHost, settingsSearchHost, menu],
         modules: {
           '@codeui/kit': {compound: ['DropdownMenu']},
           [cloneButton]: {standalone: ['ReadOnlyCloneButton']},
@@ -41,10 +48,7 @@ async function buildHost(projectMenu) {
         legacyComponents: ['../../../../components/Icons/DotVertical'],
         legacy: {
           root: path('../../'),
-          plugins: [
-            vanillaExtractPlugin({unstable_mode: 'transform'}),
-            solid1(),
-          ],
+          plugins: [prebuiltVanillaCss, vanillaExtractPlugin(), solid1()],
         },
       }),
       solid2(),
@@ -52,7 +56,7 @@ async function buildHost(projectMenu) {
     build: {
       write: false,
       lib: {
-        entry: path(projectMenu ? './host.jsx' : './editor-host.ts'),
+        entry: path('./editor-host.ts'),
         formats: ['es'],
       },
     },
@@ -77,10 +81,13 @@ async function buildHost(projectMenu) {
   ) {
     throw new Error('Unexpected assets in the Solid 2 islands');
   }
-  return {js: chunk.code, css: css.map(file => file.source).join('\n')};
+  return {
+    js: chunk.code,
+    css: `@layer solid2-islands {\n${css.map(file => file.source).join('\n')}\n}`,
+  };
 }
 
-export function editorIslands({projectMenu}) {
+export function editorIslands() {
   let host;
   return {
     name: 'codeimage-solid2-islands',
@@ -92,10 +99,8 @@ export function editorIslands({projectMenu}) {
       if (id === moduleId || id === stylesId) return '\0' + id;
     },
     async load(id) {
-      if (projectMenu && id === menu)
-        return readFile(path('./adapter.jsx'), 'utf8');
       if (id !== '\0' + moduleId && id !== '\0' + stylesId) return;
-      host ??= buildHost(projectMenu);
+      host ??= buildHost();
       const result = await host;
       return id === '\0' + stylesId
         ? result.css
