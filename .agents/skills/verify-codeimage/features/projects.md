@@ -56,4 +56,4 @@ CODEIMAGE_SOLID1_BRIDGE=1 VERIFY_AUDIT=1 VERIFY_CASES=solid1-bridge-project-menu
   VERIFY_BROWSER_CHANNEL=chrome node .agents/skills/verify-codeimage/scripts/verify.mjs
 ```
 
-The case creates a disposable MSW project, opens the menu by keyboard, checks Escape and focus, renames the project through the app dialog, clones it and follows the new URL, then deletes the original through the app dialog. It checks the mutation responses. The dashboard and API use the normal app and its mock backend, and only the project actions menu goes through the probe.
+The case creates a disposable MSW project, opens the menu by keyboard, checks Escape and focus, renames the project through the app dialog, clones it and follows the new URL, then deletes the original through the app dialog. It checks the mutation responses and verifies that the rename dialog blocks background clicks only while open. The dashboard and API use the normal app and its mock backend, and only the project actions menu goes through the probe.

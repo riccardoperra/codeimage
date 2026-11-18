@@ -47,6 +47,12 @@ async function auditProjectMenuBridge({page}) {
     await rename.click();
     const dialog = page.getByRole('alertdialog', {name: 'Rename project'});
     await dialog.getByRole('textbox').fill('Renamed through the bridge');
+    await menu.waitFor({state: 'detached'});
+    const body = page.locator('body');
+    assert.equal(
+      await body.evaluate(element => element.style.pointerEvents),
+      'none',
+    );
     const renamed = page.waitForResponse(
       response =>
         response.request().method() === 'PUT' &&
@@ -55,6 +61,11 @@ async function auditProjectMenuBridge({page}) {
     );
     await dialog.getByRole('button', {name: 'Confirm', exact: true}).click();
     assert.ok((await renamed).ok());
+    await dialog.waitFor({state: 'detached'});
+    assert.notEqual(
+      await body.evaluate(element => element.style.pointerEvents),
+      'none',
+    );
     await row.getByText('Renamed through the bridge', {exact: true}).waitFor();
 
     await trigger.click();

@@ -15,6 +15,7 @@ export interface ProjectActionsMenuProps {
   onRename(): void;
   onDuplicate(): void;
   onDelete(): void;
+  onCloseAutoFocus?(): void;
 }
 
 export function ProjectActionsMenu(props: ProjectActionsMenuProps) {
@@ -29,7 +30,7 @@ export function ProjectActionsMenu(props: ProjectActionsMenuProps) {
         <DotHorizontalIcon size={'md'} />
       </DropdownMenuTrigger>
       <DropdownMenuPortal>
-        <DropdownMenuContent>
+        <DropdownMenuContent onCloseAutoFocus={props.onCloseAutoFocus}>
           <DropdownMenuItem onClick={props.onRename}>
             {props.renameLabel}
           </DropdownMenuItem>

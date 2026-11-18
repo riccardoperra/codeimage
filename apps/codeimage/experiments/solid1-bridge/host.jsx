@@ -4,15 +4,32 @@ import {ProjectActionsMenu} from '../../src/pages/Dashboard/components/ProjectIt
 
 export function mountProjectMenu(target, initialProps) {
   const [props, setProps] = createSignal(initialProps);
+  let pendingAction;
+
+  function runMenuActionAfterClose() {
+    queueMicrotask(() => {
+      const action = pendingAction;
+      pendingAction = undefined;
+      action?.();
+    });
+  }
+
   const dispose = render(
     () => (
       <ProjectActionsMenu
         renameLabel={props().renameLabel}
         duplicateLabel={props().duplicateLabel}
         deleteLabel={props().deleteLabel}
-        onRename={props().onRename}
-        onDuplicate={props().onDuplicate}
-        onDelete={props().onDelete}
+        onRename={() => {
+          pendingAction = props().onRename;
+        }}
+        onDuplicate={() => {
+          pendingAction = props().onDuplicate;
+        }}
+        onDelete={() => {
+          pendingAction = props().onDelete;
+        }}
+        onCloseAutoFocus={runMenuActionAfterClose}
       />
     ),
     target,
@@ -21,6 +38,9 @@ export function mountProjectMenu(target, initialProps) {
     update(nextProps) {
       setProps(nextProps);
     },
-    dispose,
+    dispose() {
+      pendingAction = undefined;
+      dispose();
+    },
   };
 }
