@@ -2,12 +2,16 @@ import assert from 'node:assert/strict';
 
 export async function auditCodeMirrorPreview(page, section, editor) {
   const name = 'CodeMirror preview preset';
+  const getDialog = name =>
+    page
+      .getByRole('dialog', {name, exact: true})
+      .or(page.getByRole('alertdialog', {name, exact: true}));
   await section('presets');
   await page
     .getByRole('button', {name: 'Add preset', exact: true})
     .first()
     .click();
-  const add = page.getByRole('alertdialog', {name: 'Add a new preset'});
+  const add = getDialog('Add a new preset');
   await add.getByRole('textbox').fill(name);
   await add.getByRole('button', {name: 'Confirm', exact: true}).click();
   await add.waitFor({state: 'hidden'});
@@ -24,10 +28,7 @@ export async function auditCodeMirrorPreview(page, section, editor) {
     name: 'Preset menu',
     exact: true,
   });
-  const dialog = page.getByRole('alertdialog', {
-    name: 'Update preset',
-    exact: true,
-  });
+  const dialog = getDialog('Update preset');
   const island = dialog.locator('[data-solid2-island="custom-editor-preview"]');
   const content = island.locator('.cm-content[contenteditable="false"]');
   const code = 'function Code() {\n console.log()\n}';

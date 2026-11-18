@@ -100,7 +100,7 @@ ReadOnlyNotice, Settings search and the preset comparison already exercised the 
 ### P5a. Compiler, imports, and types
 
 - Give the app Solid 2, `@solidjs/web`, and the Solid 2 Vite plugin. Keep explicit versions and compiler inputs for the bridged Solid 1 widgets. Use the verified CodeMirror and statebuilder builds in the Solid 2 graph. Keep the website on its Solid 1 catalog until P6.
-- For each migrated module, move renderer imports and DOM JSX types to `@solidjs/web`, move store imports to `solid-js`, and migrate provider types in the owning runtime. Check the emitted JS of shared workspace packages and keep explicit entry lists for the app root, migrated islands, and legacy widgets.
+- For each migrated module, move renderer imports and DOM JSX types to `@solidjs/web`, move store imports to `solid-js`, and migrate provider types in the owning runtime. Check the emitted JS of shared workspace packages and keep an explicit list of legacy widget entries.
 - Gate this pass with frozen install, workspace builds, TypeScript, and client and Node build graphs. Verify that CodeImage browser code resolves Solid 2 and only the explicit legacy widget graph still resolves Solid 1.
 
 ### P5b. App entry, routing, and providers
