@@ -1,16 +1,20 @@
 import type {LanguageIconDefinition} from '@codeimage/config';
 import {exportExclude} from '@core/directives/exportExclude';
 import {createResizeObserver} from '@solid-primitives/resize-observer';
-import {createSortable} from '@thisbeyond/solid-dnd';
+import {registerSortableTab} from '@core/modules/dnd';
+import type {DragDropManager} from '@dnd-kit/dom';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 import type {VoidProps} from 'solid-js';
 import {
+  createEffect,
   createMemo,
   createSignal,
   lazy,
+  onCleanup,
   onMount,
   Show,
   Suspense,
+  untrack,
 } from 'solid-js';
 import {useI18n} from '@codeimage/locale';
 import type {AppLocaleEntries} from '../../../../i18n';
@@ -24,6 +28,10 @@ export interface WindowTabProps {
   readonly appearance?: WindowStyle;
   readonly id: string;
   readonly index: number;
+  readonly sortIndex: number;
+  readonly manager?: DragDropManager;
+  readonly dragging: boolean;
+  readonly dropTarget: boolean;
   readonly tabName?: string | null;
   readonly tabIcon?: LanguageIconDefinition['content'];
   readonly readonlyTab: boolean;
@@ -58,10 +66,21 @@ function TabCloseButton(props: {onClose: () => void}) {
 }
 
 export function DraggableWindowTab(props: VoidProps<WindowTabProps>) {
-  let ref!: HTMLDivElement;
+  let ref: HTMLDivElement | undefined;
   const [width, setWidth] = createSignal<number>(0);
-  // eslint-disable-next-line solid/reactivity
-  const sortable = createSortable(props.id);
+  createEffect(() => {
+    const manager = props.manager;
+    if (!manager || !ref) return;
+    const sortable = registerSortableTab(manager, {
+      id: untrack(() => props.id),
+      element: ref,
+      index: untrack(() => props.sortIndex),
+    });
+    createEffect(() => {
+      sortable.index = props.sortIndex;
+    });
+    onCleanup(sortable.destroy);
+  });
 
   onMount(() => {
     createResizeObserver(
@@ -76,7 +95,6 @@ export function DraggableWindowTab(props: VoidProps<WindowTabProps>) {
     <WindowTab
       ref={el => {
         ref = el;
-        sortable(ref);
         exportExclude(el, () => props.exportExclude);
       }}
       id={props.id}
@@ -85,13 +103,25 @@ export function DraggableWindowTab(props: VoidProps<WindowTabProps>) {
       active={props.active}
       accentMode={props.accentMode}
       tabIcon={props.tabIcon}
-      data-active-drag={sortable.isActiveDraggable}
+      classList={
+        props.manager ? {[modern.sortableInteraction]: true} : undefined
+      }
+      data-active-drag={props.dragging || undefined}
+      data-tab-drop-target={props.dropTarget || undefined}
+      role={props.manager ? 'group' : undefined}
+      aria-label={props.manager ? props.tabName || undefined : undefined}
+      tabIndex={props.manager ? 0 : undefined}
       data-export-exclude={props.exportExclude}
       data-host-index={props.index}
       style={assignInlineVars({
         [styles.tabVars.tabIndex]: String(props.index),
       })}
       onMouseDown={() => props.onClick?.()}
+      onKeyDown={event => {
+        if (event.target === event.currentTarget && event.key === 'Enter') {
+          props.onClick?.();
+        }
+      }}
       content={
         <Show
           fallback={
@@ -130,6 +160,7 @@ export function DraggableWindowTab(props: VoidProps<WindowTabProps>) {
             fallback={
               <CloseIcon
                 class={styles.tabCloseIcon}
+                data-tab-close
                 onClick={evt => {
                   props.onClose?.();
                   evt.stopPropagation();

@@ -1,14 +1,16 @@
 import {getRootEditorStore} from '@codeimage/store/editor';
-import type {DragEventParam} from '@core/modules/dnd';
-import {ConstrainDragAxis} from '@core/modules/dnd/ConstrainDragAxis';
-import {
-  closestCorners,
-  DragDropProvider,
-  DragDropSensors,
-  SortableProvider,
-} from '@thisbeyond/solid-dnd';
+import {createTabDragManager} from '@core/modules/dnd';
+import type {DragDropManager, DragEndEvent} from '@dnd-kit/dom';
 import type {VoidProps} from 'solid-js';
-import {createMemo, ErrorBoundary, For, Show, Suspense} from 'solid-js';
+import {
+  createEffect,
+  createSignal,
+  ErrorBoundary,
+  For,
+  onCleanup,
+  Show,
+  Suspense,
+} from 'solid-js';
 import {createTabIcon} from '../../../hooks/use-tab-icon';
 import type {WindowStyle} from '../WindowStyles/WindowStyles';
 import {WindowTab, WindowTabContentText} from './Tab/WindowTab';
@@ -47,11 +49,9 @@ export function TerminalWindowTabList(
   );
 }
 
-export function TerminalWindowTabListContent(
+function TerminalWindowTabListContent(
   props: VoidProps<TerminalWindowTabListProps>,
 ) {
-  let wrapperRef!: HTMLDivElement;
-
   const {
     state,
     actions: {
@@ -75,21 +75,57 @@ export function TerminalWindowTabListContent(
     return state.editors;
   };
 
-  const sortableIds = createMemo(() => editors().map(editor => editor.id));
+  const [manager, setManager] = createSignal<DragDropManager>();
+  const [dragSource, setDragSource] = createSignal<string | number>();
+  const [dropTarget, setDropTarget] = createSignal<string | number>();
 
-  function handleDragEnd(handler: DragEventParam) {
-    if (handler.draggable && handler.droppable) {
-      const droppableId = handler.droppable.id;
-      const draggableId = handler.draggable.id;
-      const fromIndex = state.editors.findIndex(({id}) => id === draggableId);
-      const toIndex = state.editors.findIndex(({id}) => id === droppableId);
-      if (fromIndex !== toIndex) {
+  function handleDragEnd({canceled, operation}: DragEndEvent) {
+    setDragSource(undefined);
+    setDropTarget(undefined);
+    const {source, target, activatorEvent} = operation;
+    if (!source) return;
+
+    if (!canceled && target && source.id !== target.id) {
+      const fromIndex = state.editors.findIndex(({id}) => id === source.id);
+      const toIndex = state.editors.findIndex(({id}) => id === target.id);
+      if (fromIndex >= 0 && toIndex >= 0) {
         const updatedItems = state.editors.slice();
         updatedItems.splice(toIndex, 0, ...updatedItems.splice(fromIndex, 1));
         setEditors(updatedItems);
       }
     }
+
+    const element = source.element;
+    if (
+      activatorEvent instanceof KeyboardEvent &&
+      element instanceof HTMLElement
+    ) {
+      element.focus({preventScroll: true});
+    }
   }
+
+  createEffect(() => {
+    if (props.readOnly || props.showOnlyActiveTab) return;
+    const dragManager = createTabDragManager();
+    dragManager.monitor.addEventListener('dragstart', ({operation}) =>
+      setDragSource(operation.source?.id),
+    );
+    dragManager.monitor.addEventListener('dragover', ({operation}) =>
+      setDropTarget(operation.target?.id),
+    );
+    let pendingDrop: number | undefined;
+    dragManager.monitor.addEventListener('dragend', event => {
+      pendingDrop = requestAnimationFrame(() => handleDragEnd(event));
+    });
+    setManager(dragManager);
+    onCleanup(() => {
+      if (pendingDrop !== undefined) cancelAnimationFrame(pendingDrop);
+      setManager(undefined);
+      setDragSource(undefined);
+      setDropTarget(undefined);
+      dragManager.destroy();
+    });
+  });
 
   function handleTabNameChange(id: string, updatedName: string) {
     setTabName(id, updatedName, true);
@@ -113,64 +149,52 @@ export function TerminalWindowTabListContent(
           data-window-tabs={props.appearance}
           data-accent-visible={props.accent}
         >
-          <div
-            class={props.appearance ? modern.list : styles.tabListWrapper}
-            ref={wrapperRef}
-          >
-            <DragDropProvider
-              onDragEnd={handleDragEnd}
-              collisionDetector={closestCorners}
-            >
-              <DragDropSensors />
-              <ConstrainDragAxis />
-              <SortableProvider ids={sortableIds()}>
-                <For each={editors()}>
-                  {(editor, index) => {
-                    const icon = createTabIcon(
-                      () => editor.tab.tabName ?? null,
-                      () => editor.languageId,
-                      true,
-                    );
+          <div class={props.appearance ? modern.list : styles.tabListWrapper}>
+            <For each={editors()}>
+              {(editor, index) => {
+                const icon = createTabIcon(
+                  () => editor.tab.tabName ?? null,
+                  () => editor.languageId,
+                  true,
+                );
 
-                    const active = () => isActive(editor.id);
+                const active = () => isActive(editor.id);
 
-                    const zIndex = createMemo(() => {
-                      if (active()) {
-                        return 10;
-                      } else {
-                        return 10 - (index() + 1);
-                      }
-                    });
+                const zIndex = () => (active() ? 10 : 9 - index());
 
-                    return (
-                      <DraggableWindowTab
-                        appearance={props.appearance}
-                        exportExclude={
-                          !editor.tab.tabName?.length &&
-                          (state.editors.length === 1 || !active())
-                        }
-                        id={editor.id}
-                        index={zIndex()}
-                        tabName={editor.tab.tabName}
-                        tabIcon={icon()?.content}
-                        readonlyTab={props.readOnly || !active()}
-                        accentMode={props.accent}
-                        active={active()}
-                        onClick={() => setActiveEditorId(editor.id)}
-                        onTabChange={tabName =>
-                          handleTabNameChange(editor.id, tabName)
-                        }
-                        onClose={
-                          !props.readOnly && state.editors.length > 1
-                            ? () => removeEditor(editor.id)
-                            : null
-                        }
-                      />
-                    );
-                  }}
-                </For>
-              </SortableProvider>
-            </DragDropProvider>
+                return (
+                  <DraggableWindowTab
+                    appearance={props.appearance}
+                    exportExclude={
+                      !editor.tab.tabName?.length &&
+                      (state.editors.length === 1 || !active())
+                    }
+                    id={editor.id}
+                    manager={manager()}
+                    sortIndex={index()}
+                    dragging={dragSource() === editor.id}
+                    dropTarget={
+                      dropTarget() === editor.id && dragSource() !== editor.id
+                    }
+                    index={zIndex()}
+                    tabName={editor.tab.tabName}
+                    tabIcon={icon()?.content}
+                    readonlyTab={props.readOnly || !active()}
+                    accentMode={props.accent}
+                    active={active()}
+                    onClick={() => setActiveEditorId(editor.id)}
+                    onTabChange={tabName =>
+                      handleTabNameChange(editor.id, tabName)
+                    }
+                    onClose={
+                      !props.readOnly && state.editors.length > 1
+                        ? () => removeEditor(editor.id)
+                        : null
+                    }
+                  />
+                );
+              }}
+            </For>
           </div>
           <Show when={!props.readOnly}>
             <TabAddButton

@@ -6,7 +6,7 @@ import {createRequire} from 'node:module';
 import {mkdir, writeFile, readFile, mkdtemp, cp, rm} from 'node:fs/promises';
 import {resolve} from 'node:path';
 import {fileURLToPath} from 'node:url';
-import {chromium} from 'playwright';
+import {chromium, webkit} from 'playwright';
 import {createMockContext} from './mock-context.mjs';
 import {PNG} from 'pngjs';
 import {dismissNews} from './news.mjs';
@@ -97,13 +97,19 @@ try {
     await new Promise(r => setTimeout(r, 500));
   }
   assert.ok(ready, 'Vite HTTP readiness');
-  profile = await mkdtemp(`/tmp/codeimage-chrome-${port}-`);
-  const owner = await chromium.launchPersistentContext(profile, {
-    channel: process.env.VERIFY_BROWSER_CHANNEL || undefined,
-    args: [`--remote-debugging-port=${debugPort}`],
-  });
-  browser = owner.browser();
-  assert.ok(browser, 'Owned Chrome browser is available');
+  const channel = process.env.VERIFY_BROWSER_CHANNEL;
+  if (channel === 'webkit') {
+    browser = await webkit.launch();
+  } else {
+    profile = await mkdtemp(`/tmp/codeimage-chrome-${port}-`);
+    browser = (
+      await chromium.launchPersistentContext(profile, {
+        channel: channel || undefined,
+        args: [`--remote-debugging-port=${debugPort}`],
+      })
+    ).browser();
+  }
+  assert.ok(browser, 'Owned browser is available');
   context = await createMockContext(browser, base, {
     viewport: {width: 1440, height: 1000},
     locale: 'en-US',
@@ -159,11 +165,19 @@ try {
   await editor.fill(code);
   await page.waitForFunction(
     code =>
-      document.querySelector('.cm-content[contenteditable="true"]')
-        ?.innerText === code,
+      [
+        ...document.querySelectorAll(
+          '.cm-content[contenteditable="true"] .cm-line',
+        ),
+      ]
+        .map(line => line.textContent)
+        .join('\n') === code,
     code,
   );
-  assert.equal(await editor.innerText(), code);
+  assert.equal(
+    (await editor.locator('.cm-line').allTextContents()).join('\n'),
+    code,
+  );
   actions.push(
     'Filled visible CodeMirror editor and asserted exact two-line text',
   );
