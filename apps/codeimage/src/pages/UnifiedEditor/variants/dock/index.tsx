@@ -1,3 +1,4 @@
+import {createResizeRef} from '@core/hooks/create-resize-ref';
 import {BarSettings} from './BarSettings';
 import {getEditorStore} from '@codeimage/store/editor';
 import {useI18n} from '@codeimage/locale';
@@ -213,13 +214,9 @@ export default function Dock(props: VariantProps) {
   createEffect(panel, panel => {
     if (panel && compact()) animation.actions.setOpen(false);
   });
-  const measureAnimation = (element: HTMLDivElement) => {
-    const observer = new ResizeObserver(() =>
-      setAnimateHeight(element.getBoundingClientRect().height),
-    );
-    observer.observe(element);
-    onCleanup(() => observer.disconnect());
-  };
+  const measureAnimation = createResizeRef(element =>
+    setAnimateHeight(element.getBoundingClientRect().height),
+  );
 
   createTrackedEffect(() => {
     if (!props.pageState().editable) close();

@@ -23,7 +23,8 @@ import {CanvasToolbar} from '../../controls/CanvasToolbar';
 import {ShortcutHelp} from '../../controls/ShortcutHelp';
 import type {ControlId} from '../../model';
 import * as styles from './accordion.css';
-import {createOverlayPlacement, createResizeRef} from './overlays';
+import {createOverlayPlacement} from './overlays';
+import {createResizeRef} from '@core/hooks/create-resize-ref';
 import {PANELS} from './panels';
 import type {PanelId} from './panels';
 import {PLACES} from './places';
@@ -215,13 +216,10 @@ export function Accordion(props: VariantProps) {
   onSettled(() => {
     return untrack(() => props.model).controls.register(id => {
       const place = PLACES[id];
-      if (place.group === 'signature') {
-        setSheet('tall');
-        toggleSection(place.panel, true);
-        controlOverlay.open('signature');
-        return;
-      }
-      openQuickControl(place.panel, id);
+      if (place.group !== 'signature') return openQuickControl(place.panel, id);
+      setSheet('tall');
+      toggleSection(place.panel, true);
+      controlOverlay.open('signature');
     });
   });
   // A click on the signature in the canvas opens its section at the handle.

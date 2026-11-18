@@ -4,9 +4,8 @@ import {
   DropdownMenuItem,
   DropdownMenuPortal,
   DropdownMenuTrigger,
-  IconButton,
-} from '@codeui/kit';
-import {onCleanup} from 'solid-js';
+} from '@ui/DropdownMenu';
+import {IconButton} from '@ui/legacy-controls';
 
 export interface ProjectActionsMenuProps {
   renameLabel: string;
@@ -18,26 +17,13 @@ export interface ProjectActionsMenuProps {
 }
 
 export function ProjectActionsMenu(props: ProjectActionsMenuProps) {
-  let pendingAction: (() => void) | undefined;
-  onCleanup(() => {
-    pendingAction = undefined;
-  });
-
-  function runActionAfterClose() {
-    queueMicrotask(() => {
-      const action = pendingAction;
-      pendingAction = undefined;
-      action?.();
-    });
-  }
-
   return (
-    <DropdownMenu modal={false}>
+    <DropdownMenu>
       <DropdownMenuTrigger
         as={IconButton}
-        theme={'secondary'}
-        size={'xs'}
-        aria-label={'Menu'}
+        theme="secondary"
+        size="xs"
+        aria-label="Menu"
       >
         <svg
           viewBox="0 0 24 24"
@@ -52,26 +38,14 @@ export function ProjectActionsMenu(props: ProjectActionsMenuProps) {
         </svg>
       </DropdownMenuTrigger>
       <DropdownMenuPortal>
-        <DropdownMenuContent onCloseAutoFocus={runActionAfterClose}>
-          <DropdownMenuItem
-            onClick={() => {
-              pendingAction = props.onRename;
-            }}
-          >
+        <DropdownMenuContent>
+          <DropdownMenuItem onSelect={() => props.onRename()}>
             {props.renameLabel}
           </DropdownMenuItem>
-          <DropdownMenuItem
-            onClick={() => {
-              pendingAction = props.onDuplicate;
-            }}
-          >
+          <DropdownMenuItem onSelect={() => props.onDuplicate()}>
             {props.duplicateLabel}
           </DropdownMenuItem>
-          <DropdownMenuItem
-            onClick={() => {
-              pendingAction = props.onDelete;
-            }}
-          >
+          <DropdownMenuItem onSelect={() => props.onDelete()}>
             {props.deleteLabel}
           </DropdownMenuItem>
         </DropdownMenuContent>

@@ -25,7 +25,7 @@ import {appEnvironment} from '@core/configuration';
 import {shadowsLabel} from '@core/configuration/shadow';
 import {AVAILABLE_TERMINAL_THEMES} from '@core/configuration/terminal-themes';
 import {getUmami} from '@core/constants/umami';
-import {createMemo} from 'solid-js';
+import {createMemo, flush} from 'solid-js';
 import type {Accessor, Component} from 'solid-js';
 import {
   createAmbientBackground,
@@ -340,7 +340,7 @@ export function createEditorControlsModel(): EditorControlsModel {
       active: () => isActiveTheme(theme.id),
       apply: () =>
         session.commit(() => {
-          dispatchUpdateTheme({theme, updateBackground: true});
+          flush(() => dispatchUpdateTheme({theme, updateBackground: true}));
           getUmami().track('theme-change', {themeId: theme.id});
         }),
       preview: () => session.show(() => showTheme(theme, true)),

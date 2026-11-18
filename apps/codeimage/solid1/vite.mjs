@@ -21,13 +21,9 @@ const controls = [
 
 export function legacyWidgets() {
   return solid1Bridge({
-    entries: [
-      'src/pages/Dashboard/components/ProjectItem/ProjectActionsMenu.tsx',
-      'src/ui/legacy-controls.ts',
-    ],
+    entries: ['src/ui/legacy-controls.ts'],
     modules: {
       '@codeui/kit': {
-        compound: ['DropdownMenu'],
         standalone: controls,
         domProps: controls,
       },

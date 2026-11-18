@@ -22,25 +22,18 @@ export function dispatchUpdateTheme(params: DispatchUpdateThemeParams): void {
   const editor = getRootEditorStore();
   const {getThemeDef} = getThemeStore();
 
-  const resolvedTheme = new Promise<CustomTheme | undefined>(r => {
-    if (typeof theme === 'string') {
-      return getThemeDef(theme)?.load().then(r);
-    } else {
-      return r(theme);
-    }
-  });
+  const apply = (resolved: CustomTheme | undefined) => {
+    if (!resolved) return;
+    if (updateBackground)
+      frame.setBackground(resolved.properties.previewBackground);
+    terminal.setState('background', resolved.properties.terminal.main);
+    terminal.setState('textColor', resolved.properties.terminal.text);
+    editor.actions.setThemeId(resolved.id);
+    getUmami().track('theme-change', {theme: resolved.id});
+  };
 
-  resolvedTheme.then(theme => {
-    if (theme) {
-      if (updateBackground) {
-        frame.setBackground(theme.properties.previewBackground);
-      }
-      terminal.setState('background', theme.properties.terminal.main);
-      terminal.setState('textColor', theme.properties.terminal.text);
-      editor.actions.setThemeId(theme.id);
-      getUmami().track('theme-change', {theme: theme.id});
-    }
-  });
+  if (typeof theme === 'string') void getThemeDef(theme)?.load().then(apply);
+  else apply(theme);
 }
 
 const randomizeBoolean = () => Math.random() < 0.5;
