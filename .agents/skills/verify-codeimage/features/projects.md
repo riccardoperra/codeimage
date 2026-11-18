@@ -46,3 +46,14 @@ Implementation: `.agents/skills/verify-codeimage/scripts/snippets.mjs`, register
 Ownership and failed-load fixtures use the existing MSW boundary. Navigation uses an anchor fixture to exercise route updates without reloading the provider. Mock logout reloads the current snippet, so the case waits for the signed-out view before following a link to `/`. Share supplies a Web Share input fixture because headless Chromium has no OS share sheet. It checks the snippet URL passed to that API, not native platform sharing. Clipboard and image downloads use real browser APIs. No editor store or exporter internal is called.
 
 To isolate a snippet matrix lane, set `VERIFY_SNIPPET_LAYOUT=inspector`, `dock`, or `studio`, and `VERIFY_SNIPPET_WIDTH=1440` or `390`. The default remains all six combinations. Each run writes the lanes actually exercised to `<case>-matrix.json`; a selected lane does not establish full matrix coverage. All scenario assertions remain active. These selectors allow fresh Chrome processes when a long-lived local browser exits during repeated context changes.
+
+## Solid 1 bridge probe
+
+Run the dashboard case on Node 24 to exercise the actual project actions through a separately compiled Solid 2 host.
+
+```sh
+CODEIMAGE_SOLID1_BRIDGE=1 VERIFY_AUDIT=1 VERIFY_CASES=solid1-bridge-project-menu \
+  VERIFY_BROWSER_CHANNEL=chrome node .agents/skills/verify-codeimage/scripts/verify.mjs
+```
+
+The case creates a disposable MSW project, opens the menu by keyboard, checks Escape and focus, renames the project through the app dialog, clones it and follows the new URL, then deletes the original through the app dialog. It checks the mutation responses. The dashboard and API use the normal app and its mock backend, and only the project actions menu goes through the probe.

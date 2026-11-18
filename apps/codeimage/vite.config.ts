@@ -6,8 +6,15 @@ import solidPlugin from 'vite-plugin-solid';
 import tsconfigPaths from 'vite-tsconfig-paths';
 import {withStaticVercelPreview} from '../../scripts/vercel-output-build';
 
-const config: UserConfigExport = defineConfig(({mode}) => ({
+const config: UserConfigExport = defineConfig(async ({mode}) => ({
   plugins: [
+    ...(mode !== 'render' && process.env.CODEIMAGE_SOLID1_BRIDGE === '1'
+      ? [
+          (
+            await import('./experiments/solid1-bridge/vite.mjs')
+          ).projectMenuBridgeProbe(),
+        ]
+      : []),
     vanillaExtractPlugin(
       mode === 'render'
         ? {

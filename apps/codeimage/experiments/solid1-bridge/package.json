@@ -1,0 +1,12 @@
+{
+  "name": "@codeimage/solid1-bridge-probe",
+  "private": true,
+  "type": "module",
+  "devDependencies": {
+    "@codeimage/vite-plugin-solid1-bridge": "workspace:*",
+    "@solidjs/vite-plugin": "3.0.0",
+    "@solidjs/web": "2.0.0",
+    "solid-js": "2.0.0",
+    "vite": "catalog:next"
+  }
+}

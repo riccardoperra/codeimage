@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "NodeNext",
+    "strict": true,
+    "declaration": true,
+    "skipLibCheck": true,
+    "verbatimModuleSyntax": true,
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "types": ["node"]
+  },
+  "include": ["src"],
+  "exclude": ["src/runtime.ts"]
+}

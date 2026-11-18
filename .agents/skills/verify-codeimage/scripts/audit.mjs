@@ -8,7 +8,7 @@ import {auditLineMarksNews} from './audit-line-marks-news.mjs';
 import {verifyKeyboardScroll} from './keyboard-scroll.mjs';
 import {createMockContext} from './mock-context.mjs';
 import {animationMp4Cases} from './animation-mp4.mjs';
-import {auditSnippets} from './snippets.mjs';
+import {auditSavedProjects} from './saved-projects.mjs';
 import {auditTabs} from './tab-reorder.mjs';
 import {writeFile, readFile} from 'node:fs/promises';
 import {resolve} from 'node:path';
@@ -838,7 +838,7 @@ export async function audit({page, context, base, out, server}) {
   await feature('animation-gif-step-size', mp4.stepSizeGif);
   for (const [name, run] of animateTimelineCases({fresh, out}))
     await feature(name, run);
-  await auditSnippets({feature, doctor, context, base, out});
+  await auditSavedProjects({feature, doctor, context, base, out, page});
   await feature('projects', async () => {
     await page
       .getByRole('button', {name: 'Sign in with GitHub', exact: true})

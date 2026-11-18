@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="it" data-cui-theme="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>CodeImage · Prova bridge Dropdown</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        font:
+          15px/1.5 system-ui,
+          sans-serif;
+        color: var(--foreground, #efedf4);
+      }
+      body {
+        margin: 0;
+      }
+      .menu-row + .menu-row {
+        margin-block-start: 20px;
+      }
+      .legacy button,
+      .raw-menu {
+        font: inherit;
+      }
+      .legacy button[aria-label='Menu'] svg {
+        width: 18px;
+        height: 18px;
+      }
+      .raw-trigger,
+      .raw-menu {
+        border: 1px solid var(--border, #454153);
+        border-radius: 6px;
+        color: var(--foreground, #efedf4);
+        background: var(--popover, #302d3a);
+        padding: 5px 9px;
+      }
+      .raw-menu [role='menuitem'] {
+        cursor: pointer;
+      }
+      .raw-menu [data-highlighted] {
+        outline: 2px solid var(--ring, #b7a1f0);
+      }
+      .demo {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        min-height: 270px;
+        background: var(--card, #1a1920);
+        border: 1px solid var(--border, #34313e);
+        border-radius: var(--radius, 12px);
+      }
+      .host,
+      .legacy {
+        padding: 16px;
+      }
+      .legacy {
+        border-inline-start: 1px solid var(--border, #34313e);
+      }
+      h2 {
+        margin: 0 0 14px;
+        font-size: 15px;
+        font-weight: 650;
+      }
+      .controls {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .controls button {
+        background: var(--secondary, #302d3a);
+        border: 1px solid var(--border, #454153);
+        border-radius: 6px;
+        color: var(--secondary-foreground, #efedf4);
+        cursor: pointer;
+        font: inherit;
+        padding: 5px 9px;
+      }
+      .controls button[aria-pressed='true'] {
+        background: var(--accent, #4d3875);
+        color: var(--accent-foreground, #fff);
+      }
+      .controls button:focus-visible {
+        outline: 2px solid var(--ring, #b7a1f0);
+        outline-offset: 2px;
+      }
+      dl {
+        margin: 22px 0 0;
+        display: grid;
+        gap: 8px;
+      }
+      dl div {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px 12px;
+      }
+      dt {
+        min-width: 108px;
+      }
+      dd {
+        margin: 0;
+        font: 13px/1.7 var(--font-mono, ui-monospace, monospace);
+      }
+      @media (max-width: 470px) {
+        .demo {
+          grid-template-columns: 1fr;
+        }
+        .legacy {
+          min-height: 220px;
+          border-inline-start: 0;
+          border-block-start: 1px solid var(--border, #34313e);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app"></div>
+    <!-- app -->
+  </body>
+</html>
