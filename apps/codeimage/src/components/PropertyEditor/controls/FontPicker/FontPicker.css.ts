@@ -28,6 +28,8 @@ export const inputIcon = style({
 
 export const fontListboxHeight = createVar();
 
+export const fontOption = style({fontSize: '80%'});
+
 export const fontPickerPopover = style([
   {
     vars: {

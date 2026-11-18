@@ -31,6 +31,21 @@ function focusTargets(panel: HTMLElement) {
   );
 }
 
+function containsFocus(layer: Layer, target: Element) {
+  if (layer.panel.contains(target) || layer.includes?.(target)) return true;
+  const controls = layer.panel.querySelectorAll(
+    '[aria-expanded="true"][aria-controls]',
+  );
+  return Array.from(controls).some(control =>
+    control
+      .getAttribute('aria-controls')
+      ?.split(/\s+/)
+      .some(id =>
+        layer.panel.ownerDocument.getElementById(id)?.contains(target),
+      ),
+  );
+}
+
 function lockPage(panel: HTMLElement) {
   const body = panel.ownerDocument.body;
   const root = panel.ownerDocument.getElementById('root');
@@ -116,6 +131,13 @@ export function activateDialog(layer: Layer) {
       if (event.defaultPrevented) return;
       if (event.key === 'Tab' && layer.modal) focusNext(event, panel);
       if (event.key !== 'Escape') return;
+      if (
+        event.target instanceof Element &&
+        event.target.closest(
+          '[aria-haspopup="listbox"][aria-expanded="true"][aria-controls]',
+        )
+      )
+        return;
       layer.onEscapeKeyDown?.(event);
       if (event.defaultPrevented) return;
       event.preventDefault();
@@ -133,8 +155,7 @@ export function activateDialog(layer: Layer) {
         layers.at(-1) !== layer ||
         event.button !== 0 ||
         !(target instanceof Element) ||
-        panel.contains(target) ||
-        layer.includes?.(target)
+        containsFocus(layer, target)
       )
         return;
       if (
@@ -160,8 +181,7 @@ export function activateDialog(layer: Layer) {
         if (
           layers.at(-1) !== layer ||
           !(event.target instanceof Element) ||
-          panel.contains(event.target) ||
-          layer.includes?.(event.target)
+          containsFocus(layer, event.target)
         )
           return;
         const outside = outsideEvent(event);

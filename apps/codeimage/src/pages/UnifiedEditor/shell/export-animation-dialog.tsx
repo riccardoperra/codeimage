@@ -33,7 +33,6 @@ import {FormatItem} from './export-animation-format-item';
 import {animationSnapshot} from './export-animation';
 import {animationMatte} from '../../../components/Animation/AnimationCanvas';
 import * as styles from './export.css';
-
 export function createAnimationExporter() {
   const {animation} = getEditorStore();
   const job = useExportAnimation();
@@ -133,16 +132,15 @@ export function createAnimationExporter() {
     void refresh();
   };
   const changeSize = (value: 'current' | '1080p' | null) => {
-    if (!value) return;
+    if (!value || value === size()) return;
     setSize(value);
     void refresh();
   };
   const changeScale = (value: 1 | 2 | 3 | null) => {
-    if (!value) return;
+    if (!value || value === scale()) return;
     setScale(value);
     void refresh();
   };
-  const changeMatte = (value: string) => setMatte(value);
   const start = () => {
     if (needsMatte() && !validMatte()) return;
     // Read again after the secrets review, including any redaction it made.
@@ -174,7 +172,7 @@ export function createAnimationExporter() {
     scale,
     changeScale,
     matte: solidBackground,
-    changeMatte,
+    changeMatte: setMatte,
     needsMatte,
     validMatte,
     scalable: () => size() === 'current' && !frame.exportTarget(),
@@ -308,6 +306,7 @@ export function AnimationExportContent(props: {
           <div class={styles.videoRow}>
             <span>{t('animation.export.format')}</span>
             <RadioGroup
+              class={styles.videoFormats}
               value={exporter().format()}
               onChange={value => {
                 if (value === 'mp4' || value === 'gif')

@@ -1,4 +1,5 @@
 import type {ListboxProps} from '@ui/legacy-listbox';
+import {fontOption} from './FontPicker.css';
 
 interface FontPickerListboxProps {
   onEsc: () => void;
@@ -26,16 +27,13 @@ export const createFontPickerListboxProps = (props: FontPickerListboxProps) => {
     },
     optionValue: item => item.value,
     optionTextValue: item => item.label,
-    itemLabel: item => (
-      <span
-        style={{
-          'font-family': `${item.label}, monospace`,
-          'font-size': '80%',
-        }}
-      >
-        {item.label}
-      </span>
-    ),
+    itemLabel: item => {
+      const label = document.createElement('span');
+      label.className = fontOption;
+      label.style.fontFamily = `${item.label}, monospace`;
+      label.textContent = item.label;
+      return label;
+    },
     get value() {
       return [props.value];
     },

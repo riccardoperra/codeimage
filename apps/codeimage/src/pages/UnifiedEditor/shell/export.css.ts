@@ -246,6 +246,11 @@ export const videoPopover = style([
 
 export const videoColor = style({width: themeVars.spacing['24']});
 
+export const videoFormats = style({
+  display: 'flex',
+  gap: themeVars.spacing['3'],
+});
+
 export const videoFormatItem = style({
   display: 'flex',
   alignItems: 'center',

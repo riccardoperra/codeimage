@@ -91,11 +91,12 @@ async function chooseTheme(page, section, name) {
 
 async function choosePadding(page, section, value) {
   await section('frame');
-  await page
+  const control = page
     .locator('[data-control="frame.padding"]')
-    .getByRole('button')
-    .click();
+    .getByRole('button');
+  await control.click();
   await page.getByRole('option', {name: String(value), exact: true}).click();
+  assert.equal((await control.innerText()).trim(), String(value));
 }
 
 const watermark = page =>
@@ -134,6 +135,7 @@ async function createPreset({page, section}) {
     if (!preset) await page.waitForTimeout(100);
   }
   assert.ok(preset, 'preset saved');
+  assert.equal(preset.data.frame.padding, 128, 'preset saved selected padding');
   return preset;
 }
 

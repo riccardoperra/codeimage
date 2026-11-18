@@ -108,14 +108,38 @@ export function createSolid1Bridge(
   readProps: (props: PropsSnapshot) => PropsSnapshot = readFlatProps,
 ) {
   return function Solid1Bridge(props: PropsSnapshot) {
-    const snapshot = createMemo(() => readProps(props));
+    let synchronizing = false;
+    const snapshot = createMemo(() => {
+      const values = readProps(props);
+      const onChange = values.onChange;
+      if (
+        readProps !== readWidgetProps ||
+        typeof onChange !== 'function' ||
+        !('value' in values || 'checked' in values)
+      )
+        return values;
+      return {
+        ...values,
+        onChange: (...args: unknown[]) => {
+          if (!synchronizing) onChange(...args);
+        },
+      };
+    });
     const target = document.createElement('div');
     if (readProps === readWidgetProps) target.style.display = 'contents';
     let island: LegacyConnection | undefined;
     let disposed = false;
+    const synchronize = (update: () => void) => {
+      synchronizing = true;
+      try {
+        update();
+      } finally {
+        synchronizing = false;
+      }
+    };
 
     onSettled(() => {
-      if (!disposed) island = mount(target, snapshot());
+      if (!disposed) synchronize(() => (island = mount(target, snapshot())));
     });
 
     onCleanup(() => {
@@ -124,7 +148,7 @@ export function createSolid1Bridge(
     });
 
     createEffect(snapshot, nextProps => {
-      island?.update(nextProps);
+      synchronize(() => island?.update(nextProps));
     });
 
     return target;

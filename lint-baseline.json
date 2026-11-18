@@ -8,7 +8,7 @@
     "codeimage(no-comments)": 7,
     "eslint(complexity)": 2,
     "eslint(max-depth)": 1,
-    "eslint(max-lines)": 768,
+    "eslint(max-lines)": 767,
     "eslint(max-lines-per-function)": 3
   },
   ".agents/skills/verify-codeimage/scripts/animation-mp4.mjs": {

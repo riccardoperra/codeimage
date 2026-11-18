@@ -15,6 +15,7 @@ import {
   createContext,
   createEffect,
   createSignal,
+  flush,
   onSettled,
   snapshot,
   useContext,
@@ -78,10 +79,12 @@ function createEditorSyncAdapter(props: ParentProps<{snippetId?: string}>) {
       const state = await idb.get<ProjectEditorPersistedState>('document');
       if (stale) return;
       if (state && !state.$snippetId) {
-        editorStore.actions.setFromPersistedState(state.editor);
-        animationStore.actions.setFromPersistedState(state.animation);
-        frameStore.setFromPersistedState(state.frame);
-        terminalStore.setFromPersistedState(state.terminal);
+        flush(() => {
+          frameStore.setFromPersistedState(state.frame);
+          terminalStore.setFromPersistedState(state.terminal);
+          editorStore.actions.setFromPersistedState(state.editor);
+          animationStore.actions.setFromPersistedState(state.animation);
+        });
       } else if (!state) {
         const signature = await loadDefaultSignature();
         if (!stale && signature && !frameStore.store.signature) {
