@@ -9,6 +9,7 @@ import {verifyKeyboardScroll} from './keyboard-scroll.mjs';
 import {createMockContext} from './mock-context.mjs';
 import {animationMp4Cases} from './animation-mp4.mjs';
 import {auditSnippets} from './snippets.mjs';
+import {auditTabs} from './tab-reorder.mjs';
 import {writeFile, readFile} from 'node:fs/promises';
 import {resolve} from 'node:path';
 import {PNG} from 'pngjs';
@@ -19,7 +20,8 @@ const require = createRequire(
 const {unzipSync} = require('fflate');
 export async function audit({page, context, base, out, server}) {
   page.setDefaultTimeout(12000);
-  await context.grantPermissions(['clipboard-read', 'clipboard-write']);
+  if (context.browser()?.browserType().name() === 'chromium')
+    await context.grantPermissions(['clipboard-read', 'clipboard-write']);
   const results = [];
   const saveResults = () =>
     writeFile(resolve(out, 'audit.json'), JSON.stringify(results, null, 2));
@@ -264,52 +266,12 @@ export async function audit({page, context, base, out, server}) {
     const {verifyWatermark} = await import('./watermark.mjs');
     await verifyWatermark({page, out, download, section, windowStyle});
   });
-  await feature('tabs', async () => {
-    await windowStyle('Editor');
-    const strip = page
-      .locator('[data-window-tabs]')
-      .filter({has: page.getByRole('button', {name: 'Add tab', exact: true})})
-      .first();
-    const name = () =>
-      strip.locator('[data-active="true"] [aria-label="Tab name"] input');
-    await editor().fill('const first = 1;');
-    await name().fill('first.ts');
-    await page.keyboard.press('Escape');
-    await strip.getByRole('button', {name: 'Add tab', exact: true}).click();
-    await editor().fill('print("second")');
-    await name().fill('hello.py');
-    await page.keyboard.press('Escape');
-    await strip
-      .locator('[data-window-tab]')
-      .filter({hasText: 'first.ts'})
-      .click();
-    assert.equal(await editor().innerText(), 'const first = 1;');
-    await strip
-      .locator('[data-window-tab]')
-      .filter({hasText: 'hello.py'})
-      .click();
-    assert.equal(await editor().innerText(), 'print("second")');
-    await shot('tabs-two');
-    await page.locator('[data-export-menu]').click();
-    const [zip] = await Promise.all([
-      page.waitForEvent('download', {timeout: 60000}),
-      page.locator('[data-export-action="tabs"]').click(),
-    ]);
-    await zip.saveAs(resolve(out, 'tabs.zip'));
-    const entries = Object.entries(
-      unzipSync(await readFile(resolve(out, 'tabs.zip'))),
-    );
-    assert.deepEqual(entries.map(([name]) => name).sort(), [
-      '01-first.ts.png',
-      '02-hello.py.png',
-    ]);
-    for (const [, data] of entries) PNG.sync.read(Buffer.from(data));
-    await strip
-      .locator('[data-active="true"]')
-      .getByRole('button', {name: 'Close tab', exact: true})
-      .click();
-    assert.equal(await strip.locator('[data-window-tab]').count(), 1);
-  });
+  await feature('tabs', () =>
+    auditTabs({page, out, editor, shot, windowStyle, unzipSync}),
+  );
+  await feature('tabs-classic', () =>
+    auditTabs({page, out, editor, shot, windowStyle, unzipSync}, 'macOS'),
+  );
   await feature('settings', async () => {
     await settings('appearance');
     await page

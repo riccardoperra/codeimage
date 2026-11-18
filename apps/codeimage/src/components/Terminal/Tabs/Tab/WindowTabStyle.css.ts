@@ -88,3 +88,16 @@ export const close = style({
   padding: 0,
   cursor: 'pointer',
 });
+
+export const sortableInteraction = style({
+  touchAction: 'pan-y',
+  selectors: {
+    '&:focus-visible, &[data-active-drag=true], &[data-tab-drop-target=true]': {
+      outline: '1px solid currentColor',
+      outlineOffset: '-2px',
+    },
+    '&[data-window-tab][data-active-drag=true]': {
+      backgroundColor: palette.background,
+    },
+  },
+});

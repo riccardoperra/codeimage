@@ -27,7 +27,7 @@
   },
   ".agents/skills/verify-codeimage/scripts/audit.mjs": {
     "codeimage(no-comments)": 8,
-    "eslint(max-lines)": 1096,
+    "eslint(max-lines)": 1058,
     "eslint(max-lines-per-function)": 2,
     "eslint(no-param-reassign)": 4
   },
@@ -295,7 +295,6 @@
     "import(no-cycle)": 1
   },
   "apps/codeimage/src/components/Terminal/Tabs/Tab/DraggableWindowTab.tsx": {
-    "codeimage(disable-directive-format)": 1,
     "solid(reactivity)": 1
   },
   "apps/codeimage/src/components/Terminal/Tabs/Tab/Tab.css.ts": {
@@ -535,9 +534,6 @@
   },
   "apps/codeimage/src/core/hooks/resizable.ts": {
     "eslint(max-lines-per-function)": 1
-  },
-  "apps/codeimage/src/core/modules/dnd/ConstrainDragAxis.tsx": {
-    "typescript(no-non-null-assertion)": 1
   },
   "apps/codeimage/src/core/modules/localFontAccessApi/api.ts": {
     "codeimage(no-comments)": 7
