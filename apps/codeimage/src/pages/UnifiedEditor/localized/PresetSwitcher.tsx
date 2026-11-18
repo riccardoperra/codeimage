@@ -128,7 +128,15 @@ export const PresetSwitcher: ParentComponent<ThemeSwitcherVariant> = props => {
                   <div>
                     <li
                       class={styles.item}
-                      onClick={() => onSelectTheme(theme.data)}
+                      onClick={event => {
+                        const target = event.target;
+                        if (
+                          target instanceof Element &&
+                          event.currentTarget.contains(target) &&
+                          !target.closest('button')
+                        )
+                          onSelectTheme(theme.data);
+                      }}
                     >
                       <Errored fallback={<ThemeBoxSkeleton />}>
                         <PresetPreview code={exampleCode} data={theme.data} />

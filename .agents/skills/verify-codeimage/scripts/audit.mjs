@@ -957,7 +957,7 @@ export async function audit({page, context, base, out, server}) {
       .getByRole('button', {name: 'Menu', exact: true})
       .click();
     await page.getByRole('menuitem', {name: 'Rename', exact: true}).click();
-    const rename = page.getByRole('dialog', {
+    const rename = page.getByRole('alertdialog', {
       name: 'Rename project',
       exact: true,
     });
@@ -1011,7 +1011,7 @@ export async function audit({page, context, base, out, server}) {
     for (const id of [clone.id, project.id]) {
       await card(id).getByRole('button', {name: 'Menu', exact: true}).click();
       await page.getByRole('menuitem', {name: 'Delete', exact: true}).click();
-      const dialog = page.getByRole('dialog', {
+      const dialog = page.getByRole('alertdialog', {
         name: 'Delete project',
         exact: true,
       });
