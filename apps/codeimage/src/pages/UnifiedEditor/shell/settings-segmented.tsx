@@ -4,6 +4,7 @@ import * as styles from './settings.css';
 export function Segmented<T extends string>(props: {
   value: T;
   label?: string;
+  disabled?: boolean;
   onChange: (value: T) => void;
   items: readonly {label: string; value: T}[];
 }) {
@@ -12,6 +13,7 @@ export function Segmented<T extends string>(props: {
       <SegmentedField
         adapt
         label={props.label}
+        disabled={props.disabled}
         size={'sm'}
         value={props.value}
         onChange={props.onChange}

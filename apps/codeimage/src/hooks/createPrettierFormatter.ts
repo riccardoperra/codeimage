@@ -2,7 +2,7 @@ import type {PrettierPluginDefinition} from '@codeimage/config';
 import {SUPPORTED_LANGUAGES} from '@codeimage/config';
 import type {Accessor} from 'solid-js';
 import {createMemo} from 'solid-js';
-import {formatting} from '@codeimage/store/editor/formatting';
+import {formattingJson} from '@codeimage/store/editor/formatting-json';
 
 export function createPrettierFormatter(
   language: Accessor<string>,
@@ -38,9 +38,9 @@ export function createPrettierFormatter(
       const selected = selectedFormatter();
       if (!selected?.parser) throw new Error('No formatter for this language');
 
-      const options = formatting.options();
       const {parser} = selected;
-      const [prettier, loaded, estree] = await Promise.all([
+      const [options, prettier, loaded, estree] = await Promise.all([
+        formattingJson.activeOptions(),
         import('prettier/standalone'),
         selected.plugin?.(),
         parser === 'json-stringify' || parser === 'json5'

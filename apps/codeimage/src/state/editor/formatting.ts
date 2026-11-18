@@ -20,7 +20,7 @@ export const FORMAT_LIMITS = {
   tabWidth: {min: 1, max: 8},
 };
 
-const defaults: FormattingOptions = {
+export const defaultFormattingOptions: FormattingOptions = {
   printWidth: 80,
   tabWidth: 2,
   useTabs: false,
@@ -43,28 +43,32 @@ function validNumber(value: unknown, limits: {min: number; max: number}) {
 }
 
 function parseOptions(raw: unknown): FormattingOptions {
-  if (typeof raw !== 'object' || raw === null) return defaults;
+  if (typeof raw !== 'object' || raw === null) return defaultFormattingOptions;
   const entries: Record<string, unknown> = {...raw};
   const {printWidth, tabWidth, trailingComma} = entries;
   const boolean = (key: keyof FormattingOptions) =>
     typeof entries[key] === 'boolean' ? entries[key] : undefined;
   return {
     printWidth:
-      validNumber(printWidth, FORMAT_LIMITS.printWidth) ?? defaults.printWidth,
+      validNumber(printWidth, FORMAT_LIMITS.printWidth) ??
+      defaultFormattingOptions.printWidth,
     tabWidth:
-      validNumber(tabWidth, FORMAT_LIMITS.tabWidth) ?? defaults.tabWidth,
-    useTabs: boolean('useTabs') ?? defaults.useTabs,
-    singleQuote: boolean('singleQuote') ?? defaults.singleQuote,
-    semi: boolean('semi') ?? defaults.semi,
-    bracketSpacing: boolean('bracketSpacing') ?? defaults.bracketSpacing,
+      validNumber(tabWidth, FORMAT_LIMITS.tabWidth) ??
+      defaultFormattingOptions.tabWidth,
+    useTabs: boolean('useTabs') ?? defaultFormattingOptions.useTabs,
+    singleQuote: boolean('singleQuote') ?? defaultFormattingOptions.singleQuote,
+    semi: boolean('semi') ?? defaultFormattingOptions.semi,
+    bracketSpacing:
+      boolean('bracketSpacing') ?? defaultFormattingOptions.bracketSpacing,
     singleAttributePerLine:
-      boolean('singleAttributePerLine') ?? defaults.singleAttributePerLine,
+      boolean('singleAttributePerLine') ??
+      defaultFormattingOptions.singleAttributePerLine,
     trailingComma:
       trailingComma === 'none' ||
       trailingComma === 'es5' ||
       trailingComma === 'all'
         ? trailingComma
-        : defaults.trailingComma,
+        : defaultFormattingOptions.trailingComma,
   };
 }
 
@@ -72,7 +76,7 @@ function readOptions(): FormattingOptions {
   try {
     return parseOptions(JSON.parse(localStorage.getItem(storageKey) ?? 'null'));
   } catch {
-    return defaults;
+    return defaultFormattingOptions;
   }
 }
 
@@ -95,5 +99,5 @@ export const formatting = {
   ) {
     save(parseOptions({...options(), [key]: value}));
   },
-  reset: () => save(defaults),
+  reset: () => save(defaultFormattingOptions),
 };

@@ -25,6 +25,7 @@ interface SegmentedFieldProps<T> {
   size?: SegmentedControlProps['size'];
   id?: string;
   label?: string;
+  disabled?: boolean;
 
   adapt?: boolean;
   autoWidth?: boolean;
@@ -57,6 +58,7 @@ export function SegmentedField<T>(props: SegmentedFieldProps<T>): JSX.Element {
   return (
     <SegmentedControl
       aria-label={props.label}
+      disabled={props.disabled}
       value={value()}
       onChange={onChange}
       fluid={props.adapt}

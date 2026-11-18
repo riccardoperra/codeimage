@@ -1,7 +1,8 @@
+import {formattingJson} from '@codeimage/store/editor/formatting-json';
 import {useI18n} from '@codeimage/locale';
 import {FORMAT_LIMITS, formatting} from '@codeimage/store/editor/formatting';
 import {Button, NumberField} from '@codeui/kit';
-import {createEffect, createMemo} from 'solid-js';
+import {createEffect, createMemo, createSignal, Show} from 'solid-js';
 import type {AppLocaleEntries} from '../../../i18n';
 import type {Command} from '../command-menu/commands';
 import {SwitchField} from '../controls/fields';
@@ -9,6 +10,7 @@ import {SparklesIcon} from './icons';
 import type {SettingSection} from './sections';
 import {Segmented} from './settings-segmented';
 import {settings} from './settings-state';
+import {FormattingJsonEditor} from './FormattingJsonEditor';
 
 const numbers = ['printWidth', 'tabWidth'] as const;
 const toggles = [
@@ -20,10 +22,36 @@ const toggles = [
 ] as const;
 const commas = ['none', 'es5', 'all'] as const;
 
+function ModeChoice() {
+  const [t] = useI18n<AppLocaleEntries>();
+  const [failed, setFailed] = createSignal(false);
+  return (
+    <div>
+      <Segmented
+        label={t('formatting.mode')}
+        value={formattingJson.mode()}
+        disabled={formattingJson.busy()}
+        items={[
+          {label: t('formatting.controls'), value: 'controls'},
+          {label: t('formatting.json'), value: 'json'},
+        ]}
+        onChange={value =>
+          void formattingJson.setMode(value).then(ok => setFailed(!ok))
+        }
+      />
+      <Show when={failed()}>
+        <p role="status">{t('formatting.storageError')}</p>
+      </Show>
+    </div>
+  );
+}
+
 export function createFormattingSection() {
   const [t] = useI18n<AppLocaleEntries>();
 
-  const groups = createMemo(() => [
+  void formattingJson.load();
+  const mode = createMemo(formattingJson.mode);
+  const controls = createMemo(() => [
     {
       title: t('formatting.style'),
       rows: [
@@ -82,6 +110,36 @@ export function createFormattingSection() {
     },
   ]);
 
+  const groups = createMemo(() => [
+    {
+      title: t('formatting.mode'),
+      rows: [
+        {
+          id: 'formatting-mode' as const,
+          title: t('formatting.source'),
+          description: () => t('formatting.modeHint'),
+          control: () => <ModeChoice />,
+        },
+      ],
+    },
+    ...(mode() === 'json'
+      ? [
+          {
+            title: t('formatting.json'),
+            rows: [
+              {
+                id: 'formatting-json' as const,
+                title: t('formatting.jsonConfig'),
+                description: () => t('formatting.jsonHint'),
+                wide: true,
+                control: () => <FormattingJsonEditor />,
+              },
+            ],
+          },
+        ]
+      : controls()),
+  ]);
+
   return {
     id: 'formatting',
     get name() {
@@ -92,9 +150,11 @@ export function createFormattingSection() {
       return t('formatting.intro');
     },
     action: () => (
-      <Button size="sm" theme="secondary" onClick={formatting.reset}>
-        {t('editor.restoreDefaults')}
-      </Button>
+      <Show when={mode() === 'controls'}>
+        <Button size="sm" theme="secondary" onClick={formatting.reset}>
+          {t('editor.restoreDefaults')}
+        </Button>
+      </Show>
     ),
     groups,
   } satisfies SettingSection;
@@ -103,7 +163,11 @@ export function createFormattingSection() {
 export function formattingCommands(): Command[] {
   const [t] = useI18n<AppLocaleEntries>();
   const group = t('formatting.title');
-  return [...numbers, ...toggles, 'trailingComma' as const].map(key => ({
+  const keys =
+    formattingJson.mode() === 'json'
+      ? (['source', 'jsonConfig'] as const)
+      : (['source', ...numbers, ...toggles, 'trailingComma'] as const);
+  return keys.map(key => ({
     id: `formatting=${key}`,
     label: t(`formatting.${key}`),
     group,

@@ -1,3 +1,5 @@
+import {Button} from '@codeui/kit';
+import {settings} from '../../shell/settings-state';
 import type {LocaleKeys} from '@codeimage/locale';
 import type {AppLocaleEntries} from '../../../../i18n';
 import {useI18n} from '@codeimage/locale';
@@ -190,6 +192,15 @@ function CodePanel(props: PanelProps) {
       <section class={styles.section}>
         <PanelHeader label={t('frame.language')} />
         <Rows {...props} ids={controlsIn('language')} />
+        <FullWidthPanelRow>
+          <Button
+            size={props.size()}
+            theme="secondary"
+            onClick={() => settings.open('formatting')}
+          >
+            {t('formatting.openSettings')}
+          </Button>
+        </FullWidthPanelRow>
         <Rows {...props} ids={controlsIn('lines')} />
       </section>
       <section class={styles.section}>
