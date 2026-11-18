@@ -18,6 +18,8 @@ Source: `pages/UnifiedEditor/shell/SettingsDialog.tsx`, `shell/sections.tsx`, `s
 
 Run `settings-persistence` for Dock and Orb persisted across navigation to `/` without query overrides. It checks checked radios after reload, Restore defaults and the visible no-results message. Restore defaults resets layout and theme cards and switches the rendering engine back off Takumi; it leaves panel side unchanged.
 
+Run `solid2-settings-search` at desktop and phone widths. It uses `/` to focus the search input, finds Export scale, clears the query with Escape, moves focus to the sections with ArrowDown, and checks that closing the dialog detaches the search island and restores focus to the opener.
+
 ## Gotchas
 
 Palette refuses to open over another modal/popover. Close it first. Escape clears a nonempty search before closing; use the Close button for deterministic teardown. Audit only claims the actions it records; all layouts/locale/phone behavior need explicit runs. Preferences persist in localStorage `codeimage:editor-settings`; the layout and card style come only from there (no URL override). To force a layout before load, write that key, as `scripts/audit.mjs` does.

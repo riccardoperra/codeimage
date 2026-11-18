@@ -45,4 +45,4 @@ export function mountProjectMenu(target, initialProps) {
   };
 }
 
-export {mountReadOnlyNotice} from './read-only-host';
+export * from './editor-host';

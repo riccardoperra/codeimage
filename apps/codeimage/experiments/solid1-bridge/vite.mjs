@@ -15,7 +15,10 @@ const menu = path(
 const fromApp = createRequire(new URL('../../package.json', import.meta.url));
 
 const readOnlyHost = path('./read-only-host.tsx');
+const settingsSearchHost = path('./settings-search-host.tsx');
 const cloneButton = '../../src/pages/UnifiedEditor/ReadOnlyCloneButton';
+const settingsSearchField =
+  '../../src/pages/UnifiedEditor/shell/SettingsSearchField';
 
 async function buildHost(projectMenu) {
   const solid1 = fromApp('vite-plugin-solid');
@@ -25,10 +28,15 @@ async function buildHost(projectMenu) {
     configFile: false,
     plugins: [
       solid1Bridge({
-        entries: projectMenu ? [readOnlyHost, menu] : [readOnlyHost],
+        entries: [
+          readOnlyHost,
+          settingsSearchHost,
+          ...(projectMenu ? [menu] : []),
+        ],
         modules: {
           '@codeui/kit': {compound: ['DropdownMenu']},
           [cloneButton]: {standalone: ['ReadOnlyCloneButton']},
+          [settingsSearchField]: {standalone: ['SettingsSearchField']},
         },
         legacyComponents: ['../../../../components/Icons/DotVertical'],
         legacy: {
@@ -44,7 +52,7 @@ async function buildHost(projectMenu) {
     build: {
       write: false,
       lib: {
-        entry: projectMenu ? path('./host.jsx') : readOnlyHost,
+        entry: path(projectMenu ? './host.jsx' : './editor-host.ts'),
         formats: ['es'],
       },
     },

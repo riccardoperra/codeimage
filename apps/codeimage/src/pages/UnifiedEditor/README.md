@@ -107,7 +107,7 @@ Phones claim no header actions and keep the existing header.
 
 `shell/SettingsDialog.tsx` stays mounted while layouts change.
 `shell/sections.tsx` defines the sections, groups, and rows.
-Search reads those same rows.
+Search reads those same rows. The search control mounts in a Solid 2 island. It sends queries and section focus requests to the Solid 1 panel and mounts the CodeUI text field through the legacy bridge.
 About contains the repository, Bugs and feedback, Releases, and Better Comments for GitHub links.
 `shell/links.ts` shares their destinations with the existing external-link commands and the Rail's repository button.
 Better Comments retains its Umami event. Dock and the Rail have no footer.

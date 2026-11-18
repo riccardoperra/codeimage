@@ -27,7 +27,7 @@
   },
   ".agents/skills/verify-codeimage/scripts/audit.mjs": {
     "codeimage(no-comments)": 8,
-    "eslint(max-lines)": 1058,
+    "eslint(max-lines)": 1055,
     "eslint(max-lines-per-function)": 2,
     "eslint(no-param-reassign)": 4
   },
@@ -962,7 +962,7 @@
     "typescript(no-non-null-assertion)": 1
   },
   "apps/codeimage/src/pages/UnifiedEditor/shell/SettingsDialog.tsx": {
-    "codeimage(no-comments)": 12,
+    "codeimage(no-comments)": 10,
     "eslint(max-lines-per-function)": 1,
     "eslint(no-nested-ternary)": 1,
     "eslint(no-restricted-imports)": 1,

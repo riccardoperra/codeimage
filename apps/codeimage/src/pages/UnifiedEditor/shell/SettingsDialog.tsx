@@ -3,7 +3,7 @@ import {NewDot} from '../../../components/WhatsNew/NewDot';
 import {getWhatsNew} from '../../../state/whats-new';
 import type {AppLocaleEntries} from '../../../i18n';
 import {useI18n} from '@codeimage/locale';
-import {Dialog, IconButton, TextField} from '@codeui/kit';
+import {Dialog, IconButton} from '@codeui/kit';
 import {useModality} from '@core/hooks/isMobile';
 import {Dialog as KDialog} from '@kobalte/core/dialog';
 import {
@@ -15,11 +15,12 @@ import {
   untrack,
 } from 'solid-js';
 import type {EditorControlsModel} from '../model';
-import {CloseIcon, SearchIcon} from './icons';
+import {CloseIcon} from './icons';
 import type {SettingGroup, SettingRow, SettingSection} from './sections';
 import {createSettingSections} from './sections';
 import {settings} from './settings-state';
 import * as styles from './settings.css';
+import SettingsSearchIsland from './SettingsSearchIsland';
 
 function Row(props: {row: SettingRow}) {
   const [t] = useI18n<AppLocaleEntries>();
@@ -165,39 +166,19 @@ function Panel(props: {sections: readonly SettingSection[]}) {
         }
       }}
     >
-      <div
-        class={styles.search}
-        on:keydown={(event: KeyboardEvent) => {
-          if (event.key === 'Escape' && query()) {
-            // Clears the search first; a second Escape closes the dialog.
-            event.stopPropagation();
-            setQuery('');
-          } else if (event.key === 'ArrowDown') {
-            event.preventDefault();
-            navItems()[0]?.focus();
-          }
+      <SettingsSearchIsland
+        label={t('editor.searchSettings')}
+        query={query()}
+        size={modality === 'full' ? 'sm' : 'md'}
+        searchClass={styles.search}
+        iconClass={styles.searchIcon}
+        keyClass={styles.searchKey}
+        onInput={input => {
+          search = input;
         }}
-      >
-        <span class={styles.searchIcon}>
-          <SearchIcon size={16} />
-        </span>
-        <TextField
-          size={modality === 'full' ? 'sm' : 'md'}
-          placeholder={t('editor.searchSettings')}
-          // The kit labels its root, not the input.
-          ref={input => {
-            search = input;
-            createEffect(() =>
-              input.setAttribute('aria-label', t('editor.searchSettings')),
-            );
-          }}
-          value={query()}
-          onChange={setQuery}
-        />
-        <kbd class={styles.searchKey} aria-hidden="true">
-          /
-        </kbd>
-      </div>
+        onQuery={setQuery}
+        onFocusSections={() => navItems()[0]?.focus()}
+      />
 
       <nav
         class={styles.nav}

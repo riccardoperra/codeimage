@@ -9,6 +9,7 @@ import {verifyKeyboardScroll} from './keyboard-scroll.mjs';
 import {createMockContext} from './mock-context.mjs';
 import {animationMp4Cases} from './animation-mp4.mjs';
 import {auditSavedProjects} from './saved-projects.mjs';
+import {auditSettingsSearch, closeSettingsDialog} from './settings-search.mjs';
 import {auditTabs} from './tab-reorder.mjs';
 import {writeFile, readFile} from 'node:fs/promises';
 import {resolve} from 'node:path';
@@ -75,12 +76,7 @@ export async function audit({page, context, base, out, server}) {
     await page.locator('[data-settings-trigger]').click();
     await page.locator(`[data-settings-section="${section}"]`).click();
   }
-  async function closeSettings() {
-    await page.getByRole('button', {name: 'Close', exact: true}).click();
-    await page
-      .locator('[data-settings-section=general]')
-      .waitFor({state: 'hidden'});
-  }
+  const closeSettings = () => closeSettingsDialog(page);
   async function download(name) {
     const [pending] = await Promise.all([
       page.waitForEvent('download', {timeout: 60000}),
@@ -272,6 +268,7 @@ export async function audit({page, context, base, out, server}) {
   await feature('tabs-classic', () =>
     auditTabs({page, out, editor, shot, windowStyle, unzipSync}, 'macOS'),
   );
+  await feature('solid2-settings-search', () => auditSettingsSearch(page));
   await feature('settings', async () => {
     await settings('appearance');
     await page
