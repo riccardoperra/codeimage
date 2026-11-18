@@ -158,8 +158,9 @@ async function checkJson({page, editor, section, closeSettings}) {
   });
   await page.waitForFunction(
     text =>
-      document.querySelector('textarea[aria-label="Prettier configuration"]')
-        ?.value === text,
+      document.querySelector(
+        '[role="textbox"][aria-label="Prettier configuration"]',
+      )?.innerText === text,
     source,
   );
   await apply.click();
@@ -170,7 +171,7 @@ async function checkJson({page, editor, section, closeSettings}) {
   await assertFormat("const label = 'hello'");
 
   await open();
-  assert.equal(await config.inputValue(), source);
+  assert.equal(await config.innerText(), source);
   await controls.click();
   await page.getByRole('textbox', {name: 'Line width', exact: true}).waitFor();
   await closeSettings();
@@ -178,8 +179,13 @@ async function checkJson({page, editor, section, closeSettings}) {
 
   await open();
   await jsonTab.click();
-  assert.equal(await config.inputValue(), source);
-  await config.fill('{"semi":false}');
+  assert.equal(await config.innerText(), source);
+  const edited = '{\n  "semi": false\n}';
+  await config.fill(edited);
+  await config.press('ControlOrMeta+z');
+  assert.equal(await config.innerText(), source);
+  await config.press('ControlOrMeta+Shift+z');
+  assert.equal(await config.innerText(), edited);
   await apply.click();
   await page.getByText('JSON configuration saved.', {exact: true}).waitFor();
   await closeSettings();

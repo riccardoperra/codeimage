@@ -4,7 +4,8 @@ import {
   maxFormattingJsonSize,
   parseFormattingJson,
 } from '@codeimage/store/editor/formatting-json';
-import {Button, TextArea} from '@codeui/kit';
+import {Button} from '@codeui/kit';
+import {FormattingJsonInput} from './FormattingJsonInput';
 import {createMemo, createSignal, Show} from 'solid-js';
 import type {AppLocaleEntries} from '../../../i18n';
 import * as styles from './formatting-json.css';
@@ -74,20 +75,11 @@ export function FormattingJsonEditor() {
 
   return (
     <div class={styles.editor}>
-      <TextArea
-        size="md"
-        ref={input => {
-          input.rows = 9;
-          input.spellcheck = false;
-        }}
+      <FormattingJsonInput
         value={value()}
         onChange={edit}
-        disabled={pending()}
-        validationState={error() ? 'invalid' : 'valid'}
-        options={{
-          'aria-label': t('formatting.jsonConfig'),
-        }}
-        slotClasses={{input: styles.input}}
+        readOnly={pending()}
+        invalid={!!error()}
       />
       <input
         hidden
