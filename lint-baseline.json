@@ -1,7 +1,7 @@
 {
   ".agents/skills/verify-codeimage/scripts/agent-tools.mjs": {
     "codeimage(no-comments)": 3,
-    "eslint(max-lines)": 476,
+    "eslint(max-lines)": 448,
     "eslint(max-lines-per-function)": 2
   },
   ".agents/skills/verify-codeimage/scripts/animation-gif.mjs": {
@@ -27,7 +27,7 @@
   },
   ".agents/skills/verify-codeimage/scripts/audit.mjs": {
     "codeimage(no-comments)": 8,
-    "eslint(max-lines)": 1050,
+    "eslint(max-lines)": 1047,
     "eslint(max-lines-per-function)": 2,
     "eslint(no-param-reassign)": 4
   },
@@ -646,8 +646,8 @@
     "typescript(no-non-null-assertion)": 2
   },
   "apps/codeimage/src/pages/UnifiedEditor/agent-tools/tools.ts": {
-    "codeimage(no-comments)": 11,
-    "eslint(max-lines)": 605,
+    "codeimage(no-comments)": 3,
+    "eslint(max-lines)": 603,
     "eslint(max-lines-per-function)": 1
   },
   "apps/codeimage/src/pages/UnifiedEditor/agent-tools/values.ts": {
@@ -771,10 +771,9 @@
     "typescript(no-non-null-assertion)": 1
   },
   "apps/codeimage/src/pages/UnifiedEditor/local-ai/LocalAi.tsx": {
-    "codeimage(no-comments)": 17,
+    "codeimage(no-comments)": 15,
     "codeimage(no-document-query)": 2,
-    "eslint(max-lines)": 363,
-    "solid(reactivity)": 1
+    "eslint(max-lines)": 357
   },
   "apps/codeimage/src/pages/UnifiedEditor/local-ai/agent.test.ts": {
     "codeimage(no-comments)": 1

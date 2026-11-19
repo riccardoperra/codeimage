@@ -5,6 +5,7 @@ import assert from 'node:assert/strict';
 import {auditPresetCases, auditPresetPersistence} from './presets.mjs';
 import {auditLineMarks} from './audit-line-marks.mjs';
 import {auditLineMarksNews} from './audit-line-marks-news.mjs';
+import {verifyExportDialog} from './export-dialog.mjs';
 import {verifyKeyboardScroll} from './keyboard-scroll.mjs';
 import {createMockContext} from './mock-context.mjs';
 import {animationMp4Cases} from './animation-mp4.mjs';
@@ -541,6 +542,11 @@ export async function audit({page, context, base, out, server}) {
   await auditPresetCases({feature, fresh, page, doctor, editor, shot});
   await feature('preset-persistence', () =>
     auditPresetPersistence({fresh, out}),
+  );
+  await feature('export-dialog', () =>
+    fresh({name: 'export-dialog', layout: 'inspector'}, fixture =>
+      verifyExportDialog(fixture, out),
+    ),
   );
   await feature('export-options', async () => {
     try {

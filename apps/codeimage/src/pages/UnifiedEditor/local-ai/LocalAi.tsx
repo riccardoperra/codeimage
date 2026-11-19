@@ -8,7 +8,6 @@ import {
   For,
   Match,
   onCleanup,
-  onSettled,
   untrack,
   Show,
   Switch,
@@ -277,7 +276,7 @@ function Block(props: {exchange: Exchange; earlier: boolean}) {
  */
 export function PromptBar() {
   const [t] = useI18n<AppLocaleEntries>();
-  let input!: HTMLTextAreaElement;
+  let input: HTMLTextAreaElement | undefined;
   let panel: HTMLElement | undefined;
   // Follows the latest block unless the user scrolled up to read.
   let follow = true;
@@ -297,7 +296,7 @@ export function PromptBar() {
   };
   const newChat = () => {
     endChat();
-    input.focus();
+    input?.focus();
   };
 
   createEffect(exchanges, () => {
@@ -305,27 +304,17 @@ export function PromptBar() {
   });
 
   const beforeLast = (position: number) => position < exchanges().length - 1;
-  onSettled(() => {
-    input.focus({preventScroll: true});
-    // App shortcuts listen on the body before Solid's delegated handlers, so
-    // the field keeps its keys with a native listener.
-    const keys = (event: KeyboardEvent) => {
-      event.stopPropagation();
-      if (event.key === 'Escape') {
-        event.preventDefault();
-        close();
-      } else if (
-        event.key === 'Enter' &&
-        !event.shiftKey &&
-        !event.isComposing
-      ) {
-        event.preventDefault();
-        send();
-      }
-    };
-    input.addEventListener('keydown', keys);
-    return () => input.removeEventListener('keydown', keys);
-  });
+  const keys = (event: KeyboardEvent) => {
+    event.stopPropagation();
+    if (event.key === 'Escape') {
+      event.preventDefault();
+      close();
+    } else if (event.key === 'Enter' && !event.shiftKey && !event.isComposing) {
+      event.preventDefault();
+      send();
+    }
+  };
+  onCleanup(() => input?.removeEventListener('keydown', keys));
 
   return (
     <div class={styles.slot} data-local-ai>
@@ -371,8 +360,11 @@ export function PromptBar() {
           <TextArea
             size="md"
             ref={element => {
+              input?.removeEventListener('keydown', keys);
               input = element;
               element.rows = 1;
+              element.addEventListener('keydown', keys);
+              queueMicrotask(() => element.focus({preventScroll: true}));
             }}
             value={draft()}
             onChange={setDraft}
