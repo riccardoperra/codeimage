@@ -3,15 +3,17 @@ import {getRootEditorStore} from '@codeimage/store/editor';
 import {icons} from '@ui/kit-icons';
 import {Button} from '@ui/legacy-controls';
 import {Dialog, Content as DialogContent} from '@ui/Dialog/parts';
+import {placePopover} from '@ui/Popover/placement';
 import type {Accessor} from 'solid-js';
-import {createSignal, untrack, For, Show, onCleanup, onSettled} from 'solid-js';
 import {
-  autoUpdate,
-  computePosition,
-  flip,
-  offset,
-  shift,
-} from '@floating-ui/dom';
+  createEffect,
+  createSignal,
+  untrack,
+  For,
+  Show,
+  onCleanup,
+  onSettled,
+} from 'solid-js';
 import {HintIcon} from '../../../components/Icons/Hint';
 import {isKeyOwnedByFocus} from '../../../hooks/use-hotkey';
 import type {AppLocaleEntries} from '../../../i18n';
@@ -27,14 +29,15 @@ export function ShortcutHelp(props: {
   canvas?: Accessor<HTMLElement | undefined>;
 }) {
   const [t] = useI18n<AppLocaleEntries>();
-  let trigger: HTMLButtonElement | undefined;
+  const [trigger, setTrigger] = createSignal<HTMLButtonElement>();
+  const [panel, setPanel] = createSignal<HTMLDivElement>();
   const [clear, setClear] = createSignal(true);
   let opener: HTMLElement | undefined;
   const close = () => setOpen(false);
   const show = () => setOpen(true);
   const restoreFocus = (event: Event) => {
     event.preventDefault();
-    if (clear()) trigger?.focus();
+    if (clear()) trigger()?.focus();
     else
       (opener?.isConnected
         ? opener
@@ -44,14 +47,14 @@ export function ShortcutHelp(props: {
   bindEditorShortcuts(() => props.editable);
   onCleanup(commandMenu.beforeOpen(close));
   onCleanup(close);
-  onSettled(() => {
-    const canvas = untrack(() => props.canvas?.());
-    let resize: ResizeObserver | undefined;
-    if (canvas && trigger) {
+  createEffect(
+    () => [props.canvas?.(), trigger()] as const,
+    ([canvas, anchor]) => {
+      if (!canvas || !anchor) return;
       const measure = () => {
-        const frame = canvas.querySelector<HTMLElement>('[data-fit-scale]');
-        if (!frame || !trigger) return;
-        const a = trigger.getBoundingClientRect();
+        const frame = canvas.querySelector('[data-fit-scale]');
+        if (!frame) return;
+        const a = anchor.getBoundingClientRect();
         const b = frame.getBoundingClientRect();
         const c = canvas.getBoundingClientRect();
         setClear(
@@ -69,10 +72,29 @@ export function ShortcutHelp(props: {
       observer.observe(canvas);
       const frame = canvas.querySelector('[data-fit-scale]');
       if (frame) observer.observe(frame);
-      observer.observe(trigger);
+      observer.observe(anchor);
       measure();
-      resize = observer;
-    }
+      return () => observer.disconnect();
+    },
+  );
+  createEffect(
+    () => [open(), props.canvas?.(), trigger(), panel()] as const,
+    ([showing, canvas, anchor, element]) => {
+      if (!showing || !canvas || !anchor || !element) return;
+      let positioned = false;
+      return placePopover(
+        anchor,
+        element,
+        {placement: 'bottom-start', gutter: 8, overflowPadding: 12},
+        () => {
+          if (positioned) return;
+          positioned = true;
+          element.focus({preventScroll: true});
+        },
+      );
+    },
+  );
+  onSettled(() => {
     const keydown = (event: KeyboardEvent) => {
       if (
         !untrack(() => props.editable) ||
@@ -92,10 +114,7 @@ export function ShortcutHelp(props: {
       setOpen(value => !value);
     };
     window.addEventListener('keydown', keydown);
-    return () => {
-      resize?.disconnect();
-      window.removeEventListener('keydown', keydown);
-    };
+    return () => window.removeEventListener('keydown', keydown);
   });
   return (
     <span
@@ -103,7 +122,7 @@ export function ShortcutHelp(props: {
       data-shortcut-help
     >
       <Button
-        ref={trigger}
+        ref={element => setTrigger(element)}
         style={{visibility: clear() ? undefined : 'hidden'}}
         size="sm"
         theme="secondary"
@@ -125,25 +144,11 @@ export function ShortcutHelp(props: {
             <Dialog.Overlay class={styles.backdrop} />
           </Show>
           <DialogContent
-            class={styles.content}
+            class={props.canvas ? styles.anchoredContent : styles.content}
             data-shortcut-overlay
-            ref={element => {
-              if (!props.canvas || !trigger) return;
-              const update = () => {
-                if (!trigger) return;
-                void computePosition(trigger, element, {
-                  strategy: 'fixed',
-                  placement: 'bottom-start',
-                  middleware: [offset(8), flip(), shift({padding: 12})],
-                }).then(({x, y}) =>
-                  Object.assign(element.style, {
-                    left: `${x}px`,
-                    top: `${y}px`,
-                    transform: 'none',
-                  }),
-                );
-              };
-              onCleanup(autoUpdate(trigger, element, update));
+            ref={element => setPanel(element)}
+            onOpenAutoFocus={event => {
+              if (props.canvas) event.preventDefault();
             }}
             onCloseAutoFocus={restoreFocus}
           >

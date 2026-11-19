@@ -16,6 +16,8 @@ Run the case in an owned Chrome profile:
 VERIFY_AUDIT=1 VERIFY_CASES=keyboard-scroll VERIFY_BROWSER_CHANNEL=chrome VERIFY_PORT=4846 VERIFY_DEBUG_PORT=14846 ARTIFACT_DIR=/tmp/codeimage-keyboard-proof fnm exec --using=v24.14.0 node .agents/skills/verify-codeimage/scripts/verify.mjs
 ```
 
+`shortcut-help` opens the keyboard shortcuts guide on desktop and phone. It checks desktop positioning and canvas geometry, phone modal behavior, Escape and the Close button, focus return, and ownership of the `?` key when typing in CodeMirror.
+
 The dependency patch is `patches/@kobalte__utils@0.9.1.patch`. Both ESM and CommonJS bundles start each `scrollIntoViewport` lookup at the target's parent. Each iteration therefore reaches a strict ancestor and eventually the document root. The exported `getScrollParent` behavior remains unchanged. The editor's root overflow and the Animate trigger placement workaround remain unchanged.
 
 `scripts/keyboard-scroll.test.mjs` runs the installed ESM utility against a hidden document root and nested CSS scroll containers. A visit limit fails the original loop without hanging the test process. The test also checks that `getScrollParent` keeps its exported behavior and that scrollable targets and detached elements terminate. `VERIFY_KOBALTE_UTILS` can point to the original package's `dist/index.cjs` to repeat the negative control; the test imports its adjacent ESM bundle.

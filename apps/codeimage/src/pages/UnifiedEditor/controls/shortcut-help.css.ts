@@ -41,6 +41,7 @@ export const content = style({
   padding: themeVars.spacing['4'],
   boxShadow: themeVars.dynamicColors.dialog.panelShadow,
 });
+export const anchoredContent = style([content, {transform: 'none'}]);
 export const header = style({
   display: 'flex',
   alignItems: 'center',

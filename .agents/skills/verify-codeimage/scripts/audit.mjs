@@ -6,7 +6,7 @@ import {auditPresetCases, auditPresetPersistence} from './presets.mjs';
 import {auditLineMarks} from './audit-line-marks.mjs';
 import {auditLineMarksNews} from './audit-line-marks-news.mjs';
 import {verifyExportDialog} from './export-dialog.mjs';
-import {verifyKeyboardScroll} from './keyboard-scroll.mjs';
+import {auditKeyboard} from './shortcut-help.mjs';
 import {createMockContext} from './mock-context.mjs';
 import {animationMp4Cases} from './animation-mp4.mjs';
 import {auditSavedProjects, verifyProjectSearch} from './saved-projects.mjs';
@@ -193,7 +193,7 @@ export async function audit({page, context, base, out, server}) {
       ({page, context} = previous);
     }
   }
-  await feature('keyboard-scroll', () => verifyKeyboardScroll({fresh, out}));
+  await auditKeyboard({feature, fresh, out});
   const {auditFrameGeometry} = await import('./export-geometry.mjs');
   await auditFrameGeometry({feature, fresh, out});
   await feature('agent-tools', async () => {
