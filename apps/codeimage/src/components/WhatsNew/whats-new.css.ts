@@ -407,7 +407,7 @@ export const accessoryThumb = style({
   height: '44px',
   flexShrink: 0,
 });
-globalStyle(`${accessory} > button`, {flexShrink: 0});
+export const accessoryAction = style({flexShrink: 0});
 export const accessoryCopy = style({flex: 1, minWidth: 0});
 export const accessoryTitle = style({
   margin: '0 0 4px',

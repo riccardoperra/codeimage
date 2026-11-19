@@ -16,7 +16,9 @@ Run the case in an owned Chrome profile:
 VERIFY_AUDIT=1 VERIFY_CASES=keyboard-scroll VERIFY_BROWSER_CHANNEL=chrome VERIFY_PORT=4846 VERIFY_DEBUG_PORT=14846 ARTIFACT_DIR=/tmp/codeimage-keyboard-proof fnm exec --using=v24.14.0 node .agents/skills/verify-codeimage/scripts/verify.mjs
 ```
 
-`shortcut-help` opens the keyboard shortcuts guide on desktop and phone. It checks desktop positioning and canvas geometry, phone modal behavior, Escape and the Close button, focus return, and ownership of the `?` key when typing in CodeMirror.
+`shortcut-help` checks the trigger's 36 px desktop and 40 px phone hit areas. It opens the guide and checks desktop positioning and canvas geometry, phone modal behavior, Escape and the Close button, focus return, and ownership of the `?` key when typing in CodeMirror.
+
+`rail-interrupted-close` closes Themes and immediately opens Frame on a 390 px Sidebar Rail. Frame must stay open after the Themes exit would have finished. The case repeats with reduced motion and verifies that closing Frame returns focus to its rail button.
 
 The dependency patch is `patches/@kobalte__utils@0.9.1.patch`. Both ESM and CommonJS bundles start each `scrollIntoViewport` lookup at the target's parent. Each iteration therefore reaches a strict ancestor and eventually the document root. The exported `getScrollParent` behavior remains unchanged. The editor's root overflow and the Animate trigger placement workaround remain unchanged.
 

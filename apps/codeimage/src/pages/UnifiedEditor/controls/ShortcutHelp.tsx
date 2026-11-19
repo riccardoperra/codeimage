@@ -122,6 +122,7 @@ export function ShortcutHelp(props: {
       data-shortcut-help
     >
       <Button
+        class={props.canvas ? styles.canvasButton : styles.button}
         ref={element => setTrigger(element)}
         style={{visibility: clear() ? undefined : 'hidden'}}
         size="sm"

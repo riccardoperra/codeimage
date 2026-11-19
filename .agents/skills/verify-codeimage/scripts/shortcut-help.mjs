@@ -1,8 +1,20 @@
 import assert from 'node:assert/strict';
 import {verifyKeyboardScroll} from './keyboard-scroll.mjs';
+import {verifyRailSwitch} from './rail-switch.mjs';
 
 export async function auditKeyboard({feature, fresh, out}) {
   await feature('keyboard-scroll', () => verifyKeyboardScroll({fresh, out}));
+  await feature('rail-interrupted-close', () =>
+    fresh(
+      {
+        name: 'rail-interrupted-close',
+        layout: 'studio',
+        viewport: {width: 390, height: 844},
+        hasTouch: true,
+      },
+      verifyRailSwitch,
+    ),
+  );
   await feature('shortcut-help', async () => {
     for (const width of [1440, 390]) {
       await fresh(
@@ -29,6 +41,16 @@ async function verifyShortcutHelp({page, doctor, editor}) {
   const frame = page.locator('[data-fit-scale]').first();
   const bounds = await frame.boundingBox();
   const desktop = page.viewportSize().width > 768;
+  const size = desktop ? 36 : 40;
+  const dimensions = await trigger.boundingBox();
+  assert.ok(dimensions.width >= size && dimensions.height >= size);
+  const buttonStyle = await trigger.evaluate(element => {
+    const {minHeight, minWidth, columnGap} = getComputedStyle(element);
+    return {minHeight, minWidth, columnGap};
+  });
+  assert.equal(buttonStyle.minHeight, `${size}px`);
+  assert.equal(buttonStyle.minWidth, `${size}px`);
+  if (desktop) assert.equal(buttonStyle.columnGap, '8px');
 
   await trigger.click();
   await help.getByText('Focus code editor', {exact: true}).waitFor();

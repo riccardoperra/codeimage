@@ -2,6 +2,17 @@ import assert from 'node:assert/strict';
 import {resolve} from 'node:path';
 import {dismissNews} from './news.mjs';
 
+export async function verifyShowcaseAction(sheet) {
+  await sheet.waitFor({timeout: 15000});
+  const action = sheet
+    .locator('[data-highlight="command-menu"]')
+    .getByRole('button', {name: 'Show me', exact: true});
+  assert.equal(
+    await action.evaluate(button => getComputedStyle(button).flexShrink),
+    '0',
+  );
+}
+
 export async function auditLineMarksNews({base, out, feature, fresh}) {
   await feature('whats-new-line-marks-dot', () =>
     fresh(

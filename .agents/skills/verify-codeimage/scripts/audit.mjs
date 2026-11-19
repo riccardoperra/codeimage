@@ -4,7 +4,7 @@ import {createDoctor} from './health/doctor.mjs';
 import assert from 'node:assert/strict';
 import {auditPresetCases, auditPresetPersistence} from './presets.mjs';
 import {auditLineMarks} from './audit-line-marks.mjs';
-import {auditLineMarksNews} from './audit-line-marks-news.mjs';
+import * as newsAudits from './audit-line-marks-news.mjs';
 import {verifyExportDialog} from './export-dialog.mjs';
 import {auditKeyboard} from './shortcut-help.mjs';
 import {createMockContext} from './mock-context.mjs';
@@ -387,7 +387,7 @@ export async function audit({page, context, base, out, server}) {
       .locator('[data-settings-section=general]')
       .waitFor({state: 'hidden'});
   });
-  await auditLineMarksNews({base, out, feature, fresh});
+  await newsAudits.auditLineMarksNews({base, out, feature, fresh});
   // The current release is major, so a fresh profile gets the Showcase
   // sheet. Minimize turns it into the Nudge card, which steps through the
   // highlights, and a dismissal survives a reload.
@@ -404,7 +404,7 @@ export async function audit({page, context, base, out, server}) {
         await page.goto(base, {waitUntil: 'domcontentloaded'});
         await ready();
         const sheet = page.locator('[data-whats-new="showcase"]');
-        await sheet.waitFor({timeout: 15000});
+        await newsAudits.verifyShowcaseAction(sheet);
         await page
           .getByRole('button', {name: "Minimize what's new", exact: true})
           .click();

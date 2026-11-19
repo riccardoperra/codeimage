@@ -139,8 +139,13 @@ export function Rail(props: VariantProps) {
       ? sheetHeights()[stop()]
       : 0;
 
-  const stopAnimations = () =>
-    panelEl.getAnimations().forEach(animation => animation.cancel());
+  const stopAnimations = () => {
+    for (const animation of panelEl?.getAnimations() ?? []) {
+      animation.onfinish = null;
+      animation.cancel();
+    }
+  };
+  onCleanup(stopAnimations);
 
   const slide = (from: string, to: string, duration: number) => {
     stopAnimations();
@@ -157,8 +162,9 @@ export function Rail(props: VariantProps) {
     );
     setStop(panel.sheet ?? 'short');
     setOpenId(panel.id);
-    if (!isPhone() || wasOpen) return;
+    if (!isPhone()) return;
     stopAnimations();
+    if (wasOpen) return;
     if (reducedMotion()) {
       panelEl.animate([{opacity: 0}, {opacity: 1}], {duration: 200});
     } else {
@@ -167,22 +173,27 @@ export function Rail(props: VariantProps) {
   };
 
   const finishClose = (id: PanelId, returnFocus: boolean) => {
+    if (openId() !== id) return;
     stopAnimations();
     setOpenId(null);
     if (returnFocus) openers.get(id)?.focus();
   };
 
-  const close = (returnFocus = false) => {
+  const close = (returnFocus = false, offset = 0) => {
     const id = openId();
     if (!id) return;
     if (!isPhone()) return finishClose(id, returnFocus);
+    stopAnimations();
     const exit = reducedMotion()
       ? panelEl.animate([{opacity: 1}, {opacity: 0}], {
           duration: 150,
           fill: 'forwards',
         })
       : panelEl.animate(
-          [{transform: 'translateY(0)'}, {transform: 'translateY(110%)'}],
+          [
+            {transform: `translateY(${offset}px)`},
+            {transform: 'translateY(110%)'},
+          ],
           {duration: 200, easing: DRAWER, fill: 'forwards'},
         );
     exit.onfinish = () => finishClose(id, returnFocus);
@@ -272,19 +283,7 @@ export function Rail(props: VariantProps) {
         : best,
     );
 
-    if (nearest.target === 'closed') {
-      const id = openId();
-      if (!id || reducedMotion()) return close();
-      const exit = panelEl.animate(
-        [
-          {transform: `translateY(${offset}px)`},
-          {transform: 'translateY(110%)'},
-        ],
-        {duration: 200, easing: DRAWER, fill: 'forwards'},
-      );
-      exit.onfinish = () => finishClose(id, false);
-      return;
-    }
+    if (nearest.target === 'closed') return close(false, offset);
     settle(nearest.target, offset);
   };
 

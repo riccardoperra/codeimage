@@ -375,7 +375,7 @@
   },
   "apps/codeimage/src/components/WhatsNew/whats-new.css.ts": {
     "codeimage(no-comments)": 23,
-    "codeimage(no-global-style)": 16,
+    "codeimage(no-global-style)": 15,
     "eslint(max-lines)": 390
   },
   "apps/codeimage/src/core/altText.perf.ts": {
@@ -750,9 +750,6 @@
   "apps/codeimage/src/pages/UnifiedEditor/controls/saved-signatures.css.ts": {
     "codeimage(no-comments)": 3
   },
-  "apps/codeimage/src/pages/UnifiedEditor/controls/shortcut-help.css.ts": {
-    "codeimage(no-global-style)": 2
-  },
   "apps/codeimage/src/pages/UnifiedEditor/controls/shortcuts.ts": {
     "codeimage(no-comments)": 1,
     "eslint(no-restricted-imports)": 1
@@ -1047,7 +1044,7 @@
   },
   "apps/codeimage/src/pages/UnifiedEditor/variants/sidebar/Rail.tsx": {
     "codeimage(no-comments)": 5,
-    "eslint(max-lines)": 447,
+    "eslint(max-lines)": 446,
     "eslint(max-lines-per-function)": 1,
     "typescript(no-non-null-assertion)": 3
   },

@@ -47,6 +47,7 @@ export function ShowcaseAccessories(props: {
               {located => (
                 <Show when={news.canShowMe(located().id)}>
                   <Button
+                    class={styles.accessoryAction}
                     size="sm"
                     theme="secondary"
                     onClick={(event: MouseEvent) =>
