@@ -3,23 +3,16 @@ import {NewDot} from '../../../components/WhatsNew/NewDot';
 import {getWhatsNew} from '../../../state/whats-new';
 import type {AppLocaleEntries} from '../../../i18n';
 import {useI18n} from '@codeimage/locale';
-import {Dialog, IconButton, TextField} from '@codeui/kit';
 import {useModality} from '@core/hooks/isMobile';
-import {Dialog as KDialog} from '@kobalte/core/dialog';
-import {
-  createEffect,
-  createMemo,
-  For,
-  onCleanup,
-  Show,
-  untrack,
-} from 'solid-js';
+import {Dialog, DialogCloseButton, DialogTitle} from '@ui/Dialog';
+import {createMemo, For, Show, untrack, createTrackedEffect} from 'solid-js';
 import type {EditorControlsModel} from '../model';
-import {CloseIcon, SearchIcon} from './icons';
+import {CloseIcon} from './icons';
 import type {SettingGroup, SettingRow, SettingSection} from './sections';
 import {createSettingSections} from './sections';
 import {settings} from './settings-state';
 import * as styles from './settings.css';
+import SettingsSearch from './SettingsSearch';
 
 function Row(props: {row: SettingRow}) {
   const [t] = useI18n<AppLocaleEntries>();
@@ -77,8 +70,6 @@ function Panel(props: {sections: readonly SettingSection[]}) {
   const modality = useModality();
   const query = settings.query;
   const setQuery = settings.setQuery;
-  // Each opening starts without a search, as when the query was the panel's.
-  onCleanup(() => setQuery(''));
   let shell!: HTMLDivElement;
   let search: HTMLInputElement | undefined;
 
@@ -92,7 +83,7 @@ function Panel(props: {sections: readonly SettingSection[]}) {
   const searching = () => terms().length > 0;
   // Once per visit to a section, not per row drawn: a search or a language
   // switch draws the rows again.
-  createEffect(() => {
+  createTrackedEffect(() => {
     const section = current();
     if (searching()) return;
     untrack(() =>
@@ -129,33 +120,13 @@ function Panel(props: {sections: readonly SettingSection[]}) {
     ...shell.querySelectorAll<HTMLElement>('[data-settings-section]'),
   ];
 
-  // The dialog would focus its first field, the search, which opens a phone's
-  // keyboard over the settings. Kobalte asks before it does, with an event on
-  // the dialog's panel, and the section on screen takes the focus instead.
-  const takeFocus = (event: Event) => {
-    if (!(event.target instanceof Node) || !event.target.contains(shell))
-      return;
-    event.preventDefault();
-    shell
-      .querySelector<HTMLElement>('[data-settings-section][aria-current]')
-      ?.focus();
-  };
-  document.addEventListener('focusScope.autoFocusOnMount', takeFocus, true);
-  onCleanup(() =>
-    document.removeEventListener(
-      'focusScope.autoFocusOnMount',
-      takeFocus,
-      true,
-    ),
-  );
-
   return (
     <div
       class={styles.shell}
       ref={shell}
       data-settings
       // Native, so that the keys stop here and not at the document.
-      on:keydown={(event: KeyboardEvent) => {
+      onKeyDown={(event: KeyboardEvent) => {
         const typing =
           event.target instanceof HTMLElement &&
           event.target.matches('input, textarea, [contenteditable]');
@@ -165,44 +136,24 @@ function Panel(props: {sections: readonly SettingSection[]}) {
         }
       }}
     >
-      <div
-        class={styles.search}
-        on:keydown={(event: KeyboardEvent) => {
-          if (event.key === 'Escape' && query()) {
-            // Clears the search first; a second Escape closes the dialog.
-            event.stopPropagation();
-            setQuery('');
-          } else if (event.key === 'ArrowDown') {
-            event.preventDefault();
-            navItems()[0]?.focus();
-          }
+      <SettingsSearch
+        label={t('editor.searchSettings')}
+        query={query()}
+        size={modality === 'full' ? 'sm' : 'md'}
+        searchClass={styles.search}
+        iconClass={styles.searchIcon}
+        keyClass={styles.searchKey}
+        onInput={input => {
+          search = input;
         }}
-      >
-        <span class={styles.searchIcon}>
-          <SearchIcon size={16} />
-        </span>
-        <TextField
-          size={modality === 'full' ? 'sm' : 'md'}
-          placeholder={t('editor.searchSettings')}
-          // The kit labels its root, not the input.
-          ref={input => {
-            search = input;
-            createEffect(() =>
-              input.setAttribute('aria-label', t('editor.searchSettings')),
-            );
-          }}
-          value={query()}
-          onChange={setQuery}
-        />
-        <kbd class={styles.searchKey} aria-hidden="true">
-          /
-        </kbd>
-      </div>
+        onQuery={setQuery}
+        onFocusSections={() => navItems()[0]?.focus()}
+      />
 
       <nav
         class={styles.nav}
         aria-label={t('editor.settingsSections')}
-        on:keydown={(event: KeyboardEvent) => {
+        onKeyDown={(event: KeyboardEvent) => {
           const step =
             event.key === 'ArrowDown' || event.key === 'ArrowRight'
               ? 1
@@ -238,23 +189,21 @@ function Panel(props: {sections: readonly SettingSection[]}) {
       </nav>
 
       <header class={styles.head}>
-        <KDialog.Title class={styles.crumbs}>
+        <DialogTitle class={styles.crumbs}>
           <span class={styles.crumbRoot}>{t('editor.settings')}</span>
           <span class={styles.crumbSlash} aria-hidden="true">
             /
           </span>
           <span>{searching() ? t('editor.search') : current().name}</span>
-        </KDialog.Title>
-        <KDialog.CloseButton
-          as={IconButton}
+        </DialogTitle>
+        <DialogCloseButton
           class={styles.close}
           aria-label={t('common.close')}
           size={modality === 'full' ? 'sm' : 'md'}
-          theme={'secondary'}
-          variant={'ghost'}
+          ghost
         >
           <CloseIcon size={18} />
-        </KDialog.CloseButton>
+        </DialogCloseButton>
       </header>
 
       <div class={styles.body} data-settings-body>
@@ -313,6 +262,15 @@ export function SettingsDialog(props: {model: EditorControlsModel}) {
     <Dialog
       size={'xl'}
       open={settings.isOpen()}
+      onOpenAutoFocus={event => {
+        if (!(event.currentTarget instanceof HTMLElement)) return;
+        const selected = event.currentTarget.querySelector<HTMLElement>(
+          '[data-settings-section][aria-current="page"]',
+        );
+        if (!selected) return;
+        event.preventDefault();
+        selected.focus({preventScroll: true});
+      }}
       onOpenChange={open => {
         if (!open) settings.close();
       }}

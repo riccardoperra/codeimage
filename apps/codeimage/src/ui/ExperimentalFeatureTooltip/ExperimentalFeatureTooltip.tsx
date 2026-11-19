@@ -1,6 +1,6 @@
 import type {SvgIconProps} from '@codeimage/ui';
 import {Box, Link, SvgIcon} from '@codeimage/ui';
-import {Tooltip} from '@codeui/kit';
+import {Tooltip} from '@ui/legacy-controls';
 import * as styles from './ExperimentalFeatureTooltip.css';
 import type {FlowProps} from 'solid-js';
 

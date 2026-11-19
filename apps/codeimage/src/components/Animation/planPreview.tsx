@@ -20,9 +20,9 @@ import {
   type TimelineStep,
 } from '@core/animation/timeline';
 import {loadLanguage, tokenizeCode} from '@core/snapshot/tokenize';
-import type {JSX, Owner} from 'solid-js';
-import {runWithOwner} from 'solid-js';
-import {render} from 'solid-js/web';
+import type {JSX} from '@solidjs/web';
+import type {Owner} from 'solid-js';
+import {mountOwnedView} from '@core/helpers/mount-owned-view';
 import StaticCodeView from '../CustomEditor/StaticCodeView';
 import {targetLayout} from '@core/animation/target-layout';
 import * as frameStyles from '../Frame/Frame.css';
@@ -68,7 +68,7 @@ async function measureHidden<T>(
   document.body.append(host);
   let dispose: (() => void) | undefined;
   try {
-    dispose = runWithOwner(owner, () => render(view, host));
+    dispose = mountOwnedView(owner, host, view);
     await document.fonts.ready;
     await new Promise<void>(resolve => setTimeout(resolve, 0));
     return read(host);

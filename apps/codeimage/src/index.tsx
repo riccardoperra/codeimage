@@ -1,4 +1,4 @@
-import {createI18nContext, I18nContext, useI18n} from '@codeimage/locale';
+import {createI18nContext, I18nContext} from '@codeimage/locale';
 import {getAuth0State} from '@codeimage/store/auth/auth0';
 import {getRootEditorStore} from '@codeimage/store/editor';
 import {getUiStore} from '@codeimage/store/ui';
@@ -10,13 +10,13 @@ import {
 } from '@codeimage/ui';
 import '@codeimage/ui/themes/lightTheme';
 import {appEnvironment} from '@core/configuration';
-import {Router, Navigate, type RouteDefinition} from '@solidjs/router';
+import {createRouter, intentPreload, useNavigate} from '@solidjs/router';
+import {render} from '@solidjs/web';
 import {snackbarHostAppStyleCss} from '@ui/snackbarHostAppStyle.css';
 import {setElementVars} from '@vanilla-extract/dynamic';
-import type {Component} from 'solid-js';
-import {createEffect, lazy, on, Show} from 'solid-js';
-import {render} from 'solid-js/web';
-import {StateProvider} from 'statebuilder';
+import type {Component, ParentProps} from 'solid-js';
+import {createEffect, lazy, Loading, onSettled, Show} from 'solid-js';
+import {StoreProvider} from 'statebuilder';
 import './assets/styles/app.scss';
 import {Scaffold} from './components/Scaffold/Scaffold';
 import {locale} from './i18n';
@@ -24,20 +24,17 @@ import './theme/global.css';
 
 console.debug('💻 CodeImage version:', appEnvironment.version);
 
-const i18n = createI18nContext(locale);
-
 const mockApiReady =
   import.meta.env.VITE_ENABLE_MSW === true
     ? import('./mocks/browser').then(({startMockApi}) => startMockApi())
     : Promise.resolve();
 
-// oxlint-disable-next-line typescript/no-explicit-any
-function lazyWithNoLauncher(cp: () => Promise<{default: Component<any>}>) {
+function lazyWithNoLauncher(load: () => Promise<{default: Component}>) {
   return lazy(() => {
     queueMicrotask(() => {
-      document.querySelector('#launcher')?.remove();
+      document.getElementById('launcher')?.remove();
     });
-    return cp();
+    return load();
   });
 }
 
@@ -50,83 +47,103 @@ const tokens: ThemeProviderProps['tokens'] = {
 const Dashboard = lazyWithNoLauncher(
   () => import('./pages/Dashboard/Dashboard'),
 );
-
-// The editor in the layout the user chose.
 const UnifiedEditor = lazyWithNoLauncher(() => import('./pages/UnifiedEditor'));
-
 const NotFoundPage = lazyWithNoLauncher(
   () => import('./pages/NotFound/NotFoundPage'),
 );
 
-export function Bootstrap() {
+function Home() {
+  const auth = getAuth0State();
+  return (
+    <Show fallback={<UnifiedEditor />} when={auth.loggedIn()}>
+      <Dashboard />
+    </Show>
+  );
+}
+
+function Login() {
+  const auth = getAuth0State();
+  const navigate = useNavigate();
+  createEffect(auth.loggedIn, loggedIn => {
+    if (loggedIn) {
+      void navigate('/', {replace: true});
+    } else {
+      void auth.login();
+    }
+  });
+  return null;
+}
+
+function DashboardRedirect() {
+  const navigate = useNavigate();
+  onSettled(() => {
+    void navigate('/', {replace: true});
+  });
+  return null;
+}
+
+function NotFoundRedirect() {
+  const navigate = useNavigate();
+  onSettled(() => {
+    void navigate('/404', {replace: true});
+  });
+  return null;
+}
+
+const Router = createRouter({
+  routes: [
+    {path: '/', component: Home},
+    {path: '/:snippetId', component: UnifiedEditor},
+    {path: '/404', component: NotFoundPage},
+    {path: '/dashboard', component: DashboardRedirect},
+    {path: '/login', component: Login},
+    {path: '/*all', component: NotFoundRedirect},
+  ],
+  preloadLinks: intentPreload(),
+});
+
+export function Bootstrap(props: ParentProps) {
   getRootEditorStore();
-  const [, {locale}] = useI18n();
   const uiStore = getUiStore();
-  const auth0 = getAuth0State();
-  createEffect(on(() => uiStore.get.locale, locale));
   const mode = () => uiStore.currentTheme();
 
-  const routes: RouteDefinition<string>[] = [
-    {
-      path: '',
-      component: () => {
-        const state = getAuth0State();
-        return (
-          <Show fallback={<UnifiedEditor />} when={state.loggedIn()}>
-            <Dashboard />
-          </Show>
-        );
-      },
-    },
-    {
-      path: ':snippetId',
-      component: UnifiedEditor,
-    },
-    {
-      path: '404',
-      component: NotFoundPage,
-    },
-    {
-      path: 'dashboard',
-      component: () => <Navigate href="/" />,
-    },
-    {
-      path: 'login',
-      component: () => {
-        if (auth0.loggedIn()) {
-          return <Navigate href={'/'} />;
-        } else {
-          auth0.login();
-        }
-      },
-    },
-    {
-      path: '/*all',
-      component: () => <Navigate href="/404" />,
-    },
-  ];
-
-  createEffect(
-    on(mode, theme => {
-      const scheme = document.querySelector('meta[name="theme-color"]');
-      const color = theme === 'dark' ? '#151516' : '#FFFFFF';
-      if (scheme) {
-        scheme.setAttribute('content', color);
-      }
-      setElementVars(document.documentElement, {
-        [backgroundColorVar]: color,
-      });
-      document.documentElement.setAttribute('data-cui-theme', theme as string);
-    }),
-  );
+  createEffect(mode, theme => {
+    const scheme = document.head.querySelector('meta[name="theme-color"]');
+    const color = theme === 'dark' ? '#151516' : '#FFFFFF';
+    scheme?.setAttribute('content', color);
+    setElementVars(document.documentElement, {[backgroundColorVar]: color});
+    document.documentElement.setAttribute('data-cui-theme', theme);
+  });
 
   return (
     <Scaffold>
       <CodeImageThemeProvider tokens={tokens} theme={mode()}>
         <SnackbarHost containerClassName={snackbarHostAppStyleCss} />
-        <Router>{routes}</Router>
+        <Loading>{props.children}</Loading>
       </CodeImageThemeProvider>
     </Scaffold>
+  );
+}
+
+function LocalizedApp() {
+  const uiStore = getUiStore();
+  const i18n = createI18nContext(locale, {
+    read: () => uiStore.get.locale,
+    write: language => uiStore.setLocale(language),
+  });
+
+  return (
+    <I18nContext value={i18n}>
+      <Router>{props => <Bootstrap>{props.children}</Bootstrap>}</Router>
+    </I18nContext>
+  );
+}
+
+function App() {
+  return (
+    <StoreProvider>
+      <LocalizedApp />
+    </StoreProvider>
   );
 }
 
@@ -135,14 +152,6 @@ getAuth0State()
   .catch(() => null)
   .then(async () => {
     await mockApiReady;
-    render(
-      () => (
-        <I18nContext.Provider value={i18n}>
-          <StateProvider>
-            <Bootstrap />
-          </StateProvider>
-        </I18nContext.Provider>
-      ),
-      document.getElementById('root') as HTMLElement,
-    );
+    const root = document.getElementById('root');
+    if (root) render(() => <App />, root);
   });

@@ -6,7 +6,7 @@ import {EditorConfigStore} from '@codeimage/store/editor/config.store';
 import {SegmentedField} from '@ui/SegmentedField/SegmentedField';
 import type {Accessor, Component, ParentProps} from 'solid-js';
 import {createSignal, For, Show} from 'solid-js';
-import {provideState} from 'statebuilder';
+import {useStore} from 'statebuilder';
 import {EditorForm} from '../../../../components/PropertyEditor/EditorForm';
 import {PanelHeader} from '../../../../components/PropertyEditor/PanelHeader';
 import {
@@ -121,7 +121,7 @@ type FontSource = 'web' | 'system';
 function FontRows(props: PanelProps) {
   const [t] = useI18n<AppLocaleEntries>();
   const editor = getRootEditorStore();
-  const config = provideState(EditorConfigStore);
+  const config = useStore(EditorConfigStore);
   const [source, setSource] = createSignal<FontSource>(
     editor.computed.selectedFont()?.type === 'system' ? 'system' : 'web',
   );

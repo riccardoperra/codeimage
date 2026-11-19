@@ -1,5 +1,5 @@
 import {createComponent} from 'solid-js';
-import {renderToString} from 'solid-js/web';
+import {renderToString} from '@solidjs/web';
 import {expect, test} from 'vitest';
 import {draculaTheme} from '@codeimage/highlight/dracula';
 import StaticCodeView from '../../components/CustomEditor/StaticCodeView';

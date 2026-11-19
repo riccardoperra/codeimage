@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import {resolve} from 'node:path';
 import {PNG} from 'pngjs';
+import {verifyAgentControls} from './agent-controls.mjs';
 
 const TOOLS = [
   'get_editor_state',
@@ -96,6 +97,7 @@ export async function verifyAgentTools({fresh, out}) {
       });
       assert.equal(coded.ok, true);
       assert.equal(coded.language, 'python');
+      assert.equal(coded.tab.language, 'python');
       assert.equal(
         typeof coded.tab.id,
         'string',
@@ -138,38 +140,7 @@ export async function verifyAgentTools({fresh, out}) {
       assert.ok(badTheme.suggestions.includes('Dracula'));
       assert.equal((await state()).theme.id, 'dracula');
 
-      const control = (snapshot, name) =>
-        snapshot.settings.find(setting => setting.name === name);
-      const before = await state();
-      const padding = control(before, 'frame_padding');
-      const target = padding.options.find(
-        option => option.value !== padding.value,
-      ).value;
-      const framePadding = () =>
-        page
-          .locator('[data-fit-scale] [data-watermark-frame]')
-          .first()
-          .evaluate(element => getComputedStyle(element).paddingLeft);
-      const paddingBefore = await framePadding();
-      assert.deepEqual(await call('set_controls', {frame_padding: target}), {
-        ok: true,
-        applied: {frame_padding: target},
-      });
-      assert.equal(control(await state(), 'frame_padding').value, target);
-      assert.notEqual(
-        await framePadding(),
-        paddingBefore,
-        'the live frame shows the new padding',
-      );
-
-      const opacity = control(await state(), 'frame_opacity').value;
-      const outOfRange = await call('set_controls', {
-        frame_opacity: 150,
-      });
-      assert.equal(outOfRange.ok, false);
-      assert.deepEqual(outOfRange.applied, {});
-      assert.match(outOfRange.errors['frame_opacity'], /from 0 to 100/);
-      assert.equal(control(await state(), 'frame_opacity').value, opacity);
+      const target = await verifyAgentControls({call, state, page});
 
       const exported = async (scale, name) => {
         const [download, result] = await Promise.all([

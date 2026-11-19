@@ -1,5 +1,5 @@
 import {useI18n} from '@codeimage/locale';
-import {Button} from '@codeui/kit';
+import {Button} from '@ui/legacy-controls';
 import {Show} from 'solid-js';
 import type {AppLocaleEntries} from '../../../i18n';
 import {PromptIcon} from '../shell/icons';

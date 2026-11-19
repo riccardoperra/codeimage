@@ -1,6 +1,7 @@
 import {getEditorSyncAdapter} from '@codeimage/store/editor/createEditorSync';
-import type {JSX, ParentProps} from 'solid-js';
-import {Suspense} from 'solid-js';
+import type {JSX} from '@solidjs/web';
+import type {ParentProps} from 'solid-js';
+import {Loading} from 'solid-js';
 
 export function SuspenseEditorItem(
   props: ParentProps<{fallback: JSX.Element}>,
@@ -13,6 +14,6 @@ export function SuspenseEditorItem(
   };
 
   return (
-    <Suspense fallback={props.fallback}>{render() && props.children}</Suspense>
+    <Loading fallback={props.fallback}>{render() && props.children}</Loading>
   );
 }

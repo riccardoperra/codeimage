@@ -5,7 +5,7 @@ import {
   ShellTerminal,
 } from '../WindowStyles/WindowStyles';
 import {createComponent} from 'solid-js';
-import {renderToString} from 'solid-js/web';
+import {renderToString} from '@solidjs/web';
 import {expect, test, vi} from 'vitest';
 import {TerminalWindowTabList} from './TerminalWindowTabList';
 import type {TerminalWindowTabListProps} from './TerminalWindowTabList';

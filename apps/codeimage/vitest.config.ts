@@ -1,7 +1,7 @@
 import {vanillaExtractPlugin} from '@vanilla-extract/vite-plugin';
 import {fileURLToPath} from 'node:url';
 import {defineConfig} from 'vitest/config';
-import solid from 'vite-plugin-solid';
+import solid from '@solidjs/vite-plugin';
 
 export default defineConfig({
   plugins: [

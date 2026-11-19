@@ -1,18 +1,13 @@
 import type {AnimationControls} from 'motion';
 import {animate} from 'motion';
 import type {FlowProps} from 'solid-js';
-import {onCleanup, onMount} from 'solid-js';
-
-// oxlint-disable-next-line typescript/no-empty-object-type
-interface DynamicSizedContainerProps {}
+import {onSettled} from 'solid-js';
 
 function toPx(value: number) {
   return `${value}px`;
 }
 
-export function DynamicSizedContainer(
-  props: FlowProps<DynamicSizedContainerProps>,
-) {
+export function DynamicSizedContainer(props: FlowProps) {
   let ref!: HTMLDivElement;
   let animation: AnimationControls | null = null;
 
@@ -45,12 +40,12 @@ export function DynamicSizedContainer(
     }, 0);
   };
 
-  onMount(() => {
+  onSettled(() => {
     if (!ref) return;
     recalculateSize();
     const resizeObserver = new MutationObserver(recalculateSize);
     resizeObserver.observe(ref, {childList: true, subtree: true});
-    return onCleanup(() => resizeObserver.disconnect());
+    return () => resizeObserver.disconnect();
   });
 
   return <div ref={ref}>{props.children}</div>;

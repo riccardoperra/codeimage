@@ -4,40 +4,30 @@ import {SUPPORTED_LANGUAGES} from '@codeimage/config';
 import {useI18n} from '@codeimage/locale';
 import {getUiStore} from '@codeimage/store/ui';
 import {backgroundColorVar, Box, HStack, Text, toast} from '@codeimage/ui';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuPortal,
-  DropdownMenuTrigger,
-  IconButton,
-} from '@codeui/kit';
-import {highlight as _highlight} from '@core/directives/highlight';
+import {createHighlight} from '@core/directives/highlight';
 import {formatDistanceToNow} from '@core/helpers/date';
 import {createControlledDialog} from '@core/hooks/createControlledDialog';
-import {A as Link, useNavigate} from '@solidjs/router';
+import {useNavigate} from '@solidjs/router';
 import {ConfirmDialog} from '@ui/ConfirmDialog/ConfirmDialog';
 import {RenameContentDialog} from '@ui/ConfirmDialog/RenameContentDialog';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 import type {VoidProps} from 'solid-js';
 import {For, Show} from 'solid-js';
-import {DotHorizontalIcon} from '../../../../components/Icons/DotVertical';
 import type {AppLocaleEntries} from '../../../../i18n';
 import {getDashboardState} from '../../dashboard.state';
+import {ProjectActionsMenu} from './ProjectActionsMenu';
 import * as styles from './ProjectItem.css';
 
 interface ProjectItemProps {
   item: ApiTypes.GetProjectByIdApi['response'];
 }
 
-const highlight = _highlight;
-void highlight;
-
 export function ProjectItem(props: VoidProps<ProjectItemProps>) {
-  const dashboard = getDashboardState()!;
+  const dashboard = getDashboardState();
   const uiStore = getUiStore();
   const locale = () => uiStore.get.locale;
   const openDialog = createControlledDialog();
+  const highlightName = createHighlight(dashboard.search);
   const navigate = useNavigate();
   const [t] = useI18n<AppLocaleEntries>();
 
@@ -120,36 +110,21 @@ export function ProjectItem(props: VoidProps<ProjectItemProps>) {
 
   return (
     <li class={styles.item}>
-      <Link class={styles.itemLink} href={`/${props.item.id}`} />
+      <a class={styles.itemLink} href={`/${props.item.id}`} />
       <div class={styles.itemTitle}>
         <Text size={'lg'} as={'div'}>
-          <span use:highlight={dashboard.search()}>{props.item.name}</span>
+          <span ref={highlightName}>{props.item.name}</span>
         </Text>
 
         <div>
-          <DropdownMenu>
-            <DropdownMenuTrigger
-              as={IconButton}
-              theme={'secondary'}
-              size={'xs'}
-              aria-label={'Menu'}
-            >
-              <DotHorizontalIcon size={'md'} />
-            </DropdownMenuTrigger>
-            <DropdownMenuPortal>
-              <DropdownMenuContent>
-                <DropdownMenuItem onClick={onRename}>
-                  {t('dashboard.renameProject.dropdownLabel')}
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={clone}>
-                  {t('dashboard.cloneProject.dropdownLabel')}
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={onDelete}>
-                  {t('dashboard.deleteProject.dropdownLabel')}
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenuPortal>
-          </DropdownMenu>
+          <ProjectActionsMenu
+            renameLabel={t('dashboard.renameProject.dropdownLabel')}
+            duplicateLabel={t('dashboard.cloneProject.dropdownLabel')}
+            deleteLabel={t('dashboard.deleteProject.dropdownLabel')}
+            onRename={onRename}
+            onDuplicate={clone}
+            onDelete={onDelete}
+          />
         </div>
       </div>
 

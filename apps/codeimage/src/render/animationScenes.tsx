@@ -16,8 +16,6 @@ import {
 
 import {loadLanguage, tokenizeCode} from '@core/snapshot/tokenize';
 
-import {renderToStringAsync} from 'solid-js/web';
-
 import AnimatedCodeView from '../components/CustomEditor/AnimatedCodeView';
 import {
   AnimationCanvas,
@@ -30,16 +28,15 @@ import type {RenderSnapshot} from './frameState';
 import {composeStep} from './composeFrame';
 import type {ComposedStep} from './composeFrame';
 
-import {page, SSR_OPTIONS, EXPORT_EXCLUDE_CSS} from './ssr';
+import {page, renderSettled, EXPORT_EXCLUDE_CSS} from './ssr';
 const FRAME_SLOT = 'codeimage-animation-frame';
 
 async function canvasMarkup(
   props: Omit<Parameters<typeof AnimationCanvas>[0], 'children'>,
 ): Promise<[string, string]> {
-  const html = await renderToStringAsync(
-    () => <AnimationCanvas {...props}>{FRAME_SLOT}</AnimationCanvas>,
-    SSR_OPTIONS,
-  );
+  const html = await renderSettled(() => (
+    <AnimationCanvas {...props}>{FRAME_SLOT}</AnimationCanvas>
+  ));
   const [start, end, ...rest] = html.split(FRAME_SLOT);
   if (end === undefined || rest.length)
     throw new Error('The animation canvas lost its frame');

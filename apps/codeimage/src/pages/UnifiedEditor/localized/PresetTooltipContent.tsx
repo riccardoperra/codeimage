@@ -1,6 +1,7 @@
 import {useI18n} from '@codeimage/locale';
 import {getAuth0State} from '@codeimage/store/auth/auth0';
-import {Box, Link} from '@codeimage/ui';
+import {Box} from '@codeimage/ui';
+import {Link} from '@ui/legacy-controls';
 import type {AppLocaleEntries} from '../../../i18n';
 
 export function PresetTooltipContent() {

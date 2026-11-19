@@ -31,13 +31,15 @@ function TabHeader(
   const actions = timelineActions();
   const navigation = () => {
     const step = props.single() ? props.first() : undefined;
+    const pressed: 'true' | 'false' =
+      props.selectedKey() === props.headKey() ? 'true' : 'false';
     return {
       'data-nav': step ? props.headKey() : undefined,
       'data-animation-segment': step ? '' : undefined,
       'data-kind': step ? ('hold' as const) : undefined,
       'data-step-id': step?.stepId,
-      'aria-pressed': !!step && props.selectedKey() === props.headKey(),
-      tabIndex: step
+      'aria-pressed': step && pressed,
+      tabindex: step
         ? tabStopOf(props.selectedKey(), props.headKey(), props.firstKey())
         : -1,
     };

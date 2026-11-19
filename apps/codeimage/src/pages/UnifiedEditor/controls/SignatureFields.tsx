@@ -19,9 +19,9 @@ import {
   readProfile,
   writeProfile,
 } from '@codeimage/store/frame/signature';
-import {Select, TextField} from '@codeui/kit';
+import {TextField, Select} from '@ui/legacy-controls';
 import {SegmentedField} from '@ui/SegmentedField/SegmentedField';
-import type {JSX} from 'solid-js';
+import type {JSX} from '@solidjs/web';
 import {createSignal, Show} from 'solid-js';
 import {PlatformIcon} from '../../../components/Frame/FrameSignature';
 import type {AppLocaleEntries} from '../../../i18n';

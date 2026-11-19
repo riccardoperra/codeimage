@@ -1,73 +1,11 @@
 import {useI18n} from '@codeimage/locale';
 import type {AppLocaleEntries} from '../../i18n';
-import type {Component, JSX} from 'solid-js';
-import {
-  For,
-  Match,
-  Switch,
-  onCleanup,
-  onMount,
-  createSignal,
-  Show,
-} from 'solid-js';
-import type {ContentHighlightId} from '../../state/whats-new/registry';
+import type {Component} from 'solid-js';
+import type {JSX} from '@solidjs/web';
+import {For, Match, Switch, Show} from 'solid-js';
+import type {ContentHighlightId} from '@codeimage/store/whats-new/registry';
+import {IllustrationFrame, type IllustrationProps} from './IllustrationFrame';
 import * as styles from './illustrations.css';
-
-export type IllustrationMode = 'play' | 'still' | 'thumb';
-interface IllustrationProps {
-  readonly mode?: IllustrationMode;
-}
-
-/** A single explanation on first intersection; the resting drawing is complete. */
-function Frame(
-  props: IllustrationProps & {id: ContentHighlightId; children: JSX.Element},
-) {
-  let frame!: HTMLDivElement;
-  const [playing, setPlaying] = createSignal<'entrance' | 'scroll'>();
-  // Once it has played, the picture is the still drawing again: no animation
-  // is left holding a layer, so its edges stay as crisp as the still mode's.
-  const play = (from: 'entrance' | 'scroll') => {
-    setPlaying(from);
-    requestAnimationFrame(() => {
-      const parts = frame.getAnimations({subtree: true});
-      void Promise.allSettled(parts.map(part => part.finished)).then(() =>
-        setPlaying(undefined),
-      );
-    });
-  };
-  onMount(() => {
-    if (props.mode !== 'play') return;
-    let first = true;
-    const observer = new IntersectionObserver(
-      entries => {
-        const visible = entries.some(entry => entry.isIntersecting);
-        // A picture on screen from the start waits for its card to settle.
-        // One that is scrolled to has nothing to wait for.
-        if (visible) play(first ? 'entrance' : 'scroll');
-        first = false;
-        if (visible) observer.disconnect();
-      },
-      {threshold: 0.25},
-    );
-    observer.observe(frame);
-    onCleanup(() => observer.disconnect());
-  });
-  return (
-    <div
-      ref={frame}
-      class={styles.frame}
-      data-picture={props.id}
-      data-mode={props.mode ?? 'still'}
-      data-playing={playing()}
-      style={
-        playing() === 'scroll' ? {'--whats-new-play-at': '0ms'} : undefined
-      }
-      aria-hidden="true"
-    >
-      <div class={styles.stage}>{props.children}</div>
-    </div>
-  );
-}
 
 const cx = (...names: (string | undefined)[]) =>
   names.filter(Boolean).join(' ');
@@ -542,11 +480,11 @@ function Drawing(props: {id: ContentHighlightId}) {
 
 function picture(id: ContentHighlightId): Component<IllustrationProps> {
   return props => (
-    <Frame {...props} id={id}>
+    <IllustrationFrame {...props} id={id}>
       <Show when={props.mode === 'thumb'} fallback={<Drawing id={id} />}>
         <Thumb id={id} />
       </Show>
-    </Frame>
+    </IllustrationFrame>
   );
 }
 

@@ -1,14 +1,13 @@
 import {resolve} from 'path';
 import {defineConfig, type Plugin} from 'vite';
 import dts from 'vite-plugin-dts';
-import solidPlugin from 'vite-plugin-solid';
+import solidPlugin from '@solidjs/vite-plugin';
 import {dependencies, peerDependencies} from './package.json';
 
 const externals = [
   ...Object.keys(dependencies),
   ...Object.keys(peerDependencies),
-  'solid-js/web',
-  'solid-js/store',
+  '@solidjs/web',
 ];
 
 export function removeSideEffects(): Plugin {

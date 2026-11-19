@@ -1,15 +1,10 @@
 import {useI18n} from '@codeimage/locale';
 import {FieldLabel, FlexField, HStack} from '@codeimage/ui';
-import {
-  Button,
-  Dialog,
-  DialogPanelContent,
-  DialogPanelFooter,
-  TextField,
-} from '@codeui/kit';
+import {Button, TextField} from '@ui/legacy-controls';
+import {Dialog, DialogPanelContent, DialogPanelFooter} from '@ui/Dialog';
 import type {ControlledDialogProps} from '@core/hooks/createControlledDialog';
-import type {JSXElement, VoidProps} from 'solid-js';
-import {createSignal, mergeProps} from 'solid-js';
+import type {Element as JSXElement, VoidProps} from 'solid-js';
+import {createSignal, merge} from 'solid-js';
 import type {AppLocaleEntries} from '../../i18n';
 
 export interface RenameContentDialogProps extends ControlledDialogProps {
@@ -25,7 +20,7 @@ export function RenameContentDialog(
   const [t] = useI18n<AppLocaleEntries>();
   const [name, setName] = createSignal(props.initialValue ?? '');
 
-  const propsWithDefault = mergeProps({actionType: 'primary'} as const, props);
+  const propsWithDefault = merge({actionType: 'primary'} as const, props);
   return (
     <Dialog
       size={'xs'}

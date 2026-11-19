@@ -1,4 +1,4 @@
-import type {JSX} from 'solid-js';
+import type {JSX} from '@solidjs/web';
 
 /** One outline icon in the text colour, 18px unless a size is given. */
 function Icon(props: {size?: number; children: JSX.Element}) {

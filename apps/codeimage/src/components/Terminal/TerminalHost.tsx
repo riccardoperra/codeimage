@@ -1,5 +1,6 @@
 import type {AnimationHeader} from '@core/animation/model';
 import type {LanguageIconDefinition} from '@codeimage/config';
+import type {CustomTheme} from '@codeimage/highlight';
 import type {TerminalState} from '@codeimage/store/editor/model';
 import {FadeInOutTransition} from '@codeimage/ui';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
@@ -33,6 +34,7 @@ export interface BaseTerminalProps extends Omit<
   showOnlyActiveTab?: boolean;
   activeTabId?: string;
   themeId: string;
+  theme?: CustomTheme;
 }
 
 export interface TerminalHostProps extends BaseTerminalProps {
@@ -44,19 +46,19 @@ export interface TerminalHostProps extends BaseTerminalProps {
 }
 
 export const TerminalHost: FlowComponent<TerminalHostProps> = props => {
-  const tabTheme = createTabTheme(() => props.themeId);
   const themes = getThemeStore();
+  const theme = () =>
+    props.theme ?? themes.getThemeResource(props.themeId)?.[0]();
+  const tabTheme = createTabTheme(
+    () => props.themeId,
+    () => props.theme,
+  );
   const palette = createMemo(() => {
-    const theme = themes
-      .themeArray()
-      .find(resource => resource()?.id === props.themeId)?.();
+    const terminal = theme()?.properties.terminal;
     return createWindowPalette({
       background: props.background,
       text: props.textColor,
-      accent:
-        theme?.properties.terminal.accent ??
-        theme?.properties.terminal.text ??
-        props.textColor,
+      accent: terminal?.accent ?? terminal?.text ?? props.textColor,
     });
   });
   const paletteVars = () =>
@@ -85,12 +87,16 @@ export const TerminalHost: FlowComponent<TerminalHostProps> = props => {
     <div
       ref={windowRef}
       class={clsx(styles.wrapper, props.themeClass)}
-      data-lite={props.lite}
-      data-preview={props.preview || ''}
+      data-lite={props.lite === undefined ? undefined : String(props.lite)}
+      data-preview={props.preview ? 'true' : ''}
       data-theme-mode={darkMode() ? 'dark' : 'light'}
-      data-header-visible={props.showHeader}
-      data-accent-header={props.accentVisible && !props.alternativeTheme}
-      data-fallback-inactive-tab={tabTheme()?.shouldFallbackInactiveColor}
+      data-header-visible={String(props.showHeader)}
+      data-accent-header={String(
+        props.accentVisible && !props.alternativeTheme,
+      )}
+      data-fallback-inactive-tab={String(
+        tabTheme().shouldFallbackInactiveColor,
+      )}
       data-custom-border={
         props.borderType === 'glass' || props.borderType === 'hairline'
           ? props.borderType

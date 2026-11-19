@@ -1,3 +1,4 @@
+import type {CustomTheme} from '@codeimage/highlight';
 import {getRootEditorStore} from '@codeimage/store/editor';
 import {getFrameState} from '@codeimage/store/editor/frame';
 import type {
@@ -7,7 +8,7 @@ import type {
 import {getTerminalState} from '@codeimage/store/editor/terminal';
 import type {FrameState} from '@codeimage/store/frame/model';
 import type {Accessor} from 'solid-js';
-import {batch, createSignal} from 'solid-js';
+import {flush, createSignal} from 'solid-js';
 import {untrackCommand} from 'statebuilder/commands';
 
 /** Every value a control or a theme can change, as it was before a preview. */
@@ -39,6 +40,7 @@ export interface Snapshot {
 export interface PreviewSession {
   /** What the canvas showed before the running preview, or null. */
   readonly saved: Accessor<Snapshot | null>;
+  readonly showTheme: (theme: CustomTheme, background: boolean) => void;
   /** Shows a write on the canvas without saving it. The previous preview is undone first. */
   readonly show: (write: () => void) => void;
   /** Undoes the running preview. Does nothing when none runs. */
@@ -51,6 +53,18 @@ export function createPreviewSession(): PreviewSession {
   const frame = getFrameState();
   const terminal = getTerminalState();
   const editor = getRootEditorStore();
+  const showTheme = (theme: CustomTheme, background: boolean) => {
+    if (background)
+      frame.setStore(draft => {
+        draft.background = theme.properties.previewBackground;
+      });
+    terminal.setState(draft => {
+      draft.background = theme.properties.terminal.main;
+      draft.textColor = theme.properties.terminal.text;
+    });
+    editor.actions.setThemeId(theme.id);
+  };
+
   const [saved, setSaved] = createSignal<Snapshot | null>(null);
 
   const take = (): Snapshot => {
@@ -90,27 +104,29 @@ export function createPreviewSession(): PreviewSession {
   };
 
   const restore = (snapshot: Snapshot) => {
-    frame.setStore(state => ({...state, ...snapshot.frame}));
-    terminal.setState(state => ({...state, ...snapshot.terminal}));
-    editor.setState('options', options => ({...options, ...snapshot.options}));
+    frame.setStore(draft => {
+      Object.assign(draft, snapshot.frame);
+    });
+    terminal.setState(draft => {
+      Object.assign(draft, snapshot.terminal);
+    });
     const tab = snapshot.tab;
-    if (!tab) return;
-    const index = editor.state.editors.findIndex(item => item.id === tab.id);
-    if (index < 0) return;
-    editor.setState('editors', index, item => ({
-      ...item,
-      languageId: tab.languageId,
-      formatter: tab.formatter,
-      lineNumberStart: tab.lineNumberStart,
-      tab: {...item.tab, tabName: tab.tabName},
-    }));
+    editor.setState(draft => {
+      Object.assign(draft.options, snapshot.options);
+      const item = draft.editors.find(item => item.id === tab?.id);
+      if (!tab || !item) return;
+      item.languageId = tab.languageId;
+      item.formatter = tab.formatter;
+      item.lineNumberStart = tab.lineNumberStart;
+      item.tab.tabName = tab.tabName;
+    });
   };
 
   // Untracked commands still update the stores but skip the persistence
   // watchers. The batch runs inside them, so the effects a write triggers
   // (a language change resets the formatter) are not saved either.
   const quietly = (write: () => void) =>
-    untrackCommand(() => batch(write), false);
+    untrackCommand(() => flush(write), false);
 
   const end = () => {
     const snapshot = saved();
@@ -123,6 +139,7 @@ export function createPreviewSession(): PreviewSession {
 
   return {
     saved,
+    showTheme,
     show: write =>
       quietly(() => {
         const snapshot = saved();

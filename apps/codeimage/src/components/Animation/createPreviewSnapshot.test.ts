@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import type * as Solid from 'solid-js';
-import {createRoot, createSignal} from 'solid-js';
+import {createRoot, createSignal, flush} from 'solid-js';
 import {test, vi} from 'vitest';
 import {
   EMPTY_DRAFT,
@@ -13,7 +13,10 @@ import {
 import type {PreviewMeasurement} from './planPreview';
 
 vi.mock('solid-js', () =>
-  vi.importActual<typeof Solid>('solid-js/dist/solid.js'),
+  vi.importActual<typeof Solid>(
+    new URL('./dist/solid.js', import.meta.resolve('solid-js/package.json'))
+      .pathname,
+  ),
 );
 
 const request = (ids: readonly [string, ...string[]]): PreviewRequest => {
@@ -65,10 +68,11 @@ const measured = (request: PreviewRequest): PreviewMeasurement => {
     lineNumbers: false,
   };
 };
-const flush = async () => {
+const complete = async () => {
   await Promise.resolve();
   await Promise.resolve();
   await Promise.resolve();
+  flush();
 };
 
 for (const removed of ['a', 'b', 'c'])
@@ -85,14 +89,15 @@ for (const removed of ['a', 'b', 'c'])
     });
     try {
       fixture.pending.get(fixture.initial.key)!(measured(fixture.initial));
-      await flush();
+      await complete();
       assert.equal(fixture.snapshot()?.measured.tabs.length, 3);
       const ids = ['a', 'b', 'c'].filter(id => id !== removed);
       const next = request([ids[0], ids[1]]);
       fixture.setCurrent(next);
+      flush();
       assert.equal(fixture.snapshot(), undefined);
       fixture.pending.get(next.key)!(measured(next));
-      await flush();
+      await complete();
       const snapshot = fixture.snapshot()!;
       assert.deepEqual(
         snapshot.measured.tabs.map(tab => tab.id),
@@ -106,6 +111,7 @@ for (const removed of ['a', 'b', 'c'])
         ...next,
         settings: {...next.settings, transitionMs: 1500},
       });
+      flush();
       assert.equal(fixture.snapshot()?.settings.transitionMs, 1500);
       assert.equal(fixture.snapshot()?.measured, snapshot.measured);
       assert.equal(fixture.pending.size, 2, 'timing changes reuse measurement');
@@ -128,10 +134,11 @@ test('a late measurement cannot restore a removed step', async () => {
   try {
     const next = request(['a', 'c']);
     fixture.setCurrent(next);
+    flush();
     fixture.pending.get(next.key)!(measured(next));
-    await flush();
+    await complete();
     fixture.pending.get(fixture.first.key)!(measured(fixture.first));
-    await flush();
+    await complete();
     assert.deepEqual(
       fixture.snapshot()?.measured.tabs.map(tab => tab.id),
       ['a', 'c'],

@@ -1,4 +1,6 @@
 import {isAssetUrl} from '@codeimage/store/assets/assetIds';
+import type {WatermarkScope} from '@core/watermark/scope';
+import {createWatermarkRef} from '@core/watermark/scope';
 import type {FrameMedia} from './frameMedia';
 import type {
   FrameSignature as Signature,
@@ -12,9 +14,7 @@ import {
   createEffect,
   createSignal,
   Match,
-  on,
-  onCleanup,
-  onMount,
+  onSettled,
   Show,
   Switch,
 } from 'solid-js';
@@ -74,18 +74,16 @@ function FitText(props: ParentProps<{class?: string}>) {
   let ref!: HTMLSpanElement;
   const [overflow, setOverflow] = createSignal(false);
   const measure = () => setOverflow(ref.scrollWidth > ref.clientWidth + 1);
-  onMount(() => {
+  onSettled(() => {
     const observer = new ResizeObserver(measure);
     observer.observe(ref);
     if (ref.parentElement) observer.observe(ref.parentElement);
     void document.fonts?.ready.then(measure);
-    onCleanup(() => observer.disconnect());
+    return () => observer.disconnect();
   });
   createEffect(
-    on(
-      () => props.children,
-      () => queueMicrotask(measure),
-    ),
+    () => props.children,
+    () => queueMicrotask(measure),
   );
   return (
     <span
@@ -116,8 +114,10 @@ export function SignatureMark(props: {
       <Match when={props.signature.style === 'pill'}>
         <div
           ref={element => props.ref?.(element)}
-          class={styles.pill}
-          classList={{[styles.pillWithIcon]: !!props.signature.platform}}
+          class={[
+            styles.pill,
+            {[styles.pillWithIcon]: !!props.signature.platform},
+          ]}
         >
           <PlatformIcon platform={props.signature.platform} size={14} />
           <FitText>{handle()}</FitText>
@@ -156,8 +156,7 @@ export function FrameSignature(props: {
   /** Makes the signature a button that opens its settings, in the editor only. */
   onEdit?: () => void;
   editLabel?: string;
-  /** Receives the visible mark: the edit button, or the mark itself. */
-  markRef?: (element: HTMLElement) => void;
+  watermark?: WatermarkScope;
 }) {
   const tone = () => props.media.tone;
   // Keep the editor's focus and selection, and start no drag.
@@ -171,47 +170,50 @@ export function FrameSignature(props: {
   };
   return (
     <Show when={props.signature}>
-      {signature => (
-        <div
-          class={`${styles.slot} ${styles.align[signature().position]} ${
-            styles.tone[tone()]
-          } ${isAssetUrl(props.background) ? styles.imageTone[tone()] : ''}`}
-          data-frame-signature={signature().position}
-          data-signature-style={signature().style}
-          data-signature-tone={tone()}
-          style={assignInlineVars({
-            [styles.signatureScale]: String(props.scale),
-          })}
-        >
-          <Show
-            when={props.onEdit}
-            fallback={
-              <SignatureMark
-                signature={signature()}
-                avatar={props.media.avatar}
-                ref={props.markRef}
-              />
-            }
+      {signature => {
+        const markRef = createWatermarkRef(props.watermark, 'signature');
+        return (
+          <div
+            class={`${styles.slot} ${styles.align[signature().position]} ${
+              styles.tone[tone()]
+            } ${isAssetUrl(props.background) ? styles.imageTone[tone()] : ''}`}
+            data-frame-signature={signature().position}
+            data-signature-style={signature().style}
+            data-signature-tone={tone()}
+            style={assignInlineVars({
+              [styles.signatureScale]: String(props.scale),
+            })}
           >
-            <button
-              ref={element => props.markRef?.(element)}
-              type="button"
-              class={styles.edit}
-              data-signature-style={signature().style}
-              aria-label={props.editLabel}
-              title={props.editLabel}
-              onPointerDown={preventSelection}
-              onMouseDown={preventSelection}
-              onClick={editSignature}
+            <Show
+              when={props.onEdit}
+              fallback={
+                <SignatureMark
+                  signature={signature()}
+                  avatar={props.media.avatar}
+                  ref={markRef}
+                />
+              }
             >
-              <SignatureMark
-                signature={signature()}
-                avatar={props.media.avatar}
-              />
-            </button>
-          </Show>
-        </div>
-      )}
+              <button
+                ref={markRef}
+                type="button"
+                class={styles.edit}
+                data-signature-style={signature().style}
+                aria-label={props.editLabel}
+                title={props.editLabel}
+                onPointerDown={preventSelection}
+                onMouseDown={preventSelection}
+                onClick={editSignature}
+              >
+                <SignatureMark
+                  signature={signature()}
+                  avatar={props.media.avatar}
+                />
+              </button>
+            </Show>
+          </div>
+        );
+      }}
     </Show>
   );
 }

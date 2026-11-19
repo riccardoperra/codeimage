@@ -1,7 +1,7 @@
 import {getEditorStore, getRootEditorStore} from '@codeimage/store/editor';
 import {getActiveEditorStore} from '@codeimage/store/editor/activeEditor';
 import {MAX_EDITOR_TABS} from '@codeimage/store/editor/model';
-import type {Accessor} from 'solid-js';
+import {flush, type Accessor} from 'solid-js';
 import {ExportExtension} from '../../../hooks/use-export-image';
 import type {ListedModel} from '../command-menu/listed-model';
 import {shownTheme} from '../command-menu/listed-model';
@@ -95,7 +95,6 @@ function tool(
   };
 }
 
-/** "index.tsx" becomes "index copy.tsx"; an untitled tab stays untitled. */
 export function copyName(name: string): string {
   if (!name) return '';
   const dot = name.lastIndexOf('.');
@@ -139,16 +138,13 @@ function exportMessage(outcome: ExportOutcome): ToolResult {
   }
 }
 
-/** The settings and tabs as an agent reads them. */
 function createEditorReader(listed: ListedModel) {
   const editors = getRootEditorStore();
   const controls = listed.sections
     .flatMap(section => section.controls)
     .filter((control): control is AgentControl => control.kind !== 'custom');
   return {
-    /** Every setting an agent can name, available now or not. */
     controls,
-    /** The settings an agent can change now. */
     usable: () =>
       controls.filter(control => unavailableReason(control) === undefined),
     tabs: (): TabEntry[] =>
@@ -187,10 +183,6 @@ export function createEditorBrief(
   };
 }
 
-/**
- * Every editor action an agent can take, built from the controls model, the
- * themes and the exporter that the editor UI uses.
- */
 export function createAgentTools(context: AgentToolsContext): AgentTool[] {
   const {model, listed, exporter, pageState} = context;
   const {controls: allControls, usable, tabs} = createEditorReader(listed);
@@ -198,9 +190,7 @@ export function createAgentTools(context: AgentToolsContext): AgentTool[] {
   const active = getActiveEditorStore();
   const editors = getRootEditorStore();
   const activeTab = () => tabs().find(tab => tab.active);
-  // The tab a call wrote, with the editor id that outlives renames and moves.
   const writtenTab = () => ({id: editors.state.activeEditorId, ...activeTab()});
-  // The option key of a language id or name, checked before anything changes.
   const languageKey = (raw: unknown): Parsed<string | undefined> => {
     const control = language();
     if (raw === undefined || !control) return {ok: true, value: undefined};
@@ -283,6 +273,7 @@ export function createAgentTools(context: AgentToolsContext): AgentTool[] {
         if (!key.ok) return fail(key.error);
         if (key.value !== undefined) language()?.set(key.value);
         active.setCode(input.code);
+        flush();
         return {
           ok: true,
           tab: writtenTab(),
@@ -328,14 +319,15 @@ export function createAgentTools(context: AgentToolsContext): AgentTool[] {
             {tabs: tabs()},
           );
         editors.actions.addEditor(code === undefined ? null : {code}, true);
+        flush();
         if (key.value !== undefined) language()?.set(key.value);
-        // A name like "main.py" sets the language too, unless one was given.
         if (name !== undefined)
           editors.actions.setTabName(
             editors.state.activeEditorId,
             name.trim(),
             key.value === undefined,
           );
+        flush();
         return {ok: true, tab: writtenTab()};
       },
     }),
@@ -378,19 +370,12 @@ export function createAgentTools(context: AgentToolsContext): AgentTool[] {
             {tabs: tabs()},
           );
         const {id: _, ...source} = editors.state.editors[found.value.index];
+        const tabName = newName?.trim() ?? copyName(source.tab.tabName ?? '');
         editors.actions.addEditor(
-          {
-            ...source,
-            tab: {
-              ...source.tab,
-              tabName:
-                typeof newName === 'string'
-                  ? newName.trim()
-                  : copyName(source.tab.tabName ?? ''),
-            },
-          },
+          {...source, tab: {...source.tab, tabName}},
           true,
         );
+        flush();
         return {ok: true, tab: writtenTab()};
       },
     }),
@@ -416,9 +401,9 @@ export function createAgentTools(context: AgentToolsContext): AgentTool[] {
       execute: async input => {
         const found = resolveTab(tabs(), input);
         if (!found.ok) return fail(found.error, {tabs: tabs()});
-        editors.actions.setActiveEditorId(
-          editors.state.editors[found.value.index].id,
-        );
+        const {id} = editors.state.editors[found.value.index];
+        editors.actions.setActiveEditorId(id);
+        flush();
         return {ok: true, tab: activeTab()};
       },
     }),
@@ -523,6 +508,7 @@ export function createAgentTools(context: AgentToolsContext): AgentTool[] {
             continue;
           }
           parsed.value.commit();
+          flush();
           applied[name] = parsed.value.value;
         }
         return Object.keys(errors).length
@@ -551,6 +537,7 @@ export function createAgentTools(context: AgentToolsContext): AgentTool[] {
           return fail('"open" must be true or false.');
         const {animation} = getEditorStore();
         animation.actions.setOpen(input.open);
+        flush();
         return {ok: true, open: animation.open()};
       },
     }),

@@ -314,7 +314,7 @@ async function turnOn(page) {
   const toggle = page.locator('#settings-local-ai');
   await toggle.focus();
   await page.keyboard.press('Space');
-  assert.equal(await toggle.getAttribute('aria-checked'), 'true');
+  assert.ok(await toggle.isChecked());
 }
 
 // The experiment already on, as a returning user has it.

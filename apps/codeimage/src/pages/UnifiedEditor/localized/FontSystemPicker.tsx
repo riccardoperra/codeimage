@@ -2,19 +2,11 @@ import {useI18n} from '@codeimage/locale';
 import type {AppLocaleEntries} from '../../../i18n';
 import {EditorConfigStore} from '@codeimage/store/editor/config.store';
 import {Box, FieldLabelHint, Link, LoadingCircle, Text} from '@codeimage/ui';
-import {Button, Checkbox, TextField, VirtualizedListbox} from '@codeui/kit';
-import {pipe} from 'rxjs';
-import {
-  createSignal,
-  Match,
-  onCleanup,
-  onMount,
-  Show,
-  Suspense,
-  Switch,
-} from 'solid-js';
-import {unwrap} from 'solid-js/store';
-import {provideState} from 'statebuilder';
+import {VirtualizedListbox} from '@ui/legacy-listbox';
+import {Button, Checkbox, TextField} from '@ui/legacy-controls';
+import {createSignal, Match, onSettled, Show, Loading, Switch} from 'solid-js';
+import {snapshot} from 'solid-js';
+import {useStore} from 'statebuilder';
 import {HintIcon} from '../../../components/Icons/Hint';
 import * as styles from '../../../components/PropertyEditor/controls/FontPicker/FontPicker.css';
 import {createFontPickerListboxProps} from '../../../components/PropertyEditor/controls/FontPicker/FontPickerListbox';
@@ -27,44 +19,24 @@ interface FontSystemPickerProps {
 
 export function FontSystemPicker(props: FontSystemPickerProps) {
   const [t] = useI18n<AppLocaleEntries>();
-  const configStore = provideState(EditorConfigStore);
+  const configStore = useStore(EditorConfigStore);
   const [fontTerm, setFontTerm] = createSignal('');
   const [showOnlyMonospaced, setShowOnlyMonospaced] = createSignal(true);
 
   const {localFontsApi} = configStore;
 
-  onMount(() => {
-    const subscription = localFontsApi.accessSystemFonts(true).subscribe();
-    onCleanup(() => subscription.unsubscribe());
-  });
+  onSettled(() => localFontsApi.observeSystemFonts());
 
   const fonts = () => {
     const onlyMonospaced = showOnlyMonospaced();
     const term = fontTerm();
-    const fonts = unwrap(configStore.get.systemFonts);
-
-    return pipe(
-      (_: typeof fonts) => _,
-      // Monospaced filter
-      fonts =>
-        onlyMonospaced ? fonts.filter(font => font.fontData.monospaced) : fonts,
-      // Term filter
-      fonts =>
-        term.length > 2
-          ? fonts.filter(font => font.name.toLowerCase().includes(term))
-          : fonts,
-      // Sorting alphabetically
-      fonts =>
-        fonts.sort((a, b) =>
-          a.fontData.family.localeCompare(b.fontData.family),
-        ),
-      // Map to select items
-      fonts =>
-        fonts.map(font => ({
-          label: font.name,
-          value: font.id,
-        })),
-    )(fonts);
+    return snapshot(configStore.get.systemFonts)
+      .filter(font => !onlyMonospaced || font.fontData.monospaced)
+      .filter(
+        font => term.length <= 2 || font.name.toLowerCase().includes(term),
+      )
+      .sort((a, b) => a.fontData.family.localeCompare(b.fontData.family))
+      .map(font => ({label: font.name, value: font.id}));
   };
 
   const listboxProps = createFontPickerListboxProps({
@@ -79,7 +51,7 @@ export function FontSystemPicker(props: FontSystemPickerProps) {
   });
 
   return (
-    <Suspense>
+    <Loading>
       <Switch>
         <Match when={localFontsApi.state().permissionState === 'granted'}>
           <div class={styles.virtualizedFontListboxToolbar}>
@@ -105,7 +77,6 @@ export function FontSystemPicker(props: FontSystemPickerProps) {
           >
             <div class={styles.virtualizedFontListboxWrapper}>
               <VirtualizedListbox
-                /* @ts-expect-error Fix @codeui/kit types */
                 class={styles.virtualizedFontListbox}
                 theme={'primary'}
                 bordered
@@ -133,7 +104,7 @@ export function FontSystemPicker(props: FontSystemPickerProps) {
           <DeniedContent />
         </Match>
       </Switch>
-    </Suspense>
+    </Loading>
   );
 }
 

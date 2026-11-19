@@ -1,6 +1,6 @@
 import type {Accessor} from 'solid-js';
 import {createMemo, createSignal, onCleanup, Show} from 'solid-js';
-import {getWhatsNew} from '../../state/whats-new';
+import {getWhatsNew} from '@codeimage/store/whats-new';
 import {Nudge} from './Nudge';
 import {Showcase} from './Showcase';
 

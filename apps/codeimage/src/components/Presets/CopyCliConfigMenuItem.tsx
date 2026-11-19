@@ -1,7 +1,7 @@
 import {useI18n} from '@codeimage/locale';
 import type {PresetData} from '@codeimage/store/presets/types';
 import {toast} from '@codeimage/ui';
-import {DropdownMenuItem} from '@codeui/kit';
+import {DropdownMenuItem} from '@ui/DropdownMenu';
 import type {AppLocaleEntries} from '../../i18n';
 import {toCliConfig} from './cliConfig';
 

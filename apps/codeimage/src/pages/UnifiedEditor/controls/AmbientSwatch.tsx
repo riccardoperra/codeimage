@@ -7,7 +7,11 @@ export function AmbientSwatch(props: {control: BackgroundControl}) {
     <button
       type="button"
       class={styles.ambientSwatch}
-      aria-pressed={props.control.value() === props.control.ambient().value}
+      aria-pressed={
+        props.control.value() === props.control.ambient().value
+          ? 'true'
+          : 'false'
+      }
       onMouseEnter={() => props.control.preview(props.control.ambient().value)}
       onMouseLeave={() => props.control.endPreview()}
       onFocus={() => props.control.preview(props.control.ambient().value)}

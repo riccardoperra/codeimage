@@ -1,7 +1,7 @@
 import {getWhatsNew} from '../../../state/whats-new';
 import {getFrameState} from '@codeimage/store/editor/frame';
-import {createSelectOptions, Select} from '@codeui/kit';
-import {Switch} from '@kobalte/core/switch';
+import {createSelectOptions} from '@codeui/kit/select-options';
+import {Select} from '@ui/legacy-controls';
 import {SegmentedField} from '@ui/SegmentedField/SegmentedField';
 import {AspectRatioPicker} from '../localized/AspectRatioPicker';
 import type {ControlId, SegmentedControl, SelectControl} from '../model';
@@ -23,17 +23,29 @@ export function SwitchField(props: {
   disabled?: boolean;
 }) {
   return (
-    <Switch
-      class={styles.switchRoot}
-      checked={props.checked}
-      onChange={props.onChange}
-      disabled={props.disabled}
-    >
-      <Switch.Input id={props.id} aria-label={props.label} />
-      <Switch.Control class={styles.switchControl}>
-        <Switch.Thumb class={styles.switchThumb} />
-      </Switch.Control>
-    </Switch>
+    <label class={styles.switchRoot}>
+      <input
+        type="checkbox"
+        role="switch"
+        id={props.id}
+        class={styles.switchInput}
+        aria-label={props.label}
+        checked={props.checked}
+        disabled={props.disabled}
+        onChange={event => props.onChange(event.currentTarget.checked)}
+      />
+      <span
+        class={styles.switchControl}
+        data-checked={props.checked || undefined}
+        data-disabled={props.disabled || undefined}
+        aria-hidden="true"
+      >
+        <span
+          class={styles.switchThumb}
+          data-checked={props.checked || undefined}
+        />
+      </span>
+    </label>
   );
 }
 

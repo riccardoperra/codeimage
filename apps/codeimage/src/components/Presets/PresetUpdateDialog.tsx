@@ -1,15 +1,11 @@
 import {useI18n} from '@codeimage/locale';
 import type {Preset} from '@codeimage/store/presets/types';
 import {Box, HStack, SvgIcon, Text} from '@codeimage/ui';
-import {
-  Button,
-  Dialog,
-  DialogPanelContent,
-  DialogPanelFooter,
-} from '@codeui/kit';
+import {Button} from '@ui/legacy-controls';
+import {Dialog, DialogPanelContent, DialogPanelFooter} from '@ui/Dialog';
 import type {ControlledDialogProps} from '@core/hooks/createControlledDialog';
-import type {JSXElement, VoidProps} from 'solid-js';
-import {mergeProps} from 'solid-js';
+import type {Element as JSXElement, VoidProps} from 'solid-js';
+import {merge} from 'solid-js';
 import type {AppLocaleEntries} from '../../i18n';
 import {PresetPreview} from './PresetPreview/PresetPreview';
 import * as styles from './PresetSwitcher/PresetSwitcher.css';
@@ -24,7 +20,7 @@ export function PresetUpdateDialog(
   props: VoidProps<PresetUpdateDialogProps>,
 ): JSXElement {
   const [t] = useI18n<AppLocaleEntries>();
-  const propsWithDefault = mergeProps({actionType: 'primary'} as const, props);
+  const propsWithDefault = merge({actionType: 'primary'} as const, props);
 
   const exampleCode = 'function Code() {\n' + ' console.log()\n' + '}';
 

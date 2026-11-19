@@ -1,5 +1,5 @@
-import type {JSX} from 'solid-js';
-import {mergeProps} from 'solid-js';
+import type {JSX} from '@solidjs/web';
+import {merge} from 'solid-js';
 
 interface CodeImageLogoV2Props {
   withGradient?: boolean;
@@ -8,7 +8,7 @@ interface CodeImageLogoV2Props {
 export const CodeImageLogoV2 = (
   props: JSX.IntrinsicElements['svg'] & CodeImageLogoV2Props,
 ) => {
-  const mergedProps = mergeProps({withGradient: true}, props);
+  const mergedProps = merge({withGradient: true}, props);
   const color = '#fff';
 
   return (

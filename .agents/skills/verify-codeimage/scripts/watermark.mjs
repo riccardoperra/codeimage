@@ -273,10 +273,10 @@ export async function verifyWatermark({
   await page.keyboard.press('Space');
   await page.getByRole('button', {name: 'Close', exact: true}).click();
   await section('frame');
-  await page
+  const aspectRatio = page
     .locator('[data-control="frame.aspectRatio"]')
-    .getByRole('button', {name: 'Aspect ratio', exact: true})
-    .click();
+    .getByRole('button', {name: 'Aspect ratio', exact: true});
+  await aspectRatio.click();
   await page
     .getByRole('option', {name: 'LinkedIn portrait', exact: true})
     .click();
@@ -285,10 +285,8 @@ export async function verifyWatermark({
   const social = PNG.sync.read(await download('watermark-social-takumi.png'));
   assert.equal(social.width, 1080);
   assert.equal(social.height, 1350);
-  await page
-    .locator('[data-control="frame.aspectRatio"]')
-    .getByRole('button', {name: 'Aspect ratio', exact: true})
-    .click();
+  await section('frame');
+  await aspectRatio.click();
   await page.getByRole('option', {name: 'Free size', exact: true}).click();
   await page.keyboard.press('Escape');
   await sample('takumi');

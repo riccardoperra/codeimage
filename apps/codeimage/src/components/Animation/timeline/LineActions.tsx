@@ -2,8 +2,8 @@ import type {AppLocaleEntries} from '../../../i18n';
 import {useI18n} from '@codeimage/locale';
 import {getEditorStore} from '@codeimage/store/editor';
 import {SvgIcon} from '@codeimage/ui';
-import {Tooltip} from '@codeui/kit';
-import {createMemo, For, Show, type JSX} from 'solid-js';
+import {createMemo, For, Show} from 'solid-js';
+import type {JSX} from '@solidjs/web';
 import {selectionVersion} from '../../CustomEditor/plugins/selection';
 import {
   applyLineAction,
@@ -115,38 +115,34 @@ export function LineActions(props: {editorId: string; step: number}) {
             const pressed = () =>
               lineActionState(props.editorId, lines(), item.action, props.step);
             return (
-              <Tooltip
-                content={t(`animation.timeline.${item.tip}`, {
+              <button
+                type="button"
+                class={styles.segment}
+                title={t(`animation.timeline.${item.tip}`, {
                   step: String(props.step),
                 })}
-                placement="top"
+                aria-pressed={pressed() ? 'true' : 'false'}
+                aria-label={t(`animation.timeline.${item.tip}`, {
+                  step: String(props.step),
+                })}
+                data-script-action={item.action}
+                disabled={
+                  !lines().length ||
+                  (props.step === 1 && item.action !== 'focus')
+                }
+                onPointerDown={event => event.preventDefault()}
+                onClick={() => {
+                  applyLineAction(
+                    store,
+                    props.editorId,
+                    item.action,
+                    props.step,
+                  );
+                }}
               >
-                <button
-                  type="button"
-                  class={styles.segment}
-                  aria-pressed={pressed()}
-                  aria-label={t(`animation.timeline.${item.tip}`, {
-                    step: String(props.step),
-                  })}
-                  data-script-action={item.action}
-                  disabled={
-                    !lines().length ||
-                    (props.step === 1 && item.action !== 'focus')
-                  }
-                  onPointerDown={event => event.preventDefault()}
-                  onClick={() => {
-                    applyLineAction(
-                      store,
-                      props.editorId,
-                      item.action,
-                      props.step,
-                    );
-                  }}
-                >
-                  <item.Icon />
-                  {t(`animation.timeline.${item.label}`)}
-                </button>
-              </Tooltip>
+                <item.Icon />
+                {t(`animation.timeline.${item.label}`)}
+              </button>
             );
           }}
         </For>

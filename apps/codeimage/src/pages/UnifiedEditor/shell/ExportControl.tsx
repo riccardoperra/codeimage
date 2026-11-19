@@ -1,6 +1,7 @@
 import {useI18n} from '@codeimage/locale';
-import {Button, DialogPanelContent, DialogPanelFooter} from '@codeui/kit';
-import {Dialog} from '@kobalte/core/dialog';
+import {Button} from '@ui/legacy-controls';
+import {DialogPanelContent, DialogPanelFooter} from '@ui/Dialog';
+import {Dialog} from '@ui/Dialog/parts';
 import type {Accessor} from 'solid-js';
 import {getEditorStore} from '@codeimage/store/editor';
 import {Show} from 'solid-js';
@@ -83,6 +84,7 @@ export function ExportControl(props: ExportControlProps) {
           <Dialog.Overlay class={styles.backdrop} />
           <div class={styles.confirmation}>
             <Dialog.Content
+              role="alertdialog"
               class={styles.confirmationPanel}
               onCloseAutoFocus={restoreFocus}
             >

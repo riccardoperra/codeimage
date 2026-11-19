@@ -2,6 +2,8 @@
 
 [Keyboard menus in scrollable panels](keyboard.md) maps the `keyboard-scroll` regression case across Inspector, Dock, and Studio at desktop and phone sizes.
 
+`responsive-editor` resizes Inspector, Dock, and Studio without reloading and checks that the editor keeps its contents and Export moves with the layout. `system-colour-mode` changes the browser colour preference while Settings is open and checks both system and manual modes.
+
 | Feature                              | User entry points                                    | Executable audit journey                                                                                                                                            |
 | ------------------------------------ | ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | [Edit code](editor.md)               | Guest `/`, saved project URL                         | Edit/undo and `editor-options`; `frame-cold-start` checks first-paint geometry and lazy tab labels                                                                  |
@@ -25,13 +27,13 @@ Source paths in feature files are relative to `apps/codeimage/src/` unless expli
 
 Every feature requires both source review and live evidence during maintenance. Each file distinguishes the executable journey from additional sub-features needing targeted proof. Do not claim complete matrix coverage from one convenient entry point.
 
-Scope follows current checkout HEAD, including the November 14–15 unified editor, line marks, signatures, window styles, What's new and Takumi merges. `pages/UnifiedEditor/` now implements the production guest `/` editor; its folder name is not a reason to exclude it. Authenticated `/` is Dashboard; saved project URLs use the unified editor in the saved layout. The theme-card and editor-controls prototype routes are gone. The Animate panel is available in the unified editor. This checkout includes the Node renderer and CLI; the specialist lanes below cover their shipped behavior.
+The production guest editor at `/` lives in `pages/UnifiedEditor/` and includes the Animate panel. Authenticated `/` opens Dashboard. Saved project URLs use the unified editor in the selected layout. The specialist cases below exercise the Node renderer and CLI.
 
 Additional case names are `agent-tools`, `local-ai`, `export-options`, `settings-persistence`, `annotations`, `signature-management`, `editor-options`, and `preset-management`. Animate adds `animate`, `animate-phone`, `animate-focus`, `animate-geometry`, `animate-followups`, `animation-mp4`, `animation-mp4-errors`, `animation-mp4-compositing`, `animation-mp4-modes`, and `animation-mp4-parity`. The six snippet cases are `snippet-save`, `snippet-previews`, `snippet-read-only`, `snippet-clone`, `snippet-missing`, and `snippet-navigation`. What's new adds `whats-new-line-marks-dot` and `whats-new-nudge`. Including the watermark, `frame-cold-start` and `export-screen-parity` journeys, the selectable journeys include `retired-classic-route`, which checks the removed route reaches 404. The two frame cases use the same owned launch and fresh-context helpers. Source paths are unchanged by the check migration. Read [the legacy-check retirement plan](../references/legacy-checks.md) before deleting old scripts.
 
 For real API and PostgreSQL prerequisites, read [backend modes](../references/backend-modes.md). The automated MSW-specific boundary fixtures cannot establish real API authorization.
 
-A5 adds `animation-gif` and `animation-gif-fallback`; see [Export](export.md) and [Animate](animate.md). The verification record covers thirty-nine journeys on the pinned A5 branch. Main can add independent journeys after that pin, so use the actual `audit.json` results for each run's case count rather than the older base index count above.
+`animation-gif` and `animation-gif-fallback` cover GIF download and format fallback. Their assertions are described in [Export](export.md) and [Animate](animate.md).
 
 `animation-mp4-step-size` and `animation-gif-step-size` check unequal natural step sizes, clipping, background seams, and identical decoded exports across active tabs and reloads in all three desktop layouts. See [Export](export.md#animation-audit).
 

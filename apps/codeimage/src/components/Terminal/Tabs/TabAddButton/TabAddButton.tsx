@@ -1,5 +1,4 @@
 import type {VoidProps} from 'solid-js';
-import {exportExclude as _exportExclude} from '@core/directives/exportExclude';
 import {useI18n} from '@codeimage/locale';
 import type {AppLocaleEntries} from '../../../../i18n';
 import type {WindowStyle} from '../../WindowStyles/WindowStyles';
@@ -16,15 +15,13 @@ export interface TabAddButtonProps {
 
 export function TabAddButton(props: VoidProps<TabAddButtonProps>) {
   const [t] = useI18n<AppLocaleEntries>();
-  const exportExclude = _exportExclude;
-  void exportExclude;
 
   return (
     <button
-      use:exportExclude={true}
-      tabIndex={-1}
+      data-export-exclude="true"
+      tabindex={-1}
       disabled={props.disabled}
-      aria-label={props.appearance ? t('frame.addTab') : undefined}
+      aria-label={t('frame.addTab')}
       class={props.appearance ? modern.add : styles.button}
       onClick={() => props.onAdd()}
     >

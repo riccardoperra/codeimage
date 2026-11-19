@@ -5,7 +5,7 @@ import {
   withThemeMode,
 } from '@codeimage/ui';
 import {darkGrayScale} from '@codeimage/ui/themes/darkTheme';
-import {responsiveStyle} from '@codeui/kit';
+import {responsiveStyle} from '@codeui/kit/foundation';
 import {style} from '@vanilla-extract/css';
 import type {RecipeVariants} from '@vanilla-extract/recipes';
 import {recipe} from '@vanilla-extract/recipes';

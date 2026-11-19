@@ -6,7 +6,7 @@ import type {
 } from '@codeimage/store/assets/assets';
 import {getAssetsStore} from '@codeimage/store/assets/assets';
 import {Box, Text, themeVars} from '@codeimage/ui';
-import {Button, Link, TextField} from '@codeui/kit';
+import {Button, Link, TextField} from '@ui/legacy-controls';
 import {createSignal} from 'solid-js';
 import * as styles from '../../../components/PropertyEditor/controls/ImagePicker/ImagePicker.css';
 

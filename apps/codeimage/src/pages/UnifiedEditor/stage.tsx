@@ -10,16 +10,9 @@ import {getTerminalState} from '@codeimage/store/editor/terminal';
 import {dispatchRandomTheme} from '@codeimage/store/effects/onThemeChange';
 import {TERMINAL_SHADOWS} from '@core/configuration/shadow';
 import {useModality} from '@core/hooks/isMobile';
-import {
-  createEffect,
-  createResource,
-  createSignal,
-  lazy,
-  onCleanup,
-  onMount,
-  Show,
-  Suspense,
-} from 'solid-js';
+import {createMediaQuery} from '@solid-primitives/media';
+import {createSignal, lazy, Show, Loading, createEffect} from 'solid-js';
+import {createResource} from '@codeimage/store/plugins/create-resource';
 import type {Accessor, Component} from 'solid-js';
 import {untrackCommand} from 'statebuilder/commands';
 import {FrameSkeleton} from '../../components/Frame/FrameSkeleton';
@@ -86,7 +79,7 @@ const previewCode =
 function ThemePreview(props: {theme: ThemeEntry}) {
   const terminal = getTerminalState();
   return (
-    <Suspense fallback={<ThemeBoxSkeleton />}>
+    <Loading fallback={<ThemeBoxSkeleton />}>
       <TerminalHost
         themeClass={themeBoxTerminalHost}
         textColor={props.theme.colors.text}
@@ -109,7 +102,7 @@ function ThemePreview(props: {theme: ThemeEntry}) {
           code={previewCode}
         />
       </TerminalHost>
-    </Suspense>
+    </Loading>
   );
 }
 
@@ -123,34 +116,36 @@ function ThemePreview(props: {theme: ThemeEntry}) {
 function FramePlaceholder(props: {frame: Accessor<HTMLElement | undefined>}) {
   const [size, setSize] = createSignal<{width: number; height: number}>();
   const [settled, setSettled] = createSignal(false);
-  createEffect(() => {
-    const element = props.frame();
-    if (!element) return;
-    let frame = 0;
-    let fontsReady = false;
-    const measure = () => {
-      const box = element.getBoundingClientRect();
-      if (!box.width || !box.height) return;
-      setSize({width: box.width, height: box.height});
-      setSettled(false);
-      cancelAnimationFrame(frame);
-      if (fontsReady) frame = requestAnimationFrame(() => setSettled(true));
-    };
-    const observer = new ResizeObserver(measure);
-    observer.observe(element);
-    measure();
-    let disposed = false;
-    void document.fonts.ready.then(() => {
-      if (disposed) return;
-      fontsReady = true;
+  createEffect(
+    () => props.frame(),
+    element => {
+      if (!element) return;
+      let frame = 0;
+      let fontsReady = false;
+      const measure = () => {
+        const box = element.getBoundingClientRect();
+        if (!box.width || !box.height) return;
+        setSize({width: box.width, height: box.height});
+        setSettled(false);
+        cancelAnimationFrame(frame);
+        if (fontsReady) frame = requestAnimationFrame(() => setSettled(true));
+      };
+      const observer = new ResizeObserver(measure);
+      observer.observe(element);
       measure();
-    });
-    onCleanup(() => {
-      disposed = true;
-      cancelAnimationFrame(frame);
-      observer.disconnect();
-    });
-  });
+      let disposed = false;
+      void document.fonts.ready.then(() => {
+        if (disposed) return;
+        fontsReady = true;
+        measure();
+      });
+      return () => {
+        disposed = true;
+        cancelAnimationFrame(frame);
+        observer.disconnect();
+      };
+    },
+  );
   return (
     <div
       class={placeholderStyles.placeholder}
@@ -168,11 +163,7 @@ function FramePlaceholder(props: {frame: Accessor<HTMLElement | undefined>}) {
 }
 
 export function createStage(pageState: Accessor<EditorPageState>): Stage {
-  const media = matchMedia('(max-width: 768px)');
-  const [compact, setCompact] = createSignal(media.matches);
-  const updateCompact = () => setCompact(media.matches);
-  media.addEventListener('change', updateCompact);
-  onCleanup(() => media.removeEventListener('change', updateCompact));
+  const compact = createMediaQuery('(max-width: 768px)');
   const [exportRef, setExportRef] = createSignal<HTMLElement>();
   const frame = getFrameState();
   // The scale is not saved, but its command makes the store save everything
@@ -191,7 +182,7 @@ export function createStage(pageState: Accessor<EditorPageState>): Stage {
     Canvas: () => {
       const [pillHost, setPillHost] = createSignal<HTMLDivElement>();
       const [popupHost, setPopupHost] = createSignal<HTMLDivElement>();
-      onMount(() => getExportCanvasStore().initCanvas(exportRef));
+      getExportCanvasStore().initCanvas(exportRef);
       const [fontsReady] = createResource(exportRef, element => {
         // Layout starts loading the preview's code font before awaiting it.
         element.getBoundingClientRect();
@@ -201,25 +192,27 @@ export function createStage(pageState: Accessor<EditorPageState>): Stage {
       // export copy renders into a portal, so its place in the tree is free.
       return (
         <div ref={setPillHost} class={shortcutStyles.canvas}>
-          <EditorPopupHost.Provider value={popupHost}>
+          <EditorPopupHost value={popupHost}>
             <FitFrame
               onScaleChange={setScale}
               overlay={<ReadOnlyNotice state={pageState()} />}
             >
-              <SuspenseEditorItem
-                fallback={<FramePlaceholder frame={exportRef} />}
-              >
-                <Suspense fallback={<FramePlaceholder frame={exportRef} />}>
-                  <Show when={fontsReady()}>
-                    <AnimationPreview pillHost={pillHost()}>
-                      <ManagedFrame />
-                    </AnimationPreview>
-                  </Show>
-                </Suspense>
-              </SuspenseEditorItem>
+              <Show when={exportRef()}>
+                <SuspenseEditorItem
+                  fallback={<FramePlaceholder frame={exportRef} />}
+                >
+                  <Loading fallback={<FramePlaceholder frame={exportRef} />}>
+                    <Show when={fontsReady()}>
+                      <AnimationPreview pillHost={pillHost()}>
+                        <ManagedFrame />
+                      </AnimationPreview>
+                    </Show>
+                  </Loading>
+                </SuspenseEditorItem>
+              </Show>
               <PreviewFrame ref={setExportRef} />
             </FitFrame>
-          </EditorPopupHost.Provider>
+          </EditorPopupHost>
           <div ref={setPopupHost} class={snippetStyles.popupHost} />
           <Show when={!compact() && pageState().kind !== 'read-only'}>
             <ShortcutHelp canvas={pillHost} editable={pageState().editable} />

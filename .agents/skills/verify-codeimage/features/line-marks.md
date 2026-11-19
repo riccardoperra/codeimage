@@ -12,7 +12,7 @@ Select lines in the editor; use Cmd/Ctrl+Alt+1/2/3/4 for highlight/added/removed
 
 ## Driving it with Playwright
 
-Audit highlights a selected line through keyboard, asserts `[data-mark="highlight"]` scoped to the first editable `.cm-content` (the debug preview duplicates marks), exports marked PNG and clears. Paste a unified diff through actual clipboard and Cmd/Ctrl+V, click Import as diff, assert added marks and changed text, then Undo. For annotation coverage paste `const annotated = 1; // [!code ++]` and assert the annotation is stripped and an added mark appears. Focus marks lines `[data-focused=true]`; the audit counts them inside the first editable `.cm-content`. The editor also exposes `.cm-editor:not([data-static-code-view])[data-line-focus="true"]`; without the `:not` the static preview copy matches too.
+The `line-marks` journey highlights a selected line with the keyboard, asserts `[data-mark="highlight"]` in the first editable `.cm-content`, downloads a marked PNG and clears the mark. It pastes a unified diff through the clipboard, clicks Import as diff and checks the changed text and marks. Undo restores the raw pasted diff and removes the import's marks. For annotation coverage paste `const annotated = 1; // [!code ++]` and assert the annotation is stripped and an added mark appears. Focus marks lines `[data-focused=true]`; the audit counts them inside the first editable `.cm-content`. The editor also exposes `.cm-editor:not([data-static-code-view])[data-line-focus="true"]`; without the `:not` the static preview copy matches too.
 
 Source: `components/CustomEditor/plugins/lineMarks/controls.ts`, `lineMarks/state.ts`, `lineMarks/gutter.ts`, `lineMarks/paste.ts`, `components/CustomEditor/CanvasEditor.tsx`, `core/diff/parseAnnotations.ts`, `core/diff/parseUnifiedDiff.ts`.
 
@@ -20,7 +20,7 @@ Run `annotations` to paste a real `[!code ++]` comment, assert the annotation di
 
 ## Gotchas
 
-Use real clipboard input, not synthetic ClipboardEvent or store setters. Read clipboard permissions failures as failures. Audit covers highlight/clear and diff import, not every mark kind; the separate annotations journey now covers annotation conversion. It invokes the toast Undo action; restoration of the full prior document/tab state needs a separate assertion before claiming Undo coverage.
+Use real clipboard input and treat clipboard permission errors as failures. The `line-marks` Undo check covers one file. Use the multi-file specialist journey to exercise tab history.
 
 Run `line-mark-controls` for mouse and keyboard gutter menus, menu arrow keys, Escape focus return, marker arrow/Home/End navigation and reaching the marker again with Shift+Tab then Tab, side-panel scrolling with an open menu, selection-toolbar blur/refocus, and gutter range drags past both ends of the editor. It checks that the gutter remains aria-hidden while the marker buttons remain accessible through CodeMirror tooltips. Run `line-mark-controls-phone` for a fresh 390px touch context, minimum marker target size, menu containment, Added/Focus actions and absence of sticky hover. Both use real pointer/keyboard input with the owned MSW server.
 

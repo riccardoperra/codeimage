@@ -39,7 +39,7 @@ Evidence includes `audit.json`, per-case screenshots and traces, `animate-script
 
 These cases use the real local app with the existing MSW/Auth0 development boundary. They do not prove production OAuth or PostgreSQL persistence. New cases initially target desktop Sidebar and one phone viewport. Other layouts, locales, touch devices, reduced motion and the full export format matrix need explicit runs before claiming coverage.
 
-Existing MP4/GIF and unequal-step-size cases remain available through `scripts/animation-mp4.mjs`, `animation-gif.mjs` and `animation-step-size.mjs`. See [Export](export.md) for renderer, encoder, compositing and static parity checks. Their historical evidence does not certify this timeline implementation. The retained `scripts/parity/animation-preview.ts` additionally requires the separate render package; this main baseline does not contain `packages/render`.
+MP4/GIF and unequal-step-size cases remain available through `scripts/animation-mp4.mjs`, `animation-gif.mjs` and `animation-step-size.mjs`. See [Export](export.md) for renderer, encoder, compositing and static parity checks. The specialist `scripts/parity/animation-preview.ts` requires the built SSR assets from `packages/render`.
 
 ## Source
 

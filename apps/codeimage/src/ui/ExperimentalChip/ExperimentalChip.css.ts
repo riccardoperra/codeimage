@@ -1,4 +1,4 @@
-import {themeTokens, themeVars} from '@codeui/kit';
+import {themeTokens, themeVars} from '@codeui/kit/foundation';
 import {style} from '@vanilla-extract/css';
 
 export const chip = style({

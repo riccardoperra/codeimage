@@ -1,7 +1,7 @@
 import type {AppLocaleEntries} from '../../../i18n';
 import {useI18n} from '@codeimage/locale';
 import {Box, HStack, Text} from '@codeimage/ui';
-import {IconButton} from '@codeui/kit';
+import {IconButton} from '@ui/legacy-controls';
 import {
   ExperimentalFeatureTooltip,
   ExperimentalIcon,

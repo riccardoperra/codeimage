@@ -1,4 +1,4 @@
-import {isBlink, isFirefox} from '@solid-primitives/platform';
+import {isBlink, isFirefox} from './platform';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import * as process from 'process';

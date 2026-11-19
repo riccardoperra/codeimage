@@ -1,7 +1,7 @@
 import {button as canvasButton} from '../../pages/UnifiedEditor/controls/canvas-toolbar.css';
 import {useI18n} from '@codeimage/locale';
 import {getEditorStore} from '@codeimage/store/editor';
-import {IconButton} from '@codeui/kit';
+import {IconButton} from '@codeimage/ui';
 import {Show} from 'solid-js';
 import type {AppLocaleEntries} from '../../i18n';
 import {CloseIcon} from '../Icons/CloseIcon';
@@ -54,7 +54,7 @@ export function TransportBar(props: {compact: boolean}) {
     document.querySelector<HTMLElement>('[data-animate-toggle]')?.focus();
   };
   return (
-    <div class={styles.transport}>
+    <div class={styles.transport} data-animation-transport>
       <IconButton
         class={canvasButton}
         size="sm"

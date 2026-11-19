@@ -1,4 +1,4 @@
-import type {Resource} from 'solid-js';
+import type {Resource} from '@codeimage/store/plugins/create-resource';
 
 export type EditorPageState =
   | {readonly kind: 'local'; readonly editable: true; readonly ready: true}

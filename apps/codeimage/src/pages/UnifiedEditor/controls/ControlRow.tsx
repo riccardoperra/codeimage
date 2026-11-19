@@ -1,10 +1,10 @@
 import {useI18n} from '@codeimage/locale';
 import type {LocaleKeys} from '@codeimage/locale';
 import {RangeField} from '@codeimage/ui';
-import {NumberField} from '@codeui/kit';
-import {createEffect, Show} from 'solid-js';
-import type {JSX} from 'solid-js';
-import {Dynamic} from 'solid-js/web';
+import {NumberField} from '@ui/legacy-controls';
+import {Show, createEffect, createSignal} from 'solid-js';
+import type {JSX} from '@solidjs/web';
+import {Dynamic} from '@solidjs/web';
 import {NewDot} from '../../../components/WhatsNew/NewDot';
 import {
   PanelRow,
@@ -60,6 +60,14 @@ export function ControlRow(props: ControlRowProps): JSX.Element {
   const look = LOOKS[control.id] ?? {};
   const id = fieldId(props.prefix, control.id);
   const size = () => props.size ?? 'sm';
+  const [numberInput, setNumberInput] = createSignal<HTMLElement>();
+  createEffect(
+    () =>
+      [numberInput(), control.kind === 'number' && control.label()] as const,
+    ([input, label]) => {
+      if (label) input?.setAttribute('aria-label', label);
+    },
+  );
 
   const field = (): {
     element: JSX.Element;
@@ -173,11 +181,7 @@ export function ControlRow(props: ControlRowProps): JSX.Element {
               min={control.min}
               max={control.max}
               value={control.value()}
-              ref={(element?: HTMLElement) =>
-                createEffect(() =>
-                  element?.setAttribute('aria-label', control.label()),
-                )
-              }
+              ref={setNumberInput}
               onChange={value => {
                 if (typeof value === 'number') control.set(value);
               }}

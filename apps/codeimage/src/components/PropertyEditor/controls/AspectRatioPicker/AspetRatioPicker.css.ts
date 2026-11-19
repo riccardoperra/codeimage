@@ -1,6 +1,6 @@
 import {textFieldStyles, themeVars, withThemeMode} from '@codeimage/ui';
 import {darkGrayScale} from '@codeimage/ui/themes/darkTheme';
-import {responsiveStyle} from '@codeui/kit';
+import {responsiveStyle} from '@codeui/kit/foundation';
 import {createVar, style} from '@vanilla-extract/css';
 
 export const input = style([

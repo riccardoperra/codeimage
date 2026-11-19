@@ -1,43 +1,35 @@
 import type {CustomTheme} from '@codeimage/highlight';
-import {THEME_REGISTRY} from '@codeimage/store/theme/themeRegistry';
-import type {ResourceReturn} from 'solid-js';
 import {
-  createMemo,
   createResource,
-  createRoot,
-  createSignal,
-  mapArray,
-} from 'solid-js';
+  type ResourceReturn,
+} from '@codeimage/store/plugins/create-resource';
+import {provideAppState} from '@codeimage/store/index';
+import {THEME_REGISTRY} from '@codeimage/store/theme/themeRegistry';
+import {createMemo} from 'solid-js';
+import {defineSignal} from 'statebuilder';
 
-function $getThemeStore() {
-  const [loaded, setLoaded] = createSignal(false, {equals: false});
-
+const ThemeStore = defineSignal(() => false).extend(loaded => {
   const themes = Object.fromEntries(
     Object.values(THEME_REGISTRY).map(
-      theme =>
-        [
-          theme.id,
-          createResource(loaded, theme.load, {ssrLoadFrom: 'initial'}),
-        ] as const,
+      theme => [theme.id, createResource(loaded, theme.load)] as const,
     ),
   );
 
-  const themeArray = mapArray(
-    () => Object.values(themes),
-    ([theme]) => theme,
-  );
+  const resources = Object.values(themes).map(([theme]) => theme);
+  const themeArray = () => resources;
 
   const themeLoading = createMemo(() =>
     themeArray().some(theme => theme.loading),
   );
 
-  const getThemeResource = (themeId: string): ResourceReturn<CustomTheme> =>
-    themes[themeId];
+  const getThemeResource = (
+    themeId: string,
+  ): ResourceReturn<CustomTheme | undefined> => themes[themeId];
 
   const getThemeDef = (id: string) =>
     THEME_REGISTRY.find(theme => theme.id === id);
 
-  const loadThemes = () => setLoaded(true);
+  const loadThemes = () => loaded.set(true);
 
   return {
     themeResources: themes,
@@ -47,10 +39,8 @@ function $getThemeStore() {
     getThemeResource,
     loadThemes,
   } as const;
-}
-
-let themeStore: ReturnType<typeof $getThemeStore> | undefined;
+});
 
 export function getThemeStore() {
-  return (themeStore ??= createRoot($getThemeStore));
+  return provideAppState(ThemeStore);
 }

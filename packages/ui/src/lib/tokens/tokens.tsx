@@ -25,28 +25,26 @@ export interface ThemeProviderProps {
 
 export function CodeImageThemeProvider(props: ParentProps<ThemeProviderProps>) {
   const tokens: BaseThemeTokens = {
-    // eslint-disable-next-line solid/reactivity
-    text: props.tokens.text ?? {},
+    get text() {
+      return props.tokens.text ?? {};
+    },
   };
 
   const theme = () => props.theme ?? 'dark';
 
-  createEffect(() => {
-    document.documentElement.setAttribute(
-      'data-codeimage-theme',
-      props.theme ?? 'dark',
-    );
+  createEffect(theme, theme => {
+    document.documentElement.setAttribute('data-codeimage-theme', theme);
   });
 
   return (
-    <ThemeTokensContext.Provider
+    <ThemeTokensContext
       value={{
         theme,
         tokens,
       }}
     >
       {props.children}
-    </ThemeTokensContext.Provider>
+    </ThemeTokensContext>
   );
 }
 

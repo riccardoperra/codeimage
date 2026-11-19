@@ -14,12 +14,11 @@ import {
 } from '@codeimage/store/plugins/unique-id';
 import type {PresetData} from '@codeimage/store/presets/types';
 import type {EditorView} from '@codemirror/view';
-import {from, map, shareReplay} from 'rxjs';
-import {createSelector, createSignal} from 'solid-js';
-import type {SetStoreFunction} from 'solid-js/store';
-import {defineStore, provideState} from 'statebuilder';
+import {createSignal} from 'solid-js';
+import {defineStore, useStore} from 'statebuilder';
 import {createCommand, withProxyCommands} from 'statebuilder/commands';
 import type {EditorState, PersistedEditorState} from './model';
+import {persistedEditorState} from './persistedEditorState';
 import {MAX_EDITOR_TABS} from './model';
 
 export function createEditorsStore() {
@@ -47,37 +46,50 @@ export function createEditorsStore() {
 
   const store = provideAppState(config);
 
-  const configStore = provideState(EditorConfigStore);
+  const configStore = useStore(EditorConfigStore);
 
   const editorUpdateCommand = createCommand('editorUpdate').withPayload<void>();
 
   store
-    .hold(store.commands.setActiveEditorId, (activeEditorId, {set}) =>
-      set('activeEditorId', activeEditorId),
+    .hold(store.commands.setActiveEditorId, activeEditorId =>
+      store.set(draft => {
+        draft.activeEditorId = activeEditorId;
+      }),
     )
-    .hold(store.commands.setFocused, (focused, {set}) =>
-      set('options', 'focused', focused),
+    .hold(store.commands.setFocused, focused =>
+      store.set(draft => {
+        draft.options.focused = focused;
+      }),
     )
-    .hold(store.commands.setFocused, (focused, {set}) =>
-      set('options', 'focused', focused),
+    .hold(store.commands.setFontId, fontId =>
+      store.set(draft => {
+        draft.options.fontId = fontId;
+      }),
     )
-    .hold(store.commands.setFontId, (fontId, {set}) =>
-      set('options', 'fontId', fontId),
+    .hold(store.commands.setThemeId, themeId =>
+      store.set(draft => {
+        draft.options.themeId = themeId;
+      }),
     )
-    .hold(store.commands.setThemeId, (themeId, {set}) =>
-      set('options', 'themeId', themeId),
+    .hold(store.commands.setFontWeight, fontWeight =>
+      store.set(draft => {
+        draft.options.fontWeight = fontWeight;
+      }),
     )
-    .hold(store.commands.setFontWeight, (fontWeight, {set}) =>
-      set('options', 'fontWeight', fontWeight),
+    .hold(store.commands.setShowLineNumbers, showLineNumbers =>
+      store.set(draft => {
+        draft.options.showLineNumbers = showLineNumbers;
+      }),
     )
-    .hold(store.commands.setShowLineNumbers, (showLineNumbers, {set}) =>
-      set('options', 'showLineNumbers', showLineNumbers),
-    )
-    .hold(store.commands.setEnableLigatures, (enable, {set}) =>
-      set('options', 'enableLigatures', enable),
+    .hold(store.commands.setEnableLigatures, enable =>
+      store.set(draft => {
+        draft.options.enableLigatures = enable;
+      }),
     )
     .hold(store.commands.setFromPreset, presetData => {
-      store.set('options', presetData);
+      store.set(draft => {
+        Object.assign(draft.options, presetData);
+      });
       store.dispatch(editorUpdateCommand, void 0);
     })
     .hold(store.commands.setFromPersistedState, (persistedState, {state}) => {
@@ -93,65 +105,31 @@ export function createEditorsStore() {
         }));
       return {
         options: {...state.options, ...persistedState.options},
-        activeEditorId: editors[0].id,
-        editors: editors.map(editor => {
-          return {
-            code: editor.code,
-            languageId: editor.languageId,
-            tab: {tabName: editor.tabName},
-            id: editor.id,
-            lineNumberStart: editor.lineNumberStart,
-            marks: editor.marks ?? {lines: [], focusedLines: []},
-          };
-        }),
+        activeEditorId: editors[0]?.id ?? defaultId,
+        editors: editors.length
+          ? editors.map(editor => {
+              return {
+                code: editor.code,
+                languageId: editor.languageId,
+                tab: {tabName: editor.tabName},
+                id: editor.id,
+                lineNumberStart: editor.lineNumberStart,
+                marks: editor.marks ?? {lines: [], focusedLines: []},
+              };
+            })
+          : [getInitialEditorState()],
       };
     });
 
-  const isActive = createSelector(() => store.get.activeEditorId);
-  const setEditors: SetStoreFunction<EditorState[]> = (...args: unknown[]) => {
-    // TODO: add derived state store
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    return (store.set as any)('editors', ...args);
-  };
-
-  const mapToStateToPersistState = (
-    state: typeof store.get,
-  ): PersistedEditorState => {
-    return {
-      editors: state.editors.map(editor => {
-        return {
-          languageId: editor.languageId,
-          code: editor.code,
-          tabName: editor.tab.tabName ?? '',
-          id: editor.id,
-          lineNumberStart: editor.lineNumberStart ?? 1,
-          marks: editor.marks ?? {lines: [], focusedLines: []},
-        };
-      }),
-      options: {
-        themeId: state.options.themeId,
-        showLineNumbers: state.options.showLineNumbers,
-        fontId: state.options.fontId,
-        fontWeight: state.options.fontWeight,
-        enableLigatures: state.options.enableLigatures ?? true,
-      },
-    };
-  };
-
-  const stateToPersist$ = from(
-    store.watchCommand([
-      store.commands.setFontId,
-      store.commands.setThemeId,
-      store.commands.setFontWeight,
-      store.commands.setShowLineNumbers,
-      store.commands.setEnableLigatures,
-      editorUpdateCommand,
-    ]),
-  ).pipe(
-    map(() => store()),
-    map(mapToStateToPersistState),
-    shareReplay({refCount: true, bufferSize: 1}),
-  );
+  const isActive = (id: string) => store.get.activeEditorId === id;
+  const persistence = store.watchCommand([
+    store.commands.setFontId,
+    store.commands.setThemeId,
+    store.commands.setFontWeight,
+    store.commands.setShowLineNumbers,
+    store.commands.setEnableLigatures,
+    editorUpdateCommand,
+  ]);
 
   const addEditor = (
     editorState?: Partial<EditorState> | null,
@@ -175,8 +153,10 @@ export function createEditorsStore() {
           steps: editor.marks.script.steps.map(() => createRandomId()),
         },
       };
-    setEditors(editors => [...editors, editor]);
-    if (active) store.set('activeEditorId', id);
+    store.set(draft => {
+      draft.editors.push(editor);
+      if (active) draft.activeEditorId = id;
+    });
     store.dispatch(editorUpdateCommand, void 0);
   };
 
@@ -192,16 +172,20 @@ export function createEditorsStore() {
     );
     const newActiveEditor = store.get.editors[currentIndex - 1];
     const updatedEditors = store.get.editors.filter(editor => editor.id !== id);
-    if ($isActive) {
-      store.set('activeEditorId', newActiveEditor?.id ?? updatedEditors[0]?.id);
-    }
-    setEditors(updatedEditors);
+    store.set(draft => {
+      if ($isActive)
+        draft.activeEditorId = newActiveEditor?.id ?? updatedEditors[0]?.id;
+      draft.editors = updatedEditors;
+    });
     store.dispatch(editorUpdateCommand, void 0);
   };
 
   const setTabName = (id: string, name: string, updateLanguage: boolean) => {
-    const index = store.get.editors.findIndex(tab => isActive(tab.id));
-    setEditors(index, 'tab', 'tabName', name);
+    const index = store.get.editors.findIndex(tab => tab.id === id);
+    if (index < 0) return;
+    store.set(draft => {
+      draft.editors[index].tab.tabName = name;
+    });
     if (updateLanguage) {
       const matches = SUPPORTED_LANGUAGES.filter(language => {
         return language.icons.some(({matcher}) => matcher.test(name));
@@ -214,7 +198,9 @@ export function createEditorsStore() {
       ) {
         return;
       }
-      setEditors(index, 'languageId', matches[0].id);
+      store.set(draft => {
+        draft.editors[index].languageId = matches[0].id;
+      });
     }
     store.dispatch(editorUpdateCommand, void 0);
   };
@@ -232,33 +218,41 @@ export function createEditorsStore() {
   };
 
   const setFromWorkspace = (item: ApiTypes.GetProjectByIdApi['response']) => {
-    setEditors(
-      item.editorTabs.map(
-        editor =>
-          ({
-            tab: {
-              tabName: editor.tabName,
-            },
-            formatter: null,
-            languageId: editor.languageId,
-            id: editor.id,
-            code: editor.code,
-            lineNumberStart: editor.lineNumberStart ?? 1,
-            marks: editor.marks ?? {lines: [], focusedLines: []},
-          }) as EditorState,
-      ),
-    );
-    store.set('activeEditorId', item.editorTabs[0].id);
-    store.set('options', item.editorOptions);
+    store.set(draft => {
+      draft.editors = item.editorTabs.map(editor => ({
+        tab: {tabName: editor.tabName},
+        formatter: null,
+        languageId: editor.languageId,
+        id: editor.id,
+        code: editor.code,
+        lineNumberStart: editor.lineNumberStart ?? 1,
+        marks: editor.marks ?? {lines: [], focusedLines: []},
+      }));
+      draft.activeEditorId = item.editorTabs[0].id;
+      Object.assign(draft.options, item.editorOptions);
+    });
     store.dispatch(editorUpdateCommand, void 0);
   };
 
-  const setEditorsWithCommand: SetStoreFunction<EditorState[]> = (
-    ...args: unknown[]
-  ) => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (setEditors as any)(...args);
+  const replaceEditors = (editors: EditorState[]) => {
+    store.set(draft => {
+      draft.editors = editors;
+    });
     store.dispatch(editorUpdateCommand, void 0);
+  };
+
+  const updateEditor = (
+    id: string | undefined,
+    update: (draft: EditorState) => void,
+  ) => {
+    let updated = false;
+    store.set(draft => {
+      const editor = draft.editors.find(editor => editor.id === id);
+      if (!editor) return;
+      update(editor);
+      updated = true;
+    });
+    if (updated) store.dispatch(editorUpdateCommand, void 0);
   };
 
   return {
@@ -268,10 +262,15 @@ export function createEditorsStore() {
     setState: store.set,
     isActive,
     stateToPersist() {
-      const state = store();
-      return mapToStateToPersistState(state);
+      const state = store.peek();
+      return persistedEditorState(state);
     },
-    stateToPersist$,
+    onPersistedChange(listener: (state: PersistedEditorState) => void) {
+      const subscription = persistence.subscribe(() =>
+        listener(persistedEditorState(store.peek())),
+      );
+      return () => subscription.unsubscribe();
+    },
     activeEditorView,
     activeEditorViewTabId,
     computed: {
@@ -281,7 +280,8 @@ export function createEditorsStore() {
     actions: {
       setActiveEditorView,
       setActiveEditorViewTabId,
-      setEditors: setEditorsWithCommand,
+      replaceEditors,
+      updateEditor,
       addEditor,
       removeEditor,
       setTabName,
@@ -289,7 +289,7 @@ export function createEditorsStore() {
       ...store.actions,
       setFontId(fontId: string) {
         store.actions.setFontId(fontId);
-        const value = selectedFont();
+        const value = configuredFonts().find(font => font.id === fontId);
         if (
           !!value &&
           !value.types

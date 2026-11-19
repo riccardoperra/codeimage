@@ -10,7 +10,9 @@ export function createThemeStore() {
     );
   }
 
-  const theme = () => AVAILABLE_THEMES.find(theme => theme.id === themeId())!;
+  const theme = () =>
+    AVAILABLE_THEMES.find(theme => theme.id === themeId()) ??
+    AVAILABLE_THEMES[0];
 
   return [
     theme,

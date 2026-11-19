@@ -35,11 +35,7 @@ export function TransitionRow(
             {transition => (
               <button
                 type="button"
-                class={styles.transitionRow}
-                classList={{
-                  [styles.betweenTabs]: !!props.between,
-                  [shared.linked]: true,
-                }}
+                class={`${styles.transitionRow} ${shared.linked} ${props.between ? styles.betweenTabs : ''}`}
                 data-flip={`tr:${props.stepId}`}
                 data-ring={key()}
                 data-nav={key()}
@@ -50,12 +46,12 @@ export function TransitionRow(
                   props.model.isCurrent(transition()) ? '' : undefined
                 }
                 data-linked={props.model.linked(props.stepId) ? '' : undefined}
-                aria-pressed={props.selectedKey() === key()}
+                aria-pressed={props.selectedKey() === key() ? 'true' : 'false'}
                 aria-label={t('animation.timeline.transitionInto', {
                   step: step().label,
                   duration: formatDuration(transition().durationMs, locale()),
                 })}
-                tabIndex={tabStopOf(
+                tabindex={tabStopOf(
                   props.selectedKey(),
                   key(),
                   props.firstKey(),
@@ -121,9 +117,9 @@ export function StepRow(props: Context & {stepId: string}) {
             data-step-id={props.stepId}
             data-current={props.model.isCurrent(step().hold) ? '' : undefined}
             data-linked={props.model.linked(props.stepId) ? '' : undefined}
-            aria-pressed={props.selectedKey() === key()}
+            aria-pressed={props.selectedKey() === key() ? 'true' : 'false'}
             aria-label={`${step().label} · ${step().long}`}
-            tabIndex={tabStopOf(props.selectedKey(), key(), props.firstKey())}
+            tabindex={tabStopOf(props.selectedKey(), key(), props.firstKey())}
             onClick={select}
             onFocus={select}
             onContextMenu={event => openStepMenu(event, select)}

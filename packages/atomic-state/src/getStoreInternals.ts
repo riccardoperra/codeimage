@@ -1,4 +1,4 @@
-import type {Store} from 'solid-js/store';
+import type {Store} from 'solid-js';
 import {$STORE, type StoreInternals} from './createStore';
 
 export function getStoreInternals<T extends object>(

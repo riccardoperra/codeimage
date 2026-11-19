@@ -72,6 +72,8 @@ Tokens without a colour use the base text colour.
 Each layout renders `Canvas` once inside a container with a definite size.
 A snippet load uses the same frame placeholder as a lazy editor load.
 `ReadOnlyNotice` floats at the top of that container, outside the fitted frame.
+The Solid 1 editor resolves its labels and supplies the clone command.
+The banner mounts a Solid 2 root when the snippet becomes read-only. The Solid 2 root tracks the pending clone and uses the Vite bridge for the CodeUI button and its spinner. The shared `createSolid2Island` and `createSolid2Mount` factories handle the mount, prop updates, and disposal.
 `EditingControls` hides and makes controls inert while loading, preserving the owner's layout.
 Read-only pages remove those controls and their containers so the canvas can take the space.
 Export waits for a snippet to load, so it cannot capture the previous document.
@@ -105,7 +107,8 @@ Phones claim no header actions and keep the existing header.
 
 `shell/SettingsDialog.tsx` stays mounted while layouts change.
 `shell/sections.tsx` defines the sections, groups, and rows.
-Search reads those same rows.
+Search reads those same rows. The search control mounts in a Solid 2 island. It sends queries and section focus requests to the Solid 1 panel and mounts the CodeUI text field through the legacy bridge.
+The Vite config registers `SettingsSearch.tsx` by path. The app imports its default export directly, and Vite generates the Solid 1 wrapper and the Solid 2 mount entry. A registration can specify a named export with `export`.
 About contains the repository, Bugs and feedback, Releases, and Better Comments for GitHub links.
 `shell/links.ts` shares their destinations with the existing external-link commands and the Rail's repository button.
 Better Comments retains its Umami event. Dock and the Rail have no footer.

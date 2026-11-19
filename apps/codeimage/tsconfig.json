@@ -9,8 +9,8 @@
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "jsx": "preserve",
-    "jsxImportSource": "solid-js",
-    "types": ["vite/client"],
+    "jsxImportSource": "@solidjs/web",
+    "types": ["vite/client", "node"],
     "verbatimModuleSyntax": true,
     "lib": ["ESNext", "dom", "dom.iterable", "es2019", "WebWorker"],
     "paths": {

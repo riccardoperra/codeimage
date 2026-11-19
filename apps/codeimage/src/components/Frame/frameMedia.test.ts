@@ -1,12 +1,8 @@
 import {createSignature} from '@codeimage/store/frame/model';
-import type * as solid from 'solid-js';
 import {createRoot} from 'solid-js';
 import {afterEach, expect, it, vi} from 'vitest';
 import {createFrameMedia, resolveFrameMedia} from './frameMedia';
 
-vi.mock('solid-js', () =>
-  vi.importActual<typeof solid>('solid-js/dist/solid.js'),
-);
 vi.mock('@codeimage/store/assets/assets', () => ({
   getAssetsStore: () => ({
     getAsset: (id: string) => () =>

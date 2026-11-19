@@ -4,8 +4,8 @@ import {getTerminalState} from '@codeimage/store/editor/terminal';
 import {TERMINAL_SHADOWS} from '@core/configuration/shadow';
 import {AVAILABLE_TERMINAL_THEMES} from '@core/configuration/terminal-themes';
 import type {ParentProps} from 'solid-js';
-import {Suspense} from 'solid-js';
-import {Dynamic} from 'solid-js/web';
+import {Loading} from 'solid-js';
+import {Dynamic} from '@solidjs/web';
 
 const entries = Object.values(AVAILABLE_TERMINAL_THEMES.entries);
 
@@ -27,7 +27,7 @@ export function WindowPreview(
       AVAILABLE_TERMINAL_THEMES.entries.macOs
     ).component;
   return (
-    <Suspense>
+    <Loading>
       <Dynamic
         component={component()}
         lite
@@ -49,6 +49,6 @@ export function WindowPreview(
       >
         {props.children}
       </Dynamic>
-    </Suspense>
+    </Loading>
   );
 }

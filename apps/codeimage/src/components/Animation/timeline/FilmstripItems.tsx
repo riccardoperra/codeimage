@@ -43,9 +43,9 @@ export function Card(props: Context & {stepId: string}) {
             data-step-id={props.stepId}
             data-current={current() ? '' : undefined}
             data-linked={props.model.linked(props.stepId) ? '' : undefined}
-            aria-pressed={props.selectedKey() === key()}
+            aria-pressed={props.selectedKey() === key() ? 'true' : 'false'}
             aria-label={`${step().label} · ${step().short}`}
-            tabIndex={tabStopOf(props.selectedKey(), key(), props.firstKey())}
+            tabindex={tabStopOf(props.selectedKey(), key(), props.firstKey())}
             onClick={select}
             onFocus={select}
             onContextMenu={event => openStepMenu(event, select)}
@@ -97,11 +97,7 @@ export function Chip(props: Context & {stepId: string; between?: boolean}) {
             {transition => (
               <button
                 type="button"
-                class={styles.chip}
-                classList={{
-                  [styles.between]: !!props.between,
-                  [shared.linked]: true,
-                }}
+                class={`${styles.chip} ${shared.linked} ${props.between ? styles.between : ''}`}
                 data-flip={`tr:${props.stepId}`}
                 data-ring={key()}
                 data-nav={key()}
@@ -110,12 +106,12 @@ export function Chip(props: Context & {stepId: string; between?: boolean}) {
                 data-step-id={props.stepId}
                 data-current={current() ? '' : undefined}
                 data-linked={props.model.linked(props.stepId) ? '' : undefined}
-                aria-pressed={props.selectedKey() === key()}
+                aria-pressed={props.selectedKey() === key() ? 'true' : 'false'}
                 aria-label={t('animation.timeline.transitionInto', {
                   step: step().label,
                   duration: formatDuration(transition().durationMs, locale()),
                 })}
-                tabIndex={tabStopOf(
+                tabindex={tabStopOf(
                   props.selectedKey(),
                   key(),
                   props.firstKey(),

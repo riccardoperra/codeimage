@@ -1,5 +1,5 @@
 import clsx from 'clsx';
-import {omitProps} from 'solid-use/props';
+import {omit} from 'solid-js';
 import type {BoxProps} from './Box';
 import {Box} from './Box';
 import * as styles from './Stack.css';
@@ -29,7 +29,7 @@ export const VStack = (props: StackProps) => {
 export const HStack = (props: StackProps) => {
   return (
     <Box
-      {...omitProps(props, ['class', 'style'])}
+      {...omit(props, 'class', 'style')}
       class={clsx(styles.hStack, props.class)}
       style={assignInlineVars({
         [styles.stackThemeVars.spacing]: themeVars.spacing[props.spacing],

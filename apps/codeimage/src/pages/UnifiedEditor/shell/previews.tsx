@@ -1,5 +1,6 @@
-import type {JSX} from 'solid-js';
-import {createUniqueId, Match, Switch} from 'solid-js';
+import {createId} from '@core/helpers/create-id';
+import type {JSX} from '@solidjs/web';
+import {Match, Switch} from 'solid-js';
 import type {ColourModeId, LayoutId, PanelNav, PanelSide} from './preferences';
 import * as styles from './settings.css';
 
@@ -187,7 +188,7 @@ export function LayoutPreview(props: {
  * other. The colours stand for the modes, so they do not follow the theme.
  */
 export function ColourModeOrb(props: {mode: ColourModeId}) {
-  const id = createUniqueId();
+  const id = createId();
   const url = (name: string) => `url(#${id}-${name})`;
   return (
     <svg

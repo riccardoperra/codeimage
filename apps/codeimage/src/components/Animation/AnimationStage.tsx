@@ -3,7 +3,7 @@ import {useI18n} from '@codeimage/locale';
 import {getEditorStore} from '@codeimage/store/editor';
 import {getFrameState} from '@codeimage/store/editor/frame';
 
-import {createEffect, onCleanup, Show} from 'solid-js';
+import {createEffect, Show} from 'solid-js';
 import type {AppLocaleEntries} from '../../i18n';
 
 import * as styles from './AnimationPreview.css';
@@ -19,14 +19,17 @@ export function AnimationStage(props: {
   const {animation} = getEditorStore();
   const [t] = useI18n<AppLocaleEntries>();
   let stage: HTMLDivElement | undefined;
-  createEffect(() => {
-    if (!props.visible || !props.focus) return;
-    const request = requestAnimationFrame(() => {
-      stage?.focus({preventScroll: true});
-      props.onFocused();
-    });
-    onCleanup(() => cancelAnimationFrame(request));
-  });
+  createEffect(
+    () => props.visible && props.focus,
+    focus => {
+      if (!focus) return;
+      const request = requestAnimationFrame(() => {
+        stage?.focus({preventScroll: true});
+        props.onFocused();
+      });
+      return () => cancelAnimationFrame(request);
+    },
+  );
   const target = () => getFrameState().exportTarget();
   const zoom = () => {
     const current = target();
@@ -56,13 +59,13 @@ export function AnimationStage(props: {
       data-animation-stage
       ref={stage}
       class={styles.stage}
-      tabIndex={0}
+      tabindex={0}
       role={'group'}
       aria-roledescription={t('animation.previewRole')}
       aria-label={t('animation.previewLabel')}
       hidden={!props.visible}
       style={{zoom: zoom()}}
-      on:keydown={onKeyDown}
+      onKeyDown={onKeyDown}
     >
       <Show when={props.plan} keyed>
         {plan => <AnimationScenes plan={plan} visible={props.visible} />}

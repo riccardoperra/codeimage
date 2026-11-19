@@ -1,7 +1,7 @@
 import {useI18n} from '@codeimage/locale';
 import {getFrameState} from '@codeimage/store/editor/frame';
 import {RangeField} from '@codeimage/ui';
-import {RadioGroup} from '@kobalte/core/radio-group';
+import {RadioGroup} from '@ui/RadioGroup/RadioGroup';
 import {For, Show} from 'solid-js';
 import type {ExportExtension} from '../../../../hooks/use-export-image';
 import type {AppLocaleEntries} from '../../../../i18n';

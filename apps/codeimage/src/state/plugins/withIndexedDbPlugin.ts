@@ -1,11 +1,11 @@
-import {makePlugin} from 'statebuilder';
+import {createPlugin} from 'statebuilder';
 import {useIdb} from '../../hooks/use-indexed-db';
 
 export function withIndexedDbPlugin<T>(idbKey: string, fallbackValue: T) {
   const idb = useIdb();
 
-  return makePlugin(
-    _ => {
+  return createPlugin(
+    () => {
       return {
         idb: {
           get(): Promise<T> {
@@ -18,15 +18,9 @@ export function withIndexedDbPlugin<T>(idbKey: string, fallbackValue: T) {
             return Promise.resolve().then(() => idb.set(idbKey, data));
           },
           update(updaterFn: (data: T) => T) {
-            return idb.update(idbKey, data => updaterFn(data));
-          },
-          hydrateOnInit() {
-            return new Promise(resolve => {
-              return this.get().then(data => {
-                _.set(() => data);
-                resolve(data);
-              });
-            });
+            return idb.update<T>(idbKey, data =>
+              updaterFn(data ?? fallbackValue),
+            );
           },
         },
       };

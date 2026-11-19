@@ -1,14 +1,9 @@
-import {trackTimelineInput} from './timeline/motion';
+import {createTimelineInputRef} from './timeline/input';
 import {useI18n} from '@codeimage/locale';
 import {getEditorStore} from '@codeimage/store/editor';
 import {EASINGS, transitionOf} from '@codeimage/store/editor/animationSettings';
-import {
-  Button,
-  Popover,
-  PopoverTrigger,
-  PopoverContent,
-  TextField,
-} from '@codeui/kit';
+import {Button, TextField} from '@codeimage/ui';
+import {Popover} from '@ui/Popover';
 import {
   curveOf,
   easingOf,
@@ -17,7 +12,8 @@ import {
 } from '@core/animation/easing';
 import type {EasingName} from '@core/animation/model';
 import {SegmentedField} from '@ui/SegmentedField/SegmentedField';
-import {createEffect, createSignal, on, Show, type JSX} from 'solid-js';
+import {createEffect, createSignal, Show, untrack} from 'solid-js';
+import type {JSX} from '@solidjs/web';
 import type {AppLocaleEntries} from '../../i18n';
 import {EasingCurve} from './EasingCurve';
 import * as styles from './easing.css';
@@ -32,10 +28,13 @@ export function EasingField(props: {
   class?: string;
 }) {
   const {animation} = getEditorStore();
+  const inputRef = createTimelineInputRef();
   const [t] = useI18n<AppLocaleEntries>();
   const value = createTransitionEasing(() => props.stepId);
   const preset = () => easingPreset(value());
-  const [choice, setChoice] = createSignal<EasingName | 'custom'>(preset());
+  const [choice, setChoice] = createSignal<EasingName | 'custom'>(
+    untrack(preset),
+  );
   const [text, setText] = createSignal('');
   const [invalid, setInvalid] = createSignal(false);
   const [ownOpen, setOwnOpen] = createSignal(false);
@@ -43,16 +42,17 @@ export function EasingField(props: {
   const setOpen = (value: boolean) => {
     setOwnOpen(value);
     props.onOpenChange?.(value);
-  };
-  let content: HTMLDivElement | undefined;
-  createEffect(
-    on(value, () => {
-      setText(
-        `cubic-bezier(${curveOf(easingOf(value())).map(formatPoint).join(', ')})`,
-      );
+    if (value) {
+      setChoice(preset());
       setInvalid(false);
-    }),
-  );
+    }
+  };
+  createEffect(value, current => {
+    setText(
+      `cubic-bezier(${curveOf(easingOf(current)).map(formatPoint).join(', ')})`,
+    );
+    setInvalid(false);
+  });
   const choices = () =>
     [...EASINGS, 'custom' as const].map(value => ({
       value,
@@ -71,25 +71,21 @@ export function EasingField(props: {
     if (easing && easing !== value())
       animation.actions.setTransition(props.stepId, {easing});
   };
-  const openChange = (value: boolean) => {
-    setOpen(value);
-    if (value) {
-      setChoice(preset());
-      setInvalid(false);
-    }
-  };
   const progress = createTransitionProgress(() => props.stepId);
   const close = () => setOpen(false);
   return (
     <Popover
       open={open()}
-      onOpenChange={openChange}
-      placement={props.anchor ? 'top' : 'top-end'}
-      anchorRef={() => props.anchor}
+      onOpenChange={setOpen}
       modal={props.modal}
+      placement={props.anchor ? 'top' : 'top-end'}
+      anchor={props.anchor}
+      gutter={8}
+      overflowPadding={12}
+      exitDuration={120}
     >
       <Show when={!props.anchor}>
-        <PopoverTrigger
+        <Popover.Trigger
           as={Button}
           size="xs"
           theme="secondary"
@@ -98,73 +94,74 @@ export function EasingField(props: {
         >
           <EasingCurve easing={easingOf(value())} glyph />
           {t(`animation.easing.${preset()}`)}
-        </PopoverTrigger>
+        </Popover.Trigger>
       </Show>
-      <PopoverContent
-        data-transition-popover={props.anchor ? '' : undefined}
-        aria-label={t('animation.easing.label')}
-        title={props.anchor ? undefined : t('animation.easing.label')}
-        class={`${styles.content} ${props.class ?? ''}`}
-        ref={element => {
-          content = element;
-          trackTimelineInput(element);
-        }}
-        onOpenAutoFocus={event => autofocus(event, content)}
-        onCloseAutoFocus={(event: Event) => {
-          if (!props.anchor) return;
-          event.preventDefault();
-          props.anchor.focus({preventScroll: true});
-        }}
-      >
-        <div class={styles.body}>
-          {props.header}
-          <SegmentedField
-            itemClass={styles.preset}
-            size="xs"
-            adapt
-            value={choice()}
-            onEscape={close}
-            onChange={select}
-            items={choices()}
-          />
-          <EasingCurve
-            easing={easingOf(value())}
-            progress={progress()}
-            label={t('animation.curve')}
-          />
-          <Show when={choice() === 'custom'}>
-            <div
-              on:keydown={event => commitOnEnter(event, commitCustom)}
-              onFocusOut={commitCustom}
-            >
-              <TextField
-                id="animationCustomEasing"
-                size="xs"
-                label={t('animation.easing.custom')}
-                value={text()}
-                onChange={setText}
-                validationState={invalid() ? 'invalid' : 'valid'}
-                errorMessage={
-                  invalid() ? t('animation.invalidCurve') : undefined
-                }
-              />
-            </div>
+      <Popover.Portal>
+        <Show when={props.modal && open()}>
+          <div class={styles.popoverBackdrop} />
+        </Show>
+        <Popover.Content
+          data-transition-popover={props.anchor ? '' : undefined}
+          aria-label={t('animation.easing.label')}
+          aria-modal={props.modal ? 'true' : undefined}
+          class={styles.content + ' ' + (props.class ?? '')}
+          ref={inputRef}
+          onOpenAutoFocus={focusEasingChoice}
+        >
+          <Show when={!props.anchor}>
+            <div class={styles.popoverTitle}>{t('animation.easing.label')}</div>
           </Show>
-          <Button
-            class={styles.play}
-            size="sm"
-            theme="secondary"
-            onClick={() => {
-              setOpen(false);
-              animation.actions.playTransition(props.stepId);
-            }}
-          >
-            {t('animation.playTransition')}
-          </Button>
-        </div>
-      </PopoverContent>
+          <div class={styles.body}>
+            {props.header}
+            <SegmentedField
+              itemClass={styles.preset}
+              size="xs"
+              adapt
+              value={choice()}
+              onEscape={close}
+              onChange={select}
+              items={choices()}
+            />
+            <EasingCurve
+              easing={easingOf(value())}
+              progress={progress()}
+              label={t('animation.curve')}
+            />
+            <Show when={choice() === 'custom'}>
+              <CustomEasingInput
+                value={text()}
+                invalid={invalid()}
+                onChange={setText}
+                commit={commitCustom}
+              />
+            </Show>
+            <Button
+              class={styles.play}
+              size="sm"
+              theme="secondary"
+              onClick={() => {
+                setOpen(false);
+                animation.actions.playTransition(props.stepId);
+              }}
+            >
+              {t('animation.playTransition')}
+            </Button>
+          </div>
+        </Popover.Content>
+      </Popover.Portal>
     </Popover>
   );
+}
+
+function focusEasingChoice(event: Event) {
+  if (!(event.currentTarget instanceof HTMLElement)) return;
+  const selected = event.currentTarget.querySelector<HTMLElement>(
+    '[role=tab][aria-selected=true]',
+  );
+  if (selected) {
+    event.preventDefault();
+    selected.focus({preventScroll: true});
+  }
 }
 
 function createTransitionProgress(stepId: () => string) {
@@ -198,6 +195,37 @@ function easingPreset(current: string): EasingName | 'custom' {
   }
 }
 
+function CustomEasingInput(props: {
+  value: string;
+  invalid: boolean;
+  onChange: (value: string) => void;
+  commit: () => void;
+}) {
+  const [t] = useI18n<AppLocaleEntries>();
+  return (
+    <div
+      onKeyDown={event => commitOnEnter(event, props.commit)}
+      onFocusOut={() => props.commit()}
+    >
+      <TextField
+        type="text"
+        id="animationCustomEasing"
+        size="xs"
+        aria-label={t('animation.easing.custom')}
+        value={props.value}
+        onChange={props.onChange}
+        aria-invalid={props.invalid ? 'true' : 'false'}
+        aria-describedby={props.invalid ? 'animationCurveError' : undefined}
+      />
+      <Show when={props.invalid}>
+        <div class={styles.validationError} id="animationCurveError">
+          {t('animation.invalidCurve')}
+        </div>
+      </Show>
+    </div>
+  );
+}
+
 function commitOnEnter(event: KeyboardEvent, commit: () => void) {
   if (event.key === 'Escape') return;
   event.stopPropagation();
@@ -206,15 +234,6 @@ function commitOnEnter(event: KeyboardEvent, commit: () => void) {
     commit();
   }
 }
-function autofocus(event: Event, content: HTMLDivElement | undefined) {
-  event.preventDefault();
-  requestAnimationFrame(() =>
-    content
-      ?.querySelector<HTMLElement>('[role=tab][aria-selected=true]')
-      ?.focus(),
-  );
-}
-
 function createTransitionEasing(stepId: () => string) {
   const {animation} = getEditorStore();
   const step = () =>

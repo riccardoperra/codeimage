@@ -1,8 +1,8 @@
 import clsx from 'clsx';
 import type {Component, FlowComponent} from 'solid-js';
-import {mergeProps, Show} from 'solid-js';
-import {Dynamic} from 'solid-js/web';
-import {omitProps} from 'solid-use/props';
+import {merge, Show} from 'solid-js';
+import {Dynamic} from '@solidjs/web';
+import {omit} from 'solid-js';
 import {Box} from '../Box';
 import type {TextComponentProps, TextProps} from '../Text';
 import {Text} from '../Text';
@@ -15,7 +15,7 @@ type FieldLabelProps = TextProps<'label'> & {
 export const FieldLabel: FlowComponent<FieldLabelProps> = props => {
   return (
     <Text
-      {...omitProps(props, ['class', 'children'])}
+      {...omit(props, 'class', 'children')}
       as={'label'}
       weight={'semibold'}
       class={clsx(styles.label, props.class)}
@@ -26,7 +26,7 @@ export const FieldLabel: FlowComponent<FieldLabelProps> = props => {
 };
 
 export const FieldLabelHint: FlowComponent<FieldLabelProps> = props => {
-  const computedProps = mergeProps(
+  const computedProps = merge(
     {
       weight: 'semibold',
     } as TextComponentProps,
@@ -42,7 +42,7 @@ export const FieldLabelHint: FlowComponent<FieldLabelProps> = props => {
       </Show>
 
       <Text
-        {...omitProps(computedProps, ['class', 'children'])}
+        {...omit(computedProps, 'class', 'children')}
         as={'label'}
         class={clsx(styles.labelHint, props.class)}
       >

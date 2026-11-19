@@ -58,7 +58,7 @@ const server = spawn(
   [
     '--input-type=module',
     '-e',
-    `import {createServer} from 'vite'; const server = await createServer({cacheDir:process.env.VERIFY_PUBLIC+'-cache',publicDir:process.env.VERIFY_PUBLIC, server:{host:'127.0.0.1',port:Number(process.env.VERIFY_PORT),strictPort:true}}); await server.listen();`,
+    `import {createServer} from 'vite'; const server = await createServer({cacheDir:process.env.VERIFY_PUBLIC+'-cache',publicDir:process.env.VERIFY_PUBLIC,optimizeDeps:{include:['@vanilla-extract/recipes']}, server:{host:'127.0.0.1',port:Number(process.env.VERIFY_PORT),strictPort:true,watch:null,hmr:false}}); await server.listen();`,
   ],
   {
     cwd: resolve(root, 'apps/codeimage'),

@@ -1,4 +1,4 @@
-import type {JSX} from 'solid-js';
+import type {JSX} from '@solidjs/web';
 import {untrack} from 'solid-js';
 import {NewDot} from '../../../components/WhatsNew/NewDot';
 import {commandMenu} from './state';
@@ -6,7 +6,7 @@ import {commandMenu} from './state';
 interface CommandMenuTrigger {
   readonly onClick: () => void;
   readonly 'aria-haspopup': 'dialog';
-  readonly 'aria-expanded': boolean;
+  readonly 'aria-expanded': 'true' | 'false';
 }
 
 export function CommandMenuButton(props: {
@@ -16,7 +16,7 @@ export function CommandMenuButton(props: {
     onClick: commandMenu.open,
     'aria-haspopup': 'dialog',
     get 'aria-expanded'() {
-      return commandMenu.isOpen();
+      return commandMenu.isOpen() ? 'true' : 'false';
     },
   };
   return (

@@ -1,6 +1,6 @@
 import {useI18n} from '@codeimage/locale';
 import {Box, FlexField} from '@codeimage/ui';
-import {TextField} from '@codeui/kit';
+import {TextField} from '@ui/legacy-controls';
 import {Show} from 'solid-js';
 import type {AppLocaleEntries} from '../../../../i18n';
 import {getDashboardState} from '../../dashboard.state';
@@ -8,7 +8,7 @@ import {CreateNewProjectButton} from '../CreateNewProjectButton/CreateNewProject
 import * as styles from './ProjectToolbar.css';
 
 export function ProjectToolbar() {
-  const dashboard = getDashboardState()!;
+  const dashboard = getDashboardState();
   const [t] = useI18n<AppLocaleEntries>();
 
   return (

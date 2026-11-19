@@ -1,4 +1,4 @@
-import {isIOS, isSafari} from '@solid-primitives/platform';
+import {isIOS, isSafari} from './platform';
 import {toArray, uuid} from './util';
 
 type Pseudo = ':before' | ':after';

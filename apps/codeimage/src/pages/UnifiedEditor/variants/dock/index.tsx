@@ -1,22 +1,24 @@
+import {createResizeRef} from '@core/hooks/create-resize-ref';
 import {BarSettings} from './BarSettings';
 import {getEditorStore} from '@codeimage/store/editor';
 import {useI18n} from '@codeimage/locale';
+import {createMediaQuery} from '@solid-primitives/media';
 import {signatureEditor} from '@codeimage/store/frame/signatureEditor';
-import {Button} from '@codeui/kit';
-import {Popover} from '@kobalte/core/popover';
+import {Button} from '@ui/legacy-controls';
+import {Popover} from '@ui/Popover';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 import {
   createEffect,
-  on,
   createSignal,
   For,
   onCleanup,
-  onMount,
+  onSettled,
   Show,
   untrack,
+  createTrackedEffect,
 } from 'solid-js';
-import type {JSX} from 'solid-js';
-import {Dynamic} from 'solid-js/web';
+import type {JSX} from '@solidjs/web';
+import {Dynamic} from '@solidjs/web';
 import {sidebarTheme} from '../../../../components/PropertyEditor/EditorSidebar.css';
 import type {AppLocaleEntries} from '../../../../i18n';
 import {EditingControls} from '../../EditingControls';
@@ -30,12 +32,7 @@ import {ShortcutHelp} from '../../controls/ShortcutHelp';
 import type {ControlId} from '../../model';
 import {themeStyle} from '../../theme-styles/style';
 import {ThemeSwatch} from '../../ThemeSwatch';
-import {
-  closeOnEscape,
-  createMediaQuery,
-  DockContext,
-  isKeyboardClick,
-} from './context';
+import {closeOnEscape, DockContext, isKeyboardClick} from './context';
 import type {DockApi} from './context';
 import * as styles from './dock.css';
 import {PLACES, createFields} from './fields';
@@ -177,7 +174,7 @@ function DockItem(props: DockItemProps & {host: DockItemHost}) {
                 ).focus();
               });
             }}
-            on:keydown={closeOnEscape(() =>
+            onKeyDown={closeOnEscape(() =>
               props.host.onOpenChange(props.panel, false),
             )}
           >
@@ -207,25 +204,17 @@ export default function Dock(props: VariantProps) {
   let sheetTrigger: HTMLElement | undefined;
 
   const close = () => setPanel(undefined);
-  createEffect(
-    on(animation.open, open => {
-      if (open && compact()) close();
-    }),
+  createEffect(animation.open, open => {
+    if (open && compact()) close();
+  });
+  createEffect(panel, panel => {
+    if (panel && compact()) animation.actions.setOpen(false);
+  });
+  const measureAnimation = createResizeRef(element =>
+    setAnimateHeight(element.getBoundingClientRect().height),
   );
-  createEffect(
-    on(panel, panel => {
-      if (panel && compact()) animation.actions.setOpen(false);
-    }),
-  );
-  const measureAnimation = (element: HTMLDivElement) => {
-    const observer = new ResizeObserver(() =>
-      setAnimateHeight(element.getBoundingClientRect().height),
-    );
-    observer.observe(element);
-    onCleanup(() => observer.disconnect());
-  };
 
-  createEffect(() => {
+  createTrackedEffect(() => {
     if (!props.pageState().editable) close();
   });
 
@@ -251,7 +240,7 @@ export default function Dock(props: VariantProps) {
   // The islands of the dock, which wrap onto two lines on a narrow window.
   const islands = () => [...row.children].map(el => el.getBoundingClientRect());
 
-  onMount(() => {
+  onSettled(() => {
     const measure = () => {
       const boxes = islands();
       setDockHeight(row.offsetHeight);
@@ -263,17 +252,15 @@ export default function Dock(props: VariantProps) {
     const observer = new ResizeObserver(measure);
     observer.observe(row);
     for (const island of row.children) observer.observe(island);
-    onCleanup(() => observer.disconnect());
+    return () => observer.disconnect();
   });
 
-  onMount(() => {
-    onCleanup(
-      props.model.controls.register(id => {
-        const place = PLACES[id];
-        if (place.group) showMoreGroup(place.group);
-        setPanel(place.panel);
-      }),
-    );
+  onSettled(() => {
+    return untrack(() => props.model).controls.register(id => {
+      const place = PLACES[id];
+      if (place.group) showMoreGroup(place.group);
+      setPanel(place.panel);
+    });
   });
   // A click on the signature in the canvas opens More at the Signature group.
   onCleanup(
@@ -335,7 +322,7 @@ export default function Dock(props: VariantProps) {
   const background = () => fields.control('frame.background', 'background');
 
   return (
-    <DockContext.Provider value={dock}>
+    <DockContext value={dock}>
       <div
         class={styles.root}
         data-compact={compact() ? '' : undefined}
@@ -529,6 +516,6 @@ export default function Dock(props: VariantProps) {
           </main>
         </div>
       </div>
-    </DockContext.Provider>
+    </DockContext>
   );
 }

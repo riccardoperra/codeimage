@@ -1,5 +1,5 @@
 import type {Accessor, Component} from 'solid-js';
-import {createContext, createSignal, onCleanup, useContext} from 'solid-js';
+import {createContext, useContext} from 'solid-js';
 import type {EditorControlsModel} from '../../model';
 import type {Stage} from '../../stage';
 import type {ThemePickerSlotProps} from '../../theme-styles/ThemePicker';
@@ -29,15 +29,6 @@ export function useDock(): DockApi {
   const dock = useContext(DockContext);
   if (!dock) throw new Error('useDock must be called inside the Dock variant');
   return dock;
-}
-
-export function createMediaQuery(query: string): Accessor<boolean> {
-  const media = window.matchMedia(query);
-  const [matches, setMatches] = createSignal(media.matches);
-  const update = () => setMatches(media.matches);
-  media.addEventListener('change', update);
-  onCleanup(() => media.removeEventListener('change', update));
-  return matches;
 }
 
 /** A click that came from Enter or Space reports no pointer detail. */

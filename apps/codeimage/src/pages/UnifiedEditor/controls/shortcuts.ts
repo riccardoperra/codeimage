@@ -95,7 +95,6 @@ export function useExportShortcuts(exporter: Accessor<Exporter>) {
       bindings[combo] = event => onExportShortcut(event, shortcut, combo);
     }
   }
-  // Capture before PreviewFrame's production clipboard shortcut on the body.
   useHotkey(window, bindings, {capture: true});
 }
 

@@ -1,7 +1,10 @@
 import type {CustomTheme} from '@codeimage/highlight';
-import {createEffect, createMemo, on} from 'solid-js';
-import {isServer} from 'solid-js/web';
-import {useWatermarkScope} from '../../core/watermark/scope';
+import {createEffect, createMemo} from 'solid-js';
+import {isServer} from '@solidjs/web';
+import {
+  createStaticWatermarkRef,
+  useWatermarkScope,
+} from '@core/watermark/scope';
 import {getStaticTheme, mountStaticTheme} from './staticTheme';
 import './plugins/lineMarks/marks.css';
 
@@ -22,13 +25,16 @@ export interface AnimatedCodeViewProps {
 export default function AnimatedCodeView(props: AnimatedCodeViewProps) {
   const theme = createMemo(() => getStaticTheme(props.theme));
   const watermark = useWatermarkScope();
+  const codeRef = createStaticWatermarkRef(watermark);
   createEffect(
-    on(
-      () => props.timeMs,
-      () => watermark?.invalidate(),
-    ),
+    () => props.timeMs,
+    () => watermark?.invalidate(),
   );
-  if (!isServer) createEffect(() => mountStaticTheme(document, props.theme));
+  if (!isServer)
+    createEffect(
+      () => props.theme,
+      theme => mountStaticTheme(document, theme),
+    );
   return (
     <code class={`language-${props.languageId}`}>
       <div
@@ -46,7 +52,7 @@ export default function AnimatedCodeView(props: AnimatedCodeViewProps) {
       >
         <div
           class="cm-scroller"
-          ref={root => watermark?.attach('code', {kind: 'static', root})}
+          ref={codeRef}
           style={{'grid-template-rows': 'repeat(1, auto)'}}
           // compileScene escapes every token text and class.
           // oxlint-disable-next-line solid/no-innerhtml

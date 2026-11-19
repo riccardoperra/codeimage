@@ -1,5 +1,4 @@
 import {backgroundColorVar, themeVars, withThemeMode} from '@codeimage/ui';
-import {themeTokens} from '@codeui/kit';
 import {createTheme, style} from '@vanilla-extract/css';
 
 export const [frame, frameVars] = createTheme({
@@ -77,11 +76,11 @@ export const previewPortal = style({
     left: 0,
     top: 0,
     zIndex: 999,
-    borderRadius: themeTokens.radii.md,
-    padding: themeTokens.spacing['2'],
+    borderRadius: '12px',
+    padding: themeVars.spacing['2'],
     backgroundColor: '#333',
     color: 'white',
-    margin: themeTokens.spacing['1'],
+    margin: themeVars.spacing['1'],
   },
 });
 

@@ -1,12 +1,18 @@
 import {useI18n} from '@codeimage/locale';
 import type {AppLocaleEntries} from '../../i18n';
-import {Button} from '@codeui/kit';
-import {Popover} from '@kobalte/core/popover';
-import type {JSX} from 'solid-js';
-import {createEffect, createSignal, onCleanup, Show} from 'solid-js';
-import {Dynamic} from 'solid-js/web';
-import type {LocatedHighlightId, Where} from '../../state/whats-new';
-import {getWhatsNew, RELEASES} from '../../state/whats-new';
+import {Button} from '@ui/legacy-controls';
+import {Popover} from '@ui/Popover';
+import type {JSX} from '@solidjs/web';
+import {
+  createSignal,
+  flush,
+  onCleanup,
+  Show,
+  createTrackedEffect,
+} from 'solid-js';
+import {Dynamic} from '@solidjs/web';
+import type {LocatedHighlightId, Where} from '@codeimage/store/whats-new';
+import {getWhatsNew, RELEASES} from '@codeimage/store/whats-new';
 import {tabbableBeside} from './focus';
 import {illustrations} from './illustrations';
 import {duration, fromKeyboard} from './motion';
@@ -15,6 +21,22 @@ import * as styles from './whats-new.css';
 type NewDotProps =
   | {at: Where; children?: undefined; filled?: undefined}
   | {at: Where; children: JSX.Element; filled?: boolean};
+
+type FocusSide = 'before' | 'after';
+
+function handleCoachmarkKey(
+  event: KeyboardEvent,
+  close: (side?: FocusSide) => void,
+) {
+  if (event.key === 'Escape') {
+    event.preventDefault();
+    event.stopPropagation();
+    close();
+  } else if (event.key === 'Tab') {
+    event.preventDefault();
+    close(event.shiftKey ? 'before' : 'after');
+  }
+}
 
 export function NewDot(props: NewDotProps) {
   return (
@@ -46,13 +68,12 @@ function Dot(props: {at: Where}) {
   const [open, setOpen] = createSignal(false);
   // A coachmark opened or closed from the keyboard appears and goes at once.
   const [instant, setInstant] = createSignal(false);
+  const animateInstantly = (value: boolean) => {
+    flush(() => setInstant(value));
+  };
   let closed: number | undefined;
   onCleanup(() => clearTimeout(closed));
-  const toggle = (
-    value: boolean,
-    side?: 'before' | 'after',
-    automatic = false,
-  ) => {
+  const toggle = (value: boolean, side?: FocusSide, automatic = false) => {
     if (value === open()) return;
     if (value) {
       // Pin before marking seen, or the dot unmounts for a moment and comes
@@ -80,7 +101,11 @@ function Dot(props: {at: Where}) {
       );
     returnTo?.focus();
   };
-  createEffect(() => {
+  const closeFromKeyboard = (side?: FocusSide) => {
+    animateInstantly(true);
+    toggle(false, side);
+  };
+  createTrackedEffect(() => {
     // Export reveals its menu. Its arrow stays outside that menu's focus scope.
     if (
       props.at === 'export' ||
@@ -91,7 +116,7 @@ function Dot(props: {at: Where}) {
     requestAnimationFrame(() => {
       if (!anchor?.isConnected || !news.revealedAt(props.at)) return;
       anchor.scrollIntoView({block: 'nearest', inline: 'nearest'});
-      setInstant(true);
+      animateInstantly(true);
       toggle(true, undefined, true);
     });
   });
@@ -114,10 +139,13 @@ function Dot(props: {at: Where}) {
             onOpenChange={toggle}
             placement="bottom-start"
             gutter={10}
+            exitDuration={instant() ? 0 : duration.coachmarkOut}
           >
             <Popover.Trigger
               class={styles.dot}
-              onClick={(event: MouseEvent) => setInstant(fromKeyboard(event))}
+              onClick={(event: MouseEvent) =>
+                animateInstantly(fromKeyboard(event))
+              }
               data-instant={instant() ? '' : undefined}
               aria-label={t('whatsNew.newLabel', {
                 title: t(`whatsNew.highlights.${item().id}.title`),
@@ -135,23 +163,11 @@ function Dot(props: {at: Where}) {
                 ref={content}
                 class={styles.coachmark}
                 data-instant={instant() ? '' : undefined}
-                onEscapeKeyDown={() => setInstant(true)}
-                onPointerDownOutside={() => setInstant(false)}
-                // The coachmark is portaled away from its dot, so Tab would
-                // otherwise leave it for the end of the page.
-                on:keydown={(event: KeyboardEvent) => {
-                  if (event.key === 'Escape') {
-                    event.preventDefault();
-                    event.stopPropagation();
-                    setInstant(true);
-                    toggle(false);
-                    return;
-                  }
-                  if (event.key !== 'Tab') return;
-                  event.preventDefault();
-                  setInstant(true);
-                  toggle(false, event.shiftKey ? 'before' : 'after');
-                }}
+                onEscapeKeyDown={() => animateInstantly(true)}
+                onPointerDownOutside={() => animateInstantly(false)}
+                onKeyDown={(event: KeyboardEvent) =>
+                  handleCoachmarkKey(event, closeFromKeyboard)
+                }
                 onCloseAutoFocus={event => {
                   if (!returnTo) return;
                   event.preventDefault();
@@ -173,9 +189,9 @@ function Dot(props: {at: Where}) {
                   <Button
                     size="sm"
                     theme="secondary"
-                    onClick={event => {
+                    onClick={(event: MouseEvent) => {
                       news.seen(item().id);
-                      setInstant(fromKeyboard(event));
+                      animateInstantly(fromKeyboard(event));
                       toggle(false);
                     }}
                   >

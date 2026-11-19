@@ -179,6 +179,18 @@ async function quality(file, job, out, name) {
   return result;
 }
 
+async function setSegmentDuration(page, segment, duration) {
+  const kind = await segment.getAttribute('data-kind');
+  await segment.click();
+  const input = page.locator(
+    kind === 'transition'
+      ? '#animationChipDuration-input'
+      : '#animationDuration-input',
+  );
+  await input.fill(String(duration));
+  await input.press('Enter');
+}
+
 export function animationGifCases({
   page: getPage,
   out,
@@ -425,11 +437,8 @@ export function animationGifCases({
       : Array.from({length: (fixture.steps ?? codes.length) * 2 - 1}, (_, i) =>
           i % 2 ? (fixture.transition ?? 600) : 600,
         );
-    for (const [index, duration] of durations.entries()) {
-      await segments.nth(index).click();
-      await page.locator('#animationDuration-input').fill(String(duration));
-      await page.locator('#animationDuration-input').press('Enter');
-    }
+    for (const [index, duration] of durations.entries())
+      await setSegmentDuration(page, segments.nth(index), duration);
     await instrument();
     await open();
     await ready();
@@ -517,19 +526,13 @@ export function animationGifCases({
     const page = getPage();
     // Three holds of 600 ms and two 600 ms transitions make a 3 s clip.
     const holds = page.locator('[data-animation-segment][data-kind="hold"]');
-    for (let i = 0; i < 3; i++) {
-      await holds.nth(i).click();
-      await page.locator('#animationDuration-input').fill('600');
-      await page.locator('#animationDuration-input').press('Enter');
-    }
+    for (let i = 0; i < 3; i++)
+      await setSegmentDuration(page, holds.nth(i), 600);
     const transitions = page.locator(
       '[data-animation-segment][data-kind="transition"]',
     );
-    for (let i = 0; i < 2; i++) {
-      await transitions.nth(i).click();
-      await page.locator('#animationDuration-input').fill('600');
-      await page.locator('#animationDuration-input').press('Enter');
-    }
+    for (let i = 0; i < 2; i++)
+      await setSegmentDuration(page, transitions.nth(i), 600);
     await page.waitForTimeout(500);
     const results = [];
     for (const layout of ['inspector', 'dock', 'studio']) {
@@ -690,11 +693,8 @@ export function animationGifCases({
     }
     // Ten seconds with four seconds of motion exceeds the GIF recommendation.
     const segments = page.locator('[data-animation-segment]');
-    for (let i = 0; i < 5; i++) {
-      await segments.nth(i).click();
-      await page.locator('#animationDuration-input').fill('2000');
-      await page.locator('#animationDuration-input').press('Enter');
-    }
+    for (let i = 0; i < 5; i++)
+      await setSegmentDuration(page, segments.nth(i), 2000);
     await open();
     await ready();
     await selectGif();

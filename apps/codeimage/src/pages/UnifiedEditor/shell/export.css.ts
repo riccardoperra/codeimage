@@ -217,7 +217,6 @@ export const videoProgress = style({
 
 export const videoProgressFill = style({
   height: '100%',
-  width: 'var(--kb-progress-fill-width)',
   background: c.baseText,
 });
 
@@ -246,6 +245,11 @@ export const videoPopover = style([
 ]);
 
 export const videoColor = style({width: themeVars.spacing['24']});
+
+export const videoFormats = style({
+  display: 'flex',
+  gap: themeVars.spacing['3'],
+});
 
 export const videoFormatItem = style({
   display: 'flex',

@@ -1,7 +1,6 @@
 import path from 'path';
 import {defineConfig} from 'vite';
 import dts from 'vite-plugin-dts';
-import {dependencies, peerDependencies} from './package.json';
 
 export default defineConfig({
   build: {
@@ -12,13 +11,6 @@ export default defineConfig({
       formats: ['es'],
     },
     cssCodeSplit: true,
-    rollupOptions: {
-      external: [
-        ...Object.keys(dependencies),
-        ...Object.keys(peerDependencies),
-      ],
-      output: {},
-    },
   },
   plugins: [dts()],
 });

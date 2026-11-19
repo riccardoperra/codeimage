@@ -3,7 +3,7 @@ import {getFrameState} from '@codeimage/store/editor/frame';
 
 import {frameRules, type FrameSelectors} from '@core/animation/timeline';
 
-import {createEffect, For, untrack} from 'solid-js';
+import {For, untrack, createEffect} from 'solid-js';
 
 import AnimatedCodeView from '../CustomEditor/AnimatedCodeView';
 import StaticCodeView from '../CustomEditor/StaticCodeView';
@@ -59,23 +59,29 @@ export function AnimationScenes(props: {plan: PreviewPlan; visible: boolean}) {
   };
 
   let shown: {index: number; animations: Animation[]} | null = null;
-  createEffect(() => {
-    if (!props.visible) {
-      shown = null;
-      return;
-    }
-    const {index, localMs} = sceneAt(animation.playhead());
-    if (shown?.index !== index) {
-      scenes.forEach((scene, other) => {
-        scene.style.display = other === index ? 'block' : 'none';
-      });
-      shown = {index, animations: scenes[index].getAnimations({subtree: true})};
-    }
-    for (const playing of shown.animations) {
-      playing.pause();
-      playing.currentTime = localMs;
-    }
-  });
+  createEffect(
+    () => (props.visible ? sceneAt(animation.playhead()) : null),
+    scene => {
+      if (!scene) {
+        shown = null;
+        return;
+      }
+      const {index, localMs} = scene;
+      if (shown?.index !== index) {
+        scenes.forEach((scene, other) => {
+          scene.style.display = other === index ? 'block' : 'none';
+        });
+        shown = {
+          index,
+          animations: scenes[index].getAnimations({subtree: true}),
+        };
+      }
+      for (const playing of shown.animations) {
+        playing.pause();
+        playing.currentTime = localMs;
+      }
+    },
+  );
 
   return (
     <>

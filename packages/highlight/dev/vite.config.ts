@@ -1,7 +1,7 @@
 import {vanillaExtractPlugin} from '@vanilla-extract/vite-plugin';
 import type {Plugin} from 'vite';
 import {defineConfig} from 'vite';
-import solidPlugin from 'vite-plugin-solid';
+import solidPlugin from '@solidjs/vite-plugin';
 import {withStaticVercelPreview} from '../../../scripts/vercel-output-build';
 
 export const viteConfig = defineConfig({
@@ -12,6 +12,14 @@ export const viteConfig = defineConfig({
     solidPlugin(),
     withStaticVercelPreview() as unknown as Plugin,
   ],
+  resolve: {
+    dedupe: [
+      'solid-js',
+      '@solidjs/web',
+      '@codemirror/state',
+      '@codemirror/view',
+    ],
+  },
   optimizeDeps: {
     // Add both @codemirror/state and @codemirror/view to included deps to optimize
     include: [

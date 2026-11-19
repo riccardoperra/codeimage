@@ -15,7 +15,8 @@ import {
 import {avatarSource} from '@codeimage/store/frame/signature';
 import type {AvatarSource} from '@codeimage/store/frame/signature';
 import type {Accessor} from 'solid-js';
-import {createMemo, createResource, untrack} from 'solid-js';
+import {createMemo, untrack} from 'solid-js';
+import {createResource} from '@codeimage/store/plugins/create-resource';
 import {toneOfBackground} from './signatureColors';
 import type {SignatureTone} from './signatureColors';
 import {canvasSample, toneOfPixels} from './signatureTone';

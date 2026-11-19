@@ -3,16 +3,17 @@ import type {
   AnimationHeader,
   EasingValue,
 } from '@core/animation/model';
-import {Subject, map} from 'rxjs';
+import {createEventBus} from '@solid-primitives/event-bus';
+import type {Accessor} from 'solid-js';
+import type {EditorView} from '@codemirror/view';
 import {
-  batch,
   createEffect,
   createMemo,
   createRoot,
   createSignal,
   getOwner,
-  on,
   onCleanup,
+  onFlush,
   runWithOwner,
   untrack,
 } from 'solid-js';
@@ -22,6 +23,7 @@ import {
   EMPTY_DRAFT,
   clampDuration,
   parseDraft,
+  persistedAnimation,
   reconcileSteps,
   segmentsOf,
   stepAt,
@@ -100,29 +102,26 @@ export function nextPlayback(
   }
 }
 
-export function createAnimationStore(
-  editor: Pick<
-    ReturnType<typeof createEditorsStore>,
-    'activeEditorView' | 'activeEditorViewTabId'
+export function createAnimationStore(editor: {
+  activeEditorView: Accessor<EditorView | undefined>;
+  activeEditorViewTabId: Accessor<string | undefined>;
+  state: Pick<
+    ReturnType<typeof createEditorsStore>['state'],
+    'editors' | 'activeEditorId'
+  >;
+  actions: Pick<
+    ReturnType<typeof createEditorsStore>['actions'],
+    'setActiveEditorId' | 'addEditor' | 'removeEditor'
   > & {
-    state: Pick<
-      ReturnType<typeof createEditorsStore>['state'],
-      'editors' | 'activeEditorId'
-    >;
-    actions: Pick<
-      ReturnType<typeof createEditorsStore>['actions'],
-      'setActiveEditorId' | 'addEditor' | 'removeEditor'
-    > & {
-      setEditors: (
-        tabs: ReturnType<typeof createEditorsStore>['state']['editors'],
-      ) => void;
-    };
-    computed: Pick<
-      ReturnType<typeof createEditorsStore>['computed'],
-      'canAddEditor'
-    >;
-  },
-) {
+    replaceEditors: (
+      tabs: ReturnType<typeof createEditorsStore>['state']['editors'],
+    ) => void;
+  };
+  computed: Pick<
+    ReturnType<typeof createEditorsStore>['computed'],
+    'canAddEditor'
+  >;
+}) {
   const owner = getOwner();
   const [draft, setDraft] = createSignal<AnimationDraft>(EMPTY_DRAFT);
   const tabs = createMemo(() => {
@@ -135,15 +134,15 @@ export function createAnimationStore(
   const [playback, setPlayback] = createSignal<Playback>({state: 'editing'});
   const [open, setOpen] = createSignal(false);
   const [selection, setSelection] = createSignal<SegmentSelection | null>(null);
-  const changes = new Subject<void>();
+  const changes = createEventBus<ReturnType<typeof persistedAnimation>>();
   let cancelFocus: (() => void) | undefined;
-  onCleanup(() => changes.complete());
   const update = (
     change: (settings: AnimationSettings) => AnimationDraft,
     options: {commit?: boolean} = {},
   ) => {
-    setDraft(change(settings()));
-    if (options.commit !== false) changes.next();
+    const next = setDraft(previous => change(reconcileSteps(previous, tabs())));
+    if (options.commit !== false)
+      changes.emit(persistedAnimation(reconcileSteps(next, tabs())));
   };
   const cancelEditingFocus = () => {
     cancelFocus?.();
@@ -155,8 +154,7 @@ export function createAnimationStore(
   };
   const edit = () => send({type: 'edit'});
   const [now, setNow] = createSignal(0);
-  createEffect(() => {
-    const state = playback();
+  createEffect(playback, state => {
     if (state.state !== 'playing') return;
     let request = 0;
     const tick = (time: number) => {
@@ -169,7 +167,7 @@ export function createAnimationStore(
     };
     setNow(performance.now());
     request = requestAnimationFrame(tick);
-    onCleanup(() => cancelAnimationFrame(request));
+    return () => cancelAnimationFrame(request);
   });
   const playhead = createMemo(() => {
     const state = playback();
@@ -189,52 +187,49 @@ export function createAnimationStore(
     runWithOwner(owner, () =>
       createRoot(dispose => {
         cancelFocus = dispose;
-        createEffect(() => {
-          const view = editor.activeEditorView();
-          if (
-            !view ||
-            editor.state.activeEditorId !== step.editorId ||
-            editor.activeEditorViewTabId() !== step.editorId
-          )
-            return;
-          view.focus();
-          if (text && !view.state.readOnly)
-            view.dispatch(view.state.replaceSelection(text));
-          dispose();
-          cancelFocus = undefined;
-        });
+        createEffect(
+          () =>
+            editor.state.activeEditorId === step.editorId &&
+            editor.activeEditorViewTabId() === step.editorId
+              ? editor.activeEditorView()
+              : undefined,
+          view => {
+            if (!view) return;
+            view.focus();
+            if (text && !view.state.readOnly)
+              view.dispatch(view.state.replaceSelection(text));
+            dispose();
+            cancelFocus = undefined;
+          },
+        );
       }),
     );
   }
   createEffect(
-    on(
-      () => editor.state.editors.map(({code}) => code),
-      () => {
-        if (untrack(playback).state !== 'editing') edit();
-      },
-      {defer: true},
-    ),
+    () => editor.state.editors.map(({code}) => code),
+    () => {
+      if (untrack(playback).state !== 'editing') edit();
+    },
+    {defer: true},
   );
   createEffect(
-    on(
-      settings,
-      reconciled => {
-        if (
-          JSON.stringify(reconciled.steps) !==
-          JSON.stringify(untrack(draft).steps)
-        )
-          update(() => reconciled);
-        const selected = untrack(selection);
-        if (
-          selected &&
-          !reconciled.steps.some(step => step.id === selected.stepId)
-        )
-          setSelection(null);
-      },
-      {defer: true},
-    ),
+    settings,
+    reconciled => {
+      if (
+        JSON.stringify(reconciled.steps) !==
+        JSON.stringify(untrack(draft).steps)
+      )
+        update(() => reconciled);
+      const selected = untrack(selection);
+      if (
+        selected &&
+        !reconciled.steps.some(step => step.id === selected.stepId)
+      )
+        setSelection(null);
+    },
+    {defer: true},
   );
-  const stateToPersist = () => ({...settings(), steps: [...settings().steps]});
+  const stateToPersist = () => persistedAnimation(settings());
   const setHoldMs = (
     stepId: string,
     holdMs: number,
@@ -302,16 +297,14 @@ export function createAnimationStore(
     open,
     selection,
     stateToPersist,
-    stateToPersist$: changes.pipe(map(stateToPersist)),
+    onPersistedChange: changes.listen,
     actions: {
       setOpen(value: boolean) {
-        batch(() => {
-          setOpen(value);
-          if (!value) {
-            edit();
-            setSelection(null);
-          }
-        });
+        setOpen(value);
+        if (!value) {
+          edit();
+          setSelection(null);
+        }
       },
       setFromPersistedState(value: unknown) {
         setDraft(parseDraft(value));
@@ -325,9 +318,11 @@ export function createAnimationStore(
       addTab() {
         if (!editor.computed.canAddEditor()) return;
         editor.actions.addEditor(null, true);
-        const tab = editor.state.editors.at(-1)!;
-        const step = settings().steps.find(step => step.editorId === tab.id);
-        if (step) select({stepId: step.id, kind: 'hold'});
+        onFlush(() => {
+          const tab = editor.state.editors.at(-1);
+          const step = settings().steps.find(step => step.editorId === tab?.id);
+          if (step) select({stepId: step.id, kind: 'hold'});
+        });
       },
       closeTab(editorId: string) {
         edit();
@@ -340,7 +335,7 @@ export function createAnimationStore(
         const [tab] = tabs.splice(index, 1);
         tabs.splice(to, 0, tab);
         edit();
-        editor.actions.setEditors(tabs);
+        editor.actions.replaceEditors(tabs);
       },
       applyToAll(stepId: string) {
         const step = settings().steps.find(step => step.id === stepId);

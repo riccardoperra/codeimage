@@ -16,23 +16,21 @@ import {
   TONE_SAMPLE_SIZE,
   toneSampleMarkup,
 } from '../components/Frame/signatureTone';
-import {getEditorStore} from '@codeimage/store/editor';
+import {EditorStoreProvider, getEditorStore} from '@codeimage/store/editor';
 import type {CustomTheme} from '@codeimage/highlight';
 import type {Language} from '@codemirror/language';
 
 import type {AnimationHeader} from '@core/animation/model';
 
-import {getThemeStore} from '@codeimage/store/theme/theme.store';
 import {THEME_REGISTRY} from '@codeimage/store/theme/themeRegistry';
 import {SUPPORTED_FONTS} from '@core/configuration/font';
 
-import type {JSX} from 'solid-js';
-import {renderToStringAsync} from 'solid-js/web';
-import {StateProvider} from 'statebuilder';
+import type {JSX} from '@solidjs/web';
+import {StoreProvider} from 'statebuilder';
 
 import {staticThemeCss} from '../components/CustomEditor/staticTheme';
 
-import {page, serialize, SSR_OPTIONS, EXPORT_EXCLUDE_CSS} from './ssr';
+import {page, renderSettled, EXPORT_EXCLUDE_CSS} from './ssr';
 export type RenderSnapshot = Omit<ProjectEditorPersistedState, 'frame'> & {
   width?: number;
   frame: Omit<PersistedFrameState, 'exportTarget' | 'aspectRatio'> &
@@ -141,45 +139,40 @@ export function renderBody(
   pass: Pass,
 ): Promise<string> {
   const {terminal} = snapshot;
-  return serialize(() => {
-    const SnapshotFrame = () => {
-      const store = getEditorStore();
-      store.editor.actions.setFromPersistedState(
-        pass.editor ?? snapshot.editor,
-      );
-      store.frame.setFromPersistedState(pass.appearance);
-      store.frame.setWidth(snapshot.width ?? 0);
-      store.frame.setHeight(0);
-      store.terminal.setFromPersistedState({
-        ...terminal,
-        background: terminal.background || theme.properties.terminal.main,
-        textColor: terminal.textColor || theme.properties.terminal.text,
-      });
-      getThemeStore().getThemeResource(theme.id)[1].mutate(theme);
-      return (
-        <FrameView
-          tab={store.editor.state.editors.find(({id}) => id === pass.editorId)}
-          theme={theme}
-          language={pass.language}
-          media={media}
-          windowPlacement={pass.placement}
-          showOnlyActiveTab={false}
-          header={pass.animation?.header}
-          natural={!!pass.animation}
-          signatureWidth={pass.animation?.signatureWidth}
-          code={pass.code?.()}
-        />
-      );
-    };
-    return renderToStringAsync(
-      () => (
-        <StateProvider>
-          <SnapshotFrame />
-        </StateProvider>
-      ),
-      SSR_OPTIONS,
+  const SnapshotFrame = () => {
+    const store = getEditorStore();
+    store.editor.actions.setFromPersistedState(pass.editor ?? snapshot.editor);
+    store.frame.setFromPersistedState(pass.appearance);
+    store.frame.setWidth(snapshot.width ?? 0);
+    store.frame.setHeight(0);
+    store.terminal.setFromPersistedState({
+      ...terminal,
+      background: terminal.background || theme.properties.terminal.main,
+      textColor: terminal.textColor || theme.properties.terminal.text,
+    });
+    return (
+      <FrameView
+        tab={store.editor.state.editors.find(({id}) => id === pass.editorId)}
+        theme={theme}
+        language={pass.language}
+        media={media}
+        windowPlacement={pass.placement}
+        showOnlyActiveTab={false}
+        header={pass.animation?.header}
+        natural={!!pass.animation}
+        signatureWidth={pass.animation?.signatureWidth}
+        code={pass.code?.()}
+      />
     );
-  });
+  };
+
+  return renderSettled(() => (
+    <StoreProvider>
+      <EditorStoreProvider>
+        <SnapshotFrame />
+      </EditorStoreProvider>
+    </StoreProvider>
+  ));
 }
 
 export const frameMarkup = (

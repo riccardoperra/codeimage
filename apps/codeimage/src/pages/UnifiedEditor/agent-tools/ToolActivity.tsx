@@ -1,15 +1,16 @@
 import {useI18n} from '@codeimage/locale';
-import {IconButton, icons} from '@codeui/kit';
+import {icons} from '@ui/kit-icons';
+import {IconButton} from '@ui/legacy-controls';
 import type {Accessor} from 'solid-js';
 import {
   createEffect,
   createSignal,
   For,
   Match,
-  on,
   onCleanup,
   Show,
   Switch,
+  createTrackedEffect,
 } from 'solid-js';
 import type {AppLocaleEntries} from '../../../i18n';
 import {agentActivity} from '../../../i18n/agentActivity';
@@ -130,7 +131,7 @@ export function ToolRow(props: {
  */
 function nudgeClearance(active: Accessor<boolean>): Accessor<number> {
   const [room, setRoom] = createSignal(0);
-  createEffect(() => {
+  createTrackedEffect(() => {
     if (!active()) return;
     let frame = 0;
     let watched: HTMLElement | undefined;
@@ -164,11 +165,11 @@ function nudgeClearance(active: Accessor<boolean>): Accessor<number> {
       attributeFilter: ['data-closing'],
     });
     measure();
-    onCleanup(() => {
+    return () => {
       cancelAnimationFrame(frame);
       mutations.disconnect();
       resize.disconnect();
-    });
+    };
   });
   return room;
 }
@@ -204,23 +205,21 @@ export function ToolActivity() {
   };
   const dismiss = () => leave(true);
 
-  createEffect(() => {
+  createTrackedEffect(() => {
     if (!shown() || activity.running() || hovered() || focused()) return;
     const timer = setTimeout(() => leave(false), HIDE_AFTER_MS);
-    onCleanup(() => clearTimeout(timer));
+    return () => clearTimeout(timer);
   });
 
   // A call that starts while the card leaves keeps it on screen.
   createEffect(
-    on(
-      () => latest()?.id,
-      () => {
-        clearTimeout(exit);
-        setClosing(false);
-        setHidden(false);
-      },
-      {defer: true},
-    ),
+    () => latest()?.id,
+    () => {
+      clearTimeout(exit);
+      setClosing(false);
+      setHidden(false);
+    },
+    {defer: true},
   );
   onCleanup(() => clearTimeout(exit));
 

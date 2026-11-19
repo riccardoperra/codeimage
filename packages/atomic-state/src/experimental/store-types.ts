@@ -1,17 +1,19 @@
-import type {NotWrappable, Part, StoreSetter} from 'solid-js/store';
+import type {NotWrappable, Part, PathSetter} from 'solid-js';
 
 export type PickMutable<T> = {
-  [K in keyof T as (<U>() => U extends {
-    [V in K]: T[V];
-  }
-    ? 1
-    : 2) extends <U>() => U extends {
-    -readonly [V in K]: T[V];
-  }
-    ? 1
-    : 2
-    ? K
-    : never]: T[K];
+  [
+    K in keyof T as (<U>() => U extends {
+      [V in K]: T[V];
+    }
+      ? 1
+      : 2) extends <U>() => U extends {
+      -readonly [V in K]: T[V];
+    }
+      ? 1
+      : 2
+      ? K
+      : never
+  ]: T[K];
 };
 type W<T> = Exclude<T, NotWrappable>;
 type KeyOf<T> = number extends keyof T
@@ -42,10 +44,7 @@ export interface SetStoreFunction<T> {
     k5: Part<W<W<W<W<W<T>[K1]>[K2]>[K3]>[K4]>, K5>,
     k6: Part<W<W<W<W<W<W<T>[K1]>[K2]>[K3]>[K4]>[K5]>, K6>,
     k7: Part<W<W<W<W<W<W<W<T>[K1]>[K2]>[K3]>[K4]>[K5]>[K6]>, K7>,
-    setter: StoreSetter<
-      W<W<W<W<W<W<W<T>[K1]>[K2]>[K3]>[K4]>[K5]>[K6]>[K7],
-      [K7, K6, K5, K4, K3, K2, K1]
-    >,
+    setter: PathSetter<W<W<W<W<W<W<W<T>[K1]>[K2]>[K3]>[K4]>[K5]>[K6]>[K7]>,
   ): void;
 
   <
@@ -62,10 +61,7 @@ export interface SetStoreFunction<T> {
     k4: Part<W<W<W<W<T>[K1]>[K2]>[K3]>, K4>,
     k5: Part<W<W<W<W<W<T>[K1]>[K2]>[K3]>[K4]>, K5>,
     k6: Part<W<W<W<W<W<W<T>[K1]>[K2]>[K3]>[K4]>[K5]>, K6>,
-    setter: StoreSetter<
-      W<W<W<W<W<W<T>[K1]>[K2]>[K3]>[K4]>[K5]>[K6],
-      [K6, K5, K4, K3, K2, K1]
-    >,
+    setter: PathSetter<W<W<W<W<W<W<T>[K1]>[K2]>[K3]>[K4]>[K5]>[K6]>,
   ): void;
 
   <
@@ -80,10 +76,7 @@ export interface SetStoreFunction<T> {
     k3: Part<W<W<W<T>[K1]>[K2]>, K3>,
     k4: Part<W<W<W<W<T>[K1]>[K2]>[K3]>, K4>,
     k5: Part<W<W<W<W<W<T>[K1]>[K2]>[K3]>[K4]>, K5>,
-    setter: StoreSetter<
-      W<W<W<W<W<T>[K1]>[K2]>[K3]>[K4]>[K5],
-      [K5, K4, K3, K2, K1]
-    >,
+    setter: PathSetter<W<W<W<W<W<T>[K1]>[K2]>[K3]>[K4]>[K5]>,
   ): void;
 
   <
@@ -96,7 +89,7 @@ export interface SetStoreFunction<T> {
     k2: Part<W<W<T>[K1]>, K2>,
     k3: Part<W<W<W<T>[K1]>[K2]>, K3>,
     k4: Part<W<W<W<W<T>[K1]>[K2]>[K3]>, K4>,
-    setter: StoreSetter<W<W<W<W<T>[K1]>[K2]>[K3]>[K4], [K4, K3, K2, K1]>,
+    setter: PathSetter<W<W<W<W<T>[K1]>[K2]>[K3]>[K4]>,
   ): void;
 
   <
@@ -107,38 +100,19 @@ export interface SetStoreFunction<T> {
     k1: Part<W<T>, K1>,
     k2: Part<W<W<T>[K1]>, K2>,
     k3: Part<W<W<W<T>[K1]>[K2]>, K3>,
-    setter: StoreSetter<W<W<W<T>[K1]>[K2]>[K3], [K3, K2, K1]>,
+    setter: PathSetter<W<W<W<T>[K1]>[K2]>[K3]>,
   ): void;
 
   <K1 extends KeyOf<W<T>>, K2 extends MutableKeyOf<W<W<T>[K1]>>>(
     k1: Part<W<T>, K1>,
     k2: Part<W<W<T>[K1]>, K2>,
-    setter: StoreSetter<W<W<T>[K1]>[K2], [K2, K1]>,
+    setter: PathSetter<W<W<T>[K1]>[K2]>,
   ): void;
 
   <K1 extends MutableKeyOf<W<T>>>(
     k1: Part<W<T>, K1>,
-    setter: StoreSetter<W<T>[K1], [K1]>,
+    setter: PathSetter<W<T>[K1]>,
   ): void;
 
-  (setter: StoreSetter<T, []>): void;
-
-  // <
-  //   K1 extends KeyOf<W<T>>,
-  //   K2 extends KeyOf<W<W<T>[K1]>>,
-  //   K3 extends KeyOf<W<W<W<T>[K1]>[K2]>>,
-  //   K4 extends KeyOf<W<W<W<W<T>[K1]>[K2]>[K3]>>,
-  //   K5 extends KeyOf<W<W<W<W<W<T>[K1]>[K2]>[K3]>[K4]>>,
-  //   K6 extends KeyOf<W<W<W<W<W<W<T>[K1]>[K2]>[K3]>[K4]>[K5]>>,
-  //   K7 extends KeyOf<W<W<W<W<W<W<W<T>[K1]>[K2]>[K3]>[K4]>[K5]>[K6]>>,
-  // >(
-  //   k1: Part<W<T>, K1>,
-  //   k2: Part<W<W<T>[K1]>, K2>,
-  //   k3: Part<W<W<W<T>[K1]>[K2]>, K3>,
-  //   k4: Part<W<W<W<W<T>[K1]>[K2]>[K3]>, K4>,
-  //   k5: Part<W<W<W<W<W<T>[K1]>[K2]>[K3]>[K4]>, K5>,
-  //   k6: Part<W<W<W<W<W<W<T>[K1]>[K2]>[K3]>[K4]>[K5]>, K6>,
-  //   k7: Part<W<W<W<W<W<W<W<T>[K1]>[K2]>[K3]>[K4]>[K5]>[K6]>, K7>,
-  //   // ...rest: Rest<W<W<W<W<W<W<W<T>[K1]>[K2]>[K3]>[K4]>[K5]>[K6]>[K7], [K7, K6, K5, K4, K3, K2, K1]>
-  // ): void;
+  (setter: PathSetter<T>): void;
 }

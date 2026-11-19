@@ -3,15 +3,7 @@ import type {CustomFontConfiguration} from '@core/configuration/font';
 import {SUPPORTED_FONTS} from '@core/configuration/font';
 import type {RasterizerName} from '@core/rasterize';
 import {fontWeightLabelMap} from '@core/modules/localFontAccessApi/font';
-import {
-  createEffect,
-  createMemo,
-  getOwner,
-  on,
-  onMount,
-  runWithOwner,
-} from 'solid-js';
-import {unwrap} from 'solid-js/store';
+import {createEffect, createMemo} from 'solid-js';
 import {defineStore} from 'statebuilder';
 import type {LoadedFont} from '../../hooks/use-local-fonts';
 import {withLocalFontManagementPlugin} from './config/localFont';
@@ -43,57 +35,53 @@ function getDefaultConfig(): ConfigState {
 
 export const EditorConfigStore = defineStore(() => getDefaultConfig())
   .extend(withIndexedDbPlugin('editorConfig', getDefaultConfig()))
-  .extend(_ => {
-    const persist = (state: ConfigState) =>
-      _.idb.set({
-        ...unwrap(state),
-        systemFonts: state.systemFonts.map(font => ({
-          ...unwrap(font),
-          fontData: {...unwrap(font.fontData), sources: []},
-        })),
+  .extend((store, context) => {
+    let disposed = false;
+    context.onDispose(() => {
+      disposed = true;
+    });
+    context.onMount(async () => {
+      if (typeof window === 'undefined') return;
+      const value = await store.idb.get();
+      if (disposed) return;
+      const renderer = new URLSearchParams(window.location.search).get(
+        'renderer',
+      );
+      const {fonts: _cachedFonts, ...cachedSettings} = value;
+      store.set(draft => {
+        Object.assign(draft, cachedSettings);
+        if (renderer === 'takumi' || renderer === 'dom-export') {
+          draft.renderer = renderer;
+        }
+        draft.ready = true;
       });
-    onMount(() => {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const owner = getOwner()!;
-      _.idb.hydrateOnInit().then(() => {
-        runWithOwner(owner, () => {
-          const renderer = new URLSearchParams(window.location.search).get(
-            'renderer',
-          );
-          _.set(
-            'renderer',
-            renderer === 'takumi' || renderer === 'dom-export'
-              ? renderer
-              : _.get.renderer === 'takumi'
-                ? 'takumi'
-                : 'dom-export',
-          );
-          persist(_.get);
-          _.set('ready', true);
-          _.set('fonts', [...SUPPORTED_FONTS]);
-          createEffect(
-            on(
-              _,
-              state => {
-                persist(state);
-              },
-              {defer: true},
-            ),
-          );
-        });
-      });
+      context.onSet(state =>
+        store.idb.set({
+          ...state,
+          systemFonts: state.systemFonts.map(font => ({
+            ...font,
+            fontData: {...font.fontData, sources: []},
+          })),
+        }),
+      );
     });
   })
   .extend(withLocalFontManagementPlugin())
-  .extend(_ => {
+  .extend((_, context) => {
     const fonts = createMemo(() => _.localFontsApi.state().fonts);
 
-    const toggleDevMode = () => _.set('devMode', debug => !debug);
+    const toggleDevMode = () =>
+      _.set(state => {
+        state.devMode = !state.devMode;
+      });
     const setRenderer = (renderer: RasterizerName) => {
       if (renderer === 'dom-export' || renderer === 'takumi')
-        _.set('renderer', renderer);
+        _.set(state => {
+          state.renderer = renderer;
+        });
     };
-    onMount(() => {
+    context.onMount(() => {
+      if (typeof window === 'undefined') return;
       window.setRenderer = setRenderer;
       window.toggleDevMode = toggleDevMode;
     });
@@ -111,12 +99,12 @@ export const EditorConfigStore = defineStore(() => getDefaultConfig())
         // TODO: remove when typescript > 5 to use satisfies
       }) as CustomFontConfiguration & {type: 'system'};
 
-    createEffect(
-      on(fonts, fonts => {
-        const fontsConfiguration = fonts.map(buildSystemFontConfiguration);
-        _.set('systemFonts', fontsConfiguration);
-      }),
-    );
+    createEffect(fonts, fonts => {
+      const fontsConfiguration = fonts.map(buildSystemFontConfiguration);
+      _.set(state => {
+        state.systemFonts = fontsConfiguration;
+      });
+    });
 
     return {
       toggleDevMode,

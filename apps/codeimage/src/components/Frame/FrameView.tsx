@@ -14,11 +14,13 @@ import {getFrameState} from '@codeimage/store/editor/frame';
 import type {EditorState} from '@codeimage/store/editor/model';
 import type {Language} from '@codemirror/language';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
-import type {JSX, Ref, VoidProps} from 'solid-js';
-import {createEffect, on, Show} from 'solid-js';
+import type {JSX} from '@solidjs/web';
+import type {Ref, VoidProps} from 'solid-js';
+import {createEffect, Show} from 'solid-js';
 
 import {
-  bindWatermarkExport,
+  createWatermarkExportRef,
+  createWatermarkRef,
   createWatermarkScope,
   WatermarkContext,
 } from '@core/watermark/scope';
@@ -61,20 +63,23 @@ export function FrameView(props: VoidProps<FrameViewProps>) {
 
   const terminalView = createFrameTerminal(props);
   const watermark = createWatermarkScope();
-  createEffect(on(() => frame.signature?.position, watermark.invalidate));
+  const exportRef = createWatermarkExportRef(watermark);
+  const frameRef = createWatermarkRef(watermark, 'frame');
+  const backgroundRef = createWatermarkRef(watermark, 'background');
+  createEffect(() => frame.signature?.position, watermark.invalidate);
 
   return (
     <div
       class={styles.previewWrapper}
       ref={element => {
-        bindWatermarkExport(element, watermark);
+        exportRef(element);
         const ref = props.ref;
         if (typeof ref === 'function') ref(element);
       }}
     >
       <div
         class={styles.container}
-        ref={element => watermark.attach('frame', element)}
+        ref={frameRef}
         data-watermark-frame
         data-snapshot-frame
         data-animation-frame={props.animated ? '' : undefined}
@@ -94,7 +99,7 @@ export function FrameView(props: VoidProps<FrameViewProps>) {
         })}
       >
         <div
-          ref={element => watermark.attach('background', element)}
+          ref={backgroundRef}
           data-watermark-background
           class={styles.previewOverlay}
           style={assignInlineVars({
@@ -129,9 +134,9 @@ export function FrameView(props: VoidProps<FrameViewProps>) {
             data-animation-window
             style={props.natural ? naturalWindowStyle : {display: 'contents'}}
           >
-            <WatermarkContext.Provider value={watermark}>
+            <WatermarkContext value={watermark}>
               {terminalView()}
-            </WatermarkContext.Provider>
+            </WatermarkContext>
           </div>
         </Show>
         <FrameSignature
@@ -139,7 +144,7 @@ export function FrameView(props: VoidProps<FrameViewProps>) {
           media={props.media}
           background={frame.background}
           scale={scale()}
-          markRef={element => watermark.attach('signature', element)}
+          watermark={watermark}
         />
       </div>
     </div>

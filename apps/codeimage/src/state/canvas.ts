@@ -3,7 +3,6 @@ import {provideAppState} from '@codeimage/store/index';
 import {withIndexedDbPlugin} from '@codeimage/store/plugins/withIndexedDbPlugin';
 import {createResizeObserver} from '@solid-primitives/resize-observer';
 import type {Accessor} from 'solid-js';
-import {createEffect, on} from 'solid-js';
 import {defineStore} from 'statebuilder';
 import {getWhatsNew} from './whats-new';
 import {ExportExtension} from '../hooks/use-export-image';
@@ -37,8 +36,17 @@ export const ExportCanvasStore = defineStore(() => ({
     }),
   )
   .extend((store, context) => {
-    createEffect(
-      on(store, value => {
+    let disposed = false;
+    context.onDispose(() => {
+      disposed = true;
+    });
+    context.onMount(async () => {
+      const value = await store.idb.get();
+      if (disposed) return;
+      store.set(draft => {
+        Object.assign(draft, value);
+      });
+      context.onSet(value => {
         store.idb.set({
           devicePixelRatio: value.devicePixelRatio,
           jpegQuality: value.jpegQuality,
@@ -46,15 +54,7 @@ export const ExportCanvasStore = defineStore(() => ({
           showOnlyActiveTab: value.showOnlyActiveTab,
           oneImagePerTab: value.oneImagePerTab,
         });
-      }),
-    );
-    context.hooks.onInit(() => {
-      store.idb.get().then(value =>
-        store.set(prevValue => ({
-          ...prevValue,
-          ...value,
-        })),
-      );
+      });
     });
   })
   .extend(store => ({
@@ -67,14 +67,35 @@ export const ExportCanvasStore = defineStore(() => ({
       return `${width}x${height}`;
     },
     setCanvasSize(width: number, height: number) {
-      store.set('canvasSize', {width, height});
+      store.set(state => {
+        state.canvasSize = {width, height};
+      });
+    },
+    setExtension(value: ExportExtension) {
+      store.set(draft => {
+        draft.extension = value;
+      });
+    },
+    setJpegQuality(value: number) {
+      store.set(draft => {
+        draft.jpegQuality = value;
+      });
+    },
+    setDevicePixelRatio(value: number) {
+      store.set(draft => {
+        draft.devicePixelRatio = value;
+      });
     },
     setShowOnlyActiveTab(value: boolean) {
-      store.set('showOnlyActiveTab', value);
+      store.set(state => {
+        state.showOnlyActiveTab = value;
+      });
     },
     setOneImagePerTab(value: boolean) {
       if (value) getWhatsNew().seen('tabs');
-      store.set('oneImagePerTab', value);
+      store.set(state => {
+        state.oneImagePerTab = value;
+      });
     },
     initCanvas(el: Accessor<HTMLElement | undefined>) {
       createResizeObserver(el, ref => {
@@ -85,6 +106,12 @@ export const ExportCanvasStore = defineStore(() => ({
     },
   }));
 
-export function getExportCanvasStore() {
+function createExportCanvasStore() {
   return provideAppState(ExportCanvasStore);
+}
+
+let exportCanvasStore: ReturnType<typeof createExportCanvasStore> | undefined;
+
+export function getExportCanvasStore() {
+  return (exportCanvasStore ??= createExportCanvasStore());
 }

@@ -1,10 +1,17 @@
 import type {AppLocaleEntries} from '../../../i18n';
 import {useI18n} from '@codeimage/locale';
-import {Button, TextField} from '@codeui/kit';
+import {Button, TextField} from '@ui/legacy-controls';
 import {SegmentedField} from '@ui/SegmentedField/SegmentedField';
 import type {Component} from 'solid-js';
-import {createEffect, onCleanup, onMount, Show} from 'solid-js';
-import {Dynamic} from 'solid-js/web';
+import {
+  createEffect,
+  createSignal,
+  onCleanup,
+  onSettled,
+  untrack,
+  Show,
+} from 'solid-js';
+import {Dynamic} from '@solidjs/web';
 import type {EditorControlsModel, ThemeEntry} from '../model';
 import type {Stage} from '../stage';
 import {AaList} from './aa-list';
@@ -51,6 +58,11 @@ export interface ThemePickerProps extends ThemePickerSlotProps {
  */
 export function ThemePicker(props: ThemePickerProps) {
   const [t] = useI18n<AppLocaleEntries>();
+  const [searchInput, setSearchInput] = createSignal<HTMLInputElement>();
+  createEffect(
+    () => [searchInput(), t('editor.searchThemes')] as const,
+    ([element, label]) => element?.setAttribute('aria-label', label),
+  );
   // oxlint-disable-next-line solid/reactivity -- one model lives for the whole session
   const browser = createThemeBrowser(props.model, {
     onPick: (theme, byKeyboard) => props.onPick?.(theme, byKeyboard),
@@ -58,8 +70,8 @@ export function ThemePicker(props: ThemePickerProps) {
     releaseEscape: props.releaseEscape,
   });
   onCleanup(() => props.model.endPreview());
-  onMount(() => {
-    if (props.autofocus) browser.focusSelected();
+  onSettled(() => {
+    if (untrack(() => props.autofocus)) browser.focusSelected();
   });
 
   const showAll = () => {
@@ -72,7 +84,7 @@ export function ThemePicker(props: ThemePickerProps) {
       <div class={styles.tools}>
         <div
           class={styles.search}
-          on:keydown={(event: KeyboardEvent) => {
+          onKeyDown={(event: KeyboardEvent) => {
             if (event.key === 'ArrowDown') {
               event.preventDefault();
               browser.focusFirst();
@@ -86,12 +98,7 @@ export function ThemePicker(props: ThemePickerProps) {
           <TextField
             size={props.size ?? 'sm'}
             placeholder={t('themeSwitcher.search')}
-            // The kit labels its root, not the input.
-            ref={input =>
-              createEffect(() =>
-                input.setAttribute('aria-label', t('editor.searchThemes')),
-              )
-            }
+            ref={setSearchInput}
             value={browser.query()}
             onChange={browser.setQuery}
           />

@@ -8,8 +8,8 @@ import {
   DropdownMenuItem,
   DropdownMenuPortal,
   DropdownMenuTrigger,
-  IconButton,
-} from '@codeui/kit';
+} from '@ui/DropdownMenu';
+import {IconButton} from '@ui/legacy-controls';
 import {createControlledDialog} from '@core/hooks/createControlledDialog';
 import {useNavigate} from '@solidjs/router';
 import {Show} from 'solid-js';

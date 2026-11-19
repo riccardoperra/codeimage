@@ -1,6 +1,6 @@
 import {isFirefox} from '@solid-primitives/platform';
 import type {Accessor} from 'solid-js';
-import {createSignal, onMount} from 'solid-js';
+import {createSignal, onSettled} from 'solid-js';
 
 export function useWebshare(): [
   supported: Accessor<boolean>,
@@ -8,7 +8,7 @@ export function useWebshare(): [
   share: (data: ShareData) => Promise<void> | null,
 ] {
   const [supported, setSupported] = createSignal(true);
-  onMount(() => {
+  onSettled(() => {
     setSupported(true);
   });
 

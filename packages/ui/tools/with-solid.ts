@@ -8,6 +8,7 @@
 import type {RollupBabelInputPluginOptions} from '@rollup/plugin-babel';
 import {babel} from '@rollup/plugin-babel';
 import {nodeResolve} from '@rollup/plugin-node-resolve';
+import {transformAsync} from '@solidjs/compiler';
 import {rmSync, writeFileSync} from 'node:fs';
 import {mergeAndConcat} from 'merge-anything';
 import {cwd} from 'node:process';
@@ -113,14 +114,26 @@ function processOptions(options: Options, asSubPackage = true): RollupOptions {
 
   const defaultOptions: Options = {
     input: resolveInput(src),
-    external: ['solid-js', 'solid-js/web', 'solid-js/store', ...external],
+    external: ['solid-js', '@solidjs/web', ...external],
     output,
     plugins: [
+      {
+        name: 'solid2',
+        async transform(source, id) {
+          if (!/\.[jt]sx$/.test(id)) return;
+          const result = await transformAsync(source, {
+            ...solidOptions,
+            filename: id,
+            generate: 'dom',
+            sourceMap: true,
+          });
+          return {code: result.code, map: result.map ?? null};
+        },
+      },
       babel({
         extensions,
         babelHelpers: 'bundled',
         presets: [
-          ['babel-preset-solid', solidOptions || {}],
           '@babel/preset-typescript',
           ['@babel/preset-env', {bugfixes: true, targets: babelTargets}],
         ],
@@ -152,7 +165,7 @@ function processOptions(options: Options, asSubPackage = true): RollupOptions {
               module: ts.ModuleKind.ESNext,
               moduleResolution: ts.ModuleResolutionKind.NodeJs,
               jsx: ts.JsxEmit.Preserve,
-              jsxImportSource: 'solid-js',
+              jsxImportSource: '@solidjs/web',
               declarationMap: false,
               sourceMap: false,
               outDir: `dist/source`,

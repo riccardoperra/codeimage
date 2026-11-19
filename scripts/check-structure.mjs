@@ -29,7 +29,6 @@ const checks = [
       /^(apps\/codeimage|packages\/ui)\/.*\.(css|scss|sass|less)$/.test(file),
     fix: 'Write the styles in a vanilla-extract .css.ts file beside the component, with tokens from @codeimage/ui.',
     recorded: [
-      'apps/codeimage/src/assets/styles/_inter.scss',
       'apps/codeimage/src/assets/styles/_reset.scss',
       'apps/codeimage/src/assets/styles/app.scss',
       'apps/codeimage/src/components/CustomEditor/plugins/lineMarks/gutter.css',

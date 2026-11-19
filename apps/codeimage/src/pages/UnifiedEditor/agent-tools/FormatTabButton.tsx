@@ -1,7 +1,8 @@
 import {useI18n} from '@codeimage/locale';
 import {getRootEditorStore} from '@codeimage/store/editor';
 import {getActiveEditorStore} from '@codeimage/store/editor/activeEditor';
-import {Button, icons} from '@codeui/kit';
+import {icons} from '@ui/kit-icons';
+import {Button} from '@ui/legacy-controls';
 import {createSignal, Show} from 'solid-js';
 import {createPrettierFormatter} from '../../../hooks/createPrettierFormatter';
 import type {AppLocaleEntries} from '../../../i18n';

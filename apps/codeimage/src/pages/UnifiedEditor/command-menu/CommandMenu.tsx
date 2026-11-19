@@ -1,22 +1,22 @@
+import {createId} from '@core/helpers/create-id';
 import type {Accessor} from 'solid-js';
 import type {EditorPageState} from '../page-state';
 import {editorLinks, trackEditorLink} from '../shell/links';
 import {useI18n} from '@codeimage/locale';
 import {getAuth0State} from '@codeimage/store/auth/auth0';
 import {getRootEditorStore} from '@codeimage/store/editor';
-import {icons} from '@codeui/kit';
+import {icons} from '@ui/kit-icons';
 import {RemoteSvgIcon} from '@codeimage/ui';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
-import {Dialog} from '@kobalte/core/dialog';
+import {Dialog} from '@ui/Dialog/parts';
 import {useNavigate} from '@solidjs/router';
 import {
   createMemo,
   createSignal,
-  createUniqueId,
   For,
   Match,
   onCleanup,
-  onMount,
+  onSettled,
   Show,
   Switch,
   untrack,
@@ -118,7 +118,7 @@ function SearchIcon() {
 function Commands(
   props: CommandMenuProps & {onRun: (command: Command) => void},
 ) {
-  const listId = createUniqueId();
+  const listId = createId();
   const [t] = useI18n<AppLocaleEntries>();
   const editor = getRootEditorStore();
   const auth = getAuth0State();
@@ -259,7 +259,7 @@ function Commands(
     highlight((active() + step + count) % count, true);
   };
 
-  onMount(() => input.focus());
+  onSettled(() => input.focus());
   // Ended as the menu closes, not when this unmounts: a write made during
   // Solid's cleanup runs its effects later, outside the preview's quiet
   // scope, and the editor would save a restored language.
@@ -329,7 +329,7 @@ function Commands(
                     id={optionId(row.index)}
                     class={styles.row}
                     role="option"
-                    aria-selected={active() === row.index}
+                    aria-selected={active() === row.index ? 'true' : 'false'}
                     onPointerMove={event => {
                       if (
                         event.pointerType === 'mouse' &&
@@ -396,7 +396,7 @@ export function CommandMenu(props: CommandMenuProps) {
   // A command that only runs, such as Export, moves focus itself.
   let giveFocusBack = true;
 
-  onMount(() => {
+  onSettled(() => {
     const onKeyDown = (event: KeyboardEvent) => {
       if (!commandMenu.isShortcut(event)) return;
       event.preventDefault();
@@ -406,7 +406,7 @@ export function CommandMenu(props: CommandMenuProps) {
     };
     // Capture, so that the code editor does not take the key first.
     window.addEventListener('keydown', onKeyDown, true);
-    onCleanup(() => window.removeEventListener('keydown', onKeyDown, true));
+    return () => window.removeEventListener('keydown', onKeyDown, true);
   });
   // Switching layouts unmounts the menu.
   onCleanup(commandMenu.close);
@@ -425,9 +425,8 @@ export function CommandMenu(props: CommandMenuProps) {
       </Show>
       <Dialog
         open={commandMenu.isOpen()}
-        onOpenChange={open => {
-          if (!open) commandMenu.close();
-        }}
+        exitDuration={0}
+        onOpenChange={commandMenu.close}
       >
         <Dialog.Portal>
           <Dialog.Content

@@ -3,7 +3,7 @@ import type {AppLocaleEntries} from '../../../i18n';
 import {useI18n} from '@codeimage/locale';
 import {getRootEditorStore} from '@codeimage/store/editor';
 import {EditorConfigStore} from '@codeimage/store/editor/config.store';
-import {provideState} from 'statebuilder';
+import {useStore} from 'statebuilder';
 import type {
   Control,
   ControlId,
@@ -67,7 +67,7 @@ export interface ListedModel {
 export function createListedModel(model: EditorControlsModel): ListedModel {
   const [t] = useI18n<AppLocaleEntries>();
   const editor = getRootEditorStore();
-  const config = provideState(EditorConfigStore);
+  const config = useStore(EditorConfigStore);
 
   const fontFamily = (base: Control): SelectControl => ({
     kind: 'select',

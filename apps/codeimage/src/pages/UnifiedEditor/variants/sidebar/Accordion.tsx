@@ -1,19 +1,20 @@
 import {getEditorStore} from '@codeimage/store/editor';
 import {useI18n} from '@codeimage/locale';
 import {signatureEditor} from '@codeimage/store/frame/signatureEditor';
-import {Button} from '@codeui/kit';
+import {Button} from '@ui/legacy-controls';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 import {
   For,
   Show,
   createEffect,
   createSignal,
-  on,
   onCleanup,
-  onMount,
+  onSettled,
+  untrack,
 } from 'solid-js';
-import type {JSX, ParentProps} from 'solid-js';
-import {Dynamic} from 'solid-js/web';
+import type {JSX} from '@solidjs/web';
+import type {ParentProps} from 'solid-js';
+import {Dynamic} from '@solidjs/web';
 import type {AppLocaleEntries} from '../../../../i18n';
 import {EditingControls} from '../../EditingControls';
 import type {VariantProps} from '../../contract';
@@ -23,6 +24,7 @@ import {ShortcutHelp} from '../../controls/ShortcutHelp';
 import type {ControlId} from '../../model';
 import * as styles from './accordion.css';
 import {createOverlayPlacement} from './overlays';
+import {createResizeRef} from '@core/hooks/create-resize-ref';
 import {PANELS} from './panels';
 import type {PanelId} from './panels';
 import {PLACES} from './places';
@@ -70,6 +72,9 @@ function Section(
 ) {
   let trigger: HTMLButtonElement | undefined;
   const [measured, setMeasured] = createSignal(0);
+  const measureSection = createResizeRef(element =>
+    setMeasured(element.offsetHeight),
+  );
   const header = () => `sidebar-section-${props.id}`;
   return (
     <section
@@ -87,7 +92,7 @@ function Section(
         type="button"
         id={header()}
         class={styles.sectionTrigger}
-        aria-expanded={props.open}
+        aria-expanded={props.open ? 'true' : 'false'}
         aria-controls={`${header()}-body`}
         onClick={() => props.onOpenChange(!props.open)}
         onKeyDown={moveBetweenHeaders}
@@ -109,23 +114,12 @@ function Section(
         class={styles.sectionBody}
         role="region"
         aria-labelledby={header()}
-        ref={body =>
-          createEffect(() => body.toggleAttribute('inert', !props.open))
-        }
+        inert={!props.open}
         style={assignInlineVars({
           [styles.bodyHeight]: `${props.height ?? measured()}px`,
         })}
       >
-        <div
-          class={styles.sectionContent}
-          ref={element => {
-            const observer = new ResizeObserver(() =>
-              setMeasured(element.offsetHeight),
-            );
-            observer.observe(element);
-            onCleanup(() => observer.disconnect());
-          }}
-        >
+        <div class={styles.sectionContent} ref={measureSection}>
           {props.children}
         </div>
       </div>
@@ -140,18 +134,14 @@ export function Accordion(props: VariantProps) {
   const [openSection, setOpenSection] = createSignal<PanelId | null>('themes');
   const {animation} = getEditorStore();
   const [sheet, setSheet] = createSignal<'short' | 'tall'>('short');
-  createEffect(
-    on(animation.open, open => {
-      if (open) setSheet('short');
-    }),
-  );
+  createEffect(animation.open, open => {
+    if (open) setSheet('short');
+  });
   // How far down the page the layout ends, which sets how tall the sheet
   // may grow. The page's header is above the root.
   const [rootHeight, setRootHeight] = createSignal(innerHeight);
   const tallSheet = () => Math.min(560, rootHeight() - 284);
-  const [mobile, setMobile] = createSignal(
-    matchMedia('(max-width: 768px)').matches,
-  );
+  const mobile = () => props.stage.compact();
   let panel: HTMLElement | undefined;
   let canvas: HTMLElement | undefined;
   let scroll: HTMLDivElement | undefined;
@@ -177,6 +167,14 @@ export function Accordion(props: VariantProps) {
     const gaps = (parseFloat(box.rowGap) || 0) * (sections.length - 1);
     setFill(Math.max(mobile() ? 436 : 360, Math.floor(inner - chrome - gaps)));
   };
+  const measureRoot = createResizeRef(element =>
+    setRootHeight(element.getBoundingClientRect().bottom),
+  );
+  const observeScroll = createResizeRef(() => measureFill());
+  const measureScroll = (element: HTMLDivElement) => {
+    scroll = element;
+    observeScroll(element);
+  };
   let handle: HTMLButtonElement | undefined;
   createOverlayPlacement(
     () => panel,
@@ -187,13 +185,10 @@ export function Accordion(props: VariantProps) {
     | undefined;
   let skipHandleClick = false;
   // An open section changes the island padding the theme section leaves room for.
-  createEffect(on([openSection, mobile], () => queueMicrotask(measureFill)));
-  onMount(() => {
-    const media = matchMedia('(max-width: 768px)');
-    const update = () => setMobile(media.matches);
-    media.addEventListener('change', update);
-    onCleanup(() => media.removeEventListener('change', update));
-  });
+  createEffect(
+    () => [openSection(), mobile()] as const,
+    () => queueMicrotask(() => untrack(measureFill)),
+  );
   const size = () => (mobile() ? 'md' : 'sm');
   const toggleSection = (id: PanelId, open: boolean) =>
     setOpenSection(current => (open ? id : current === id ? null : current));
@@ -210,19 +205,14 @@ export function Accordion(props: VariantProps) {
         ?.focus({preventScroll: true});
     });
   };
-  onMount(() => {
-    onCleanup(
-      props.model.controls.register(id => {
-        const place = PLACES[id];
-        if (place.group === 'signature') {
-          setSheet('tall');
-          toggleSection(place.panel, true);
-          controlOverlay.open('signature');
-          return;
-        }
-        openQuickControl(place.panel, id);
-      }),
-    );
+  onSettled(() => {
+    return untrack(() => props.model).controls.register(id => {
+      const place = PLACES[id];
+      if (place.group !== 'signature') return openQuickControl(place.panel, id);
+      setSheet('tall');
+      toggleSection(place.panel, true);
+      controlOverlay.open('signature');
+    });
   });
   // A click on the signature in the canvas opens its section at the handle.
   onCleanup(signatureEditor.register(() => controlOverlay.open('signature')));
@@ -231,13 +221,7 @@ export function Accordion(props: VariantProps) {
       class={styles.root}
       data-sheet={sheet()}
       style={assignInlineVars({[styles.tallSheet]: `${tallSheet()}px`})}
-      ref={root => {
-        const observer = new ResizeObserver(() =>
-          setRootHeight(root.getBoundingClientRect().bottom),
-        );
-        observer.observe(root);
-        onCleanup(() => observer.disconnect());
-      }}
+      ref={measureRoot}
     >
       <div class={styles.workspace}>
         <main
@@ -290,11 +274,13 @@ export function Accordion(props: VariantProps) {
                   ? t('editor.expandInspector')
                   : t('editor.collapseInspector')
               }
-              aria-expanded={sheet() === 'tall'}
+              aria-expanded={sheet() === 'tall' ? 'true' : 'false'}
               ref={element => {
                 handle = element;
               }}
-              onPointerDown={event => {
+              onPointerDown={(
+                event: PointerEvent & {currentTarget: HTMLButtonElement},
+              ) => {
                 if (!event.isPrimary || event.button !== 0 || !panel) return;
                 drag = {
                   pointerId: event.pointerId,
@@ -304,7 +290,7 @@ export function Accordion(props: VariantProps) {
                 };
                 event.currentTarget.setPointerCapture(event.pointerId);
               }}
-              onPointerMove={event => {
+              onPointerMove={(event: PointerEvent) => {
                 if (!drag || event.pointerId !== drag.pointerId || !panel)
                   return;
                 const distance = drag.startY - event.clientY;
@@ -313,7 +299,7 @@ export function Accordion(props: VariantProps) {
                 panel.style.height = `${Math.max(92, Math.min(tallSheet(), drag.height + distance))}px`;
                 setSheet('tall');
               }}
-              onPointerUp={event => {
+              onPointerUp={(event: PointerEvent) => {
                 if (!drag || event.pointerId !== drag.pointerId || !panel)
                   return;
                 if (skipHandleClick) {
@@ -387,12 +373,7 @@ export function Accordion(props: VariantProps) {
             </div>
             <div
               class={styles.panelScroll}
-              ref={element => {
-                scroll = element;
-                const observer = new ResizeObserver(measureFill);
-                observer.observe(element);
-                onCleanup(() => observer.disconnect());
-              }}
+              ref={measureScroll}
               onKeyDown={event => {
                 if (event.key !== 'Escape' || fromPortal(event)) return;
                 event.stopPropagation();

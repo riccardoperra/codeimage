@@ -10,18 +10,12 @@ export interface TabThemeProps extends TerminalTabsTheme {
 
 export function createTabTheme(
   themeId: Accessor<string>,
+  preloadedTheme?: Accessor<CustomTheme | undefined>,
 ): Accessor<TabThemeProps> {
-  const {themeArray: themes} = getThemeStore();
+  const {getThemeResource} = getThemeStore();
 
-  const $theme = createMemo(() =>
-    themeId()
-      ? themes().find(resource => resource()?.id === themeId())?.()
-      : null,
-  );
-
-  // eslint-disable-next-line solid/reactivity
-  return () => {
-    const theme = $theme() as CustomTheme | null;
+  return createMemo(() => {
+    const theme = preloadedTheme?.() ?? getThemeResource(themeId())?.[0]();
     if (!theme)
       return {
         shouldFallbackInactiveColor: true,
@@ -39,5 +33,5 @@ export function createTabTheme(
       inactiveTabBackground,
       darkMode: theme.properties.darkMode,
     };
-  };
+  });
 }

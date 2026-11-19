@@ -1,5 +1,5 @@
 import {getEditorStore} from '@codeimage/store/editor';
-import {createEffect, createSignal, on, onCleanup, onMount} from 'solid-js';
+import {createEffect, createSignal, onSettled} from 'solid-js';
 import {
   type Box,
   boxOf,
@@ -47,8 +47,10 @@ export function createCanvasBar(wanted: () => CanvasBarMode) {
     };
     return was;
   };
-  createEffect(on(mode, () => place()));
-  onMount(() => {
+  createEffect(mode, () => {
+    place();
+  });
+  onSettled(() => {
     const observer = new ResizeObserver(() => {
       const was = place();
       const now = shown;
@@ -74,38 +76,37 @@ export function createCanvasBar(wanted: () => CanvasBarMode) {
     });
     for (const group of [...sides('actions'), ...sides('transport')])
       observer.observe(group);
-    onCleanup(() => observer.disconnect());
+    return () => observer.disconnect();
   });
   createEffect(
-    on(
-      wanted,
-      next => {
-        if (next === mode() || !groups.transport.left) return setMode(next);
-        const opening = next === 'transport';
-        const from = sides(opening ? 'actions' : 'transport');
-        const to = sides(next);
-        const hadFocus = from.some(group =>
-          group.contains(document.activeElement),
-        );
-        morphBar({
-          bar,
-          surface,
-          anchor,
-          from,
-          to,
-          opening,
-          animate: toggledByPointer(),
-          change: () => setMode(next),
-          done: () => {
-            if (hadFocus)
-              anchor
-                .querySelector<HTMLElement>('[data-animate-toggle]')
-                ?.focus();
-          },
-        });
-      },
-      {defer: true},
-    ),
+    wanted,
+    next => {
+      if (next === mode() || !groups.transport.left) {
+        setMode(next);
+        return;
+      }
+      const opening = next === 'transport';
+      const from = sides(opening ? 'actions' : 'transport');
+      const to = sides(next);
+      const hadFocus = from.some(group =>
+        group.contains(document.activeElement),
+      );
+      morphBar({
+        bar,
+        surface,
+        anchor,
+        from,
+        to,
+        opening,
+        animate: toggledByPointer(),
+        change: () => setMode(next),
+        done: () => {
+          if (hadFocus)
+            anchor.querySelector<HTMLElement>('[data-animate-toggle]')?.focus();
+        },
+      });
+    },
+    {defer: true},
   );
   const escape = (event: KeyboardEvent) => {
     if (event.key !== 'Escape' || mode() !== 'transport') return;

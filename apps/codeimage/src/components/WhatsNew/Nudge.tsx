@@ -1,19 +1,23 @@
+import {createId} from '@core/helpers/create-id';
 import {useI18n} from '@codeimage/locale';
 import type {AppLocaleEntries} from '../../i18n';
-import {Button, IconButton, icons} from '@codeui/kit';
+import {Button, IconButton} from '@ui/legacy-controls';
+import {icons} from '@ui/kit-icons';
 import {
-  createEffect,
   createMemo,
   createSignal,
-  createUniqueId,
   For,
   onCleanup,
-  onMount,
   Show,
   untrack,
+  createTrackedEffect,
 } from 'solid-js';
-import {Dynamic} from 'solid-js/web';
-import {getWhatsNew, type RELEASES, type WhatsNew} from '../../state/whats-new';
+import {Dynamic} from '@solidjs/web';
+import {
+  getWhatsNew,
+  type RELEASES,
+  type WhatsNew,
+} from '@codeimage/store/whats-new';
 import {releaseTitle} from './releaseDate';
 import {SparkleIcon} from './SparkleIcon';
 import {tabbableBeside} from './focus';
@@ -27,6 +31,12 @@ interface View {
   readonly leaving?: number;
 }
 
+function focusWhenConnected(element: HTMLButtonElement) {
+  queueMicrotask(() => {
+    if (element.isConnected) element.focus({preventScroll: true});
+  });
+}
+
 export function Nudge(props: {
   release: (typeof RELEASES)[number];
   dismiss: (keyboard: boolean) => void;
@@ -36,14 +46,14 @@ export function Nudge(props: {
   const news = getWhatsNew();
   const [t, {locale}] = useI18n<AppLocaleEntries>();
   const initialEntry = untrack(() => props.entry);
-  const fromHeader = () =>
-    props.entry === 'pointer' || props.entry === 'keyboard';
-  const [expanded, setExpanded] = createSignal(
-    initialEntry === 'pointer' || initialEntry === 'keyboard',
-  );
+  const fromHeader = initialEntry === 'pointer' || initialEntry === 'keyboard';
+  const initiallyMinimized = untrack(() => props.keyboardMinimize);
+  const [expanded, setExpanded] = createSignal(fromHeader);
   const [view, setView] = createSignal<View>({step: 0});
   const [closing, setClosing] = createSignal(false);
-  const [instant, setInstant] = createSignal(initialEntry === 'keyboard');
+  const [instant, setInstant] = createSignal(
+    initialEntry === 'keyboard' || initiallyMinimized,
+  );
   const step = createMemo(() => view().step);
   const highlight = () => props.release.highlights[step()];
   const located = (item: (typeof RELEASES)[number]['highlights'][number]) =>
@@ -55,33 +65,21 @@ export function Nudge(props: {
     const {step, leaving} = view();
     return leaving === undefined ? [step] : [leaving, step];
   };
-  const copyId = createUniqueId();
+  const copyId = createId();
   let card: HTMLElement | undefined;
-  let primary: HTMLButtonElement | undefined;
   let bar: HTMLDivElement | undefined;
   let barHeight = 0;
   let timer: number | undefined;
-  onMount(() => {
-    if (props.keyboardMinimize) {
-      setInstant(true);
-      card
-        ?.querySelector<HTMLButtonElement>('button')
-        ?.focus({preventScroll: true});
-    }
-  });
   // Focus inside the card would fall to the page when it leaves.
   const restoreFocus = () => {
     if (card?.contains(document.activeElement))
       tabbableBeside(card, 'before')?.focus({preventScroll: true});
   };
-  onMount(() => {
-    if (fromHeader()) primary?.focus({preventScroll: true});
-  });
   onCleanup(() => {
     clearTimeout(timer);
     restoreFocus();
   });
-  createEffect(() => {
+  createTrackedEffect(() => {
     if (expanded()) news.opened(highlight().id, 'nudge');
   });
 
@@ -124,8 +122,8 @@ export function Nudge(props: {
     <aside
       id="whats-new-nudge"
       ref={card}
-      tabIndex={-1}
-      on:keydown={event => {
+      tabindex={-1}
+      onKeyDown={event => {
         if (event.key !== 'Escape' || !expanded()) return;
         event.preventDefault();
         event.stopPropagation();
@@ -154,14 +152,15 @@ export function Nudge(props: {
               </span>
             </div>
             <Button
+              ref={(element: HTMLButtonElement) => {
+                if (initiallyMinimized) focusWhenConnected(element);
+              }}
               size="sm"
               theme="primary"
-              onClick={event => {
+              onClick={(event: MouseEvent) => {
                 barHeight = bar?.offsetHeight ?? 0;
                 setInstant(fromKeyboard(event));
                 setExpanded(true);
-                // The button that had focus is gone, so keep the keyboard here.
-                primary?.focus();
               }}
             >
               {t('whatsNew.see')}
@@ -171,7 +170,7 @@ export function Nudge(props: {
               theme="secondary"
               variant="ghost"
               aria-label={t('whatsNew.dismiss')}
-              onClick={event => close(fromKeyboard(event))}
+              onClick={(event: MouseEvent) => close(fromKeyboard(event))}
             >
               <icons.CloseIcon />
             </IconButton>
@@ -246,9 +245,7 @@ export function Nudge(props: {
               </For>
             </div>
             <Button
-              ref={element => {
-                primary = element;
-              }}
+              ref={focusWhenConnected}
               size="sm"
               theme="primary"
               aria-describedby={copyId}
@@ -264,7 +261,7 @@ export function Nudge(props: {
             theme="secondary"
             variant="ghost"
             aria-label={t('whatsNew.dismiss')}
-            onClick={event => close(fromKeyboard(event))}
+            onClick={(event: MouseEvent) => close(fromKeyboard(event))}
           >
             <icons.CloseIcon />
           </IconButton>

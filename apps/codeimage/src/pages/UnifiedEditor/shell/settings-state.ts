@@ -39,7 +39,9 @@ export const settings = {
       // As on opening, the section on screen takes the focus, here from a
       // control of the section it replaced.
       document
-        .querySelector<HTMLElement>(`[data-settings-section="${section()}"]`)
+        .querySelector<HTMLElement>(
+          `[data-settings-section="${found?.id ?? section()}"]`,
+        )
         ?.focus();
       return;
     }
@@ -52,6 +54,7 @@ export const settings = {
   close: () => {
     if (!isOpen()) return;
     setOpen(false);
+    setQuery('');
     const target = opener?.isConnected ? opener : entryButton();
     queueMicrotask(() => target?.focus());
   },

@@ -1,7 +1,7 @@
 import {Card, Chip, type Context} from './FilmstripItems';
 import {useI18n} from '@codeimage/locale';
 import {getEditorStore} from '@codeimage/store/editor';
-import {createSignal, For, onCleanup, onMount, Show, untrack} from 'solid-js';
+import {createSignal, For, onSettled, Show, untrack} from 'solid-js';
 import type {AppLocaleEntries} from '../../../i18n';
 import {registerRoot, timelineActions} from './actions';
 import {keyOf, type TimelineModel} from './model';
@@ -17,8 +17,7 @@ export function Filmstrip(props: {model: TimelineModel}) {
   let root: HTMLDivElement | undefined;
   let row: HTMLDivElement | undefined;
   let ring: HTMLSpanElement | undefined;
-  onMount(() => registerRoot(root));
-  onCleanup(() => registerRoot(undefined));
+  onSettled(() => registerRoot(root));
   const [dragging, setDragging] = createSignal<string | null>(null);
   const selectedKey = () => {
     const value = animation.selection();

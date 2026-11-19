@@ -1,5 +1,6 @@
 import {useI18n} from '@codeimage/locale';
-import {Button, icons, TextField} from '@codeui/kit';
+import {Button, TextField} from '@codeimage/ui';
+import {icons} from '@ui/kit-icons';
 import {createEffect, createSignal, untrack} from 'solid-js';
 import type {AppLocaleEntries} from '../../i18n';
 import * as styles from './AnimatePanel.css';
@@ -17,7 +18,12 @@ export function DurationInput(props: {
   const [pending, setPending] = createSignal(
     untrack(() => String(props.value)),
   );
-  createEffect(() => setPending(String(props.value)));
+  createEffect(
+    () => props.value,
+    value => {
+      setPending(String(value));
+    },
+  );
   const numericValue = () =>
     pending().trim() ? Number(pending()) : props.value;
   const save = (value: number) => {
@@ -50,14 +56,11 @@ export function DurationInput(props: {
     if (event.target instanceof Element && event.target.closest('button'))
       event.preventDefault();
   };
-  const configureInput = (input: HTMLInputElement) => {
-    input.inputMode = 'numeric';
-  };
   return (
     <div
       class={styles.field}
       onFocusOut={commit}
-      on:keydown={keyDown}
+      onKeyDown={keyDown}
       onPointerDown={pointerDown}
     >
       <label class={styles.durationLabel} for={`${props.id}-input`}>
@@ -65,9 +68,10 @@ export function DurationInput(props: {
       </label>
       <div class={styles.number} data-compact={props.compact ? '' : undefined}>
         <TextField
-          slotClasses={{input: styles.durationInput}}
-          ref={configureInput}
-          id={props.id}
+          class={styles.durationInput}
+          type="text"
+          inputmode="numeric"
+          id={`${props.id}-input`}
           size="xs"
           value={pending()}
           onChange={setPending}
@@ -78,8 +82,8 @@ export function DurationInput(props: {
             type="button"
             size="xs"
             theme="secondary"
-            variant="ghost"
-            tabIndex={-1}
+            variant="link"
+            tabindex={-1}
             aria-label={t(
               props.field === 'hold'
                 ? 'animation.increaseHold'
@@ -95,8 +99,8 @@ export function DurationInput(props: {
             type="button"
             size="xs"
             theme="secondary"
-            variant="ghost"
-            tabIndex={-1}
+            variant="link"
+            tabindex={-1}
             aria-label={t(
               props.field === 'hold'
                 ? 'animation.decreaseHold'

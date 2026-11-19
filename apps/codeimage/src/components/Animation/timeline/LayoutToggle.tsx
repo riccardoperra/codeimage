@@ -1,7 +1,6 @@
 import {button as canvasButton} from '../../../pages/UnifiedEditor/controls/canvas-toolbar.css';
 import type {AppLocaleEntries} from '../../../i18n';
 import {useI18n} from '@codeimage/locale';
-import {Tooltip} from '@codeui/kit';
 import {SegmentedField} from '@ui/SegmentedField/SegmentedField';
 import {setTimelineLayout, timelineLayout} from './layout';
 
@@ -54,19 +53,11 @@ export function LayoutToggle() {
         onChange={setTimelineLayout}
         items={[
           {
-            label: (
-              <Tooltip content={t('animation.timeline.cards')} placement="top">
-                <CardsIcon label={t('animation.timeline.cards')} />
-              </Tooltip>
-            ),
+            label: <CardsIcon label={t('animation.timeline.cards')} />,
             value: 'filmstrip',
           },
           {
-            label: (
-              <Tooltip content={t('animation.timeline.list')} placement="top">
-                <ListIcon label={t('animation.timeline.list')} />
-              </Tooltip>
-            ),
+            label: <ListIcon label={t('animation.timeline.list')} />,
             value: 'outline',
           },
         ]}

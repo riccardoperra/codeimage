@@ -4,7 +4,7 @@ import {
   withThemeMode,
   themeVars,
 } from '@codeimage/ui';
-import {globalStyle, style} from '@vanilla-extract/css';
+import {style} from '@vanilla-extract/css';
 export const host = style({
   display: 'flex',
   alignItems: 'center',
@@ -14,7 +14,7 @@ export const host = style({
   borderRadius: themeVars.borderRadius.xl,
   background: themeVars.dynamicColors.panel.background,
 });
-globalStyle(`${host} > button`, {
+export const button = style({
   minHeight: '36px',
   minWidth: '36px',
   padding: themeVars.spacing['2'],
@@ -41,6 +41,7 @@ export const content = style({
   padding: themeVars.spacing['4'],
   boxShadow: themeVars.dynamicColors.dialog.panelShadow,
 });
+export const anchoredContent = style([content, {transform: 'none'}]);
 export const header = style({
   display: 'flex',
   alignItems: 'center',
@@ -111,7 +112,4 @@ export const canvasEntry = style({
   zIndex: 2,
   borderRadius: themeVars.borderRadius.lg,
 });
-globalStyle(`${canvasEntry} > button`, {
-  gap: '8px',
-  padding: '6px 10px',
-});
+export const canvasButton = style([button, {gap: '8px', padding: '6px 10px'}]);

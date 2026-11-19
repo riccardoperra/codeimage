@@ -1,32 +1,97 @@
 import type {LocaleKeys} from './path';
-import {useI18n as _useI18n} from '@solid-primitives/i18n';
-import {batch} from 'solid-js';
+import {createContext, createSignal, useContext} from 'solid-js';
 
-type I18nReturnType = ReturnType<typeof _useI18n>;
-type EnchantedI18n<T> = readonly [
-  tStrict: (
-    message: LocaleKeys<T>,
-    values?: Parameters<I18nReturnType[0]>[1],
-  ) => string,
-  i18n: I18nReturnType[1] & {
-    tUnsafe: I18nReturnType[0];
-    merge: (dict: Record<string, unknown>) => void;
-  },
-];
+type Dictionary = Record<string, unknown>;
+type Dictionaries = Record<string, Dictionary>;
+interface LocaleControl {
+  read: () => string;
+  write: (language: string) => void;
+}
 
-export const useI18n = <T>(): EnchantedI18n<T> => {
-  const [t, i18n] = _useI18n();
+function isDictionary(value: unknown): value is Dictionary {
+  return typeof value === 'object' && value !== null;
+}
+
+function readPath(dictionary: unknown, path: string) {
+  return path
+    .trim()
+    .split('.')
+    .reduce<unknown>(
+      (value, key) =>
+        isDictionary(value) && Object.hasOwn(value, key)
+          ? value[key]
+          : undefined,
+      dictionary,
+    );
+}
+
+function initialLocale(dictionaries: Dictionaries) {
+  if (
+    typeof navigator !== 'undefined' &&
+    Object.hasOwn(dictionaries, navigator.language)
+  )
+    return navigator.language;
+  return Object.keys(dictionaries)[0] ?? '';
+}
+
+export function createI18nContext(
+  initial: Dictionaries = {},
+  source: string | LocaleControl = initialLocale(initial),
+) {
+  const [readLocale, writeLocale] =
+    typeof source === 'string'
+      ? createSignal(source)
+      : ([source.read, source.write] as const);
+  const [dictionaries, setDictionaries] = createSignal(initial);
+
+  function translate(key: string, values?: Dictionary, fallback = ''): string {
+    const value = readPath(dictionaries()[readLocale()], key);
+    if (typeof value === 'function') {
+      const message: unknown = value(values);
+      return typeof message === 'string' ? message : fallback;
+    }
+    const message = typeof value === 'string' ? value : fallback;
+    return message.replace(/{{([^{}]+)}}/g, (_, path: string) =>
+      String(readPath(values, path) ?? ''),
+    );
+  }
+
+  function locale(language?: string) {
+    if (!language) return readLocale();
+    writeLocale(language);
+    return language;
+  }
+
+  function merge(updates: Dictionary) {
+    setDictionaries(previous => {
+      const next = {...previous};
+      for (const [language, dictionary] of Object.entries(updates)) {
+        if (isDictionary(dictionary))
+          next[language] = {...next[language], ...dictionary};
+      }
+      return next;
+    });
+  }
 
   return [
-    t,
-    Object.assign(i18n, {
-      tUnsafe: t,
-      merge: (dict: Record<string, unknown>) =>
-        batch(() =>
-          Object.entries(dict).forEach(([k, dict]) =>
-            i18n.add(k, dict as Record<string, unknown>),
-          ),
-        ),
-    }),
-  ];
-};
+    translate,
+    {
+      tUnsafe: translate,
+      merge,
+      add: (language: string, dictionary: Dictionary) =>
+        merge({[language]: dictionary}),
+      dict: (language: string) => dictionaries()[language],
+      locale,
+    },
+  ] as const;
+}
+
+type I18nReturnType = ReturnType<typeof createI18nContext>;
+export const I18nContext = createContext<I18nReturnType>();
+
+export function useI18n<T>(): readonly [
+  (message: LocaleKeys<T>, values?: Dictionary) => string,
+  I18nReturnType[1],
+] {
+  return useContext(I18nContext);
+}

@@ -6,8 +6,7 @@ import type {
 import type {ReferenceElement} from '@floating-ui/dom';
 import {autoUpdate, computePosition} from '@floating-ui/dom';
 import type {Accessor} from 'solid-js';
-import {createEffect, createSignal, mergeProps, on, onCleanup} from 'solid-js';
-import {createStore} from 'solid-js/store';
+import {createEffect, createSignal} from 'solid-js';
 
 interface UseFloatingProps {
   placement: Placement;
@@ -43,7 +42,7 @@ export function useFloating({
   const [reference, setReference] = createSignal<ReferenceElement | null>(null);
   const [floating, setFloating] = createSignal<HTMLElement | null>(null);
 
-  const [data, setData] = createStore<UseFloatingProps>({
+  const [data, setData] = createSignal<UseFloatingProps>({
     x: null,
     y: null,
     strategy: strategy ?? 'absolute',
@@ -51,36 +50,52 @@ export function useFloating({
     middlewareData: {},
   });
 
-  function update() {
-    const referenceEl = reference();
-    const floatingEl = floating();
-    if (!referenceEl || !floatingEl) {
-      return;
-    }
-
+  function updatePosition(
+    referenceEl: ReferenceElement,
+    floatingEl: HTMLElement,
+  ) {
     computePosition(referenceEl, floatingEl, {
       middleware: middleware,
       placement,
       strategy,
-    }).then(data => setData(data));
+    }).then(setData);
+  }
+
+  function update() {
+    const referenceEl = reference();
+    const floatingEl = floating();
+    if (referenceEl && floatingEl) updatePosition(referenceEl, floatingEl);
   }
 
   createEffect(
-    on([reference, floating], ([reference, floating]) => {
-      if (reference && floating) {
-        if (runAutoUpdate) {
-          const cleanup = autoUpdate(reference, floating, update);
-          if (cleanup) {
-            onCleanup(cleanup);
-          }
-        } else {
-          update();
-        }
+    () => [reference(), floating()] as const,
+    ([referenceEl, floatingEl]) => {
+      if (!referenceEl || !floatingEl) return;
+      if (runAutoUpdate) {
+        return autoUpdate(referenceEl, floatingEl, () =>
+          updatePosition(referenceEl, floatingEl),
+        );
       }
-    }),
+      updatePosition(referenceEl, floatingEl);
+    },
   );
 
-  const result = mergeProps(data, {
+  return {
+    get placement() {
+      return data().placement;
+    },
+    get x() {
+      return data().x;
+    },
+    get y() {
+      return data().y;
+    },
+    get strategy() {
+      return data().strategy;
+    },
+    get middlewareData() {
+      return data().middlewareData;
+    },
     update,
     setReference,
     setFloating,
@@ -88,7 +103,5 @@ export function useFloating({
       reference,
       floating,
     },
-  });
-
-  return result as UseFloatingReturn;
+  };
 }

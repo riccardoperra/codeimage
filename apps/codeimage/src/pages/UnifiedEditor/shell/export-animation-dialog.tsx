@@ -2,18 +2,17 @@ import {useI18n} from '@codeimage/locale';
 import {getEditorStore} from '@codeimage/store/editor';
 import {getFrameState} from '@codeimage/store/editor/frame';
 import {useFrameCodeStyle} from '../../../components/Frame/PreviewFrame';
+import {Button, Select, TextField} from '@ui/legacy-controls';
+import {DialogPanelContent, DialogPanelFooter} from '@ui/Dialog';
+import {Dialog} from '@ui/Dialog/parts';
+import {RadioGroup} from '@ui/RadioGroup/RadioGroup';
 import {
-  Button,
-  DialogPanelContent,
-  DialogPanelFooter,
-  Select,
-  RadioList,
-  TextField,
-} from '@codeui/kit';
-import {Dialog} from '@kobalte/core/dialog';
-import {Progress} from '@kobalte/core/progress';
-import {RadioGroup} from '@kobalte/core/radio-group';
-import {type Accessor, batch, createEffect, createSignal, Show} from 'solid-js';
+  type Accessor,
+  flush,
+  createSignal,
+  Show,
+  createTrackedEffect,
+} from 'solid-js';
 import download from 'downloadjs';
 import {useExportAnimation} from '../../../hooks/use-export-animation';
 import {
@@ -30,30 +29,10 @@ import {
   type AnimationFormat,
 } from '../../../core/video/formats';
 import type {AppLocaleEntries} from '../../../i18n';
+import {FormatItem} from './export-animation-format-item';
 import {animationSnapshot} from './export-animation';
 import {animationMatte} from '../../../components/Animation/AnimationCanvas';
 import * as styles from './export.css';
-
-// Kit 0.1.5's RadioListItem drops its disabled prop. Keep the kit group and
-// use its underlying Kobalte parts so unavailable formats are disabled.
-function FormatItem(props: {format: AnimationFormat; disabled?: boolean}) {
-  return (
-    <RadioGroup.Item
-      value={props.format}
-      disabled={props.disabled}
-      class={styles.videoFormatItem}
-    >
-      <RadioGroup.ItemInput />
-      <RadioGroup.ItemControl class={styles.videoFormatRadio}>
-        <RadioGroup.ItemIndicator class={styles.videoFormatIndicator} />
-      </RadioGroup.ItemControl>
-      <RadioGroup.ItemLabel>
-        {ANIMATION_FORMATS[props.format].label}
-      </RadioGroup.ItemLabel>
-    </RadioGroup.Item>
-  );
-}
-
 export function createAnimationExporter() {
   const {animation} = getEditorStore();
   const job = useExportAnimation();
@@ -107,7 +86,7 @@ export function createAnimationExporter() {
       return value.config;
     });
   };
-  createEffect(() => {
+  createTrackedEffect(() => {
     const value = job.state();
     if (value.kind === 'done')
       download(
@@ -146,23 +125,22 @@ export function createAnimationExporter() {
   const changeFormat = (value: string) => {
     if (value !== 'mp4' && value !== 'gif') return;
     const rate = selectedFps[value] ?? nearestAnimationFps(value, fps());
-    batch(() => {
+    flush(() => {
       setFormat(value);
       setFps(rate);
     });
     void refresh();
   };
   const changeSize = (value: 'current' | '1080p' | null) => {
-    if (!value) return;
+    if (!value || value === size()) return;
     setSize(value);
     void refresh();
   };
   const changeScale = (value: 1 | 2 | 3 | null) => {
-    if (!value) return;
+    if (!value || value === scale()) return;
     setScale(value);
     void refresh();
   };
-  const changeMatte = (value: string) => setMatte(value);
   const start = () => {
     if (needsMatte() && !validMatte()) return;
     // Read again after the secrets review, including any redaction it made.
@@ -194,7 +172,7 @@ export function createAnimationExporter() {
     scale,
     changeScale,
     matte: solidBackground,
-    changeMatte,
+    changeMatte: setMatte,
     needsMatte,
     validMatte,
     scalable: () => size() === 'current' && !frame.exportTarget(),
@@ -327,16 +305,19 @@ export function AnimationExportContent(props: {
         <div class={styles.videoFields}>
           <div class={styles.videoRow}>
             <span>{t('animation.export.format')}</span>
-            <RadioList
-              size="sm"
+            <RadioGroup
+              class={styles.videoFormats}
               value={exporter().format()}
-              onChange={exporter().changeFormat}
+              onChange={value => {
+                if (value === 'mp4' || value === 'gif')
+                  exporter().changeFormat(value);
+              }}
               aria-label={t('animation.export.format')}
               disabled={exporter().busy()}
             >
               <FormatItem format="mp4" disabled={!!unsupported()} />
               <FormatItem format="gif" />
-            </RadioList>
+            </RadioGroup>
           </div>
           <div class={styles.videoRow}>
             <span>{t('animation.export.fps')}</span>
@@ -452,15 +433,22 @@ export function AnimationExportContent(props: {
             when={state().kind === 'preparing' || state().kind === 'encoding'}
           >
             <div role="status" class={styles.videoFields}>
-              <Progress
+              <div
+                role="progressbar"
                 aria-label={t('animation.export.progress')}
-                maxValue={progress().total}
-                value={progress().done}
+                aria-valuemin={0}
+                aria-valuemax={progress().total}
+                aria-valuenow={progress().done}
               >
-                <Progress.Track class={styles.videoProgress}>
-                  <Progress.Fill class={styles.videoProgressFill} />
-                </Progress.Track>
-              </Progress>
+                <div class={styles.videoProgress}>
+                  <div
+                    class={styles.videoProgressFill}
+                    style={{
+                      width: `${(progress().done / Math.max(1, progress().total)) * 100}%`,
+                    }}
+                  />
+                </div>
+              </div>
               <span class={styles.hint}>
                 {t('animation.export.frames', {
                   done: number(progress().done),

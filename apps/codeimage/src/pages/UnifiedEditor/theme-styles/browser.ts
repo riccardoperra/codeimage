@@ -1,6 +1,7 @@
 import type {AppLocaleEntries} from '../../../i18n';
 import {useI18n} from '@codeimage/locale';
-import type {Accessor, JSX} from 'solid-js';
+import type {Accessor} from 'solid-js';
+import type {JSX} from '@solidjs/web';
 import {createMemo, createSignal} from 'solid-js';
 import type {EditorControlsModel, ThemeEntry} from '../model';
 
@@ -174,7 +175,7 @@ export function createThemeBrowser(
       },
       // A native listener: Solid delegates onKeyDown to the document, where
       // stopPropagation would no longer keep the picker from seeing arrows.
-      'on:keydown': (event: KeyboardEvent) => {
+      onKeyDown: (event: KeyboardEvent) => {
         const from = focusedOption();
         if (!list || !from) return;
         if (event.key === 'Escape') {
@@ -201,9 +202,9 @@ export function createThemeBrowser(
       role: 'option',
       'data-theme-option': theme.id,
       get 'aria-selected'() {
-        return theme.id === selectedId();
+        return theme.id === selectedId() ? 'true' : 'false';
       },
-      get tabIndex() {
+      get tabindex() {
         return theme.id === tabStopId() ? 0 : -1;
       },
       onMouseEnter: () => show(theme),

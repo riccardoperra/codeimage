@@ -2,7 +2,22 @@ import assert from 'node:assert/strict';
 import {resolve} from 'node:path';
 import {writeFile} from 'node:fs/promises';
 import {isDeepStrictEqual} from 'node:util';
-export {auditPresets} from './preset-reopen.mjs';
+import {auditCodeMirrorPreview} from './codemirror-preview.mjs';
+import {auditPresets} from './preset-reopen.mjs';
+
+export async function auditPresetCases({feature, fresh, ...context}) {
+  await feature('presets', () => auditPresets(context));
+  const name = 'codemirror-preview';
+  await feature(name, () =>
+    fresh(
+      {name, layout: 'inspector', viewport: {width: 1440, height: 900}},
+      async ({page, doctor, section, editor}) => {
+        await doctor('/', 'editor', 'inspector');
+        return auditCodeMirrorPreview(page, section, editor);
+      },
+    ),
+  );
+}
 
 async function stored(page, key) {
   return page.evaluate(
@@ -30,10 +45,10 @@ async function stored(page, key) {
   );
 }
 
-async function waitForDocument(page, expected) {
+async function waitForDocument(page, expected, key) {
   let actual;
   for (let attempt = 0; attempt < 50; attempt++) {
-    actual = await stored(page, 'document');
+    actual = await stored(page, key);
     if (
       isDeepStrictEqual(actual?.editor.options, expected.editor) &&
       actual?.frame.padding === expected.frame.padding &&
@@ -76,11 +91,12 @@ async function chooseTheme(page, section, name) {
 
 async function choosePadding(page, section, value) {
   await section('frame');
-  await page
+  const control = page
     .locator('[data-control="frame.padding"]')
-    .getByRole('button')
-    .click();
+    .getByRole('button');
+  await control.click();
   await page.getByRole('option', {name: String(value), exact: true}).click();
+  assert.equal((await control.innerText()).trim(), String(value));
 }
 
 const watermark = page =>
@@ -119,6 +135,7 @@ async function createPreset({page, section}) {
     if (!preset) await page.waitForTimeout(100);
   }
   assert.ok(preset, 'preset saved');
+  assert.equal(preset.data.frame.padding, 128, 'preset saved selected padding');
   return preset;
 }
 
@@ -132,6 +149,7 @@ async function checkApplied({
   projectId,
 }) {
   const code = 'const presetKeepsCode = true;';
+  const key = projectId ? 'project-document' : 'document';
   await editor().fill(code);
   const changedThemeId = await chooseTheme(page, section, 'Night Owl');
   await choosePadding(page, section, 32);
@@ -144,7 +162,7 @@ async function checkApplied({
     frame: {...preset.data.frame, padding: 32},
     terminal: {...preset.data.terminal, showWatermark: true},
   };
-  await waitForDocument(page, changed);
+  await waitForDocument(page, changed, key);
   await section('presets');
   await page.screenshot({path: resolve(out, `${name}-before-apply.png`)});
   const pending = projectId
@@ -157,7 +175,7 @@ async function checkApplied({
       )
     : null;
   await page.locator('li').filter({hasText: 'Persistence preset'}).click();
-  const saved = await waitForDocument(page, preset.data);
+  const saved = await waitForDocument(page, preset.data, key);
   assert.deepEqual(saved.frame, preset.data.frame);
   assert.deepEqual(saved.terminal, preset.data.terminal);
   const appliedAppearance = await appearance(page);
@@ -209,7 +227,7 @@ async function checkApplied({
     JSON.stringify(
       {
         expected: preset.data,
-        document: await stored(page, 'document'),
+        document: await stored(page, key),
         appliedAppearance,
         reloadedAppearance,
       },
@@ -222,7 +240,7 @@ async function checkApplied({
     appliedAppearance,
     'terminal renders the same colours after reload',
   );
-  const reloaded = await waitForDocument(page, preset.data);
+  const reloaded = await waitForDocument(page, preset.data, key);
   assert.deepEqual(reloaded.frame, preset.data.frame);
   assert.deepEqual(reloaded.terminal, preset.data.terminal);
   await page.screenshot({path: resolve(out, `${name}-after-reload.png`)});

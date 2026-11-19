@@ -1,4 +1,4 @@
-import type {JSX} from 'solid-js';
+import type {JSX} from '@solidjs/web';
 
 function Icon(props: {children: JSX.Element; size?: number}) {
   return (

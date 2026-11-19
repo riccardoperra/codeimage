@@ -1,12 +1,16 @@
-import type {JSX, JSXElement, PropsWithChildren} from 'solid-js';
-import {createSignal, mergeProps, onMount, Show} from 'solid-js';
+import type {JSX} from '@solidjs/web';
+import type {
+  Element as JSXElement,
+  ParentProps as PropsWithChildren,
+} from 'solid-js';
+import {createSignal, merge, onSettled, Show} from 'solid-js';
 import * as styles from './PortalHost.css';
-import {Portal} from 'solid-js/web';
+import {Portal} from '@solidjs/web';
 
 export function PortalHost(
   props: Omit<JSX.IntrinsicElements['div'], 'class' | 'style'>,
 ): JSXElement {
-  const mergedProps = mergeProps({id: 'portal-host'}, props);
+  const mergedProps = merge({id: 'portal-host'}, props);
 
   return <div class={styles.host} {...mergedProps} />;
 }
@@ -14,7 +18,7 @@ export function PortalHost(
 export function PortalHostContext(props: PropsWithChildren) {
   const [ref, setRef] = createSignal<HTMLElement | null>();
 
-  onMount(() => {
+  onSettled(() => {
     const el = document.querySelector('#portal-host') as HTMLElement | null;
     setRef(() => el);
   });

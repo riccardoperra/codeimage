@@ -1,16 +1,17 @@
 import {useI18n} from '@codeimage/locale';
 import {signatureEditor} from '@codeimage/store/frame/signatureEditor';
-import {Button, IconButton} from '@codeui/kit';
+import {Button, IconButton} from '@ui/legacy-controls';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 import {
   createMemo,
   createSignal,
   For,
   onCleanup,
-  onMount,
+  onSettled,
+  untrack,
   Show,
 } from 'solid-js';
-import {Dynamic} from 'solid-js/web';
+import {Dynamic} from '@solidjs/web';
 import {SparklesIcon} from '../../../../components/Icons/SparklesIcon';
 import {ShareButton} from '../../../../components/Toolbar/ShareButton';
 import type {AppLocaleEntries} from '../../../../i18n';
@@ -26,7 +27,7 @@ import {ExperimentsIcon, SettingsIcon, GitHubIcon} from '../../shell/icons';
 import {editorLinks} from '../../shell/links';
 import {settings} from '../../shell/settings-state';
 import {claimHeaderActions} from '../../shell/header-actions';
-import {ownCompositeKeys} from './controls';
+import {handleRailPanelKey} from './controls';
 import {CloseIcon, CollapseIcon, SearchIcon} from './icons';
 import {PANELS} from './panels';
 import {PLACES} from './places';
@@ -62,7 +63,7 @@ function RailActions() {
         type="button"
         class={styles.railButton}
         aria-haspopup="dialog"
-        aria-expanded={settings.isOpen()}
+        aria-expanded={settings.isOpen() ? 'true' : 'false'}
         data-settings-trigger
         onClick={() => settings.open()}
       >
@@ -101,13 +102,13 @@ function RailActions() {
 /** The sidebar as a rail of areas, each opening its panel beside the canvas. */
 export function Rail(props: VariantProps) {
   const [t] = useI18n<AppLocaleEntries>();
-  const compactQuery = matchMedia(styles.COMPACT_QUERY);
-  const [isPhone, setIsPhone] = createSignal(compactQuery.matches);
+  const isPhone = () => props.stage.compact();
+  const initiallyPhone = untrack(isPhone);
   const [openId, setOpenId] = createSignal<PanelId | null>(
-    compactQuery.matches ? null : 'themes',
+    initiallyPhone ? null : 'themes',
   );
   const [mounted, setMounted] = createSignal<ReadonlySet<PanelId>>(
-    new Set<PanelId>(compactQuery.matches ? [] : ['themes']),
+    new Set<PanelId>(initiallyPhone ? [] : ['themes']),
   );
   const [stop, setStop] = createSignal<Stop>('short');
   const [available, setAvailable] = createSignal(0);
@@ -138,8 +139,13 @@ export function Rail(props: VariantProps) {
       ? sheetHeights()[stop()]
       : 0;
 
-  const stopAnimations = () =>
-    panelEl.getAnimations().forEach(animation => animation.cancel());
+  const stopAnimations = () => {
+    for (const animation of panelEl?.getAnimations() ?? []) {
+      animation.onfinish = null;
+      animation.cancel();
+    }
+  };
+  onCleanup(stopAnimations);
 
   const slide = (from: string, to: string, duration: number) => {
     stopAnimations();
@@ -156,8 +162,9 @@ export function Rail(props: VariantProps) {
     );
     setStop(panel.sheet ?? 'short');
     setOpenId(panel.id);
-    if (!isPhone() || wasOpen) return;
+    if (!isPhone()) return;
     stopAnimations();
+    if (wasOpen) return;
     if (reducedMotion()) {
       panelEl.animate([{opacity: 0}, {opacity: 1}], {duration: 200});
     } else {
@@ -166,22 +173,27 @@ export function Rail(props: VariantProps) {
   };
 
   const finishClose = (id: PanelId, returnFocus: boolean) => {
+    if (openId() !== id) return;
     stopAnimations();
     setOpenId(null);
     if (returnFocus) openers.get(id)?.focus();
   };
 
-  const close = (returnFocus = false) => {
+  const close = (returnFocus = false, offset = 0) => {
     const id = openId();
     if (!id) return;
     if (!isPhone()) return finishClose(id, returnFocus);
+    stopAnimations();
     const exit = reducedMotion()
       ? panelEl.animate([{opacity: 1}, {opacity: 0}], {
           duration: 150,
           fill: 'forwards',
         })
       : panelEl.animate(
-          [{transform: 'translateY(0)'}, {transform: 'translateY(110%)'}],
+          [
+            {transform: `translateY(${offset}px)`},
+            {transform: 'translateY(110%)'},
+          ],
           {duration: 200, easing: DRAWER, fill: 'forwards'},
         );
     exit.onfinish = () => finishClose(id, returnFocus);
@@ -194,9 +206,7 @@ export function Rail(props: VariantProps) {
     setStop('tall');
     if (place.group === 'signature') controlOverlay.open('signature');
   }
-  onMount(() => {
-    onCleanup(props.model.controls.register(revealControl));
-  });
+  onCleanup(untrack(() => props.model.controls.register(revealControl)));
   // Canvas clicks and the Frame row share the same signature editor.
   onCleanup(signatureEditor.register(() => controlOverlay.open('signature')));
 
@@ -273,33 +283,11 @@ export function Rail(props: VariantProps) {
         : best,
     );
 
-    if (nearest.target === 'closed') {
-      const id = openId();
-      if (!id || reducedMotion()) return close();
-      const exit = panelEl.animate(
-        [
-          {transform: `translateY(${offset}px)`},
-          {transform: 'translateY(110%)'},
-        ],
-        {duration: 200, easing: DRAWER, fill: 'forwards'},
-      );
-      exit.onfinish = () => finishClose(id, false);
-      return;
-    }
+    if (nearest.target === 'closed') return close(false, offset);
     settle(nearest.target, offset);
   };
 
-  const onPanelKeyDown = (e: KeyboardEvent) => {
-    ownCompositeKeys(e);
-    if (e.key !== 'Escape' || e.defaultPrevented || e.cancelBubble) return;
-    e.stopPropagation();
-    close(true);
-  };
-
-  onMount(() => {
-    const onQuery = (e: MediaQueryListEvent) => setIsPhone(e.matches);
-    compactQuery.addEventListener('change', onQuery);
-
+  onSettled(() => {
     const measure = () => {
       if (!railEl?.isConnected) return;
       setAvailable(
@@ -312,10 +300,7 @@ export function Rail(props: VariantProps) {
     observer.observe(bodyEl);
     measure();
 
-    onCleanup(() => {
-      compactQuery.removeEventListener('change', onQuery);
-      observer.disconnect();
-    });
+    return () => observer.disconnect();
   });
 
   return (
@@ -344,7 +329,7 @@ export function Rail(props: VariantProps) {
                     type="button"
                     class={styles.railButton}
                     aria-controls={PANEL_ID}
-                    aria-expanded={openId() === panel.id}
+                    aria-expanded={openId() === panel.id ? 'true' : 'false'}
                     onClick={() => toggle(panel)}
                   >
                     <span class={styles.railIcon}>
@@ -394,7 +379,7 @@ export function Rail(props: VariantProps) {
             class={styles.panel}
             data-wide={openPanel()?.wide ? '' : undefined}
             hidden={!openPanel()}
-            onKeyDown={onPanelKeyDown}
+            onKeyDown={event => handleRailPanelKey(event, panelEl, close)}
           >
             <div
               class={styles.panelGrabArea}

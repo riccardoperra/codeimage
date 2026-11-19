@@ -1,4 +1,4 @@
-import {onCleanup, onMount} from 'solid-js';
+import {onSettled} from 'solid-js';
 
 // The pickers' popovers and the kit selects' lists.
 const OPEN_TRIGGER = [
@@ -137,7 +137,7 @@ export function createOverlayPlacement(
     if (triggers.length && !frame) frame = requestAnimationFrame(tick);
   };
 
-  onMount(() => {
+  onSettled(() => {
     // The production pickers open from a div with role button, which takes
     // focus but, unlike a button, does not click on Enter or Space.
     const reachTriggers = () => {
@@ -150,7 +150,6 @@ export function createOverlayPlacement(
     const root = panel();
     if (root) triggers.observe(root, {childList: true, subtree: true});
     reachTriggers();
-    onCleanup(() => triggers.disconnect());
     const schedule = () => {
       if (!frame) frame = requestAnimationFrame(tick);
     };
@@ -167,10 +166,11 @@ export function createOverlayPlacement(
       });
     // Kobalte portals its popovers to the end of the body.
     observer.observe(document.body, {childList: true});
-    onCleanup(() => {
+    return () => {
+      triggers.disconnect();
       observer.disconnect();
       moved.disconnect();
       cancelAnimationFrame(frame);
-    });
+    };
   });
 }

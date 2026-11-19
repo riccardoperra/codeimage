@@ -1,7 +1,7 @@
 import {AnimationStage} from './AnimationStage';
 import {AnimateModeBadge} from './AnimateModeBadge';
 import {projectStep} from '@core/animation/project';
-import {Portal} from 'solid-js/web';
+import {Portal} from '@solidjs/web';
 import {useI18n} from '@codeimage/locale';
 import {getExportCanvasStore} from '@codeimage/store/canvas';
 import {getEditorStore} from '@codeimage/store/editor';
@@ -9,14 +9,7 @@ import {getFrameState} from '@codeimage/store/editor/frame';
 import {getTerminalState} from '@codeimage/store/editor/terminal';
 import {toast} from '@codeimage/ui';
 import type {ParentProps} from 'solid-js';
-import {
-  createEffect,
-  createMemo,
-  createSignal,
-  getOwner,
-  on,
-  Show,
-} from 'solid-js';
+import {createEffect, createMemo, createSignal, getOwner, Show} from 'solid-js';
 import type {AppLocaleEntries} from '../../i18n';
 import {useFrameCodeStyle} from '../Frame/PreviewFrame';
 import * as styles from './AnimationPreview.css';
@@ -108,21 +101,22 @@ export function AnimationPreview(
   const ready = () => previewing() && planned() !== undefined;
   const [focusPreview, setFocusPreview] = createSignal(false);
   createEffect(
-    on(() => animation.playback().state === 'playing', setFocusPreview),
+    () => animation.playback().state === 'playing',
+    playing => {
+      setFocusPreview(playing);
+    },
   );
   const focused = () => setFocusPreview(false);
 
   createEffect(
-    on(
-      () => measurement.state === 'errored',
-      errored => {
-        if (!errored) return;
-        console.error(measurement.error);
-        toast.error(t('animation.previewFailed'));
-        animation.actions.edit();
-        setFailures(count => count + 1);
-      },
-    ),
+    () => measurement.state === 'errored',
+    errored => {
+      if (!errored) return;
+      console.error(measurement.error);
+      toast.error(t('animation.previewFailed'));
+      animation.actions.edit();
+      setFailures(count => count + 1);
+    },
   );
 
   // The editor frame keeps its layout under the stage. Its size is measured

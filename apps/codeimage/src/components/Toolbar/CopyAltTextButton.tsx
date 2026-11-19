@@ -1,7 +1,7 @@
 import {useI18n} from '@codeimage/locale';
 import {getActiveEditorStore} from '@codeimage/store/editor/activeEditor';
 import {toast} from '@codeimage/ui';
-import {Button, Tooltip} from '@codeui/kit';
+import {Button, Tooltip} from '@ui/legacy-controls';
 import {altText} from '@core/altText';
 import type {AppLocaleEntries} from '../../i18n';
 import {getWhatsNew} from '../../state/whats-new';

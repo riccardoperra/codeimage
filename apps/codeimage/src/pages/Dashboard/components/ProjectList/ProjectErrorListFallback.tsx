@@ -1,6 +1,6 @@
 import {useI18n} from '@codeimage/locale';
 import {Box, Text} from '@codeimage/ui';
-import {Button} from '@codeui/kit';
+import {Button} from '@ui/legacy-controls';
 import type {VoidProps} from 'solid-js';
 import {ExclamationAltIcon} from '../../../../components/Icons/Exclamation';
 import type {AppLocaleEntries} from '../../../../i18n';

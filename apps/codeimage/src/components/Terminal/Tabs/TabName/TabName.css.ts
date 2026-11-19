@@ -1,5 +1,4 @@
 import {themeVars} from '@codeimage/ui';
-import {componentStateStyles} from '@kobalte/vanilla-extract';
 import {keyframes, style} from '@vanilla-extract/css';
 
 const contentShow = keyframes({
@@ -13,95 +12,49 @@ const contentShow = keyframes({
   },
 });
 
-const contentHide = keyframes({
-  from: {
-    opacity: 1,
-    transform: 'translateY(0px)',
-  },
-  to: {
-    opacity: 0,
-    transform: 'translateY(-0)',
-  },
-});
-
-export const tabHint = style([
-  {
-    position: 'absolute',
-    backgroundColor: themeVars.dynamicColors.dialog.panelBackgroundColor,
-    boxShadow: themeVars.dynamicColors.dialog.panelShadow,
-    borderRadius: themeVars.borderRadius.lg,
-    zIndex: themeVars.zIndex['50'],
-    maxHeight: '250px',
-    overflowY: 'auto',
-    left: 0,
-    transition: 'all 200ms ease-in-out',
-    transformOrigin: 'var(--kb-combobox-content-transform-origin)',
-    animation: `${contentHide} 150ms ease-in forwards`,
-  },
-  componentStateStyles({
-    expanded: {
-      animation: `${contentShow} 150ms ease-out`,
-    },
-  }),
-]);
-
-export const listbox = style({
-  display: 'flex',
-  flexDirection: 'column',
+export const tabHint = style({
+  position: 'fixed',
+  visibility: 'hidden',
+  minWidth: '72px',
   maxHeight: '250px',
   overflowY: 'auto',
-  overflowX: 'hidden',
-});
-
-export const tabHintDropdownItemContent = style([
-  {
-    height: '34px',
-    flex: '1 0 34px',
-    fontWeight: themeVars.fontWeight.normal,
-    fontSize: themeVars.fontSize.sm,
-    display: 'flex',
-    alignItems: 'center',
-    padding: `0 ${themeVars.spacing['3']}`,
-    borderBottom: `1px solid ${themeVars.dynamicColors.divider}`,
-    color: themeVars.dynamicColors.listBox.textColor,
-    whiteSpace: 'nowrap',
-    cursor: 'pointer',
-    vars: {
-      ['--highlight-color']: 'rgb(112, 182, 246, 0.25)',
-    },
-    ':hover': {
-      backgroundColor: themeVars.dynamicColors.listBox.hoverBackgroundColor,
-      color: themeVars.dynamicColors.listBox.textColor,
-    },
-    selectors: {
-      ['[active] &']: {
-        backgroundColor: themeVars.dynamicColors.listBox.activeBackgroundColor,
-        color: themeVars.dynamicColors.listBox.activeTextColor,
-      },
-      ['[aria-selected=true] &']: {
-        backgroundColor: themeVars.dynamicColors.listBox.activeBackgroundColor,
-        color: themeVars.dynamicColors.listBox.activeTextColor,
-      },
+  backgroundColor: themeVars.dynamicColors.dialog.panelBackgroundColor,
+  boxShadow: themeVars.dynamicColors.dialog.panelShadow,
+  borderRadius: themeVars.borderRadius.lg,
+  zIndex: themeVars.zIndex['50'],
+  '@media': {
+    '(prefers-reduced-motion: no-preference)': {
+      animation: `${contentShow} 150ms ease-out`,
     },
   },
-  componentStateStyles({
-    highlighted: {
+});
+
+export const tabHintDropdownItemContent = style({
+  height: '34px',
+  fontWeight: themeVars.fontWeight.normal,
+  fontSize: themeVars.fontSize.sm,
+  display: 'flex',
+  alignItems: 'center',
+  padding: `0 ${themeVars.spacing['3']}`,
+  borderBottom: `1px solid ${themeVars.dynamicColors.divider}`,
+  color: themeVars.dynamicColors.listBox.textColor,
+  whiteSpace: 'nowrap',
+  cursor: 'pointer',
+  ':hover': {
+    backgroundColor: themeVars.dynamicColors.listBox.hoverBackgroundColor,
+  },
+  selectors: {
+    '&[aria-selected="true"]': {
       backgroundColor: themeVars.dynamicColors.listBox.activeBackgroundColor,
       color: themeVars.dynamicColors.listBox.activeTextColor,
     },
-  }),
-]);
-
-export const tabHintDropdownItemLabel = style({
-  display: 'flex',
-  alignItems: 'center',
+  },
 });
 
-export const tabText = style([
-  {
-    display: 'inline-block',
-  },
-]);
+export const tabText = style({display: 'inline-block'});
+export const highlightedText = style({
+  backgroundColor: 'rgb(112, 182, 246, 0.25)',
+});
 
 export const control = style({});
 

@@ -1,5 +1,5 @@
 import type * as solid from 'solid-js';
-import {createMemo, createRoot, createSignal, onCleanup} from 'solid-js';
+import {createMemo, createRoot, createSignal, flush, onCleanup} from 'solid-js';
 import {describe, expect, expectTypeOf, it, vi} from 'vitest';
 import {RELEASES, UPCOMING, type LocatedHighlightId} from './registry';
 import {createWhatsNew, type WhatsNew} from './whats-new.store';
@@ -7,7 +7,10 @@ import {createWhatsNew, type WhatsNew} from './whats-new.store';
 // The suite renders snapshots with Solid's server build, where signals never
 // update. The store runs in the browser, so it gets the browser build here.
 vi.mock('solid-js', () =>
-  vi.importActual<typeof solid>('solid-js/dist/solid.js'),
+  vi.importActual<typeof solid>(
+    new URL('./dist/solid.js', import.meta.resolve('solid-js/package.json'))
+      .pathname,
+  ),
 );
 vi.stubGlobal('window', new EventTarget());
 
@@ -48,16 +51,21 @@ describe('release discovery across visits', () => {
     expect(app.announcement()).toBeNull();
     expect(app.store.interaction()).toBeNull();
     app.setQuiet(true);
+    flush();
     expect(app.announcement()?.surface).toBe('showcase');
     expect(app.store.headerEntry()).toBe(false);
     app.setQuiet(false);
+    flush();
     expect(app.announcement()?.surface).toBe('showcase');
     app.store.dismiss();
+    flush();
     expect(app.store.headerEntry()).toBe(true);
     expect(app.store.interaction()).toBe('pointer');
     app.store.reopen();
+    flush();
     expect(app.store.headerEntry()).toBe(false);
     app.store.dismiss(true);
+    flush();
     expect(app.store.headerEntry()).toBe(true);
     expect(app.store.interaction()).toBe('keyboard');
     await settle();
@@ -94,6 +102,7 @@ describe('release discovery across visits', () => {
       expect(app.store.headerEntry()).toBe(true);
       expect(app.store.headerUnread()).toBe(true);
       app.store.reopen(true);
+      flush();
       expect(app.announcement()).toMatchObject({
         surface: 'nudge',
         release: {id: '2.0'},
@@ -104,13 +113,16 @@ describe('release discovery across visits', () => {
       expect(update).not.toHaveBeenCalled();
       expect(await db.get('whats-new')).toEqual(stored);
       app.store.reopen();
+      flush();
       expect(
         track.mock.calls.filter(([event]) => event === 'whats-new-reopened'),
       ).toEqual([['whats-new-reopened', {surface: 'nudge', release: '2.0'}]]);
       window.dispatchEvent(new Event('focus'));
+      flush();
       await settle();
       expect(app.announcement()).not.toBeNull();
       app.store.dismiss();
+      flush();
       await settle();
       expect(app.announcement()).toBeNull();
       expect(await db.get('whats-new')).toEqual(stored);
@@ -132,14 +144,17 @@ describe('release discovery across visits', () => {
     const app = boot(db);
     await settle();
     for (const {id} of RELEASES[0].highlights) app.store.seen(id);
+    flush();
     expect(app.store.headerEntry()).toBe(true);
     expect(app.store.headerUnread()).toBe(false);
     app.store.reopen();
+    flush();
     expect(app.store.current()).toMatchObject({
       entry: 'pointer',
       surface: 'nudge',
     });
     app.store.dismiss();
+    flush();
     expect(app.store.current()).toBeNull();
     app.dispose();
   });
@@ -152,8 +167,10 @@ describe('release discovery across visits', () => {
     await settle();
     expect(app.store.headerEntry()).toBe(false);
     app.store.reopen();
+    flush();
     expect(app.store.current()).toBeNull();
     app.store.dismiss();
+    flush();
     expect(app.store.headerEntry()).toBe(false);
     app.dispose();
   });
@@ -167,9 +184,11 @@ describe('release discovery across visits', () => {
     await settle();
     expect(app.store.headerEntry()).toBe(false);
     app.store.dismiss();
+    flush();
     expect(app.store.headerEntry()).toBe(true);
     expect(app.store.interaction()).toBe('pointer');
     app.store.reopen();
+    flush();
     expect(app.store.current()?.surface).toBe('nudge');
     app.dispose();
   });
@@ -189,21 +208,25 @@ describe('release discovery across visits', () => {
       expect(first.store.headerEntry()).toBe(false);
       if (minimized) {
         first.store.minimize('2.0');
+        flush();
         expect(first.current()?.surface).toBe('nudge');
         expect(first.store.headerEntry()).toBe(false);
       }
       first.store.dismiss(true);
+      flush();
       await settle();
       expect(first.store.headerEntry()).toBe(true);
       const stored = await db.get('whats-new');
       const update = vi.spyOn(db, 'update');
       first.store.reopen(true);
+      flush();
       expect(first.current()).toMatchObject({
         surface: 'nudge',
         entry: 'keyboard',
       });
       expect(first.store.headerEntry()).toBe(false);
       window.dispatchEvent(new Event('focus'));
+      flush();
       await settle();
       expect(first.current()?.surface).toBe('nudge');
       expect(update).not.toHaveBeenCalled();
@@ -253,9 +276,11 @@ describe('release discovery across visits', () => {
     await settle();
     expect(watching).toBe(1);
     setQuiet(true);
+    flush();
     expect(first.announcement()).not.toBeNull();
     expect(watching).toBe(0);
     first.store.dismiss();
+    flush();
     await settle();
     const returning = createRoot(dispose => {
       createWhatsNew(db, () => Date.parse('2026-11-14')).announce(watch);
@@ -281,14 +306,18 @@ describe('release discovery across visits', () => {
       'window-styles',
     ] as const)
       a.store.seen(id);
+    flush();
     a.store.seen('command-menu');
+    flush();
     b.store.seen('layouts');
+    flush();
     const reloaded = boot(db);
     await settle();
     expect(reloaded.store.dotAt('command-menu')).toBeUndefined();
     expect(reloaded.store.dotAt('setting:layout')).toBeUndefined();
     expect(reloaded.store.dotAt('setting:theme-cards')).toBe('theme-cards');
     window.dispatchEvent(new Event('focus'));
+    flush();
     await settle();
     expect(a.store.isNew('layouts')).toBe(false);
     expect(b.store.isNew('command-menu')).toBe(false);
@@ -314,12 +343,14 @@ describe('release discovery across visits', () => {
       expect(a.announcement()).not.toBeNull();
       expect(b.announcement()).not.toBeNull();
       a.store.dismiss();
+      flush();
       await settle();
       const writes = update.mock.calls.length;
       const dismissals = () =>
         track.mock.calls.filter(([event]) => event === 'whats-new-dismissed');
       expect(dismissals()).toHaveLength(1);
       window.dispatchEvent(new Event('focus'));
+      flush();
       await settle();
       expect(b.announcement()).toBeNull();
       expect(update).toHaveBeenCalledTimes(writes);
@@ -350,10 +381,12 @@ describe('release discovery across visits', () => {
       expect(app.store.dotAt('editor:line-marks')).toBe('marks');
       now.mockReturnValue(Date.parse('2026-12-29T00:00:00Z'));
       window.dispatchEvent(new Event('focus'));
+      flush();
       await settle();
       expect(app.store.isNew('tabs')).toBe(false);
       expect(app.store.dotAt('export:tabs')).toBeUndefined();
       app.setQuiet(true);
+      flush();
       expect(app.announcement()).toBeNull();
     } finally {
       app.dispose();
@@ -380,8 +413,10 @@ describe('release discovery across visits', () => {
     await settle();
     expect(app.announcement()?.surface).toBe('showcase');
     expect(() => app.store.seen('command-menu')).not.toThrow();
+    flush();
     expect(app.store.dotAt('command-menu')).toBeUndefined();
     expect(() => app.store.dismiss()).not.toThrow();
+    flush();
     expect(app.announcement()).toBeNull();
     await settle();
     app.dispose();
@@ -397,6 +432,7 @@ describe('release discovery across visits', () => {
       });
       return dispose;
     });
+    flush();
     expect(app.store.canShowMe('command-menu')).toBe(true);
     app.store.showMe('command-menu', 'nudge');
     expect(revealed).toBe(true);
@@ -404,8 +440,10 @@ describe('release discovery across visits', () => {
     expect(app.store.revealedAt('command-menu')).toBe('command-menu');
     expect(app.store.isNew('command-menu')).toBe(true);
     app.store.seen('command-menu');
+    flush();
     expect(app.store.dotAt('command-menu')).toBeUndefined();
     unbind();
+    flush();
     expect(app.store.canShowMe('command-menu')).toBe(false);
     app.dispose();
   });
@@ -420,7 +458,7 @@ it('only accepts located highlights for Show me', () => {
   >().toEqualTypeOf<LocatedHighlightId>();
 });
 
-it('resolves items by their most specific owner and rejects duplicate owners', async () => {
+it('resolves items by specificity and restores the previous owner after concurrent mounts', async () => {
   const app = boot(database());
   await settle();
   expect(app.store.canShowMe('layouts')).toBe(false);
@@ -431,9 +469,18 @@ it('resolves items by their most specific owner and rejects duplicate owners', a
     app.store.bindLocation('setting:layout', exact);
     return dispose;
   });
-  expect(() =>
-    createRoot(() => app.store.bindLocation('setting', vi.fn())),
-  ).toThrow('already has an owner');
+  flush();
+  const replacement = vi.fn();
+  const disposeReplacement = createRoot(dispose => {
+    app.store.bindLocation('setting', replacement);
+    return dispose;
+  });
+  flush();
+  app.store.showMe('theme-cards', 'library');
+  expect(replacement).toHaveBeenCalledWith('theme-cards');
+  expect(reveal).not.toHaveBeenCalled();
+  disposeReplacement();
+  flush();
   app.store.showMe('layouts', 'library');
   expect(exact).toHaveBeenCalledWith(undefined);
   expect(reveal).not.toHaveBeenCalled();
@@ -441,6 +488,7 @@ it('resolves items by their most specific owner and rejects duplicate owners', a
   expect(reveal).toHaveBeenCalledWith('theme-cards');
   expect(app.store.isNew('layouts')).toBe(true);
   unbind();
+  flush();
   expect(app.store.canShowMe('layouts')).toBe(false);
   app.dispose();
 });
@@ -464,10 +512,12 @@ it('hands a place to the owner that replaces another in the same update', async 
     return dispose;
   });
   setPlacement('layout');
+  flush();
   app.store.showMe('tabs', 'library');
   expect(layout).toHaveBeenCalled();
   expect(header).not.toHaveBeenCalled();
   dispose();
+  flush();
   expect(app.store.canShowMe('tabs')).toBe(false);
   app.dispose();
 });
@@ -486,6 +536,7 @@ it('waits for control panels to reveal, opens a temporary coachmark and preserve
     app.store.bindLocation('control', reveal);
     return dispose;
   });
+  flush();
   expect(app.store.canShowMe('window-styles')).toBe(true);
   app.store.showMe('window-styles', 'showcase');
   expect(reveal).toHaveBeenCalledWith('window.style');
@@ -497,8 +548,10 @@ it('waits for control panels to reveal, opens a temporary coachmark and preserve
   expect(app.store.dotAt('setting:layout')).toBe('layouts');
   expect(app.store.dotAt('control:window.style')).toBeUndefined();
   app.store.endReveal('window-styles');
+  flush();
   expect(app.store.dotAt('setting:layout')).toBe('layouts');
   unbind();
+  flush();
   expect(app.store.canShowMe('window-styles')).toBe(false);
   app.dispose();
 });
@@ -518,6 +571,7 @@ it('binds editor places and lets the most recent Show me request win', async () 
     app.store.bindLocation('editor', vi.fn());
     return dispose;
   });
+  flush();
   app.store.showMe('social', 'library');
   app.store.showMe('marks', 'library');
   await settle();
@@ -526,9 +580,11 @@ it('binds editor places and lets the most recent Show me request win', async () 
   expect(app.store.revealedAt('editor:line-marks')).toBe('marks');
   expect(app.store.revealedAt('control:frame.aspectRatio')).toBeUndefined();
   app.store.seen('marks');
+  flush();
   expect(app.store.revealedAt('editor:line-marks')).toBeUndefined();
   expect(app.store.isNew('marks')).toBe(false);
   unbind();
+  flush();
   app.dispose();
 });
 
@@ -545,6 +601,7 @@ it('gives the optional engine its Settings pointer without consuming it on revea
     'command-menu',
   ] as const)
     app.store.seen(id);
+  flush();
   expect(app.store.dotAt('setting:rendering-engine')).toBe('takumi');
   expect(app.store.canShowMe('takumi')).toBe(false);
   const reveal = vi.fn();
@@ -552,12 +609,14 @@ it('gives the optional engine its Settings pointer without consuming it on revea
     app.store.bindLocation('setting', reveal);
     return dispose;
   });
+  flush();
   app.store.showMe('takumi', 'library');
   await settle();
   expect(reveal).toHaveBeenCalledWith('rendering-engine');
   expect(app.store.isNew('takumi')).toBe(true);
   expect(app.store.revealedAt('setting:rendering-engine')).toBe('takumi');
   app.store.seen('takumi');
+  flush();
   expect(app.store.dotAt('setting:rendering-engine')).toBeUndefined();
   expect(app.store.isNew('takumi')).toBe(false);
   dispose();
@@ -606,7 +665,9 @@ it('persists minimizing once, keeps every highlight fresh, and changes an alread
     expect(a.announcement()?.surface).toBe('showcase');
     expect(b.announcement()?.surface).toBe('showcase');
     a.store.minimize('2.0');
+    flush();
     a.store.minimize('2.0');
+    flush();
     await settle();
     expect(a.announcement()?.surface).toBe('nudge');
     expect(await db.get('whats-new')).toEqual({
@@ -621,6 +682,7 @@ it('persists minimizing once, keeps every highlight fresh, and changes an alread
     for (const h of RELEASES[0].highlights)
       expect(a.store.isNew(h.id)).toBe(true);
     window.dispatchEvent(new Event('focus'));
+    flush();
     await settle();
     expect(b.announcement()?.surface).toBe('nudge');
     expect(
@@ -632,8 +694,10 @@ it('persists minimizing once, keeps every highlight fresh, and changes an alread
     expect(reloaded.store.headerEntry()).toBe(false);
     expect(a.store.headerEntry()).toBe(false);
     a.store.dismiss();
+    flush();
     await settle();
     window.dispatchEvent(new Event('focus'));
+    flush();
     await settle();
     expect(b.announcement()).toBeNull();
     expect(reloaded.announcement()).toBeNull();

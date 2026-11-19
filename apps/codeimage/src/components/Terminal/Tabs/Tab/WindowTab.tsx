@@ -1,8 +1,9 @@
 import type {LanguageIconDefinition} from '@codeimage/config';
 import {Loading, Text} from '@codeimage/ui';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
-import type {FlowProps, JSX, JSXElement, ParentProps, Ref} from 'solid-js';
-import {mergeProps, Show, splitProps, Suspense} from 'solid-js';
+import type {JSX} from '@solidjs/web';
+import type {FlowProps, ParentProps, Ref} from 'solid-js';
+import {merge, Show, omit, Loading as LoadingBoundary} from 'solid-js';
 import {TabIcon} from '../TabIcon/TabIcon';
 import type {WindowStyle} from '../../WindowStyles/WindowStyles';
 import * as modern from './WindowTabStyle.css';
@@ -16,14 +17,15 @@ export interface WindowTabProps {
   readonly lite?: boolean;
   readonly ref?: Ref<HTMLDivElement>;
   readonly tabIcon?: LanguageIconDefinition['content'];
-  readonly content: JSXElement;
-  readonly rightContent?: JSXElement;
+  readonly content: JSX.Element;
+  readonly rightContent?: JSX.Element;
 }
 
 export function WindowTab(
   props: ParentProps<WindowTabProps & JSX.IntrinsicElements['div']>,
 ) {
-  const [, others] = splitProps(props, [
+  const others = omit(
+    props,
     'class',
     'ref',
     'style',
@@ -35,32 +37,33 @@ export function WindowTab(
     'accentMode',
     'lite',
     'tabIcon',
-  ]);
+  );
 
   return (
     <div
       data-watermark-obstacle
-      data-active={props.active}
+      data-active={String(props.active)}
       data-window-tab={props.appearance}
       data-host-index={props.index}
-      data-lite={props.lite}
-      data-accent-visible={props.accentMode}
-      class={
+      data-lite={props.lite === undefined ? undefined : String(props.lite)}
+      data-accent-visible={String(props.accentMode)}
+      class={[
         props.appearance
           ? modern.tab
           : styles.tab({
               accent: props.accentMode,
               active: props.active,
               lite: props.lite,
-            })
-      }
+            }),
+        props.class,
+      ]}
       ref={props.ref}
       style={assignInlineVars({
         [styles.tabVars.tabIndex]: String(props.index),
       })}
       {...others}
     >
-      <Suspense fallback={<Loading size={'sm'} />}>
+      <LoadingBoundary fallback={<Loading size={'sm'} />}>
         <Show when={props.appearance && props.appearance !== 'shell'}>
           <span class={modern.mark} />
         </Show>
@@ -72,20 +75,20 @@ export function WindowTab(
         <div class={props.appearance ? modern.text : styles.tabTextContent}>
           {props.content}
         </div>
-      </Suspense>
+      </LoadingBoundary>
       <Show when={props.rightContent}>{props.rightContent}</Show>
     </div>
   );
 }
 
 interface WindowTabContentTextProps {
-  fallback?: JSXElement;
+  fallback?: JSX.Element;
 }
 
 export function WindowTabContentText(
   props: FlowProps<WindowTabContentTextProps>,
 ) {
-  const propsWithDefaults = mergeProps({fallback: 'Untitled'}, props);
+  const propsWithDefaults = merge({fallback: 'Untitled'}, props);
 
   return (
     <Text size={'sm'} class={styles.fallbackText}>

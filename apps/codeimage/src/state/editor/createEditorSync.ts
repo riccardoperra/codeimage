@@ -1,236 +1,247 @@
 import type * as ApiTypes from '@codeimage/api/api-types';
 import {getAuth0State} from '@codeimage/store/auth/auth0';
-import {getRootEditorStore} from '@codeimage/store/editor';
-import {getFrameState} from '@codeimage/store/editor/frame';
 import {getEditorStore} from '@codeimage/store/editor/index';
 import type {ProjectEditorPersistedState} from '@codeimage/store/editor/model';
-import {getTerminalState} from '@codeimage/store/editor/terminal';
 import {parseSignature} from '@codeimage/store/frame/model';
+import {createResource} from '@codeimage/store/plugins/create-resource';
 import {loadDefaultSignature} from '@codeimage/store/signatures/signatures';
 import {toast} from '@codeimage/ui';
 import {appEnvironment} from '@core/configuration';
-import {createContextProvider} from '@solid-primitives/context';
 import {useNavigate} from '@solidjs/router';
-
-import {debounceTime, filter, map, merge} from 'rxjs';
-import type {ParentProps, Resource} from 'solid-js';
+import type {ParentProps} from 'solid-js';
 import {
+  createComponent,
+  createContext,
   createEffect,
-  createMemo,
-  createResource,
   createSignal,
-  on,
+  flush,
   onCleanup,
-  onMount,
-  untrack,
+  snapshot,
+  useContext,
 } from 'solid-js';
-import {unwrap} from 'solid-js/store';
 import {API} from '../../data-access/api';
 import {useIdb} from '../../hooks/use-indexed-db';
-import {remoteSaves} from './remoteSync';
+import {createRemoteSaves} from './remoteSync';
 
-type ProjectResponse = Awaited<ReturnType<typeof API.project.loadSnippet>>;
+type Project = ApiTypes.GetProjectByIdApi['response'];
 
-function createEditorSyncAdapter(props: ParentProps<{snippetId: string}>) {
-  const snippetId = createMemo(() => props.snippetId);
+const documentKey = (snippetId?: string | null) =>
+  snippetId ? 'project-document' : 'document';
+
+function createEditorSyncAdapter(props: ParentProps<{snippetId?: string}>) {
+  const snippetId = () => props.snippetId;
   const [remoteSync, setRemoteSync] = createSignal(false);
   const [readOnly, setReadonly] = createSignal(false);
-  const [activeWorkspace, setActiveWorkspace] = createSignal<
-    ApiTypes.GetProjectByIdApi['response'] | null
-  >();
+  const [activeWorkspace, setActiveWorkspace] = createSignal<Project | null>(
+    null,
+  );
+  const [localReady, setLocalReady] = createSignal(false);
+
   const authState = getAuth0State();
-  const frameStore = getFrameState();
-  const terminalStore = getTerminalState();
-  const editorStore = getRootEditorStore();
-  const store = getEditorStore();
-  const animationStore = store.animation;
+  const {
+    frame: frameStore,
+    terminal: terminalStore,
+    editor: editorStore,
+    animation: animationStore,
+    initialized,
+  } = getEditorStore();
   const idb = useIdb();
   const navigate = useNavigate();
 
-  const [loadedSnippet, {refetch}] = createResource(
-    snippetId,
-    async (snippetId, fetcherInfo) => {
-      if (fetcherInfo.refetching === 'CLONE') {
-        setReadonly(false);
-        return fetcherInfo.value;
-      }
-      try {
-        const loadedProject = await API.project.loadSnippet(snippetId);
-        if (loadedProject) {
-          updateStateFromRemote(loadedProject);
+  const [loadedSnippet] = createResource(snippetId, id =>
+    API.project.loadSnippet(id),
+  );
+
+  function updateStateFromRemote(data: Project) {
+    setActiveWorkspace(data);
+    setReadonly(!data.isOwner);
+    editorStore.actions.setFromWorkspace(data);
+    animationStore.actions.setFromPersistedState(data.animation);
+    terminalStore.setState(draft => {
+      Object.assign(draft, data.terminal, {
+        surface: data.terminal.surface ?? 'solid',
+      });
+    });
+    frameStore.setStore(draft => {
+      Object.assign(draft, data.frame, {
+        signature: parseSignature(data.frame.signature),
+      });
+    });
+  }
+
+  createEffect(snippetId, id => {
+    setRemoteSync(false);
+    setReadonly(false);
+    setActiveWorkspace(null);
+    setLocalReady(false);
+    if (id) return;
+
+    let stale = false;
+    async function restoreLocal() {
+      const state = await idb.get<ProjectEditorPersistedState>('document');
+      if (stale) return;
+      if (state && !state.$snippetId) {
+        flush(() => {
+          frameStore.setFromPersistedState(state.frame);
+          terminalStore.setFromPersistedState(state.terminal);
+          editorStore.actions.setFromPersistedState(state.editor);
+          animationStore.actions.setFromPersistedState(state.animation);
+        });
+      } else if (!state) {
+        const signature = await loadDefaultSignature();
+        if (!stale && signature && !frameStore.store.signature) {
+          frameStore.setSignature(signature);
         }
-        setReadonly(!loadedProject.isOwner);
-        return loadedProject;
-      } catch (e) {
-        console.info('Error while loading project', e);
+      }
+    }
+
+    restoreLocal()
+      .catch(() => undefined)
+      .finally(() => {
+        if (!stale) setLocalReady(true);
+      });
+    return () => {
+      stale = true;
+    };
+  });
+
+  createEffect(
+    () => [snippetId(), loadedSnippet.state, loadedSnippet.latest] as const,
+    ([id, status, project]) => {
+      if (!id) return;
+      if (status === 'errored') {
         navigate('/404');
+        return;
+      }
+      if (status === 'ready' && project?.id === id) {
+        updateStateFromRemote(project);
       }
     },
   );
 
-  createEffect(() => {
-    if (!snippetId()) {
-      idb
-        .get<ProjectEditorPersistedState>('document')
-        .then(idbState => {
-          if (idbState && !idbState.$snippetId) {
-            editorStore.actions.setFromPersistedState(idbState.editor);
-            animationStore.actions.setFromPersistedState(idbState.animation);
-            frameStore.setFromPersistedState(idbState.frame);
-            terminalStore.setFromPersistedState(idbState.terminal);
-            return;
-          }
-          // A new local document starts with the default saved signature.
-          if (!idbState) {
-            return loadDefaultSignature().then(signature => {
-              if (signature && !frameStore.store.signature) {
-                frameStore.setSignature(signature);
-              }
-            });
-          }
-        })
-        .catch(() => null);
-    }
-  });
-
-  const isReadyToSync = () => {
-    const loading = loadedSnippet.loading,
-      initialized = store.initialized();
-    return !loading && initialized;
+  const isReady = () => {
+    const id = snippetId();
+    return (
+      initialized() &&
+      (id
+        ? loadedSnippet.state === 'ready' && activeWorkspace()?.id === id
+        : localReady())
+    );
   };
 
-  const onChange$ = merge(
-    frameStore.stateToPersist$,
-    terminalStore.stateToPersist$,
-    editorStore.stateToPersist$,
-    animationStore.stateToPersist$,
-  ).pipe(
-    filter(() => isReadyToSync()),
-    map(
-      () =>
-        [
-          frameStore.stateToPersist(),
-          terminalStore.stateToPersist(),
-          editorStore.stateToPersist(),
-          animationStore.stateToPersist(),
-        ] as const,
-    ),
-  );
-
-  createEffect(() => {
-    if (loadedSnippet.error) {
-      navigate('/404');
-    }
-  });
-
-  createEffect(
-    on(store.initialized, ready => {
-      if (ready) {
-        const subscription = onChange$.pipe(debounceTime(250)).subscribe(() => {
-          const state: ProjectEditorPersistedState = unwrap({
-            $snippetId: untrack(snippetId) ?? null,
-            $version: appEnvironment.version,
-            frame: frameStore.stateToPersist(),
-            terminal: terminalStore.stateToPersist(),
-            editor: editorStore.stateToPersist(),
-            animation: animationStore.stateToPersist(),
-          });
-          idb.set('document', state);
-        });
-        return onCleanup(() => subscription.unsubscribe());
-      }
-    }),
-  );
-
-  function updateStateFromRemote(data: ApiTypes.GetProjectByIdApi['response']) {
-    setActiveWorkspace(data);
-    editorStore.actions.setFromWorkspace(data);
-    animationStore.actions.setFromPersistedState(data.animation);
-    terminalStore.setState(state => ({
-      ...state,
-      ...data.terminal,
-      surface: data.terminal.surface ?? 'solid',
-    }));
-    frameStore.setStore(state => ({
-      ...state,
-      ...data.frame,
-      signature: parseSignature(data.frame.signature),
-    }));
-  }
-
-  async function clone() {
-    if (!authState.loggedIn()) {
-      navigate('/');
-      refetch('CLONE');
-    } else {
-      const projectId = snippetId();
-      if (!projectId) return;
-      await new Promise(r => setTimeout(r, 100));
-      return API.project
-        .cloneSnippet(projectId, {
-          body: {},
-        })
-        .then(({id}) => navigate(`/${id}`));
-    }
-  }
-
-  function initRemoteDbSync() {
-    const subscription = remoteSaves(
-      onChange$,
-      {
-        id: () => activeWorkspace()?.id,
-        loggedIn: authState.loggedIn,
-        readOnly,
-      },
-      (id, [frame, terminal, {editors, options}, animation]) =>
-        API.project
-          .updateSnippet({
-            body: {frame, terminal, editors, editorOptions: options, animation},
-            params: {id},
-          })
-          .catch(() => toast.error('An error occurred while saving')),
-      setRemoteSync,
-    ).subscribe();
-
-    return onCleanup(() => {
-      const workspace = untrack(activeWorkspace);
-      if (!workspace) return;
-      if (activeWorkspace() && remoteSync()) {
-        const snippet = API.project
-          .updateSnippet({
-            body: {
-              frame: frameStore.stateToPersist(),
-              terminal: terminalStore.stateToPersist(),
-              editors: editorStore.stateToPersist().editors,
-              editorOptions: editorStore.stateToPersist().options,
-              animation: animationStore.stateToPersist(),
-            },
-            params: {id: workspace.id},
-          })
-          .then();
-        if (!snippet) return;
-      }
-      subscription.unsubscribe();
+  function stateToPersist(
+    animation = animationStore.stateToPersist(),
+  ): ProjectEditorPersistedState {
+    return snapshot({
+      $snippetId: snippetId() ?? null,
+      $version: appEnvironment.version,
+      frame: frameStore.stateToPersist(),
+      terminal: terminalStore.stateToPersist(),
+      editor: editorStore.stateToPersist(),
+      animation,
     });
   }
 
-  onMount(() => {
-    initRemoteDbSync();
+  async function clone() {
+    const projectId = snippetId();
+    if (!projectId) return;
+
+    if (!authState.loggedIn()) {
+      setReadonly(false);
+      navigate('/');
+      return;
+    }
+
+    await new Promise(resolve => setTimeout(resolve, 100));
+    const {id} = await API.project.cloneSnippet(projectId, {body: {}});
+    navigate(`/${id}`);
+  }
+
+  async function saveRemote(
+    id: string,
+    {frame, terminal, editor, animation}: ProjectEditorPersistedState,
+  ) {
+    try {
+      await API.project.updateSnippet({
+        body: {
+          frame,
+          terminal,
+          editors: editor.editors,
+          editorOptions: editor.options,
+          animation,
+        },
+        params: {id},
+      });
+    } catch {
+      toast.error('An error occurred while saving');
+    }
+  }
+
+  const remote = createRemoteSaves(
+    {id: () => activeWorkspace()?.id, loggedIn: authState.loggedIn, readOnly},
+    saveRemote,
+    setRemoteSync,
+  );
+  const local = new Map<string, ReturnType<typeof setTimeout>>();
+  const persist = (
+    animation?: ReturnType<typeof animationStore.stateToPersist>,
+  ) => {
+    if (!isReady()) return;
+    const state = stateToPersist(animation);
+    remote.schedule(state);
+    const key = documentKey(state.$snippetId);
+    clearTimeout(local.get(key));
+    local.set(
+      key,
+      setTimeout(() => {
+        local.delete(key);
+        void idb.set(key, state);
+      }, 250),
+    );
+  };
+  const current = () => persist();
+  const unsubscribe = [
+    frameStore.onPersistedChange(current),
+    terminalStore.onPersistedChange(current),
+    editorStore.onPersistedChange(current),
+    animationStore.onPersistedChange(persist),
+  ];
+
+  onCleanup(() => {
+    const workspace = activeWorkspace();
+    if (workspace && remoteSync() && !readOnly() && authState.loggedIn()) {
+      void saveRemote(workspace.id, stateToPersist());
+    }
+    remote.dispose();
+    for (const timer of local.values()) clearTimeout(timer);
+    for (const stop of unsubscribe) stop();
   });
 
   return {
-    indexedDbState: () => idb.get<ProjectEditorPersistedState>('document'),
-    loadedSnippet: loadedSnippet as Resource<ProjectResponse>,
+    indexedDbState: () =>
+      idb.get<ProjectEditorPersistedState>(documentKey(snippetId())),
+    loadedSnippet,
     readOnly,
     clone,
     snippetId,
     activeWorkspace,
-    setActiveWorkspace,
     remoteSync,
-    initRemoteDbSync,
   } as const;
 }
 
-export const [EditorSyncProvider, getEditorSyncAdapter] = createContextProvider(
-  createEditorSyncAdapter,
-);
+const EditorSyncContext =
+  createContext<ReturnType<typeof createEditorSyncAdapter>>();
+
+export function EditorSyncProvider(props: ParentProps<{snippetId?: string}>) {
+  const value = createEditorSyncAdapter(props);
+  return createComponent(EditorSyncContext, {
+    value,
+    get children() {
+      return props.children;
+    },
+  });
+}
+
+export function getEditorSyncAdapter() {
+  return useContext(EditorSyncContext);
+}

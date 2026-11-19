@@ -2,14 +2,17 @@
 import {animateTimelineCases} from './animate-timeline.mjs';
 import {createDoctor} from './health/doctor.mjs';
 import assert from 'node:assert/strict';
-import {auditPresets, auditPresetPersistence} from './presets.mjs';
+import {auditPresetCases, auditPresetPersistence} from './presets.mjs';
 import {auditLineMarks} from './audit-line-marks.mjs';
-import {auditLineMarksNews} from './audit-line-marks-news.mjs';
-import {verifyKeyboardScroll} from './keyboard-scroll.mjs';
+import * as newsAudits from './audit-line-marks-news.mjs';
+import {verifyExportDialog} from './export-dialog.mjs';
+import {auditEditor} from './editor-responsiveness.mjs';
+import {auditKeyboard} from './shortcut-help.mjs';
 import {createMockContext} from './mock-context.mjs';
 import {animationMp4Cases} from './animation-mp4.mjs';
-import {auditSnippets} from './snippets.mjs';
-import {auditTabs} from './tab-reorder.mjs';
+import {auditSavedProjects, verifyProjectSearch} from './saved-projects.mjs';
+import {auditSettingsSearch, closeSettingsDialog} from './settings-search.mjs';
+import {auditTabLayouts} from './tab-reorder.mjs';
 import {writeFile, readFile} from 'node:fs/promises';
 import {resolve} from 'node:path';
 import {PNG} from 'pngjs';
@@ -75,12 +78,7 @@ export async function audit({page, context, base, out, server}) {
     await page.locator('[data-settings-trigger]').click();
     await page.locator(`[data-settings-section="${section}"]`).click();
   }
-  async function closeSettings() {
-    await page.getByRole('button', {name: 'Close', exact: true}).click();
-    await page
-      .locator('[data-settings-section=general]')
-      .waitFor({state: 'hidden'});
-  }
+  const closeSettings = () => closeSettingsDialog(page);
   async function download(name) {
     const [pending] = await Promise.all([
       page.waitForEvent('download', {timeout: 60000}),
@@ -196,7 +194,7 @@ export async function audit({page, context, base, out, server}) {
       ({page, context} = previous);
     }
   }
-  await feature('keyboard-scroll', () => verifyKeyboardScroll({fresh, out}));
+  await auditKeyboard({feature, fresh, out});
   const {auditFrameGeometry} = await import('./export-geometry.mjs');
   await auditFrameGeometry({feature, fresh, out});
   await feature('agent-tools', async () => {
@@ -226,14 +224,7 @@ export async function audit({page, context, base, out, server}) {
       },
     ),
   );
-  await feature('editor', async () => {
-    await doctor();
-    await editor().fill('const audit = 1;');
-    await editor().press('End');
-    await page.keyboard.type('x');
-    await page.keyboard.press('ControlOrMeta+z');
-    assert.equal(await editor().innerText(), 'const audit = 1;');
-  });
+  await auditEditor({feature, fresh, doctor, editor, page});
   await feature('appearance', async () => {
     await section('themes');
     await page
@@ -266,12 +257,8 @@ export async function audit({page, context, base, out, server}) {
     const {verifyWatermark} = await import('./watermark.mjs');
     await verifyWatermark({page, out, download, section, windowStyle});
   });
-  await feature('tabs', () =>
-    auditTabs({page, out, editor, shot, windowStyle, unzipSync}),
-  );
-  await feature('tabs-classic', () =>
-    auditTabs({page, out, editor, shot, windowStyle, unzipSync}, 'macOS'),
-  );
+  await auditTabLayouts({feature, fresh, out, shot, windowStyle, unzipSync});
+  await feature('settings-search', () => auditSettingsSearch(page));
   await feature('settings', async () => {
     await settings('appearance');
     await page
@@ -394,7 +381,7 @@ export async function audit({page, context, base, out, server}) {
       .locator('[data-settings-section=general]')
       .waitFor({state: 'hidden'});
   });
-  await auditLineMarksNews({base, out, feature, fresh});
+  await newsAudits.auditLineMarksNews({base, out, feature, fresh});
   // The current release is major, so a fresh profile gets the Showcase
   // sheet. Minimize turns it into the Nudge card, which steps through the
   // highlights, and a dismissal survives a reload.
@@ -411,7 +398,7 @@ export async function audit({page, context, base, out, server}) {
         await page.goto(base, {waitUntil: 'domcontentloaded'});
         await ready();
         const sheet = page.locator('[data-whats-new="showcase"]');
-        await sheet.waitFor({timeout: 15000});
+        await newsAudits.verifyShowcaseAction(sheet);
         await page
           .getByRole('button', {name: "Minimize what's new", exact: true})
           .click();
@@ -501,23 +488,16 @@ export async function audit({page, context, base, out, server}) {
     await closeSettings();
     await settings('experiments');
     const renderer = page.locator('#settings-rendering-engine');
-    if ((await renderer.getAttribute('aria-checked')) !== 'true') {
-      await renderer.focus();
-      await page.keyboard.press('Space');
-    }
-    await page.waitForFunction(
-      () =>
-        document
-          .querySelector('#settings-rendering-engine')
-          ?.getAttribute('aria-checked') === 'true',
-    );
+    if (!(await renderer.isChecked())) await renderer.press('Space');
+    await page.locator('#settings-rendering-engine:checked').waitFor({
+      state: 'attached',
+    });
     await closeSettings();
     PNG.sync.read(await download('takumi.png'));
     page.off('console', observe);
     assert.deepEqual(fallbacks, [], 'Takumi should not fall back');
     await settings('experiments');
-    await page.locator('#settings-rendering-engine').focus();
-    await page.keyboard.press('Space');
+    await renderer.press('Space');
     await closeSettings();
   });
   await feature('secrets', async () => {
@@ -553,9 +533,14 @@ export async function audit({page, context, base, out, server}) {
     assert.equal(downloads, 1);
     page.off('download', count);
   });
-  await feature('presets', () => auditPresets({page, doctor, editor, shot}));
+  await auditPresetCases({feature, fresh, page, doctor, editor, shot});
   await feature('preset-persistence', () =>
     auditPresetPersistence({fresh, out}),
+  );
+  await feature('export-dialog', () =>
+    fresh({name: 'export-dialog', layout: 'inspector'}, fixture =>
+      verifyExportDialog(fixture, out),
+    ),
   );
   await feature('export-options', async () => {
     try {
@@ -838,7 +823,7 @@ export async function audit({page, context, base, out, server}) {
   await feature('animation-gif-step-size', mp4.stepSizeGif);
   for (const [name, run] of animateTimelineCases({fresh, out}))
     await feature(name, run);
-  await auditSnippets({feature, doctor, context, base, out});
+  await auditSavedProjects({feature, fresh, doctor, context, base, out, page});
   await feature('projects', async () => {
     await page
       .getByRole('button', {name: 'Sign in with GitHub', exact: true})
@@ -960,7 +945,7 @@ export async function audit({page, context, base, out, server}) {
       .getByRole('button', {name: 'Menu', exact: true})
       .click();
     await page.getByRole('menuitem', {name: 'Rename', exact: true}).click();
-    const rename = page.getByRole('dialog', {
+    const rename = page.getByRole('alertdialog', {
       name: 'Rename project',
       exact: true,
     });
@@ -980,9 +965,7 @@ export async function audit({page, context, base, out, server}) {
       ),
     );
     await page.reload();
-    await card(project.id)
-      .getByText('Renamed verification', {exact: true})
-      .waitFor();
+    await verifyProjectSearch(page, card(project.id));
     await card(project.id)
       .getByRole('button', {name: 'Menu', exact: true})
       .click();
@@ -1014,7 +997,7 @@ export async function audit({page, context, base, out, server}) {
     for (const id of [clone.id, project.id]) {
       await card(id).getByRole('button', {name: 'Menu', exact: true}).click();
       await page.getByRole('menuitem', {name: 'Delete', exact: true}).click();
-      const dialog = page.getByRole('dialog', {
+      const dialog = page.getByRole('alertdialog', {
         name: 'Delete project',
         exact: true,
       });

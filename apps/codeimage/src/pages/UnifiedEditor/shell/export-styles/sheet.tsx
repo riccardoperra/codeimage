@@ -1,9 +1,10 @@
 import {useI18n} from '@codeimage/locale';
 import {EditorConfigStore} from '@codeimage/store/editor/config.store';
-import {Button, Checkbox, IconButton, icons} from '@codeui/kit';
-import {Dialog} from '@kobalte/core/dialog';
-import {createEffect, createSignal, For, on, onCleanup, Show} from 'solid-js';
-import {provideState} from 'statebuilder';
+import {icons} from '@ui/kit-icons';
+import {Button, Checkbox} from '@ui/legacy-controls';
+import {Dialog} from '@ui/Dialog/parts';
+import {createEffect, createSignal, For, Show} from 'solid-js';
+import {useStore} from 'statebuilder';
 import {DownloadIcon} from '../../../../components/Icons/Download';
 import {NewDot} from '../../../../components/WhatsNew/NewDot';
 import {
@@ -36,7 +37,7 @@ const DESTINATIONS: readonly ExportItem[] = ['share', 'new-tab', 'copy'];
  */
 export function SheetExport(props: ExportControlProps) {
   const [t] = useI18n<AppLocaleEntries>();
-  const config = provideState(EditorConfigStore);
+  const config = useStore(EditorConfigStore);
   const [open, setOpen] = createSignal(false);
   const [instant, setInstant] = createSignal(false);
   const [choice, setChoice] = createSignal<ExportChoice>(savedExportChoice());
@@ -63,13 +64,14 @@ export function SheetExport(props: ExportControlProps) {
 
   // A quick, small render of what the export captures.
   createEffect(
-    on(open, isOpen => {
+    () => [open(), props.exportRef(), config.get.renderer] as const,
+    ([isOpen, ref, renderer]) => {
       if (!isOpen) return;
       let url: string | undefined;
       let cancelled = false;
       exportImage({
-        ref: props.exportRef(),
-        renderer: config.get.renderer,
+        ref,
+        renderer,
         options: {
           extension: ExportExtension.png,
           mode: ExportMode.getBlob,
@@ -83,12 +85,12 @@ export function SheetExport(props: ExportControlProps) {
           setPreview(url);
         })
         .catch(() => undefined);
-      onCleanup(() => {
+      return () => {
         cancelled = true;
         setPreview(undefined);
         if (url) URL.revokeObjectURL(url);
-      });
-    }),
+      };
+    },
   );
 
   const run = (action: ExportAction) => {
@@ -132,10 +134,8 @@ export function SheetExport(props: ExportControlProps) {
                   {t('toolbar.export')}
                 </Dialog.Title>
                 <Dialog.CloseButton
-                  as={IconButton}
                   size="sm"
-                  theme="secondary"
-                  variant="ghost"
+                  ghost
                   aria-label={t('common.close')}
                 >
                   <icons.CloseIcon />

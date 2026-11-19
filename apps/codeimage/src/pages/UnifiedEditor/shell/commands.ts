@@ -121,7 +121,7 @@ export function exportCommands(exporter: Exporter): Command[] {
       label: t('editor.exportFormat', {value: format.name}),
       value: format.name,
       current: format.extension === store.get.extension,
-      run: () => store.set('extension', format.extension),
+      run: () => store.setExtension(format.extension),
     })),
     ...(getFrameState().exportTarget() ? [] : EXPORT_SCALES).map(
       (scale): Command => ({
@@ -131,7 +131,7 @@ export function exportCommands(exporter: Exporter): Command[] {
         label: t('editor.exportScale', {value: `${scale}x`}),
         value: `${scale}x`,
         current: scale === store.get.devicePixelRatio,
-        run: () => store.set('devicePixelRatio', scale),
+        run: () => store.setDevicePixelRatio(scale),
       }),
     ),
     ...[70, 80, 90, 100].map((quality): Command => ({
@@ -141,7 +141,7 @@ export function exportCommands(exporter: Exporter): Command[] {
       label: t('editor.jpegQuality', {value: `${quality}%`}),
       value: `${quality}%`,
       current: quality === store.get.jpegQuality,
-      run: () => store.set('jpegQuality', quality),
+      run: () => store.setJpegQuality(quality),
     })),
     ...[
       {on: true, name: t('exportTabs.showOnlyActiveTab')},

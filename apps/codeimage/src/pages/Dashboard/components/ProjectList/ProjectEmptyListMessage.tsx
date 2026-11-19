@@ -8,14 +8,14 @@ import {CreateNewProjectButton} from '../CreateNewProjectButton/CreateNewProject
 import * as styles from './ProjectList.css';
 
 export function ProjectEmptyListMessage() {
-  const dashboard = getDashboardState()!;
+  const dashboard = getDashboardState();
   const [t] = useI18n<AppLocaleEntries>();
 
   const noMatchingProjects = () => {
     return (
       dashboard.search().length > 0 &&
       !dashboard.filteredData().length &&
-      dashboard.data().length
+      dashboard.data.latest.length
     );
   };
 

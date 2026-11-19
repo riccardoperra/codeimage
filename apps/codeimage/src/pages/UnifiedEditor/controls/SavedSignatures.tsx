@@ -11,9 +11,9 @@ import {
   DropdownMenuPortal,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-  TextField,
-} from '@codeui/kit';
-import type {JSX} from 'solid-js';
+} from '@ui/DropdownMenu';
+import {TextField} from '@ui/legacy-controls';
+import type {JSX} from '@solidjs/web';
 import {createSignal, For, Match, Show, Switch} from 'solid-js';
 import type {AppLocaleEntries} from '../../../i18n';
 import * as styles from './saved-signatures.css';
@@ -87,7 +87,9 @@ export function SavedSignaturesField(props: {id?: string}) {
         fallback={
           <DropdownMenu gutter={6} placement="bottom-end">
             <DropdownMenuTrigger
-              ref={trigger}
+              ref={element => {
+                trigger = element;
+              }}
               id={props.id}
               class={styles.trigger}
               aria-label={t('savedSignatures.menu')}

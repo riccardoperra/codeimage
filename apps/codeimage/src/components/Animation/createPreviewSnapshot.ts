@@ -1,6 +1,7 @@
 import type {AnimationSettings, NonEmpty} from '@core/animation/model';
 import type {Accessor} from 'solid-js';
-import {createMemo, createResource} from 'solid-js';
+import {createMemo} from 'solid-js';
+import {createResource} from '@codeimage/store/plugins/create-resource';
 import type {CodeStyle, PreviewMeasurement, PreviewTab} from './planPreview';
 
 export interface PreviewRequest {

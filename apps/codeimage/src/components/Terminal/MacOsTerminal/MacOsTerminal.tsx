@@ -28,13 +28,15 @@ export const MacOsTerminal: ParentComponent<MacOsTerminalProps> = props => {
           class={baseStyles.header}
           ref={headerRef}
           data-watermark-header
-          data-lite={props.lite}
+          data-lite={props.lite === undefined ? undefined : String(props.lite)}
           data-accent-visible={showTab()}
         >
           <div
             class={styles.headerIconRow}
             data-watermark-obstacle
-            data-lite={props.lite}
+            data-lite={
+              props.lite === undefined ? undefined : String(props.lite)
+            }
             data-header-type={props.headerType ?? 'default'}
           >
             <div

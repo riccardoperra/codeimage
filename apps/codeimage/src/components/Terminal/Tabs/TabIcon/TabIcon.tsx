@@ -1,8 +1,8 @@
 import type {LanguageIconDefinition} from '@codeimage/config';
 import type {SvgExternalIconProps} from '@codeimage/ui';
 import {Box, RemoteSvgIcon} from '@codeimage/ui';
-import type {JSXElement} from 'solid-js';
-import {mergeProps} from 'solid-js';
+import type {JSX} from '@solidjs/web';
+import {merge} from 'solid-js';
 import * as styles from './TabIcon.css';
 
 interface TabIconProps {
@@ -11,11 +11,12 @@ interface TabIconProps {
   size?: SvgExternalIconProps['size'];
 }
 
-export function TabIcon(props: TabIconProps): JSXElement {
-  const computedProps = mergeProps(
+export function TabIcon(props: TabIconProps): JSX.Element {
+  const defaultSize: SvgExternalIconProps['size'] = 'md';
+  const computedProps = merge(
     {
       delay: 250,
-      size: 'md' as SvgExternalIconProps['size'],
+      size: defaultSize,
     },
     props,
   );

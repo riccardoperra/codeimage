@@ -16,11 +16,11 @@ Audit clicks real login button using the existing Auth0 mock, waits for New, reg
 
 Source: `pages/Dashboard/components/CreateNewProjectButton/CreateNewProjectButton.tsx`, `ProjectItem/ProjectItem.tsx`, `state/editor/createEditorSync.ts` (250 ms local save), `state/editor/remoteSync.ts` (3 s account save), `mocks/persist.ts`.
 
-The projects journey now renames through the dashboard, reloads the name, clones and verifies identical code under a new ID, then deletes both disposable records and checks absence after reload. Supplemental HTTP boundary assertions check DELETE by another owner receives 404, deleted resources return 404 for get/rename/delete, and the list excludes deleted records. A second disposable context restores IndexedDB and delays MSW startup until document load to verify the saved code still opens. This fixture uses mock session authentication only for the boundary test. It closes in finally.
+The `projects` journey renames through the dashboard and reloads the name. It checks that two search characters leave the card visible, three nonmatching characters hide it, an uppercase query matches the renamed card, and clearing the search restores the card. It then clones the project and verifies identical code under a new ID, deletes both disposable records and checks absence after reload. Supplemental HTTP boundary assertions check DELETE by another owner receives 404, deleted resources return 404 for get/rename/delete, and the list excludes deleted records. A second disposable context restores IndexedDB and delays MSW startup until document load to verify the saved code still opens. This fixture uses mock session authentication only for the boundary test. It closes in finally.
 
 ## Gotchas
 
-Doctor after login must expect Dashboard, not an editor. Autosave has a roughly 3s debounce. No real OAuth/Postgres claim: Auth0 and project services use existing development mocks. Closing context removes guest test database. Search and real backend integration still need separate journeys.
+Doctor after login must expect Dashboard. Account autosave has a roughly 3s debounce. Auth0 and project services use development mocks. Closing the context removes the guest IndexedDB database. Real backend verification has its own [requirements](../references/backend-modes.md).
 
 ## Snippet audit cases
 
@@ -46,3 +46,25 @@ Implementation: `.agents/skills/verify-codeimage/scripts/snippets.mjs`, register
 Ownership and failed-load fixtures use the existing MSW boundary. Navigation uses an anchor fixture to exercise route updates without reloading the provider. Mock logout reloads the current snippet, so the case waits for the signed-out view before following a link to `/`. Share supplies a Web Share input fixture because headless Chromium has no OS share sheet. It checks the snippet URL passed to that API, not native platform sharing. Clipboard and image downloads use real browser APIs. No editor store or exporter internal is called.
 
 To isolate a snippet matrix lane, set `VERIFY_SNIPPET_LAYOUT=inspector`, `dock`, or `studio`, and `VERIFY_SNIPPET_WIDTH=1440` or `390`. The default remains all six combinations. Each run writes the lanes actually exercised to `<case>-matrix.json`; a selected lane does not establish full matrix coverage. All scenario assertions remain active. These selectors allow fresh Chrome processes when a long-lived local browser exits during repeated context changes.
+
+## Bridged project actions
+
+Run the dashboard case on Node 24 to exercise the Solid 2 project menu and its bridged Solid 1 CodeUI trigger.
+
+```sh
+VERIFY_AUDIT=1 VERIFY_CASES=solid1-bridge-project-menu \
+  VERIFY_BROWSER_CHANNEL=chrome node .agents/skills/verify-codeimage/scripts/verify.mjs
+```
+
+The case creates a disposable MSW project, opens the menu by keyboard, checks Escape and focus, renames the project through the app dialog, clones it and follows the new URL, then deletes the original through the app dialog. It checks the mutation responses and verifies that the rename dialog blocks background clicks only while open.
+
+## Read-only notice
+
+Run the focused CodeImage audit under Node 24.
+
+```sh
+VERIFY_AUDIT=1 VERIFY_CASES=read-only-notice VERIFY_BROWSER_CHANNEL=chrome \
+  node .agents/skills/verify-codeimage/scripts/verify.mjs
+```
+
+The case opens a read-only snippet, changes the locale on the existing banner, delays the clone response with MSW, and checks that the button disables until the request completes. It verifies one clone request, navigation to the editable clone, and removal of the banner. Run `snippet-read-only` and `snippet-clone` to cover layout and export behavior.

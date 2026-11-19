@@ -4,8 +4,7 @@ import {getRootEditorStore} from '@codeimage/store/editor';
 import {getUiStore} from '@codeimage/store/ui';
 import {toast} from '@codeimage/ui';
 import {appEnvironment} from '@core/configuration';
-import {clamp, isNonNullable} from '@solid-primitives/utils';
-import {createEffect, createMemo, createRoot, on} from 'solid-js';
+import {createEffect, createRoot} from 'solid-js';
 import {createPrettierFormatter} from '../../hooks/createPrettierFormatter';
 import type {AppLocaleEntries} from '../../i18n';
 
@@ -15,56 +14,52 @@ const $activeEditorState = () => {
     const {
       state,
       isActive,
-      actions: {setEditors},
+      actions: {updateEditor},
     } = getRootEditorStore();
     const currentEditor = () =>
       state.editors.find(editor => isActive(editor.id));
 
-    const currentEditorIndex = () =>
-      state.editors.findIndex(editor => editor.id === currentEditor()?.id);
-
     const setLanguageId = (languageId: string) => {
-      const currentLanguageId = currentEditor()?.languageId;
-      setEditors(currentEditorIndex(), 'languageId', languageId);
-      if (currentLanguageId !== languageId) {
-        const language = languages.find(language => language.id === languageId);
-        if (language) {
-          const tabName = currentEditor()?.tab?.tabName;
-          if (!language.icons.find(item => item.matcher.test(tabName ?? ''))) {
-            setEditors(currentEditorIndex(), 'tab', 'tabName', name =>
-              (name ?? 'index.tsx').replace(
-                /\.[^.]*$/,
-                language.icons[0].extension,
-              ),
-            );
-          }
+      const current = currentEditor();
+      const previousLanguage = current?.languageId;
+      const language = languages.find(language => language.id === languageId);
+      const defaultFormatter = formatter.availableFormatters()[0]?.parser;
+      updateEditor(current?.id, draft => {
+        draft.languageId = languageId;
+        if (previousLanguage === languageId) return;
+        if (
+          language &&
+          !language.icons.some(icon =>
+            icon.matcher.test(draft.tab.tabName ?? ''),
+          )
+        ) {
+          draft.tab.tabName = (draft.tab.tabName ?? 'index.tsx').replace(
+            /\.[^.]*$/,
+            language.icons[0].extension,
+          );
         }
-        const defaultFormatter = formatter.availableFormatters()[0]?.parser;
-        setEditors(currentEditorIndex(), 'formatter', defaultFormatter ?? null);
-      }
+        draft.formatter = defaultFormatter ?? null;
+      });
     };
 
     const setCode = (code: string) =>
-      setEditors(currentEditorIndex(), 'code', code);
+      updateEditor(currentEditor()?.id, draft => {
+        draft.code = code;
+      });
 
     const setLineNumberStart = (lineNumberStart: number | null | undefined) => {
-      if (!lineNumberStart) {
-        lineNumberStart = 1;
-      }
-      return setEditors(
-        currentEditorIndex(),
-        'lineNumberStart',
-        // TODO Already done by @codeui/kit but I don't feel safe about this component I made
-        clamp(
-          lineNumberStart,
-          appEnvironment.lineNumbers.min,
+      updateEditor(currentEditor()?.id, draft => {
+        draft.lineNumberStart = Math.min(
+          Math.max(lineNumberStart || 1, appEnvironment.lineNumbers.min),
           appEnvironment.lineNumbers.max,
-        ),
-      );
+        );
+      });
     };
 
     const setFormatterName = (formatter: string | null) =>
-      setEditors(currentEditorIndex(), 'formatter', formatter);
+      updateEditor(currentEditor()?.id, draft => {
+        draft.formatter = formatter;
+      });
 
     const formatter = createPrettierFormatter(
       () => currentEditor()?.languageId ?? '',
@@ -72,29 +67,20 @@ const $activeEditorState = () => {
       () => currentEditor()?.formatter ?? null,
     );
 
-    // On each tab editor change, it will listen for name and languageId updates
-    // in order to update the formatter with the default one.
-    let unsubscribe: (() => void) | undefined = undefined;
-    createEffect(() => {
-      const editor = currentEditorIndex();
-      if (!!unsubscribe) unsubscribe();
-      if (!isNonNullable(editor) || editor === -1) return;
-      createRoot(dispose => {
-        unsubscribe = dispose;
-        const name = createMemo(() => currentEditor()?.tab?.tabName);
-        const languageId = createMemo(() => currentEditor()?.languageId);
-        createEffect(
-          on([name, languageId], () => {
-            const defaultFormatter = formatter.availableFormatters()[0];
-            setEditors(
-              currentEditorIndex(),
-              'formatter',
-              defaultFormatter?.parser ?? null,
-            );
-          }),
-        );
-      });
-    });
+    createEffect(
+      () => ({
+        id: currentEditor()?.id,
+        parser: formatter.availableFormatters()[0]?.parser ?? null,
+      }),
+      ({id, parser}) => {
+        const tab = state.editors.find(editor => editor.id === id);
+        if (tab && tab.formatter !== parser) {
+          updateEditor(tab.id, draft => {
+            draft.formatter = parser;
+          });
+        }
+      },
+    );
 
     return {
       editor: currentEditor,

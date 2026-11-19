@@ -1,6 +1,6 @@
-import type {PropsWithChildren} from 'solid-js';
-import {createSignal, mergeProps, onMount, Show} from 'solid-js';
-import {Portal} from 'solid-js/web';
+import type {ParentProps as PropsWithChildren} from 'solid-js';
+import {createSignal, merge, onSettled, Show} from 'solid-js';
+import {Portal} from '@solidjs/web';
 
 const DEFAULT_ID = 'floating-ui-root';
 
@@ -12,9 +12,9 @@ export const createFloatingPortalNode = (
   props: CreateFloatingPortalNodeProps,
 ) => {
   const [portal, setPortal] = createSignal<HTMLElement | null>(null);
-  const propsWithDefault = mergeProps({id: DEFAULT_ID}, props);
+  const propsWithDefault = merge({id: DEFAULT_ID}, props);
 
-  onMount(() => {
+  onSettled(() => {
     const rootNode = document.getElementById(propsWithDefault.id);
     if (rootNode) {
       setPortal(() => rootNode);

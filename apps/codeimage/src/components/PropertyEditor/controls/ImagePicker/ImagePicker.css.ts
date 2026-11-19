@@ -1,6 +1,6 @@
 import {themeVars, withThemeMode} from '@codeimage/ui';
 import {darkGrayScale} from '@codeimage/ui/themes/darkTheme';
-import {responsiveStyle, themeTokens} from '@codeui/kit';
+import {responsiveStyle, themeTokens} from '@codeui/kit/foundation';
 import {createVar, style} from '@vanilla-extract/css';
 
 export const gridSize = createVar();

@@ -1,7 +1,5 @@
-import {getRootEditorStore} from '@codeimage/store/editor';
-import type {EditorState} from '@codeimage/store/editor/model';
 import type {VoidProps} from 'solid-js';
-import {ErrorBoundary, Suspense} from 'solid-js';
+import {Errored, Loading as LoadingBoundary} from 'solid-js';
 import {FrameSkeleton} from '../../Frame/FrameSkeleton';
 import * as styles from './Tab/Tab.css';
 import {WindowTab, WindowTabContentText} from './Tab/WindowTab';
@@ -14,7 +12,6 @@ export interface TerminalWindowTabListPreviewProps {
 }
 
 interface PreviewTabProps {
-  editor: EditorState;
   accent: boolean;
   lite: boolean;
 }
@@ -34,24 +31,18 @@ function PreviewTab(props: PreviewTabProps) {
 export function TerminalWindowTabListPreview(
   props: VoidProps<TerminalWindowTabListPreviewProps>,
 ) {
-  const {state} = getRootEditorStore();
-
   return (
-    <ErrorBoundary fallback={<FrameSkeleton />}>
-      <Suspense>
+    <Errored fallback={<FrameSkeleton />}>
+      <LoadingBoundary>
         <div
           class={styles.wrapper({accent: props.accent})}
-          data-accent-visible={props.accent}
+          data-accent-visible={String(props.accent)}
         >
           <div class={styles.tabListWrapper}>
-            <PreviewTab
-              lite={props.lite ?? false}
-              accent={props.accent}
-              editor={state.editors[0]}
-            />
+            <PreviewTab lite={props.lite ?? false} accent={props.accent} />
           </div>
         </div>
-      </Suspense>
-    </ErrorBoundary>
+      </LoadingBoundary>
+    </Errored>
   );
 }

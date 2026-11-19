@@ -1,6 +1,6 @@
 import type {Owner} from 'solid-js';
 import {createRoot, runWithOwner} from 'solid-js';
-import {render} from 'solid-js/web';
+import {render} from '@solidjs/web';
 import {EditorView, ViewPlugin} from '@codemirror/view';
 import {NewDot} from '../../../WhatsNew/NewDot';
 import {getWhatsNew} from '../../../../state/whats-new';
@@ -8,9 +8,9 @@ import {gutterAction} from './gutter';
 
 export function mountLineMarksNews(host: HTMLElement, owner: Owner) {
   host.dataset.lineMarksNews = '';
-  return render(() => <NewDot at="editor:line-marks" />, host, undefined, {
-    owner,
-  });
+  return runWithOwner(owner, () =>
+    render(() => <NewDot at="editor:line-marks" />, host),
+  );
 }
 
 export function lineMarksNews(owner: Owner) {

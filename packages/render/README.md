@@ -29,7 +29,7 @@ The image is as large as the largest step. The first and last frame of a transit
 
 ## How it renders
 
-1. `dist/ssr/entry-server.js` is a Vite SSR build of `apps/codeimage/src/render/entry-server.tsx`. It server-renders the app's own frame and terminal components and P1's `StaticCodeView` with `renderToStringAsync`.
+1. `dist/ssr/entry-server.js` is a Vite SSR build of `apps/codeimage/src/render/entry-server.tsx`. Each render gets its own editor store and renders the app's frame, terminal, and `StaticCodeView` with a settled Solid 2 stream. The render omits scripts and aborts after 30 seconds.
 2. The CSS is the build's vanilla-extract output plus the stylesheet a CodeMirror editor with the theme would mount, CodeMirror's base theme included.
 3. Takumi measures the frame, the frame is sized to whole CSS pixels as the web export is, and Takumi rasterizes it at `scale`.
 

@@ -37,3 +37,12 @@ export const editorContainer = style({
   flexDirection: 'column',
   marginTop: themeVars.spacing['2'],
 });
+
+export const themeSelect = style({
+  backgroundColor: themeVars.dynamicColors.input.backgroundColor,
+  color: themeVars.dynamicColors.input.textColor,
+  border: `1px solid ${themeVars.dynamicColors.input.borderColor}`,
+  borderRadius: themeVars.borderRadius.md,
+  font: 'inherit',
+  padding: themeVars.spacing['2'],
+});

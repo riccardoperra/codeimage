@@ -1,34 +1,27 @@
-import {untrack} from 'solid-js';
-import {reconcile} from 'solid-js/store';
-import {makePlugin} from 'statebuilder';
+import type {ContainerPluginContext, Store} from 'statebuilder';
 
-export const withLocalStorage = (storeName: string) => {
-  return makePlugin(
-    storeApi => {
-      // TODO: add plugin storage
-      const initialState = localStorage.getItem(storeName);
-
-      if (initialState) {
-        try {
-          const parsedState = JSON.parse(initialState);
-          storeApi.set(reconcile(parsedState));
-        } catch {}
+export function readLocalState<T extends object>(
+  storeName: string,
+  defaults: T,
+): T {
+  if (typeof localStorage === 'undefined') return {...defaults};
+  try {
+    const initialState = localStorage.getItem(storeName);
+    if (initialState) {
+      const parsed: unknown = JSON.parse(initialState);
+      if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+        return {...defaults, ...parsed};
       }
+    }
+  } catch {}
+  return {...defaults};
+}
 
-      const defaultSet = storeApi.set;
-
-      // TODO: add statebuilder utilities to override set with better typings
-      storeApi.set = (...args: unknown[]): void => {
-        const result = defaultSet(...(args as Parameters<typeof defaultSet>));
-        localStorage.setItem(
-          storeName,
-          JSON.stringify(untrack(() => storeApi())),
-        );
-        return result;
-      };
-
-      return {};
-    },
-    {name: 'withLocalStorage'},
-  );
-};
+export function withLocalStorage<T extends object>(storeName: string) {
+  return (_store: Store<T>, context: ContainerPluginContext<Store<T>>) => {
+    if (typeof localStorage === 'undefined') return;
+    context.onSet(value =>
+      localStorage.setItem(storeName, JSON.stringify(value)),
+    );
+  };
+}

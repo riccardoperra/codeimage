@@ -5,10 +5,17 @@ import {getInitialFrameState} from '@codeimage/store/editor/frame';
 import {loadDefaultSignature} from '@codeimage/store/signatures/signatures';
 import {getInitialTerminalState} from '@codeimage/store/editor/terminal';
 import {getThemeStore} from '@codeimage/store/theme/theme.store';
+import {createResource} from '@codeimage/store/plugins/create-resource';
 import {createPagedData} from '@codeimage/ui';
 import {appEnvironment} from '@core/configuration';
-import {createContextProvider} from '@solid-primitives/context';
-import {createEffect, createResource, createSignal} from 'solid-js';
+import type {ParentProps} from 'solid-js';
+import {
+  createComponent,
+  createContext,
+  createEffect,
+  createSignal,
+  useContext,
+} from 'solid-js';
 import {API} from '../../data-access/api';
 
 function makeDashboardState(authState = getAuth0State()) {
@@ -20,14 +27,10 @@ function makeDashboardState(authState = getAuth0State()) {
   const pageSize = 9;
   const filteredData = () => {
     const searchValue = search();
-    if (!data()) return [];
-    if (!searchValue || searchValue.length > 2)
-      return (
-        data().filter(item =>
-          item.name.toLowerCase().includes(searchValue.toLowerCase()),
-        ) ?? []
-      );
-    return data();
+    const projects = data.latest;
+    if (searchValue.length <= 2) return projects;
+    const query = searchValue.toLowerCase();
+    return projects.filter(item => item.name.toLowerCase().includes(query));
   };
 
   const [pagedData, paginationState] = createPagedData(filteredData, {
@@ -35,8 +38,7 @@ function makeDashboardState(authState = getAuth0State()) {
     pageSelected: 1,
   });
 
-  createEffect(() => {
-    const searchValue = search();
+  createEffect(search, searchValue => {
     if (searchValue.length > 2) paginationState.setPage(1);
   });
 
@@ -52,7 +54,6 @@ function makeDashboardState(authState = getAuth0State()) {
     const theme = await getThemeStore().getThemeDef('fleetDark')?.load();
 
     const frame = getInitialFrameState();
-    // A new snippet starts with the default saved signature, as its own copy.
     const signature = await loadDefaultSignature().catch(() => null);
 
     const data: ApiTypes.CreateProjectApi['request'] = {
@@ -140,7 +141,9 @@ function makeDashboardState(authState = getAuth0State()) {
   return {
     data: Object.assign(data, {
       isEmpty() {
-        return !data.error && !data.loading && data().length === 0;
+        return (
+          data.error === undefined && !data.loading && data.latest.length === 0
+        );
       },
     }),
     refetch,
@@ -153,17 +156,22 @@ function makeDashboardState(authState = getAuth0State()) {
     updateSnippetName,
     cloneProject,
     pagedData,
-    paginationState: Object.assign(paginationState, {
-      get pageSize() {
-        return pageSize;
-      },
-      get hasOnePage() {
-        return pagedData().length <= pageSize;
-      },
-    }),
+    paginationState,
   };
 }
 
-export const [DashboardProvider, getDashboardState] = createContextProvider(
-  () => makeDashboardState(),
-);
+const DashboardContext = createContext<ReturnType<typeof makeDashboardState>>();
+
+export function DashboardProvider(props: ParentProps) {
+  const state = makeDashboardState();
+  return createComponent(DashboardContext, {
+    value: state,
+    get children() {
+      return props.children;
+    },
+  });
+}
+
+export function getDashboardState() {
+  return useContext(DashboardContext);
+}

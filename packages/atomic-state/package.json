@@ -27,22 +27,20 @@
     "dev": "chokidar \"src/**/*.{ts,tsx}\" -c \"pnpm build\""
   },
   "peerDependencies": {
-    "rxjs": "^7.8.0",
-    "solid-js": "catalog:next"
+    "solid-js": "catalog:solid2"
   },
   "devDependencies": {
     "@types/node": "catalog:next",
     "oxfmt": "catalog:next",
     "oxlint": "catalog:next",
     "rolldown-plugin-solid": "catalog:next",
-    "rxjs": "^7.8.2",
-    "solid-js": "catalog:next",
+    "solid-js": "catalog:solid2",
     "tsdown": "catalog:next",
     "vite": "catalog:next",
     "vitest": "catalog:next"
   },
   "dependencies": {
-    "statebuilder": "^0.8.1"
+    "@solidjs/signals": "2.0.0"
   },
   "engines": {
     "node": ">=24"

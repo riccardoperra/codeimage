@@ -1,7 +1,7 @@
-import type {ElementType} from '@solid-aria/types';
 import clsx from 'clsx';
-import type {JSX, JSXElement, ParentProps, Ref} from 'solid-js';
-import {omitProps, pickProps} from 'solid-use/props';
+import type {JSX} from '@solidjs/web';
+import type {Element as JSXElement, ParentProps, Ref} from 'solid-js';
+import {omit} from 'solid-js';
 import type {Sprinkles} from '../../theme';
 import {sprinkles} from '../../theme';
 import {styled} from '../../utils';
@@ -37,23 +37,28 @@ type BoxParameters = {
   [key in keyof Sprinkles]: Sprinkles[key] | `${Sprinkles[key] & number}`;
 };
 
-export type BoxProps<T extends ElementType = 'div'> = Partial<BoxParameters> & {
-  as?: T;
-  ref?: Ref<DynamicNode<T>>;
-} & Omit<DynamicProps<T>, 'as' | 'disabled' | 'ref'>;
+export type BoxProps<T extends ValidConstructor = 'div'> =
+  Partial<BoxParameters> & {
+    as?: T;
+    ref?: Ref<DynamicNode<T>>;
+  } & Omit<DynamicProps<T>, 'as' | 'disabled' | 'ref'>;
 
-export function Box<T extends ElementType = 'div'>(
+export function Box<T extends ValidConstructor = 'div'>(
   props: ParentProps<BoxProps<T>>,
 ): JSXElement {
   return (
     <styled.div
-      {...omitProps(props, ['as', 'ref'])}
+      {...omit(props, 'as', 'ref')}
       as={props.as ?? 'div'}
       ref={props.ref}
       class={clsx(
         boxBase,
         props.class,
-        sprinkles(pickProps(props, [...sprinkles.properties.keys()])),
+        sprinkles(
+          Object.fromEntries(
+            [...sprinkles.properties].map(key => [key, props[key]]),
+          ),
+        ),
       )}
     >
       {props.children}

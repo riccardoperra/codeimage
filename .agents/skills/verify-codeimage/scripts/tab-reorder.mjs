@@ -109,7 +109,46 @@ async function reorderTabs({page, strip, firstId, secondId, out, label}) {
   return touch ? 'emulated touch' : 'mouse';
 }
 
-export async function auditTabs(
+async function completeTabExtension(page, input, {prefix, extension, method}) {
+  await input.fill(prefix);
+  const list = page.getByRole('listbox', {name: 'Tab name', exact: true});
+  const option = list.getByRole('option', {name: extension, exact: true});
+  await option.waitFor();
+  if (method === 'keyboard') {
+    const optionId = await option.getAttribute('id');
+    const count = await list.getByRole('option').count();
+    for (let index = 0; index < count; index++) {
+      await input.press('ArrowDown');
+      if ((await input.getAttribute('aria-activedescendant')) === optionId)
+        break;
+    }
+    assert.equal(await input.getAttribute('aria-activedescendant'), optionId);
+    await input.press('Enter');
+  } else {
+    await option.click();
+  }
+  await list.waitFor({state: 'hidden'});
+  assert.equal(await input.inputValue(), prefix.split('.')[0] + extension);
+}
+
+export async function auditTabLayouts({feature, fresh, ...options}) {
+  for (const [name, style] of [
+    ['tabs', 'Editor'],
+    ['tabs-classic', 'macOS'],
+  ]) {
+    await feature(name, () =>
+      fresh(
+        {name, layout: 'inspector', viewport: {width: 1440, height: 900}},
+        async ({doctor, page, editor}) => {
+          await doctor();
+          return auditTabs({...options, page, editor}, style);
+        },
+      ),
+    );
+  }
+}
+
+async function auditTabs(
   {page, out, editor, shot, windowStyle, unzipSync},
   style = 'Editor',
 ) {
@@ -139,21 +178,32 @@ export async function auditTabs(
   const readCode = async () =>
     (await editor().locator('.cm-line').allTextContents()).join('\n');
   const name = () =>
-    strip.locator('[data-active="true"] [aria-label="Tab name"] input');
+    strip
+      .locator('[data-active="true"]')
+      .getByRole('combobox', {name: 'Tab name', exact: true});
   await editor().fill('const first = 1;');
-  await name().fill('first.ts');
-  await page.keyboard.press('Escape');
+  await completeTabExtension(page, name(), {
+    prefix: 'first.t',
+    extension: '.ts',
+    method: 'keyboard',
+  });
   await add.click();
   await editor().fill('print("second")');
-  await name().fill('hello.py');
-  await page.keyboard.press('Escape');
+  await completeTabExtension(page, name(), {
+    prefix: 'hello.p',
+    extension: '.py',
+    method: 'pointer',
+  });
   await strip.locator(tabSelector).filter({hasText: 'first.ts'}).click();
   assert.equal(await readCode(), 'const first = 1;');
   await strip.locator(tabSelector).filter({hasText: 'hello.py'}).click();
   assert.equal(await readCode(), 'print("second")');
-  const [firstId, secondId] = await strip
+  const ids = await strip
     .locator(tabSelector)
     .evaluateAll(tabs => tabs.map(tab => tab.id));
+  assert.equal(ids.length, 2);
+  assert.equal(new Set(ids).size, 2, 'each tab has its own identity');
+  const [firstId, secondId] = ids;
   assert.equal(
     await page.locator('[aria-roledescription="draggable"]').count(),
     2,
@@ -161,7 +211,9 @@ export async function auditTabs(
   const input = await reorderTabs({page, strip, firstId, secondId, out, label});
   await strip.locator(`[id="${firstId}"]`).click();
   await name().fill('renamed.ts');
-  await page.keyboard.press('Escape');
+  await name().press('Escape');
+  assert.equal(await name().getAttribute('aria-expanded'), 'false');
+  assert.equal(await name().inputValue(), 'renamed.ts');
   assert.equal(await readCode(), 'const first = 1;');
 
   await strip.locator(`[id="${firstId}"]`).focus();
@@ -188,8 +240,18 @@ export async function auditTabs(
     '01-hello.py.png',
     '02-renamed.ts.png',
   ]);
-  for (const [, data] of entries) PNG.sync.read(Buffer.from(data));
-  await closeTab(strip.locator(`${tabSelector}[data-active="true"]`)).click();
+  const pngs = entries.map(([, data]) => PNG.sync.read(Buffer.from(data)));
+  assert.ok(
+    !pngs[0].data.equals(pngs[1].data),
+    'each tab exports its own rendered pixels',
+  );
+  const active = strip.locator(`${tabSelector}[data-active="true"]`);
+  const closedId = await active.getAttribute('id');
+  assert.ok(closedId);
+  await closeTab(active).click();
+  await strip
+    .locator(`${tabSelector}[id="${closedId}"]`)
+    .waitFor({state: 'detached'});
   assert.equal(await tabs.count(), 1);
   assert.equal(await readCode(), 'print("second")');
   return {

@@ -1,16 +1,17 @@
 import {useI18n} from '@codeimage/locale';
-import {Button, IconButton, icons, TextArea} from '@codeui/kit';
+import {icons} from '@ui/kit-icons';
+import {Button, IconButton, TextArea} from '@ui/legacy-controls';
 import type {Accessor} from 'solid-js';
 import {
   createEffect,
   createSignal,
-  Index,
+  For,
   Match,
-  on,
   onCleanup,
-  onMount,
+  untrack,
   Show,
   Switch,
+  createTrackedEffect,
 } from 'solid-js';
 import type {AppLocaleEntries} from '../../../i18n';
 import {summarize} from '../agent-tools/activity';
@@ -25,6 +26,7 @@ import type {Entry, Run} from './agent';
 import {createChat, initialRun, MAX_TURNS} from './agent';
 import {log} from './language-model';
 import {languageModel, localAiProvider} from './providers';
+import {Answer} from './Answer';
 import * as styles from './local-ai.css';
 
 /** What the bar needs from the editor it sits in. */
@@ -42,7 +44,9 @@ interface Exchange {
   readonly run: Run;
 }
 
-const [host, setHost] = createSignal<Host>();
+const [host, setHost] = createSignal<Host | undefined>(undefined, {
+  ownedWrite: true,
+});
 const [open, setOpen] = createSignal(false);
 const [draft, setDraft] = createSignal('');
 const [exchanges, setExchanges] = createSignal<readonly Exchange[]>([]);
@@ -104,8 +108,8 @@ export function LocalAi(props: {
   const chat = createChat({
     provider: localAiProvider,
     // Not through withActivity: the bar lists these calls itself.
-    tools: props.tools,
-    brief: props.brief,
+    tools: untrack(() => props.tools),
+    brief: () => props.brief(),
   });
   const end = () => {
     controller?.abort();
@@ -113,7 +117,7 @@ export function LocalAi(props: {
   };
 
   setHost({
-    compact: props.compact,
+    compact: () => props.compact(),
     editable: () => props.pageState().editable,
     send: text => {
       controller?.abort();
@@ -134,11 +138,10 @@ export function LocalAi(props: {
     end,
   });
 
-  createEffect(() => {
+  createTrackedEffect(() => {
     if (!localAi.enabled()) localAi.close();
   });
-  // A conversation lives in one provider's session.
-  createEffect(on(preferences.localAiProvider, endChat, {defer: true}));
+  createEffect(preferences.localAiProvider, endChat, {defer: true});
   onCleanup(() => {
     end();
     setExchanges([]);
@@ -147,7 +150,6 @@ export function LocalAi(props: {
   return null;
 }
 
-/** Opens the Ask AI bar. Shown only while the bar can run. */
 /** A call as the agent activity card draws it, or the model's own words. */
 function EntryRow(props: {entry: Entry}) {
   const words = useSummaryWords();
@@ -189,47 +191,6 @@ function EntryRow(props: {entry: Entry}) {
   );
 }
 
-/** The model's answer as plain text, three lines until the user asks for all. */
-function Answer(props: {text: string}) {
-  const [t] = useI18n<AppLocaleEntries>();
-  const [expanded, setExpanded] = createSignal(false);
-  const [clipped, setClipped] = createSignal(false);
-  let paragraph!: HTMLParagraphElement;
-  createEffect(() => {
-    void props.text;
-    if (expanded()) return;
-    // Glyphs can overhang the clamped box by a few pixels; a hidden line is
-    // a whole line height.
-    const line = parseFloat(getComputedStyle(paragraph).lineHeight) || 16;
-    setClipped(paragraph.scrollHeight - paragraph.clientHeight > line / 2);
-  });
-  return (
-    <>
-      <p
-        ref={paragraph}
-        class={styles.answer}
-        data-local-ai-answer
-        data-clamped={expanded() ? undefined : ''}
-      >
-        {props.text}
-      </p>
-      <Show when={clipped()}>
-        <Button
-          class={styles.panelAction}
-          size="xs"
-          theme="secondary"
-          variant="ghost"
-          aria-expanded={expanded()}
-          data-local-ai-show-all
-          onClick={() => setExpanded(open => !open)}
-        >
-          {expanded() ? t('localAi.showLess') : t('localAi.showAll')}
-        </Button>
-      </Show>
-    </>
-  );
-}
-
 /** One request of the conversation: its words, its calls and the answer. */
 function Block(props: {exchange: Exchange; earlier: boolean}) {
   const [t] = useI18n<AppLocaleEntries>();
@@ -245,9 +206,9 @@ function Block(props: {exchange: Exchange; earlier: boolean}) {
       </p>
       <ol class={styles.list} aria-label={t('localAi.steps')}>
         {/* By position, so a call that settles updates its row in place. */}
-        <Index each={props.exchange.run.entries}>
+        <For keyed={false} each={props.exchange.run.entries}>
           {entry => <EntryRow entry={entry()} />}
-        </Index>
+        </For>
       </ol>
       <Show when={phase().kind === 'thinking'}>
         <p class={styles.thinking} data-local-ai-thinking>
@@ -315,7 +276,7 @@ function Block(props: {exchange: Exchange; earlier: boolean}) {
  */
 export function PromptBar() {
   const [t] = useI18n<AppLocaleEntries>();
-  let input!: HTMLTextAreaElement;
+  let input: HTMLTextAreaElement | undefined;
   let panel: HTMLElement | undefined;
   // Follows the latest block unless the user scrolled up to read.
   let follow = true;
@@ -335,36 +296,25 @@ export function PromptBar() {
   };
   const newChat = () => {
     endChat();
-    input.focus();
+    input?.focus();
   };
 
-  createEffect(
-    on(exchanges, () => {
-      if (panel && follow) panel.scrollTop = panel.scrollHeight;
-    }),
-  );
-
-  onMount(() => {
-    input.focus({preventScroll: true});
-    // App shortcuts listen on the body before Solid's delegated handlers, so
-    // the field keeps its keys with a native listener.
-    const keys = (event: KeyboardEvent) => {
-      event.stopPropagation();
-      if (event.key === 'Escape') {
-        event.preventDefault();
-        close();
-      } else if (
-        event.key === 'Enter' &&
-        !event.shiftKey &&
-        !event.isComposing
-      ) {
-        event.preventDefault();
-        send();
-      }
-    };
-    input.addEventListener('keydown', keys);
-    onCleanup(() => input.removeEventListener('keydown', keys));
+  createEffect(exchanges, () => {
+    if (panel && follow) panel.scrollTop = panel.scrollHeight;
   });
+
+  const beforeLast = (position: number) => position < exchanges().length - 1;
+  const keys = (event: KeyboardEvent) => {
+    event.stopPropagation();
+    if (event.key === 'Escape') {
+      event.preventDefault();
+      close();
+    } else if (event.key === 'Enter' && !event.shiftKey && !event.isComposing) {
+      event.preventDefault();
+      send();
+    }
+  };
+  onCleanup(() => input?.removeEventListener('keydown', keys));
 
   return (
     <div class={styles.slot} data-local-ai>
@@ -392,14 +342,11 @@ export function PromptBar() {
                 {t('localAi.newChat')}
               </Button>
             </div>
-            <Index each={exchanges()}>
+            <For keyed={false} each={exchanges()}>
               {(exchange, index) => (
-                <Block
-                  exchange={exchange()}
-                  earlier={index < exchanges().length - 1}
-                />
+                <Block exchange={exchange()} earlier={beforeLast(index)} />
               )}
-            </Index>
+            </For>
           </section>
         </Show>
         <form
@@ -413,8 +360,11 @@ export function PromptBar() {
           <TextArea
             size="md"
             ref={element => {
+              input?.removeEventListener('keydown', keys);
               input = element;
               element.rows = 1;
+              element.addEventListener('keydown', keys);
+              queueMicrotask(() => element.focus({preventScroll: true}));
             }}
             value={draft()}
             onChange={setDraft}

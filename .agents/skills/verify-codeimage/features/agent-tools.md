@@ -24,4 +24,6 @@ Source: `pages/UnifiedEditor/agent-tools/` (`tools.ts` is the registry, `adapter
 
 ## Gotchas
 
+The browser case sends a mixed `set_controls` request with a padding choice, an opacity value, a line-number toggle and an unknown property. It checks the partial result, reads the committed values back, checks the rendered padding, and verifies that an out-of-range opacity leaves the previous value intact. It also checks that hiding the frame prevents an opacity change in the same request, and that showing the frame again makes the change available immediately.
+
 The recording `modelContext` stands in for a real agent. It proves registration, schemas and effects, not a vendor's agent UI. Real WebMCP agents and Chrome DevTools MCP need a manual run. Choice schemas carry an `enum` of option values fixed at registration, except `editor_theme` and `editor_formatter`, whose options change while the page runs. Their live values come from `get_editor_state`.

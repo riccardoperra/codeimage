@@ -260,8 +260,7 @@
     "@kobalte/core": "^0.13.11",
     "@kobalte/utils": "^0.9.1",
     "@lezer/highlight": "catalog:next",
-    "@primer/primitives": "^7.17.1",
-    "@solid-primitives/props": "^3.2.3"
+    "@primer/primitives": "^7.17.1"
   },
   "peerDependencies": {
     "@codemirror/language": "catalog:next",
@@ -272,7 +271,8 @@
   "devDependencies": {
     "@codeimage/ui": "workspace:*",
     "@codemirror/lang-javascript": "^6.2.5",
-    "@codeui/kit": "^0.1.5",
+    "@solidjs/vite-plugin": "catalog:solid2",
+    "@solidjs/web": "catalog:solid2",
     "@types/node": "catalog:next",
     "@types/prettier": "^3.0.0",
     "@vanilla-extract/css": "^1.20.0",
@@ -283,14 +283,13 @@
     "oxfmt": "catalog:next",
     "oxlint": "catalog:next",
     "rimraf": "catalog:next",
-    "solid-codemirror": "catalog:next",
-    "solid-js": "catalog:next",
+    "solid-codemirror": "catalog:solid2",
+    "solid-js": "catalog:solid2",
     "ts-morph": "^27.0.2",
     "tsdown": "catalog:next",
     "typescript": "^6.0.2",
     "vite": "catalog:next",
-    "vite-plugin-dts": "catalog:next",
-    "vite-plugin-solid": "catalog:next"
+    "vite-plugin-dts": "catalog:next"
   },
   "engines": {
     "node": ">=24"
