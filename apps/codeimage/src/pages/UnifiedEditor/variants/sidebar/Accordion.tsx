@@ -141,9 +141,7 @@ export function Accordion(props: VariantProps) {
   // may grow. The page's header is above the root.
   const [rootHeight, setRootHeight] = createSignal(innerHeight);
   const tallSheet = () => Math.min(560, rootHeight() - 284);
-  const [mobile, setMobile] = createSignal(
-    matchMedia('(max-width: 768px)').matches,
-  );
+  const mobile = () => props.stage.compact();
   let panel: HTMLElement | undefined;
   let canvas: HTMLElement | undefined;
   let scroll: HTMLDivElement | undefined;
@@ -191,12 +189,6 @@ export function Accordion(props: VariantProps) {
     () => [openSection(), mobile()] as const,
     () => queueMicrotask(() => untrack(measureFill)),
   );
-  onSettled(() => {
-    const media = matchMedia('(max-width: 768px)');
-    const update = () => setMobile(media.matches);
-    media.addEventListener('change', update);
-    return () => media.removeEventListener('change', update);
-  });
   const size = () => (mobile() ? 'md' : 'sm');
   const toggleSection = (id: PanelId, open: boolean) =>
     setOpenSection(current => (open ? id : current === id ? null : current));

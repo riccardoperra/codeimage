@@ -2,6 +2,8 @@
 
 [Keyboard menus in scrollable panels](keyboard.md) maps the `keyboard-scroll` regression case across Inspector, Dock, and Studio at desktop and phone sizes.
 
+`responsive-editor` resizes Inspector, Dock, and Studio without reloading and checks that the editor keeps its contents and Export moves with the layout. `system-colour-mode` changes the browser colour preference while Settings is open and checks both system and manual modes.
+
 | Feature                              | User entry points                                    | Executable audit journey                                                                                                                                            |
 | ------------------------------------ | ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | [Edit code](editor.md)               | Guest `/`, saved project URL                         | Edit/undo and `editor-options`; `frame-cold-start` checks first-paint geometry and lazy tab labels                                                                  |

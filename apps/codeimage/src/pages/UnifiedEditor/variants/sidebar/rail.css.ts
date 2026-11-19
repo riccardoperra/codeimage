@@ -4,8 +4,7 @@ import {createVar, globalStyle, style} from '@vanilla-extract/css';
 const c = themeVars.dynamicColors;
 
 /** Same breakpoint as the app's `useModality`, so the production header and this layout agree. */
-export const COMPACT_QUERY = '(max-width: 768px)';
-const compact = `screen and ${COMPACT_QUERY}`;
+const compact = 'screen and (max-width: 768px)';
 const finePointer = '(hover: hover) and (pointer: fine)';
 const reducedMotion = '(prefers-reduced-motion: reduce)';
 const easeOut = 'cubic-bezier(0.23, 1, 0.32, 1)';

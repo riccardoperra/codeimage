@@ -8,6 +8,7 @@ import {
   offset,
   shift,
 } from '@floating-ui/dom';
+import {makeResizeObserver} from '@solid-primitives/resize-observer';
 import {Portal} from '@solidjs/web';
 import {
   createEffect,
@@ -84,18 +85,6 @@ function positionSuggestions([visible, reference, popup]: readonly [
   };
 }
 
-function observeWidth(
-  node: HTMLSpanElement | undefined,
-  setWidth: (width: number) => void,
-) {
-  if (!node) return;
-  const observer = new ResizeObserver(([entry]) => {
-    if (entry) setWidth(entry.contentRect.width);
-  });
-  observer.observe(node);
-  return () => observer.disconnect();
-}
-
 export default function TabName(props: TabNameProps) {
   const [t] = useI18n<AppLocaleEntries>();
   const id = createUniqueId();
@@ -116,7 +105,13 @@ export default function TabName(props: TabNameProps) {
   const open = () => shown() && !props.readonly && options().length > 0;
   const optionId = (item: LanguageIconDefinition) => `${id}-${item.extension}`;
 
-  onSettled(() => observeWidth(hiddenText, setWidth));
+  onSettled(() => {
+    if (!hiddenText) return;
+    const {observe} = makeResizeObserver(([entry]) => {
+      if (entry) setWidth(entry.contentRect.width);
+    });
+    observe(hiddenText);
+  });
 
   createEffect(() => [open(), control(), list()] as const, positionSuggestions);
 

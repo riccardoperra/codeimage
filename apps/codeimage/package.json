@@ -85,6 +85,7 @@
     "@ngneat/falso": "^8.0.2",
     "@shikijs/magic-move": "4.6.0",
     "@solid-primitives/event-bus": "^3.0.0",
+    "@solid-primitives/media": "4.0.0",
     "@solid-primitives/platform": "1.0.0",
     "@solid-primitives/resize-observer": "4.0.0",
     "@solidjs/router": "catalog:solid2",

@@ -2,6 +2,7 @@ import {createResizeRef} from '@core/hooks/create-resize-ref';
 import {BarSettings} from './BarSettings';
 import {getEditorStore} from '@codeimage/store/editor';
 import {useI18n} from '@codeimage/locale';
+import {createMediaQuery} from '@solid-primitives/media';
 import {signatureEditor} from '@codeimage/store/frame/signatureEditor';
 import {Button} from '@ui/legacy-controls';
 import {Popover} from '@ui/Popover';
@@ -31,12 +32,7 @@ import {ShortcutHelp} from '../../controls/ShortcutHelp';
 import type {ControlId} from '../../model';
 import {themeStyle} from '../../theme-styles/style';
 import {ThemeSwatch} from '../../ThemeSwatch';
-import {
-  closeOnEscape,
-  createMediaQuery,
-  DockContext,
-  isKeyboardClick,
-} from './context';
+import {closeOnEscape, DockContext, isKeyboardClick} from './context';
 import type {DockApi} from './context';
 import * as styles from './dock.css';
 import {PLACES, createFields} from './fields';

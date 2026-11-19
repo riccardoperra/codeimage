@@ -10,14 +10,8 @@ import {getTerminalState} from '@codeimage/store/editor/terminal';
 import {dispatchRandomTheme} from '@codeimage/store/effects/onThemeChange';
 import {TERMINAL_SHADOWS} from '@core/configuration/shadow';
 import {useModality} from '@core/hooks/isMobile';
-import {
-  createSignal,
-  lazy,
-  onCleanup,
-  Show,
-  Loading,
-  createEffect,
-} from 'solid-js';
+import {createMediaQuery} from '@solid-primitives/media';
+import {createSignal, lazy, Show, Loading, createEffect} from 'solid-js';
 import {createResource} from '@codeimage/store/plugins/create-resource';
 import type {Accessor, Component} from 'solid-js';
 import {untrackCommand} from 'statebuilder/commands';
@@ -169,11 +163,7 @@ function FramePlaceholder(props: {frame: Accessor<HTMLElement | undefined>}) {
 }
 
 export function createStage(pageState: Accessor<EditorPageState>): Stage {
-  const media = matchMedia('(max-width: 768px)');
-  const [compact, setCompact] = createSignal(media.matches);
-  const updateCompact = () => setCompact(media.matches);
-  media.addEventListener('change', updateCompact);
-  onCleanup(() => media.removeEventListener('change', updateCompact));
+  const compact = createMediaQuery('(max-width: 768px)');
   const [exportRef, setExportRef] = createSignal<HTMLElement>();
   const frame = getFrameState();
   // The scale is not saved, but its command makes the store save everything
