@@ -488,9 +488,6 @@
   "apps/codeimage/src/core/modules/localFontAccessApi/font.ts": {
     "codeimage(no-comments)": 2
   },
-  "apps/codeimage/src/core/operators/selectSlice.ts": {
-    "codeimage(no-comments)": 1
-  },
   "apps/codeimage/src/core/rasterize/domExport.test.ts": {
     "codeimage(no-comments)": 1
   },
@@ -831,7 +828,6 @@
     "solid(reactivity)": 1
   },
   "apps/codeimage/src/pages/UnifiedEditor/localized/FontSystemPicker.tsx": {
-    "codeimage(no-comments)": 4,
     "codeimage(no-static-inline-style)": 4
   },
   "apps/codeimage/src/pages/UnifiedEditor/localized/GitHubLoginButton.tsx": {
@@ -852,8 +848,8 @@
     "codeimage(no-static-inline-style)": 1
   },
   "apps/codeimage/src/pages/UnifiedEditor/model.tsx": {
-    "codeimage(no-comments)": 24,
-    "eslint(max-lines)": 710,
+    "codeimage(no-comments)": 23,
+    "eslint(max-lines)": 703,
     "eslint(max-lines-per-function)": 1,
     "eslint(no-restricted-imports)": 1,
     "typescript(no-non-null-assertion)": 1
@@ -956,7 +952,7 @@
   "apps/codeimage/src/pages/UnifiedEditor/shell/sections.tsx": {
     "codeimage(no-comments)": 28,
     "codeimage(no-static-inline-style)": 1,
-    "eslint(max-lines)": 975,
+    "eslint(max-lines)": 973,
     "eslint(max-lines-per-function)": 1,
     "eslint(no-restricted-imports)": 2,
     "solid(components-return-once)": 1,
@@ -1119,13 +1115,11 @@
     "codeimage(no-comments)": 1
   },
   "apps/codeimage/src/state/editor/activeEditor.ts": {
-    "codeimage(no-comments)": 1,
-    "eslint(no-async-promise-executor)": 1,
-    "eslint(no-param-reassign)": 1
+    "eslint(no-async-promise-executor)": 1
   },
   "apps/codeimage/src/state/editor/animation.ts": {
     "codeimage(no-comments)": 3,
-    "eslint(max-lines)": 380,
+    "eslint(max-lines)": 379,
     "eslint(max-lines-per-function)": 1,
     "eslint(no-nested-ternary)": 1
   },
@@ -1160,10 +1154,7 @@
     "unused-disable-directive": 1
   },
   "apps/codeimage/src/state/effects/onCopyToClipboard.tsx": {
-    "codeimage(disable-directive-format)": 1,
-    "codeimage(no-comments)": 1,
-    "typescript(no-non-null-assertion)": 2,
-    "unused-disable-directive": 1
+    "codeimage(no-comments)": 1
   },
   "apps/codeimage/src/state/frame/avatar.ts": {
     "codeimage(no-comments)": 5,

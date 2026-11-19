@@ -1,4 +1,3 @@
-import {type Observable, Subject} from 'rxjs';
 import type {NoFn} from '@solidjs/signals';
 import {
   createSignal,
@@ -6,17 +5,10 @@ import {
   snapshot,
   type Accessor,
 } from 'solid-js';
-import {createObservable} from './createObservable';
 import {createPathSetter} from './createPathSetter';
 import type {SetStoreFunction} from './experimental/store-types';
 
-export type StoreEvent = {
-  type: string;
-  value: unknown;
-};
-
 export interface StoreInternals<T> {
-  events$: Subject<StoreEvent>;
   $$setter: SetStoreFunction<T>;
   $$isStore: true;
 }
@@ -34,18 +26,10 @@ function isStoreSeed<T extends object>(value: T): value is T & NoFn<T> {
 
 export function createStore<T extends object>(
   initialState: T,
-): [
-  T & {accessor: Accessor<T>},
-  SetStoreFunction<T>,
-  {events$: Observable<StoreEvent>; state$: Observable<T>},
-] {
-  const events$ = new Subject<StoreEvent>();
+): [T & {accessor: Accessor<T>}, SetStoreFunction<T>, {snapshot: Accessor<T>}] {
   const seed: StoreSeed<T> = Object.assign(initialState, {
     get [$STORE](): StoreInternals<T> {
       return {
-        get events$() {
-          return events$;
-        },
         get $$setter() {
           return setStore;
         },
@@ -65,22 +49,10 @@ export function createStore<T extends object>(
     setSignal(Symbol());
   });
 
-  const state$ = createObservable(() => {
-    signal();
-    return snapshot(store);
-  });
-
   const storeAccessor = (): T => {
     signal();
     return store;
   };
 
-  return [
-    store,
-    setStore,
-    {
-      state$,
-      events$: events$.asObservable(),
-    },
-  ];
+  return [store, setStore, {snapshot: () => snapshot(storeAccessor())}];
 }

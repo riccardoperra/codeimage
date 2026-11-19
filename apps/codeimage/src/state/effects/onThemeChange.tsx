@@ -1,4 +1,3 @@
-import {effect} from '@codeimage/atomic-state';
 import {AVAILABLE_COLORS, AVAILABLE_GRADIENTS} from '@codeimage/config';
 import type {CustomTheme} from '@codeimage/highlight';
 import {getRootEditorStore} from '@codeimage/store/editor';
@@ -8,7 +7,6 @@ import {getThemeStore} from '@codeimage/store/theme/theme.store';
 import {TERMINAL_SHADOWS} from '@core/configuration/shadow';
 import {AVAILABLE_TERMINAL_THEMES} from '@core/configuration/terminal-themes';
 import {getUmami} from '@core/constants/umami';
-import {pipe, tap} from 'rxjs';
 
 export type DispatchUpdateThemeParams = {
   theme: CustomTheme | string;
@@ -26,8 +24,10 @@ export function dispatchUpdateTheme(params: DispatchUpdateThemeParams): void {
     if (!resolved) return;
     if (updateBackground)
       frame.setBackground(resolved.properties.previewBackground);
-    terminal.setState('background', resolved.properties.terminal.main);
-    terminal.setState('textColor', resolved.properties.terminal.text);
+    terminal.setState(draft => {
+      draft.background = resolved.properties.terminal.main;
+      draft.textColor = resolved.properties.terminal.text;
+    });
     editor.actions.setThemeId(resolved.id);
     getUmami().track('theme-change', {theme: resolved.id});
   };
@@ -42,34 +42,26 @@ const randomizeElement = <T,>(array: readonly T[]): T => {
   return array[Math.floor(Math.random() * array.length)];
 };
 
-export const dispatchRandomTheme = effect<void>(
-  pipe(
-    tap(() => {
-      const {themeArray: themes} = getThemeStore();
-      const index = Math.floor(Math.random() * themes().length);
-      const theme = themes()[index]?.();
-      const frame = getFrameState();
-      const terminal = getTerminalState();
+export function dispatchRandomTheme() {
+  const {themeArray: themes} = getThemeStore();
+  const index = Math.floor(Math.random() * themes().length);
+  const theme = themes()[index]?.();
+  const frame = getFrameState();
+  const terminal = getTerminalState();
 
-      if (theme) {
-        dispatchUpdateTheme({theme});
-      }
+  if (theme) {
+    dispatchUpdateTheme({theme});
+  }
 
-      frame.setBackground(
-        randomizeElement([...AVAILABLE_GRADIENTS, ...AVAILABLE_COLORS]),
-      );
+  frame.setBackground(
+    randomizeElement([...AVAILABLE_GRADIENTS, ...AVAILABLE_COLORS]),
+  );
 
-      terminal.setState('accentVisible', randomizeBoolean());
-      terminal.setState('alternativeTheme', randomizeBoolean());
-      terminal.setState('showGlassReflection', randomizeBoolean());
-      terminal.setState(
-        'shadow',
-        randomizeElement(Object.values(TERMINAL_SHADOWS)),
-      );
-      terminal.setState(
-        'type',
-        randomizeElement(AVAILABLE_TERMINAL_THEMES.keys),
-      );
-    }),
-  ),
-);
+  terminal.setState(draft => {
+    draft.accentVisible = randomizeBoolean();
+    draft.alternativeTheme = randomizeBoolean();
+    draft.showGlassReflection = randomizeBoolean();
+    draft.shadow = randomizeElement(Object.values(TERMINAL_SHADOWS));
+    draft.type = randomizeElement(AVAILABLE_TERMINAL_THEMES.keys);
+  });
+}

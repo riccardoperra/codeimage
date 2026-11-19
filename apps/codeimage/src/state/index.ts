@@ -1,4 +1,3 @@
-import {createPathSetter} from '@codeimage/atomic-state';
 import {Container, useContainer} from 'statebuilder';
 import {
   createComponent,
@@ -7,7 +6,7 @@ import {
   getOwner,
   useContext,
 } from 'solid-js';
-import type {FlowProps, StoreSetter} from 'solid-js';
+import type {FlowProps} from 'solid-js';
 
 const container = createRoot(() => Container.create());
 const AppStateScope = createContext<Container | null>(null);
@@ -27,10 +26,3 @@ export function AppStateProvider(props: FlowProps) {
 
 export const provideAppState: typeof container.get = state =>
   getAppStateContainer().get(state);
-
-export function exposeStorePaths<T, S extends object>(
-  store: S & {(): T; set: StoreSetter<T>},
-) {
-  const {set, ...extensions} = store;
-  return Object.assign(() => store(), extensions, {set: createPathSetter(set)});
-}

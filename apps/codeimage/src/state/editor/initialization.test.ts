@@ -1,5 +1,4 @@
 import {fleetDarkTheme} from '@codeimage/highlight/themes';
-import {createPathSetter} from '@codeimage/atomic-state';
 import {getThemeStore} from '@codeimage/store/theme/theme.store';
 import type * as Solid from 'solid-js';
 import {createRoot, flush} from 'solid-js';
@@ -19,7 +18,7 @@ vi.mock('./terminal', async () => {
   return {
     createTerminalState: () => {
       const [state, setState] = createStore({background: '', textColor: ''});
-      return {state, setState: createPathSetter(setState)};
+      return {state, setState};
     },
   };
 });
@@ -32,7 +31,7 @@ vi.mock('./frame', async () => {
       });
       return {
         store,
-        setStore: createPathSetter(setStore),
+        setStore,
         setBackground: (background: string) =>
           setStore(state => {
             state.background = background;
@@ -64,9 +63,13 @@ test.each([false, true])(
       dispose,
     }));
     if (restored) {
-      store.terminal.setState('background', '#282a36');
-      store.terminal.setState('textColor', '#BD93F9');
-      store.frame.setStore('background', '#abcdef');
+      store.terminal.setState(draft => {
+        draft.background = '#282a36';
+        draft.textColor = '#BD93F9';
+      });
+      store.frame.setStore(draft => {
+        draft.background = '#abcdef';
+      });
     }
     flush();
     await Promise.resolve();

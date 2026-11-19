@@ -58,7 +58,7 @@ function TerminalWindowTabListContent(
       removeEditor,
       setActiveEditorId,
       setTabName,
-      setEditors,
+      replaceEditors,
     },
     computed: {canAddEditor},
     isActive: isStoreActive,
@@ -90,7 +90,7 @@ function TerminalWindowTabListContent(
       if (fromIndex >= 0 && toIndex >= 0) {
         const updatedItems = state.editors.slice();
         updatedItems.splice(toIndex, 0, ...updatedItems.splice(fromIndex, 1));
-        setEditors(updatedItems);
+        replaceEditors(updatedItems);
       }
     }
 

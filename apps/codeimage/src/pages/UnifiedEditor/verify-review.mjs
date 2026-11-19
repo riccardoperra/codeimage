@@ -146,8 +146,10 @@ try {
         const canvas = (
           await import('/src/state/canvas.ts')
         ).getExportCanvasStore();
-        canvas.set('extension', 'png');
-        canvas.set('devicePixelRatio', 1);
+        canvas.set(draft => {
+          draft.extension = 'png';
+          draft.devicePixelRatio = 1;
+        });
         const e = window.__editor;
         const view = e.activeEditorView();
         view.dispatch({
@@ -517,12 +519,10 @@ try {
       if (width === 1440) {
         // Clear the inactive tab's secret fixture; drive the active editor through its UI.
         await page.evaluate(() => {
-          window.__editor.state.editors.forEach((_, index) => {
-            window.__editor.actions.setEditors(
-              index,
-              'code',
-              'const secondary = 2;',
-            );
+          window.__editor.state.editors.forEach(tab => {
+            window.__editor.actions.updateEditor(tab.id, draft => {
+              draft.code = 'const secondary = 2;';
+            });
           });
         });
         const editor = page.locator('.cm-content[contenteditable=true]');

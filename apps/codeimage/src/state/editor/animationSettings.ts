@@ -244,3 +244,8 @@ export function stepAt(settings: AnimationSettings, ms: number): number {
   }
   return settings.steps.length - 1;
 }
+
+export const persistedAnimation = (state: AnimationSettings) => ({
+  ...state,
+  steps: [...state.steps],
+});

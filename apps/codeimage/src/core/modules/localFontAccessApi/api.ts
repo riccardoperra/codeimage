@@ -1,5 +1,3 @@
-import {defer, merge, Observable, of, switchMap} from 'rxjs';
-
 declare global {
   interface Window {
     /**
@@ -48,16 +46,3 @@ export async function checkLocalFontPermission() {
     // TODO: extend dom interfaces?
   } as unknown as PermissionDescriptor);
 }
-
-export const checkLocalFontPermission$ = defer(() =>
-  checkLocalFontPermission(),
-).pipe(
-  switchMap(permission => {
-    const permissionStateChange$ = new Observable<PermissionState>(observer => {
-      permission.onchange = function (this) {
-        observer.next(this.state);
-      };
-    });
-    return merge(of(permission.state), permissionStateChange$);
-  }),
-);

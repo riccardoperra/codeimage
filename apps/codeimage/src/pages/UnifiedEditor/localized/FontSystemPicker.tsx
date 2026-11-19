@@ -4,7 +4,6 @@ import {EditorConfigStore} from '@codeimage/store/editor/config.store';
 import {Box, FieldLabelHint, Link, LoadingCircle, Text} from '@codeimage/ui';
 import {VirtualizedListbox} from '@ui/legacy-listbox';
 import {Button, Checkbox, TextField} from '@ui/legacy-controls';
-import {pipe} from 'rxjs';
 import {createSignal, Match, onSettled, Show, Loading, Switch} from 'solid-js';
 import {snapshot} from 'solid-js';
 import {useStore} from 'statebuilder';
@@ -26,38 +25,18 @@ export function FontSystemPicker(props: FontSystemPickerProps) {
 
   const {localFontsApi} = configStore;
 
-  onSettled(() => {
-    const subscription = localFontsApi.accessSystemFonts(true).subscribe();
-    return () => subscription.unsubscribe();
-  });
+  onSettled(() => localFontsApi.observeSystemFonts());
 
   const fonts = () => {
     const onlyMonospaced = showOnlyMonospaced();
     const term = fontTerm();
-    const fonts = snapshot(configStore.get.systemFonts);
-
-    return pipe(
-      (_: typeof fonts) => _,
-      // Monospaced filter
-      fonts =>
-        onlyMonospaced ? fonts.filter(font => font.fontData.monospaced) : fonts,
-      // Term filter
-      fonts =>
-        term.length > 2
-          ? fonts.filter(font => font.name.toLowerCase().includes(term))
-          : fonts,
-      // Sorting alphabetically
-      fonts =>
-        fonts.sort((a, b) =>
-          a.fontData.family.localeCompare(b.fontData.family),
-        ),
-      // Map to select items
-      fonts =>
-        fonts.map(font => ({
-          label: font.name,
-          value: font.id,
-        })),
-    )(fonts);
+    return snapshot(configStore.get.systemFonts)
+      .filter(font => !onlyMonospaced || font.fontData.monospaced)
+      .filter(
+        font => term.length <= 2 || font.name.toLowerCase().includes(term),
+      )
+      .sort((a, b) => a.fontData.family.localeCompare(b.fontData.family))
+      .map(font => ({label: font.name, value: font.id}));
   };
 
   const listboxProps = createFontPickerListboxProps({

@@ -1,5 +1,4 @@
 import {getExportTarget} from '@codeimage/config';
-import {createPathSetter} from '@codeimage/atomic-state';
 import {createMemo} from 'solid-js';
 import {parseSignature} from '@codeimage/store/frame/model';
 import type {
@@ -9,7 +8,6 @@ import type {
 import {provideAppState} from '@codeimage/store/index';
 import type {PresetData} from '@codeimage/store/presets/types';
 import {appEnvironment} from '@core/configuration';
-import {from, map} from 'rxjs';
 import {defineStore} from 'statebuilder';
 import {withProxyCommands} from 'statebuilder/commands';
 
@@ -155,25 +153,20 @@ const frameState = defineStore(() => getInitialFrameState())
       };
     };
 
-    const stateToPersist$ = from(
-      store.watchCommand([
-        store.commands.setBackground,
-        store.commands.setOpacity,
-        store.commands.setPadding,
-        store.commands.setRadius,
-        store.commands.setScale,
-        store.commands.setAutoWidth,
-        store.commands.setVisibility,
-        store.commands.setNextPadding,
-        store.commands.setFromPreset,
-        store.commands.setSignature,
-        store.commands.setAspectRatio,
-        store.commands.setExportTarget,
-      ]),
-    ).pipe(
-      map(() => store.peek()),
-      map(mapToStateToPersistState),
-    );
+    const persistence = store.watchCommand([
+      store.commands.setBackground,
+      store.commands.setOpacity,
+      store.commands.setPadding,
+      store.commands.setRadius,
+      store.commands.setScale,
+      store.commands.setAutoWidth,
+      store.commands.setVisibility,
+      store.commands.setNextPadding,
+      store.commands.setFromPreset,
+      store.commands.setSignature,
+      store.commands.setAspectRatio,
+      store.commands.setExportTarget,
+    ]);
 
     return {
       get store() {
@@ -181,8 +174,13 @@ const frameState = defineStore(() => getInitialFrameState())
       },
       exportTarget,
       exportPixelRatio,
-      setStore: createPathSetter(store.set),
-      stateToPersist$,
+      setStore: store.set,
+      onPersistedChange(listener: (state: PersistedFrameState) => void) {
+        const subscription = persistence.subscribe(() =>
+          listener(mapToStateToPersistState(store.peek())),
+        );
+        return () => subscription.unsubscribe();
+      },
       stateToPersist() {
         const state = store.peek();
         return mapToStateToPersistState(state);

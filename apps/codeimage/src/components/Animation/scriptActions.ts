@@ -14,14 +14,14 @@ type Store = ReturnType<typeof getEditorStore>;
 export type LineAction = 'enter' | 'leave' | 'focus';
 
 function saveMarks(store: Store, editorId: string, marks: TabMarks) {
-  const index = store.editor.state.editors.findIndex(
-    tab => tab.id === editorId,
-  );
-  if (index < 0) return;
+  if (!store.editor.state.editors.some(tab => tab.id === editorId)) return;
   const view = store.editor.activeEditorView();
   if (view && store.editor.activeEditorViewTabId() === editorId)
     flush(() => setLineMarks(view, marks));
-  else store.editor.actions.setEditors(index, 'marks', marks);
+  else
+    store.editor.actions.updateEditor(editorId, draft => {
+      Object.assign(draft.marks, marks);
+    });
 }
 
 function selectStep(store: Store, id: string) {

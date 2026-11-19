@@ -1,8 +1,7 @@
 import {
-  checkLocalFontPermission$,
+  checkLocalFontPermission,
   isLocalFontsFeatureSupported,
 } from '@core/modules/localFontAccessApi/api';
-import {EMPTY, of, switchMap, tap} from 'rxjs';
 import {createSignal, untrack} from 'solid-js';
 import type {Store} from 'statebuilder';
 import {createPlugin} from 'statebuilder';
@@ -13,73 +12,79 @@ import type {ConfigState} from '../config.store';
 export function withLocalFontManagementPlugin() {
   const plugin = createPlugin.typed<Store<ConfigState>>();
   return plugin(
-    _ => {
+    () => {
       const [state, setState] = createSignal({
         permissionState: null as PermissionState | 'unsupported' | null,
         fonts: [] as LoadedFont[],
         loading: false,
         error: null as string | null,
       });
+      let request = 0;
+      const fail = (error: unknown) =>
+        setState(state => ({...state, loading: false, error: String(error)}));
 
       async function loadFonts() {
-        untrack(() => {
-          if (!state().loading) {
-            setState(state => ({
-              ...state,
-              loading: true,
-            }));
-          }
-        });
-        await new Promise(r => setTimeout(r, 100));
-        return useLocalFonts().then(fonts => {
-          setState(state => ({
-            ...state,
-            fonts: fonts,
-            loading: false,
-            error: null,
-          }));
-        });
+        const id = ++request;
+        setState(state => ({...state, loading: true}));
+        try {
+          const fonts = await useLocalFonts();
+          if (id === request)
+            setState(state => ({...state, fonts, loading: false, error: null}));
+        } catch (error) {
+          if (id === request) fail(error);
+        }
       }
 
-      function accessSystemFonts(useCache: boolean) {
+      function observeSystemFonts() {
         if (!isLocalFontsFeatureSupported()) {
-          console.warn(
-            '[CodeImage] System Local Fonts API not supported in this browser.',
-          );
           setState(state => ({...state, permissionState: 'unsupported'}));
-          return EMPTY;
+          return;
         }
 
+        const observer = new AbortController();
         setState(state => ({...state, loading: true}));
-        return checkLocalFontPermission$.pipe(
-          switchMap(permissionState => {
-            setState(state => ({...state, permissionState}));
-            if (permissionState === 'granted') {
-              if (useCache && untrack(() => state().fonts.length > 0)) {
-                return of(state().fonts).pipe(
-                  tap(() => setState(state => ({...state, loading: false}))),
-                );
+        void checkLocalFontPermission().then(
+          permission => {
+            if (observer.signal.aborted) return;
+            function refresh() {
+              const permissionState = permission.state;
+              setState(state => ({...state, permissionState}));
+              if (
+                permissionState === 'prompt' ||
+                (permissionState === 'granted' && !untrack(state).fonts.length)
+              ) {
+                void loadFonts();
+              } else {
+                request++;
+                setState(state => ({...state, loading: false}));
               }
-              setState(state => ({...state, loading: true}));
             }
-            return loadFonts();
-          }),
-          tap({
-            error: error => setState(state => ({...state, error})),
-          }),
+            permission.addEventListener('change', refresh, {
+              signal: observer.signal,
+            });
+            refresh();
+          },
+          error => {
+            if (!observer.signal.aborted) fail(error);
+          },
         );
+        return () => {
+          if (observer.signal.aborted) return;
+          request++;
+          observer.abort();
+        };
       }
 
-      const api = {
-        state,
-        loadFonts,
-        accessSystemFonts,
-        get supported() {
-          return isLocalFontsFeatureSupported();
+      return {
+        localFontsApi: {
+          state,
+          loadFonts,
+          observeSystemFonts,
+          get supported() {
+            return isLocalFontsFeatureSupported();
+          },
         },
       };
-
-      return {localFontsApi: api};
     },
     {name: 'withLocalFontManagement'},
   );

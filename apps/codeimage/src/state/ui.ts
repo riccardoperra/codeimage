@@ -1,4 +1,4 @@
-import {exposeStorePaths, provideAppState} from '@codeimage/store/index';
+import {provideAppState} from '@codeimage/store/index';
 import {
   readLocalState,
   withLocalStorage,
@@ -75,7 +75,7 @@ export const $uiStore = defineStore(() =>
   }));
 
 function createUiStore() {
-  return exposeStorePaths(provideAppState($uiStore));
+  return provideAppState($uiStore);
 }
 
 let uiStore: ReturnType<typeof createUiStore> | undefined;

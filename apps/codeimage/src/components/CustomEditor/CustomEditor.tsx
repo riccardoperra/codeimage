@@ -113,15 +113,10 @@ export default function CustomEditor(props: VoidProps<CustomEditorProps>) {
       if (tr.docChanged || tr.effects.some(effect => effect.is(replaceMarks))) {
         const active = editor();
         if (active && tr.state.field(lineMarksField, false)) {
-          const index = editorState.editors.findIndex(
-            tab => tab.id === active.id,
-          );
-          if (index < 0) return;
-          getRootEditorStore().actions.setEditors(
-            index,
-            'marks',
-            readMarks(tr.state),
-          );
+          const marks = readMarks(tr.state);
+          getRootEditorStore().actions.updateEditor(active.id, draft => {
+            Object.assign(draft.marks, marks);
+          });
         }
       }
     },

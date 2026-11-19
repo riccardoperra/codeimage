@@ -1,5 +1,4 @@
 import {parseSurface, parseWindowType} from '@core/configuration/windowTypes';
-import {createPathSetter} from '@codeimage/atomic-state';
 import {getEditorStore} from '@codeimage/store/editor';
 import type {
   PersistedTerminalState,
@@ -9,7 +8,6 @@ import {provideAppState} from '@codeimage/store/index';
 import type {PresetData} from '@codeimage/store/presets/types';
 import {TERMINAL_SHADOWS} from '@core/configuration/shadow';
 import {AVAILABLE_TERMINAL_THEMES} from '@core/configuration/terminal-themes';
-import {from, map} from 'rxjs';
 import {defineStore} from 'statebuilder';
 import {withProxyCommands} from 'statebuilder/commands';
 
@@ -142,31 +140,31 @@ export function createTerminalState() {
     };
   };
 
-  const stateToPersist$ = from(
-    store.watchCommand([
-      store.commands.setAccentVisible,
-      store.commands.setOpacity,
-      store.commands.setAlternativeTheme,
-      store.commands.setShadow,
-      store.commands.setType,
-      store.commands.setSurface,
-      store.commands.setShowGlassReflection,
-      store.commands.setShowHeader,
-      store.commands.setShowWatermark,
-      store.commands.toggleShowHeader,
-      store.commands.toggleWatermark,
-      store.commands.setBorder,
-      store.commands.setFromPreset,
-    ]),
-  ).pipe(
-    map(() => store.peek()),
-    map(mapToStateToPersistState),
-  );
+  const persistence = store.watchCommand([
+    store.commands.setAccentVisible,
+    store.commands.setOpacity,
+    store.commands.setAlternativeTheme,
+    store.commands.setShadow,
+    store.commands.setType,
+    store.commands.setSurface,
+    store.commands.setShowGlassReflection,
+    store.commands.setShowHeader,
+    store.commands.setShowWatermark,
+    store.commands.toggleShowHeader,
+    store.commands.toggleWatermark,
+    store.commands.setBorder,
+    store.commands.setFromPreset,
+  ]);
 
   return {
     state: store.get,
-    setState: createPathSetter(store.set),
-    stateToPersist$,
+    setState: store.set,
+    onPersistedChange(listener: (state: PersistedTerminalState) => void) {
+      const subscription = persistence.subscribe(() =>
+        listener(mapToStateToPersistState(store.peek())),
+      );
+      return () => subscription.unsubscribe();
+    },
     stateToPersist() {
       const state = store.peek();
       return mapToStateToPersistState(state);

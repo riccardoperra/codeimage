@@ -308,15 +308,6 @@ export function createEditorControlsModel(): EditorControlsModel {
     (value: T) =>
       session.commit(() => set(value));
 
-  // What dispatchUpdateTheme writes, without its analytics and its async load.
-  const showTheme = (theme: CustomTheme, background: boolean) => {
-    if (background)
-      frame.setStore('background', theme.properties.previewBackground);
-    terminal.setState('background', theme.properties.terminal.main);
-    terminal.setState('textColor', theme.properties.terminal.text);
-    editor.actions.setThemeId(theme.id);
-  };
-
   // Reading a resource before it is ready would suspend the caller's
   // boundary, so only settled themes are read.
   const loadedThemes = createMemo(() =>
@@ -343,7 +334,7 @@ export function createEditorControlsModel(): EditorControlsModel {
           flush(() => dispatchUpdateTheme({theme, updateBackground: true}));
           getUmami().track('theme-change', {themeId: theme.id});
         }),
-      preview: () => session.show(() => showTheme(theme, true)),
+      preview: () => session.show(() => session.showTheme(theme, true)),
     })),
   );
 
@@ -674,7 +665,7 @@ export function createEditorControlsModel(): EditorControlsModel {
           set: theme => dispatchUpdateTheme({theme, updateBackground: false}),
           show: id => {
             const theme = loadedThemes().find(item => item.id === id);
-            if (theme) showTheme(theme, false);
+            if (theme) session.showTheme(theme, false);
           },
         }),
         choice('select', {

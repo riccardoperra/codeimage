@@ -488,9 +488,6 @@ importers:
       '@codeimage/api':
         specifier: workspace:*
         version: link:../api
-      '@codeimage/atomic-state':
-        specifier: workspace:*
-        version: link:../../packages/atomic-state
       '@codeimage/config':
         specifier: workspace:*
         version: link:../../packages/config
@@ -611,27 +608,15 @@ importers:
       '@shikijs/magic-move':
         specifier: 4.6.0
         version: 4.6.0(react@19.2.4)(solid-js@2.0.0)
-      '@solid-primitives/context':
-        specifier: ^0.3.2
-        version: 0.3.2(solid-js@2.0.0)
       '@solid-primitives/event-bus':
-        specifier: ^1.1.3
-        version: 1.1.3(solid-js@2.0.0)
-      '@solid-primitives/event-listener':
-        specifier: ^2.4.5
-        version: 2.4.5(solid-js@2.0.0)
+        specifier: ^3.0.0
+        version: 3.0.0(@solidjs/web@2.0.0(solid-js@2.0.0))(solid-js@2.0.0)
       '@solid-primitives/platform':
-        specifier: 1.0.0-next.4
-        version: 1.0.0-next.4(@solidjs/web@2.0.0(solid-js@2.0.0))(solid-js@2.0.0)
-      '@solid-primitives/props':
-        specifier: ^3.2.3
-        version: 3.2.3(solid-js@2.0.0)
+        specifier: 1.0.0
+        version: 1.0.0(@solidjs/web@2.0.0(solid-js@2.0.0))(solid-js@2.0.0)
       '@solid-primitives/resize-observer':
-        specifier: 4.0.0-next.7
-        version: 4.0.0-next.7(@solidjs/web@2.0.0(solid-js@2.0.0))(solid-js@2.0.0)
-      '@solid-primitives/utils':
-        specifier: ^6.4.0
-        version: 6.4.0(solid-js@2.0.0)
+        specifier: 4.0.0
+        version: 4.0.0(@solidjs/web@2.0.0(solid-js@2.0.0))(solid-js@2.0.0)
       '@solidjs/router':
         specifier: catalog:solid2
         version: 2.0.0(@solidjs/web@2.0.0(solid-js@2.0.0))(solid-js@2.0.0)
@@ -683,9 +668,6 @@ importers:
       polished:
         specifier: ^4.2.2
         version: 4.3.1
-      rxjs:
-        specifier: ^7.8.2
-        version: 7.8.2
       solid-codemirror:
         specifier: catalog:solid2
         version: 3.0.0(@codemirror/state@6.6.0)(@codemirror/view@6.40.0)(solid-js@2.0.0)
@@ -896,9 +878,6 @@ importers:
       rolldown-plugin-solid:
         specifier: catalog:next
         version: 0.2.1(rolldown@1.3.2)(solid-js@2.0.0)(supports-color@10.2.2)
-      rxjs:
-        specifier: ^7.8.2
-        version: 7.8.2
       solid-js:
         specifier: catalog:solid2
         version: 2.0.0
@@ -1157,9 +1136,6 @@ importers:
       '@primer/primitives':
         specifier: ^7.17.1
         version: 7.17.1
-      '@solid-primitives/props':
-        specifier: ^3.2.3
-        version: 3.2.3(solid-js@2.0.0)
     devDependencies:
       '@codeimage/ui':
         specifier: workspace:*
@@ -1258,6 +1234,7 @@ importers:
       typescript:
         specifier: ^6.0.3
         version: 6.0.3
+
 
   packages/render:
     dependencies:
@@ -1367,15 +1344,6 @@ importers:
       '@solid-aria/utils':
         specifier: ^0.2.1
         version: 0.2.1(solid-js@2.0.0)
-      '@solid-primitives/props':
-        specifier: ^3.2.3
-        version: 3.2.3(solid-js@2.0.0)
-      '@solid-primitives/refs':
-        specifier: ^1.1.3
-        version: 1.1.3(solid-js@2.0.0)
-      '@solid-primitives/utils':
-        specifier: ^6.4.0
-        version: 6.4.0(solid-js@2.0.0)
       '@vanilla-extract/css':
         specifier: ^1.20.0
         version: 1.20.0
@@ -5541,15 +5509,15 @@ packages:
     peerDependencies:
       solid-js: ^1.4.4
 
-  '@solid-primitives/context@0.3.2':
-    resolution: {integrity: sha512-6fvTtpK17PFHnUf/UOc1TzBjd+kLFjtA62aRFEm1kDP9ufTo7FYW2kUzQAWbfbRHi30yjBJtopbR8qd6nShwyg==}
-    peerDependencies:
-      solid-js: ^1.6.12
-
   '@solid-primitives/event-bus@1.1.3':
     resolution: {integrity: sha512-cVW/YIG3iXRBhA/KNPeD89bR2cZkDok1Tl8ZWtYpbu0AfZVFeI7nyZjWbYLaYPXzlZouau2fU/lEuKcInQ6s8g==}
     peerDependencies:
       solid-js: ^1.6.12
+
+  '@solid-primitives/event-bus@3.0.0':
+    resolution: {integrity: sha512-p7NwAm3NnyIyochfIJhspXbYmdMrTw0vZWoLzpQTApD5CJycIQd15ZVKRKMjCJCctlGvKxIeBl8ZKo+FQy65pg==}
+    peerDependencies:
+      solid-js: ^2.0.0
 
   '@solid-primitives/event-listener@2.4.5':
     resolution: {integrity: sha512-nwRV558mIabl4yVAhZKY8cb6G+O1F0M6Z75ttTu5hk+SxdOnKSGj+eetDIu7Oax1P138ZdUU01qnBPR8rnxaEA==}
@@ -5587,11 +5555,11 @@ packages:
     peerDependencies:
       solid-js: ^1.6.12
 
-  '@solid-primitives/platform@1.0.0-next.4':
-    resolution: {integrity: sha512-907Hp7liW8Vuwsj+O2etp4pGk/0a+3ZELXfbgwjEwMHWmQo/zGREq8RIS2uHWneUSu5x1+fDS7i5kkLmgp9FXg==}
+  '@solid-primitives/platform@1.0.0':
+    resolution: {integrity: sha512-w7+f/pdMIQeKRRdnaUilnyNvlpleB3gzSY8F0au2m9zr/odwQPKMAzK05paHuFmtUFwoJkK9SX/DZHMORm43+Q==}
     peerDependencies:
-      '@solidjs/web': ^2.0.0-rc.14
-      solid-js: ^2.0.0-rc.14
+      '@solidjs/web': ^2.0.0
+      solid-js: ^2.0.0
 
   '@solid-primitives/props@3.2.3':
     resolution: {integrity: sha512-XzG6en9gSFwmvbKcATm2BxL63HegZ+BAG5fmHi8jyBppQHcaths7ffz+6vYvwYy3nlgLa20ufJLj7tst+PcHFA==}
@@ -5608,11 +5576,11 @@ packages:
     peerDependencies:
       solid-js: ^1.6.12
 
-  '@solid-primitives/resize-observer@4.0.0-next.7':
-    resolution: {integrity: sha512-2Jpj2fh70Qq61+ndSlxYVxnobq9Eu220nS3OQax8P/BWGH9msSv7Xsc6sL4Vk076No4IBcegsDw76Li4982jyQ==}
+  '@solid-primitives/resize-observer@4.0.0':
+    resolution: {integrity: sha512-J+O70F3LL9GCDZ0iUEmL4yZnUOoWgCzyCN9KL2FcqZSNgY0TVj7vUTgAJaL+wOGsz1VReBrRK02b9DxutE9SMA==}
     peerDependencies:
-      '@solidjs/web': ^2.0.0-rc.14
-      solid-js: ^2.0.0-rc.14
+      '@solidjs/web': ^2.0.0
+      solid-js: ^2.0.0
 
   '@solid-primitives/rootless@1.5.3':
     resolution: {integrity: sha512-N8cIDAHbWcLahNRLr0knAAQvXyEdEMoAZvIMZKmhNb1mlx9e2UOv9BRD5YNwQUJwbNoYVhhLwFOEOcVXFx0HqA==}
@@ -16591,19 +16559,17 @@ snapshots:
       '@solid-primitives/utils': 2.2.1(solid-js@2.0.0)
       solid-js: 2.0.0
 
-  '@solid-primitives/context@0.3.2(solid-js@2.0.0)':
-    dependencies:
-      solid-js: 2.0.0
-
   '@solid-primitives/event-bus@1.1.3(solid-js@1.9.12)':
     dependencies:
       '@solid-primitives/utils': 6.4.0(solid-js@1.9.12)
       solid-js: 1.9.12
 
-  '@solid-primitives/event-bus@1.1.3(solid-js@2.0.0)':
+  '@solid-primitives/event-bus@3.0.0(@solidjs/web@2.0.0(solid-js@2.0.0))(solid-js@2.0.0)':
     dependencies:
-      '@solid-primitives/utils': 6.4.0(solid-js@2.0.0)
+      '@solid-primitives/utils': 7.0.0(@solidjs/web@2.0.0(solid-js@2.0.0))(solid-js@2.0.0)
       solid-js: 2.0.0
+    transitivePeerDependencies:
+      - '@solidjs/web'
 
   '@solid-primitives/event-listener@2.4.5(solid-js@1.9.12)':
     dependencies:
@@ -16669,7 +16635,7 @@ snapshots:
     dependencies:
       solid-js: 1.9.12
 
-  '@solid-primitives/platform@1.0.0-next.4(@solidjs/web@2.0.0(solid-js@2.0.0))(solid-js@2.0.0)':
+  '@solid-primitives/platform@1.0.0(@solidjs/web@2.0.0(solid-js@2.0.0))(solid-js@2.0.0)':
     dependencies:
       '@solidjs/web': 2.0.0(solid-js@2.0.0)
       solid-js: 2.0.0
@@ -16710,7 +16676,7 @@ snapshots:
       '@solid-primitives/utils': 6.4.0(solid-js@2.0.0)
       solid-js: 2.0.0
 
-  '@solid-primitives/resize-observer@4.0.0-next.7(@solidjs/web@2.0.0(solid-js@2.0.0))(solid-js@2.0.0)':
+  '@solid-primitives/resize-observer@4.0.0(@solidjs/web@2.0.0(solid-js@2.0.0))(solid-js@2.0.0)':
     dependencies:
       '@solid-primitives/event-listener': 3.0.0(@solidjs/web@2.0.0(solid-js@2.0.0))(solid-js@2.0.0)
       '@solid-primitives/rootless': 2.0.0(@solidjs/web@2.0.0(solid-js@2.0.0))(solid-js@2.0.0)

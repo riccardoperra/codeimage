@@ -5,8 +5,6 @@ import {
 } from './initialState';
 export {getInitialEditorState, getInitialEditorUiOptions} from './initialState';
 import type * as ApiTypes from '@codeimage/api/api-types';
-import type {SetStoreFunction} from '@codeimage/atomic-state';
-import {createPathSetter} from '@codeimage/atomic-state';
 import {SUPPORTED_LANGUAGES} from '@codeimage/config';
 import {EditorConfigStore} from '@codeimage/store/editor/config.store';
 import {provideAppState} from '@codeimage/store/index';
@@ -16,11 +14,11 @@ import {
 } from '@codeimage/store/plugins/unique-id';
 import type {PresetData} from '@codeimage/store/presets/types';
 import type {EditorView} from '@codemirror/view';
-import {from, map, shareReplay} from 'rxjs';
 import {createSignal} from 'solid-js';
 import {defineStore, useStore} from 'statebuilder';
 import {createCommand, withProxyCommands} from 'statebuilder/commands';
 import type {EditorState, PersistedEditorState} from './model';
+import {persistedEditorState} from './persistedEditorState';
 import {MAX_EDITOR_TABS} from './model';
 
 export function createEditorsStore() {
@@ -47,7 +45,6 @@ export function createEditorsStore() {
   );
 
   const store = provideAppState(config);
-  const setState = createPathSetter(store.set);
 
   const configStore = useStore(EditorConfigStore);
 
@@ -55,28 +52,44 @@ export function createEditorsStore() {
 
   store
     .hold(store.commands.setActiveEditorId, activeEditorId =>
-      setState('activeEditorId', activeEditorId),
+      store.set(draft => {
+        draft.activeEditorId = activeEditorId;
+      }),
     )
     .hold(store.commands.setFocused, focused =>
-      setState('options', 'focused', focused),
+      store.set(draft => {
+        draft.options.focused = focused;
+      }),
     )
     .hold(store.commands.setFontId, fontId =>
-      setState('options', 'fontId', fontId),
+      store.set(draft => {
+        draft.options.fontId = fontId;
+      }),
     )
     .hold(store.commands.setThemeId, themeId =>
-      setState('options', 'themeId', themeId),
+      store.set(draft => {
+        draft.options.themeId = themeId;
+      }),
     )
     .hold(store.commands.setFontWeight, fontWeight =>
-      setState('options', 'fontWeight', fontWeight),
+      store.set(draft => {
+        draft.options.fontWeight = fontWeight;
+      }),
     )
     .hold(store.commands.setShowLineNumbers, showLineNumbers =>
-      setState('options', 'showLineNumbers', showLineNumbers),
+      store.set(draft => {
+        draft.options.showLineNumbers = showLineNumbers;
+      }),
     )
     .hold(store.commands.setEnableLigatures, enable =>
-      setState('options', 'enableLigatures', enable),
+      store.set(draft => {
+        draft.options.enableLigatures = enable;
+      }),
     )
     .hold(store.commands.setFromPreset, presetData => {
-      setState('options', presetData);
+      store.set(draft => {
+        Object.assign(draft.options, presetData);
+      });
       store.dispatch(editorUpdateCommand, void 0);
     })
     .hold(store.commands.setFromPersistedState, (persistedState, {state}) => {
@@ -109,48 +122,14 @@ export function createEditorsStore() {
     });
 
   const isActive = (id: string) => store.get.activeEditorId === id;
-  const updateEditors = (update: (state: EditorState[]) => void) =>
-    store.set(state => update(state.editors));
-  const setEditors = createPathSetter<EditorState[]>(updateEditors);
-
-  const mapToStateToPersistState = (
-    state: typeof store.get,
-  ): PersistedEditorState => {
-    return {
-      editors: state.editors.map(editor => {
-        return {
-          languageId: editor.languageId,
-          code: editor.code,
-          tabName: editor.tab.tabName ?? '',
-          id: editor.id,
-          lineNumberStart: editor.lineNumberStart ?? 1,
-          marks: editor.marks ?? {lines: [], focusedLines: []},
-        };
-      }),
-      options: {
-        themeId: state.options.themeId,
-        showLineNumbers: state.options.showLineNumbers,
-        fontId: state.options.fontId,
-        fontWeight: state.options.fontWeight,
-        enableLigatures: state.options.enableLigatures ?? true,
-      },
-    };
-  };
-
-  const stateToPersist$ = from(
-    store.watchCommand([
-      store.commands.setFontId,
-      store.commands.setThemeId,
-      store.commands.setFontWeight,
-      store.commands.setShowLineNumbers,
-      store.commands.setEnableLigatures,
-      editorUpdateCommand,
-    ]),
-  ).pipe(
-    map(() => store.peek()),
-    map(mapToStateToPersistState),
-    shareReplay({refCount: true, bufferSize: 1}),
-  );
+  const persistence = store.watchCommand([
+    store.commands.setFontId,
+    store.commands.setThemeId,
+    store.commands.setFontWeight,
+    store.commands.setShowLineNumbers,
+    store.commands.setEnableLigatures,
+    editorUpdateCommand,
+  ]);
 
   const addEditor = (
     editorState?: Partial<EditorState> | null,
@@ -174,8 +153,10 @@ export function createEditorsStore() {
           steps: editor.marks.script.steps.map(() => createRandomId()),
         },
       };
-    setEditors(editors => [...editors, editor]);
-    if (active) setState('activeEditorId', id);
+    store.set(draft => {
+      draft.editors.push(editor);
+      if (active) draft.activeEditorId = id;
+    });
     store.dispatch(editorUpdateCommand, void 0);
   };
 
@@ -191,17 +172,20 @@ export function createEditorsStore() {
     );
     const newActiveEditor = store.get.editors[currentIndex - 1];
     const updatedEditors = store.get.editors.filter(editor => editor.id !== id);
-    if ($isActive) {
-      setState('activeEditorId', newActiveEditor?.id ?? updatedEditors[0]?.id);
-    }
-    setEditors(updatedEditors);
+    store.set(draft => {
+      if ($isActive)
+        draft.activeEditorId = newActiveEditor?.id ?? updatedEditors[0]?.id;
+      draft.editors = updatedEditors;
+    });
     store.dispatch(editorUpdateCommand, void 0);
   };
 
   const setTabName = (id: string, name: string, updateLanguage: boolean) => {
     const index = store.get.editors.findIndex(tab => tab.id === id);
     if (index < 0) return;
-    setEditors(index, 'tab', 'tabName', name);
+    store.set(draft => {
+      draft.editors[index].tab.tabName = name;
+    });
     if (updateLanguage) {
       const matches = SUPPORTED_LANGUAGES.filter(language => {
         return language.icons.some(({matcher}) => matcher.test(name));
@@ -214,7 +198,9 @@ export function createEditorsStore() {
       ) {
         return;
       }
-      setEditors(index, 'languageId', matches[0].id);
+      store.set(draft => {
+        draft.editors[index].languageId = matches[0].id;
+      });
     }
     store.dispatch(editorUpdateCommand, void 0);
   };
@@ -232,44 +218,59 @@ export function createEditorsStore() {
   };
 
   const setFromWorkspace = (item: ApiTypes.GetProjectByIdApi['response']) => {
-    setEditors(
-      item.editorTabs.map(
-        editor =>
-          ({
-            tab: {
-              tabName: editor.tabName,
-            },
-            formatter: null,
-            languageId: editor.languageId,
-            id: editor.id,
-            code: editor.code,
-            lineNumberStart: editor.lineNumberStart ?? 1,
-            marks: editor.marks ?? {lines: [], focusedLines: []},
-          }) as EditorState,
-      ),
-    );
-    setState('activeEditorId', item.editorTabs[0].id);
-    setState('options', item.editorOptions);
+    store.set(draft => {
+      draft.editors = item.editorTabs.map(editor => ({
+        tab: {tabName: editor.tabName},
+        formatter: null,
+        languageId: editor.languageId,
+        id: editor.id,
+        code: editor.code,
+        lineNumberStart: editor.lineNumberStart ?? 1,
+        marks: editor.marks ?? {lines: [], focusedLines: []},
+      }));
+      draft.activeEditorId = item.editorTabs[0].id;
+      Object.assign(draft.options, item.editorOptions);
+    });
     store.dispatch(editorUpdateCommand, void 0);
   };
 
-  const setEditorsWithCommand: SetStoreFunction<EditorState[]> =
-    createPathSetter(update => {
-      updateEditors(update);
-      store.dispatch(editorUpdateCommand, void 0);
+  const replaceEditors = (editors: EditorState[]) => {
+    store.set(draft => {
+      draft.editors = editors;
     });
+    store.dispatch(editorUpdateCommand, void 0);
+  };
+
+  const updateEditor = (
+    id: string | undefined,
+    update: (draft: EditorState) => void,
+  ) => {
+    let updated = false;
+    store.set(draft => {
+      const editor = draft.editors.find(editor => editor.id === id);
+      if (!editor) return;
+      update(editor);
+      updated = true;
+    });
+    if (updated) store.dispatch(editorUpdateCommand, void 0);
+  };
 
   return {
     get state() {
       return store.get;
     },
-    setState,
+    setState: store.set,
     isActive,
     stateToPersist() {
       const state = store.peek();
-      return mapToStateToPersistState(state);
+      return persistedEditorState(state);
     },
-    stateToPersist$,
+    onPersistedChange(listener: (state: PersistedEditorState) => void) {
+      const subscription = persistence.subscribe(() =>
+        listener(persistedEditorState(store.peek())),
+      );
+      return () => subscription.unsubscribe();
+    },
     activeEditorView,
     activeEditorViewTabId,
     computed: {
@@ -279,7 +280,8 @@ export function createEditorsStore() {
     actions: {
       setActiveEditorView,
       setActiveEditorViewTabId,
-      setEditors: setEditorsWithCommand,
+      replaceEditors,
+      updateEditor,
       addEditor,
       removeEditor,
       setTabName,

@@ -794,7 +794,7 @@ export function createSettingSections(model: EditorControlsModel) {
             control: () => (
               <Segmented
                 value={exportStore.get.extension}
-                onChange={value => exportStore.set('extension', value)}
+                onChange={exportStore.setExtension}
                 items={exportFormats.map(format => ({
                   label: format.name,
                   value: format.extension,
@@ -815,9 +815,7 @@ export function createSettingSections(model: EditorControlsModel) {
                     <div class={styles.range}>
                       <RangeField
                         value={exportStore.get.jpegQuality}
-                        onChange={value =>
-                          exportStore.set('jpegQuality', value)
-                        }
+                        onChange={exportStore.setJpegQuality}
                         min={JPEG_QUALITY.min}
                         max={JPEG_QUALITY.max}
                         step={JPEG_QUALITY.step}
@@ -854,7 +852,7 @@ export function createSettingSections(model: EditorControlsModel) {
                 <Segmented
                   value={String(exportStore.get.devicePixelRatio)}
                   onChange={value =>
-                    exportStore.set('devicePixelRatio', Number(value))
+                    exportStore.setDevicePixelRatio(Number(value))
                   }
                   items={EXPORT_SCALES.map(scale => ({
                     label: `${scale}x`,

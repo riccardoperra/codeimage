@@ -45,7 +45,7 @@ test('edit step waits for a reused view to synchronize and preserves read-only c
         setActiveEditorId: setId,
         addEditor: () => undefined,
         removeEditor: () => undefined,
-        setEditors: () => undefined,
+        replaceEditors: () => undefined,
       },
     });
     return {animation, setViewId, dispose};

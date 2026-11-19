@@ -8,7 +8,6 @@ import {loadDefaultSignature} from '@codeimage/store/signatures/signatures';
 import {toast} from '@codeimage/ui';
 import {appEnvironment} from '@core/configuration';
 import {useNavigate} from '@solidjs/router';
-import {debounceTime, filter, map, merge, share} from 'rxjs';
 import type {ParentProps} from 'solid-js';
 import {
   createComponent,
@@ -16,13 +15,13 @@ import {
   createEffect,
   createSignal,
   flush,
-  onSettled,
+  onCleanup,
   snapshot,
   useContext,
 } from 'solid-js';
 import {API} from '../../data-access/api';
 import {useIdb} from '../../hooks/use-indexed-db';
-import {remoteSaves} from './remoteSync';
+import {createRemoteSaves} from './remoteSync';
 
 type Project = ApiTypes.GetProjectByIdApi['response'];
 
@@ -58,16 +57,16 @@ function createEditorSyncAdapter(props: ParentProps<{snippetId?: string}>) {
     setReadonly(!data.isOwner);
     editorStore.actions.setFromWorkspace(data);
     animationStore.actions.setFromPersistedState(data.animation);
-    terminalStore.setState(state => ({
-      ...state,
-      ...data.terminal,
-      surface: data.terminal.surface ?? 'solid',
-    }));
-    frameStore.setStore(state => ({
-      ...state,
-      ...data.frame,
-      signature: parseSignature(data.frame.signature),
-    }));
+    terminalStore.setState(draft => {
+      Object.assign(draft, data.terminal, {
+        surface: data.terminal.surface ?? 'solid',
+      });
+    });
+    frameStore.setStore(draft => {
+      Object.assign(draft, data.frame, {
+        signature: parseSignature(data.frame.signature),
+      });
+    });
   }
 
   createEffect(snippetId, id => {
@@ -143,20 +142,6 @@ function createEditorSyncAdapter(props: ParentProps<{snippetId?: string}>) {
     });
   }
 
-  const currentState = () => stateToPersist();
-  const onChange$ = merge(
-    frameStore.stateToPersist$.pipe(map(() => currentState)),
-    terminalStore.stateToPersist$.pipe(map(() => currentState)),
-    editorStore.stateToPersist$.pipe(map(() => currentState)),
-    animationStore.stateToPersist$.pipe(
-      map(animation => () => stateToPersist(animation)),
-    ),
-  ).pipe(
-    filter(isReady),
-    map(read => read()),
-    share(),
-  );
-
   async function clone() {
     const projectId = snippetId();
     if (!projectId) return;
@@ -192,34 +177,44 @@ function createEditorSyncAdapter(props: ParentProps<{snippetId?: string}>) {
     }
   }
 
-  onSettled(() => {
-    const remote = remoteSaves(
-      onChange$,
-      {id: () => activeWorkspace()?.id, loggedIn: authState.loggedIn, readOnly},
-      saveRemote,
-      setRemoteSync,
-    ).subscribe();
-    const cache = (isProject: boolean) =>
-      onChange$
-        .pipe(
-          filter(state => Boolean(state.$snippetId) === isProject),
-          debounceTime(250),
-        )
-        .subscribe(state => {
-          void idb.set(documentKey(state.$snippetId), state);
-        });
-    const local = cache(false);
-    const projects = cache(true);
+  const remote = createRemoteSaves(
+    {id: () => activeWorkspace()?.id, loggedIn: authState.loggedIn, readOnly},
+    saveRemote,
+    setRemoteSync,
+  );
+  const local = new Map<string, ReturnType<typeof setTimeout>>();
+  const persist = (
+    animation?: ReturnType<typeof animationStore.stateToPersist>,
+  ) => {
+    if (!isReady()) return;
+    const state = stateToPersist(animation);
+    remote.schedule(state);
+    const key = documentKey(state.$snippetId);
+    clearTimeout(local.get(key));
+    local.set(
+      key,
+      setTimeout(() => {
+        local.delete(key);
+        void idb.set(key, state);
+      }, 250),
+    );
+  };
+  const current = () => persist();
+  const unsubscribe = [
+    frameStore.onPersistedChange(current),
+    terminalStore.onPersistedChange(current),
+    editorStore.onPersistedChange(current),
+    animationStore.onPersistedChange(persist),
+  ];
 
-    return () => {
-      const workspace = activeWorkspace();
-      if (workspace && remoteSync() && !readOnly() && authState.loggedIn()) {
-        void saveRemote(workspace.id, stateToPersist());
-      }
-      remote.unsubscribe();
-      local.unsubscribe();
-      projects.unsubscribe();
-    };
+  onCleanup(() => {
+    const workspace = activeWorkspace();
+    if (workspace && remoteSync() && !readOnly() && authState.loggedIn()) {
+      void saveRemote(workspace.id, stateToPersist());
+    }
+    remote.dispose();
+    for (const timer of local.values()) clearTimeout(timer);
+    for (const stop of unsubscribe) stop();
   });
 
   return {

@@ -3,7 +3,7 @@ import type {
   AnimationHeader,
   EasingValue,
 } from '@core/animation/model';
-import {Subject, map} from 'rxjs';
+import {createEventBus} from '@solid-primitives/event-bus';
 import type {Accessor} from 'solid-js';
 import type {EditorView} from '@codemirror/view';
 import {
@@ -23,6 +23,7 @@ import {
   EMPTY_DRAFT,
   clampDuration,
   parseDraft,
+  persistedAnimation,
   reconcileSteps,
   segmentsOf,
   stepAt,
@@ -112,7 +113,7 @@ export function createAnimationStore(editor: {
     ReturnType<typeof createEditorsStore>['actions'],
     'setActiveEditorId' | 'addEditor' | 'removeEditor'
   > & {
-    setEditors: (
+    replaceEditors: (
       tabs: ReturnType<typeof createEditorsStore>['state']['editors'],
     ) => void;
   };
@@ -133,15 +134,15 @@ export function createAnimationStore(editor: {
   const [playback, setPlayback] = createSignal<Playback>({state: 'editing'});
   const [open, setOpen] = createSignal(false);
   const [selection, setSelection] = createSignal<SegmentSelection | null>(null);
-  const changes = new Subject<AnimationSettings>();
+  const changes = createEventBus<ReturnType<typeof persistedAnimation>>();
   let cancelFocus: (() => void) | undefined;
-  onCleanup(() => changes.complete());
   const update = (
     change: (settings: AnimationSettings) => AnimationDraft,
     options: {commit?: boolean} = {},
   ) => {
     const next = setDraft(previous => change(reconcileSteps(previous, tabs())));
-    if (options.commit !== false) changes.next(reconcileSteps(next, tabs()));
+    if (options.commit !== false)
+      changes.emit(persistedAnimation(reconcileSteps(next, tabs())));
   };
   const cancelEditingFocus = () => {
     cancelFocus?.();
@@ -228,7 +229,7 @@ export function createAnimationStore(editor: {
     },
     {defer: true},
   );
-  const stateToPersist = () => ({...settings(), steps: [...settings().steps]});
+  const stateToPersist = () => persistedAnimation(settings());
   const setHoldMs = (
     stepId: string,
     holdMs: number,
@@ -296,9 +297,7 @@ export function createAnimationStore(editor: {
     open,
     selection,
     stateToPersist,
-    stateToPersist$: changes.pipe(
-      map(settings => ({...settings, steps: [...settings.steps]})),
-    ),
+    onPersistedChange: changes.listen,
     actions: {
       setOpen(value: boolean) {
         setOpen(value);
@@ -336,7 +335,7 @@ export function createAnimationStore(editor: {
         const [tab] = tabs.splice(index, 1);
         tabs.splice(to, 0, tab);
         edit();
-        editor.actions.setEditors(tabs);
+        editor.actions.replaceEditors(tabs);
       },
       applyToAll(stepId: string) {
         const step = settings().steps.find(step => step.id === stepId);
