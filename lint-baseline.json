@@ -848,8 +848,8 @@
     "codeimage(no-static-inline-style)": 1
   },
   "apps/codeimage/src/pages/UnifiedEditor/model.tsx": {
-    "codeimage(no-comments)": 24,
-    "eslint(max-lines)": 710,
+    "codeimage(no-comments)": 23,
+    "eslint(max-lines)": 703,
     "eslint(max-lines-per-function)": 1,
     "eslint(no-restricted-imports)": 1,
     "typescript(no-non-null-assertion)": 1
@@ -952,7 +952,7 @@
   "apps/codeimage/src/pages/UnifiedEditor/shell/sections.tsx": {
     "codeimage(no-comments)": 28,
     "codeimage(no-static-inline-style)": 1,
-    "eslint(max-lines)": 975,
+    "eslint(max-lines)": 973,
     "eslint(max-lines-per-function)": 1,
     "eslint(no-restricted-imports)": 2,
     "solid(components-return-once)": 1,
@@ -1115,9 +1115,7 @@
     "codeimage(no-comments)": 1
   },
   "apps/codeimage/src/state/editor/activeEditor.ts": {
-    "codeimage(no-comments)": 1,
-    "eslint(no-async-promise-executor)": 1,
-    "eslint(no-param-reassign)": 1
+    "eslint(no-async-promise-executor)": 1
   },
   "apps/codeimage/src/state/editor/animation.ts": {
     "codeimage(no-comments)": 3,

@@ -41,7 +41,7 @@ test('tabs always derive steps and timing updates persist independently of selec
         removeEditor: id => {
           setTabs(tabs => tabs.filter(tab => tab.id !== id));
         },
-        setEditors: value => {
+        replaceEditors: value => {
           if (Array.isArray(value)) setTabs(value);
         },
         addEditor: value => {

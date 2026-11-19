@@ -24,8 +24,10 @@ export function dispatchUpdateTheme(params: DispatchUpdateThemeParams): void {
     if (!resolved) return;
     if (updateBackground)
       frame.setBackground(resolved.properties.previewBackground);
-    terminal.setState('background', resolved.properties.terminal.main);
-    terminal.setState('textColor', resolved.properties.terminal.text);
+    terminal.setState(draft => {
+      draft.background = resolved.properties.terminal.main;
+      draft.textColor = resolved.properties.terminal.text;
+    });
     editor.actions.setThemeId(resolved.id);
     getUmami().track('theme-change', {theme: resolved.id});
   };
@@ -55,12 +57,11 @@ export function dispatchRandomTheme() {
     randomizeElement([...AVAILABLE_GRADIENTS, ...AVAILABLE_COLORS]),
   );
 
-  terminal.setState('accentVisible', randomizeBoolean());
-  terminal.setState('alternativeTheme', randomizeBoolean());
-  terminal.setState('showGlassReflection', randomizeBoolean());
-  terminal.setState(
-    'shadow',
-    randomizeElement(Object.values(TERMINAL_SHADOWS)),
-  );
-  terminal.setState('type', randomizeElement(AVAILABLE_TERMINAL_THEMES.keys));
+  terminal.setState(draft => {
+    draft.accentVisible = randomizeBoolean();
+    draft.alternativeTheme = randomizeBoolean();
+    draft.showGlassReflection = randomizeBoolean();
+    draft.shadow = randomizeElement(Object.values(TERMINAL_SHADOWS));
+    draft.type = randomizeElement(AVAILABLE_TERMINAL_THEMES.keys);
+  });
 }

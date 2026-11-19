@@ -78,9 +78,11 @@ export function savedExportChoice(): ExportChoice {
 export function saveExportChoice(choice: ExportChoice) {
   const store = getExportCanvasStore();
   flush(() => {
-    store.set('extension', choice.extension);
-    store.set('devicePixelRatio', choice.pixelRatio);
-    store.set('jpegQuality', choice.quality);
+    store.set(draft => {
+      draft.extension = choice.extension;
+      draft.devicePixelRatio = choice.pixelRatio;
+      draft.jpegQuality = choice.quality;
+    });
   });
 }
 

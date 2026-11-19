@@ -1,5 +1,4 @@
 import {parseSurface, parseWindowType} from '@core/configuration/windowTypes';
-import {createPathSetter} from '@codeimage/atomic-state';
 import {getEditorStore} from '@codeimage/store/editor';
 import type {
   PersistedTerminalState,
@@ -159,7 +158,7 @@ export function createTerminalState() {
 
   return {
     state: store.get,
-    setState: createPathSetter(store.set),
+    setState: store.set,
     onPersistedChange(listener: (state: PersistedTerminalState) => void) {
       const subscription = persistence.subscribe(() =>
         listener(mapToStateToPersistState(store.peek())),

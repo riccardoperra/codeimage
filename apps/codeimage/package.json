@@ -45,7 +45,6 @@
   "dependencies": {
     "@auth0/auth0-spa-js": "^2.18.2",
     "@codeimage/api": "workspace:*",
-    "@codeimage/atomic-state": "workspace:*",
     "@codeimage/config": "workspace:*",
     "@codeimage/dom-export": "workspace:*",
     "@codeimage/highlight": "workspace:*",

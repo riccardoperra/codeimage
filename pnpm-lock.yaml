@@ -488,9 +488,6 @@ importers:
       '@codeimage/api':
         specifier: workspace:*
         version: link:../api
-      '@codeimage/atomic-state':
-        specifier: workspace:*
-        version: link:../../packages/atomic-state
       '@codeimage/config':
         specifier: workspace:*
         version: link:../../packages/config

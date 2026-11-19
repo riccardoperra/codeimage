@@ -23,18 +23,13 @@ export function createEditorStore() {
     resource => {
       if (resource) {
         untrackCommand(() => {
-          terminal.setState(
-            'background',
-            background => background || resource.properties.terminal.main,
-          );
-          terminal.setState(
-            'textColor',
-            textColor => textColor || resource.properties.terminal.text,
-          );
-          frame.setStore(
-            'background',
-            background => background ?? resource.properties.previewBackground,
-          );
+          terminal.setState(draft => {
+            draft.background ||= resource.properties.terminal.main;
+            draft.textColor ||= resource.properties.terminal.text;
+          });
+          frame.setStore(draft => {
+            draft.background ??= resource.properties.previewBackground;
+          });
         }, false);
         setInitialized(true);
       }
