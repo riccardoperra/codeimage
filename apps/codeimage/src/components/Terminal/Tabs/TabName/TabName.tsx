@@ -105,12 +105,11 @@ export default function TabName(props: TabNameProps) {
   const open = () => shown() && !props.readonly && options().length > 0;
   const optionId = (item: LanguageIconDefinition) => `${id}-${item.extension}`;
 
+  const {observe} = makeResizeObserver(([entry]) => {
+    if (entry) setWidth(entry.contentRect.width);
+  });
   onSettled(() => {
-    if (!hiddenText) return;
-    const {observe} = makeResizeObserver(([entry]) => {
-      if (entry) setWidth(entry.contentRect.width);
-    });
-    observe(hiddenText);
+    if (hiddenText) observe(hiddenText);
   });
 
   createEffect(() => [open(), control(), list()] as const, positionSuggestions);
