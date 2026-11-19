@@ -10,7 +10,7 @@ import {createMockContext} from './mock-context.mjs';
 import {animationMp4Cases} from './animation-mp4.mjs';
 import {auditSavedProjects} from './saved-projects.mjs';
 import {auditSettingsSearch, closeSettingsDialog} from './settings-search.mjs';
-import {auditTabs} from './tab-reorder.mjs';
+import {auditTabLayouts} from './tab-reorder.mjs';
 import {writeFile, readFile} from 'node:fs/promises';
 import {resolve} from 'node:path';
 import {PNG} from 'pngjs';
@@ -262,12 +262,7 @@ export async function audit({page, context, base, out, server}) {
     const {verifyWatermark} = await import('./watermark.mjs');
     await verifyWatermark({page, out, download, section, windowStyle});
   });
-  await feature('tabs', () =>
-    auditTabs({page, out, editor, shot, windowStyle, unzipSync}),
-  );
-  await feature('tabs-classic', () =>
-    auditTabs({page, out, editor, shot, windowStyle, unzipSync}, 'macOS'),
-  );
+  await auditTabLayouts({feature, fresh, out, shot, windowStyle, unzipSync});
   await feature('settings-search', () => auditSettingsSearch(page));
   await feature('settings', async () => {
     await settings('appearance');

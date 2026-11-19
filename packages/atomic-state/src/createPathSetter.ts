@@ -1,8 +1,9 @@
 import {storePath} from '@solidjs/signals';
-import type {StoreSetter} from 'solid-js';
 import type {SetStoreFunction} from './experimental/store-types';
 
-export function createPathSetter<T>(set: StoreSetter<T>): SetStoreFunction<T> {
+export function createPathSetter<T>(
+  set: (write: (draft: T) => void) => void,
+): SetStoreFunction<T> {
   const update = storePath as (...args: unknown[]) => (draft: T) => void;
   return (...args: unknown[]) => {
     set(draft => {

@@ -26,6 +26,9 @@ import {remoteSaves} from './remoteSync';
 
 type Project = ApiTypes.GetProjectByIdApi['response'];
 
+const documentKey = (snippetId?: string | null) =>
+  snippetId ? 'project-document' : 'document';
+
 function createEditorSyncAdapter(props: ParentProps<{snippetId?: string}>) {
   const snippetId = () => props.snippetId;
   const [remoteSync, setRemoteSync] = createSignal(false);
@@ -196,9 +199,17 @@ function createEditorSyncAdapter(props: ParentProps<{snippetId?: string}>) {
       saveRemote,
       setRemoteSync,
     ).subscribe();
-    const local = onChange$.pipe(debounceTime(250)).subscribe(state => {
-      void idb.set('document', state);
-    });
+    const cache = (isProject: boolean) =>
+      onChange$
+        .pipe(
+          filter(state => Boolean(state.$snippetId) === isProject),
+          debounceTime(250),
+        )
+        .subscribe(state => {
+          void idb.set(documentKey(state.$snippetId), state);
+        });
+    const local = cache(false);
+    const projects = cache(true);
 
     return () => {
       const workspace = activeWorkspace();
@@ -207,11 +218,13 @@ function createEditorSyncAdapter(props: ParentProps<{snippetId?: string}>) {
       }
       remote.unsubscribe();
       local.unsubscribe();
+      projects.unsubscribe();
     };
   });
 
   return {
-    indexedDbState: () => idb.get<ProjectEditorPersistedState>('document'),
+    indexedDbState: () =>
+      idb.get<ProjectEditorPersistedState>(documentKey(snippetId())),
     loadedSnippet,
     readOnly,
     clone,

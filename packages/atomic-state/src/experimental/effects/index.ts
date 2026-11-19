@@ -32,13 +32,16 @@ export function effect<T>(
   const subscription = effectGeneratorCallback(valueNotifier$).subscribe();
 
   const loading$ = createObservable(loading);
-  const loadingAccessor = new Proxy(loading, {
-    get(target, key) {
-      if (!Reflect.has(loading$, key)) return Reflect.get(target, key);
-      const value = Reflect.get(loading$, key);
-      return typeof value === 'function' ? value.bind(loading$) : value;
+  const loadingAccessor = new Proxy(
+    Object.assign(() => loading(), loading$),
+    {
+      get(target, key) {
+        if (!Reflect.has(loading$, key)) return Reflect.get(target, key);
+        const value = Reflect.get(loading$, key);
+        return typeof value === 'function' ? value.bind(loading$) : value;
+      },
     },
-  }) as Effect<T>['loading'];
+  );
 
   return Object.assign(dispatch, {
     watch: valueNotifier$.subscribe.bind(valueNotifier$),

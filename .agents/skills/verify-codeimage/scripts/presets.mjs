@@ -45,10 +45,10 @@ async function stored(page, key) {
   );
 }
 
-async function waitForDocument(page, expected) {
+async function waitForDocument(page, expected, key) {
   let actual;
   for (let attempt = 0; attempt < 50; attempt++) {
-    actual = await stored(page, 'document');
+    actual = await stored(page, key);
     if (
       isDeepStrictEqual(actual?.editor.options, expected.editor) &&
       actual?.frame.padding === expected.frame.padding &&
@@ -149,6 +149,7 @@ async function checkApplied({
   projectId,
 }) {
   const code = 'const presetKeepsCode = true;';
+  const key = projectId ? 'project-document' : 'document';
   await editor().fill(code);
   const changedThemeId = await chooseTheme(page, section, 'Night Owl');
   await choosePadding(page, section, 32);
@@ -161,7 +162,7 @@ async function checkApplied({
     frame: {...preset.data.frame, padding: 32},
     terminal: {...preset.data.terminal, showWatermark: true},
   };
-  await waitForDocument(page, changed);
+  await waitForDocument(page, changed, key);
   await section('presets');
   await page.screenshot({path: resolve(out, `${name}-before-apply.png`)});
   const pending = projectId
@@ -174,7 +175,7 @@ async function checkApplied({
       )
     : null;
   await page.locator('li').filter({hasText: 'Persistence preset'}).click();
-  const saved = await waitForDocument(page, preset.data);
+  const saved = await waitForDocument(page, preset.data, key);
   assert.deepEqual(saved.frame, preset.data.frame);
   assert.deepEqual(saved.terminal, preset.data.terminal);
   const appliedAppearance = await appearance(page);
@@ -226,7 +227,7 @@ async function checkApplied({
     JSON.stringify(
       {
         expected: preset.data,
-        document: await stored(page, 'document'),
+        document: await stored(page, key),
         appliedAppearance,
         reloadedAppearance,
       },
@@ -239,7 +240,7 @@ async function checkApplied({
     appliedAppearance,
     'terminal renders the same colours after reload',
   );
-  const reloaded = await waitForDocument(page, preset.data);
+  const reloaded = await waitForDocument(page, preset.data, key);
   assert.deepEqual(reloaded.frame, preset.data.frame);
   assert.deepEqual(reloaded.terminal, preset.data.terminal);
   await page.screenshot({path: resolve(out, `${name}-after-reload.png`)});

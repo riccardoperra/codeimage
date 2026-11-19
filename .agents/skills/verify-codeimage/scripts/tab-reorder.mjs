@@ -131,7 +131,24 @@ async function completeTabExtension(page, input, {prefix, extension, method}) {
   assert.equal(await input.inputValue(), prefix.split('.')[0] + extension);
 }
 
-export async function auditTabs(
+export async function auditTabLayouts({feature, fresh, ...options}) {
+  for (const [name, style] of [
+    ['tabs', 'Editor'],
+    ['tabs-classic', 'macOS'],
+  ]) {
+    await feature(name, () =>
+      fresh(
+        {name, layout: 'inspector', viewport: {width: 1440, height: 900}},
+        async ({doctor, page, editor}) => {
+          await doctor();
+          return auditTabs({...options, page, editor}, style);
+        },
+      ),
+    );
+  }
+}
+
+async function auditTabs(
   {page, out, editor, shot, windowStyle, unzipSync},
   style = 'Editor',
 ) {
@@ -181,9 +198,12 @@ export async function auditTabs(
   assert.equal(await readCode(), 'const first = 1;');
   await strip.locator(tabSelector).filter({hasText: 'hello.py'}).click();
   assert.equal(await readCode(), 'print("second")');
-  const [firstId, secondId] = await strip
+  const ids = await strip
     .locator(tabSelector)
     .evaluateAll(tabs => tabs.map(tab => tab.id));
+  assert.equal(ids.length, 2);
+  assert.equal(new Set(ids).size, 2, 'each tab has its own identity');
+  const [firstId, secondId] = ids;
   assert.equal(
     await page.locator('[aria-roledescription="draggable"]').count(),
     2,
@@ -220,7 +240,11 @@ export async function auditTabs(
     '01-hello.py.png',
     '02-renamed.ts.png',
   ]);
-  for (const [, data] of entries) PNG.sync.read(Buffer.from(data));
+  const pngs = entries.map(([, data]) => PNG.sync.read(Buffer.from(data)));
+  assert.ok(
+    !pngs[0].data.equals(pngs[1].data),
+    'each tab exports its own rendered pixels',
+  );
   const active = strip.locator(`${tabSelector}[data-active="true"]`);
   const closedId = await active.getAttribute('id');
   assert.ok(closedId);

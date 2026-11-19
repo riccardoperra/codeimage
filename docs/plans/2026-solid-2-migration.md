@@ -152,6 +152,22 @@ Before merging P5, review the remaining imports and Solid 1 syntax across the ap
 
 [Solid 2 migration guide](https://docs.solidjs.com/migration/from-solid-1/) · [Solid Router migration](https://docs.solidjs.com/migration/from-solid-router/) · [Editor architecture](../../apps/codeimage/src/pages/UnifiedEditor/README.md) · [CLI renderer](../../packages/render/README.md) · [Browser and CLI verification](../../.agents/skills/verify-codeimage/SKILL.md)
 
+### Comparing the two runtimes
+
+Land portable assertions on a branch from `main` first. Run the same named journeys on that branch and on P5, with separate dependency installs, Vite servers and browser contexts. Record the commit, failed assertion and trace for each run. Keep browser cases on `verify-codeimage` so they exercise the real compiler, router, editor and downloads. Keep deterministic store and resource races in Vitest. Use Vitest Browser Mode when an isolated DOM component needs a real focus, layout or event-propagation check.
+
+```sh
+pnpm --filter='./packages/**' --recursive typecheck:ci
+pnpm --filter @codeimage/api typecheck:ci
+pnpm --filter @codeimage/app typecheck
+VERIFY_AUDIT=1 VERIFY_CASES=tabs,tabs-classic,preset-persistence,settings-persistence,snippet-navigation,projects \
+  node .agents/skills/verify-codeimage/scripts/verify.mjs
+```
+
+The tab journeys use fresh browser contexts and verify tab identity, the active document after closing a tab, and the order and distinct decoded pixels of the ZIP images. Solid 2 additionally exercises selection of filename completions with keyboard and pointer. Local browser runs exercise the MSW boundary. Keep the production asset build, the hosted preview and backend integration as separate gates.
+
+The navigation matrix also covers switching from a local document to a remote snippet and back. Cache the two document types separately, using the identity captured with the edit. The screen export audit currently reports a 0.765% difference in the Inspector with the header hidden on both Solid 1 and Solid 2. Keep the 0.5% threshold while investigating that shared discrepancy.
+
 ## P6. Upgrade the marketing site
 
 - [ ] In `apps/website`, select a matching Solid 2 TanStack Router and Start set. Use the ported CodeMirror adapter and replace the Solid 1 motion adapter where the landing page uses it.

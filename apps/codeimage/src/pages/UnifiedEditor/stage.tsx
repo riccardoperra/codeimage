@@ -16,7 +16,7 @@ import {
   onCleanup,
   Show,
   Loading,
-  createTrackedEffect,
+  createEffect,
 } from 'solid-js';
 import {createResource} from '@codeimage/store/plugins/create-resource';
 import type {Accessor, Component} from 'solid-js';
@@ -122,34 +122,36 @@ function ThemePreview(props: {theme: ThemeEntry}) {
 function FramePlaceholder(props: {frame: Accessor<HTMLElement | undefined>}) {
   const [size, setSize] = createSignal<{width: number; height: number}>();
   const [settled, setSettled] = createSignal(false);
-  createTrackedEffect(() => {
-    const element = props.frame();
-    if (!element) return;
-    let frame = 0;
-    let fontsReady = false;
-    const measure = () => {
-      const box = element.getBoundingClientRect();
-      if (!box.width || !box.height) return;
-      setSize({width: box.width, height: box.height});
-      setSettled(false);
-      cancelAnimationFrame(frame);
-      if (fontsReady) frame = requestAnimationFrame(() => setSettled(true));
-    };
-    const observer = new ResizeObserver(measure);
-    observer.observe(element);
-    measure();
-    let disposed = false;
-    void document.fonts.ready.then(() => {
-      if (disposed) return;
-      fontsReady = true;
+  createEffect(
+    () => props.frame(),
+    element => {
+      if (!element) return;
+      let frame = 0;
+      let fontsReady = false;
+      const measure = () => {
+        const box = element.getBoundingClientRect();
+        if (!box.width || !box.height) return;
+        setSize({width: box.width, height: box.height});
+        setSettled(false);
+        cancelAnimationFrame(frame);
+        if (fontsReady) frame = requestAnimationFrame(() => setSettled(true));
+      };
+      const observer = new ResizeObserver(measure);
+      observer.observe(element);
       measure();
-    });
-    return () => {
-      disposed = true;
-      cancelAnimationFrame(frame);
-      observer.disconnect();
-    };
-  });
+      let disposed = false;
+      void document.fonts.ready.then(() => {
+        if (disposed) return;
+        fontsReady = true;
+        measure();
+      });
+      return () => {
+        disposed = true;
+        cancelAnimationFrame(frame);
+        observer.disconnect();
+      };
+    },
+  );
   return (
     <div
       class={placeholderStyles.placeholder}
@@ -205,17 +207,19 @@ export function createStage(pageState: Accessor<EditorPageState>): Stage {
               onScaleChange={setScale}
               overlay={<ReadOnlyNotice state={pageState()} />}
             >
-              <SuspenseEditorItem
-                fallback={<FramePlaceholder frame={exportRef} />}
-              >
-                <Loading fallback={<FramePlaceholder frame={exportRef} />}>
-                  <Show when={fontsReady()}>
-                    <AnimationPreview pillHost={pillHost()}>
-                      <ManagedFrame />
-                    </AnimationPreview>
-                  </Show>
-                </Loading>
-              </SuspenseEditorItem>
+              <Show when={exportRef()}>
+                <SuspenseEditorItem
+                  fallback={<FramePlaceholder frame={exportRef} />}
+                >
+                  <Loading fallback={<FramePlaceholder frame={exportRef} />}>
+                    <Show when={fontsReady()}>
+                      <AnimationPreview pillHost={pillHost()}>
+                        <ManagedFrame />
+                      </AnimationPreview>
+                    </Show>
+                  </Loading>
+                </SuspenseEditorItem>
+              </Show>
               <PreviewFrame ref={setExportRef} />
             </FitFrame>
           </EditorPopupHost>
