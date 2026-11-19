@@ -59,6 +59,58 @@ export async function auditEditor({feature, fresh, doctor, editor, page}) {
       );
     }
   });
+  await feature('theme-search-field', async () => {
+    for (const width of [1440, 390]) {
+      await fresh(
+        {
+          name: `theme-search-field-${width}`,
+          layout: 'inspector',
+          viewport: {width, height: 900},
+          hasTouch: width < 768,
+        },
+        async ({page, doctor}) => {
+          await doctor();
+          if (width < 768)
+            await page
+              .getByRole('button', {name: 'Expand inspector'})
+              .press('Space');
+          const picker = page.locator('[data-theme-style]:visible').first();
+          const search = picker.getByRole('textbox', {
+            name: 'Search themes',
+            exact: true,
+          });
+          await search.waitFor();
+          const filter = picker.getByRole('tablist');
+          const [fieldBox, filterBox] = await Promise.all([
+            search.boundingBox(),
+            filter.boundingBox(),
+          ]);
+          const height = width < 768 ? 40 : 36;
+          assert.equal(
+            fieldBox.height,
+            height,
+            'Theme search uses the full field height',
+          );
+          assert.ok(Math.abs(fieldBox.height - filterBox.height) <= 8);
+          await search.fill('Dracula');
+          const option = picker.getByRole('option', {
+            name: 'Dracula Dark theme',
+            exact: true,
+          });
+          await option.waitFor();
+          assert.equal(await picker.getByRole('option').count(), 1);
+          await search.press('ArrowDown');
+          assert.ok(
+            await option.evaluate(node => node === document.activeElement),
+          );
+          await search.focus();
+          await search.press('Escape');
+          assert.equal(await search.inputValue(), '');
+          assert.ok((await picker.getByRole('option').count()) > 1);
+        },
+      );
+    }
+  });
   await feature('system-colour-mode', async () => {
     await fresh(
       {

@@ -1,10 +1,16 @@
 import type {AppLocaleEntries} from '../../../i18n';
 import {useI18n} from '@codeimage/locale';
-import {TextField} from '@codeimage/ui';
-import {Button} from '@ui/legacy-controls';
+import {Button, TextField} from '@ui/legacy-controls';
 import {SegmentedField} from '@ui/SegmentedField/SegmentedField';
 import type {Component} from 'solid-js';
-import {onCleanup, onSettled, untrack, Show} from 'solid-js';
+import {
+  createEffect,
+  createSignal,
+  onCleanup,
+  onSettled,
+  untrack,
+  Show,
+} from 'solid-js';
 import {Dynamic} from '@solidjs/web';
 import type {EditorControlsModel, ThemeEntry} from '../model';
 import type {Stage} from '../stage';
@@ -52,6 +58,11 @@ export interface ThemePickerProps extends ThemePickerSlotProps {
  */
 export function ThemePicker(props: ThemePickerProps) {
   const [t] = useI18n<AppLocaleEntries>();
+  const [searchInput, setSearchInput] = createSignal<HTMLInputElement>();
+  createEffect(
+    () => [searchInput(), t('editor.searchThemes')] as const,
+    ([element, label]) => element?.setAttribute('aria-label', label),
+  );
   // oxlint-disable-next-line solid/reactivity -- one model lives for the whole session
   const browser = createThemeBrowser(props.model, {
     onPick: (theme, byKeyboard) => props.onPick?.(theme, byKeyboard),
@@ -85,10 +96,9 @@ export function ThemePicker(props: ThemePickerProps) {
           }}
         >
           <TextField
-            size={props.size === 'md' ? 'base' : 'sm'}
+            size={props.size ?? 'sm'}
             placeholder={t('themeSwitcher.search')}
-            type="text"
-            aria-label={t('editor.searchThemes')}
+            ref={setSearchInput}
             value={browser.query()}
             onChange={browser.setQuery}
           />
