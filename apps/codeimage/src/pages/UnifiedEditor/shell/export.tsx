@@ -5,7 +5,10 @@ import {detectSecrets} from '@codeimage/secrets';
 import {getRootEditorStore} from '@codeimage/store/editor';
 import {getWhatsNew} from '@codeimage/store/whats-new';
 import {getActiveEditorStore} from '@codeimage/store/editor/activeEditor';
-import {dispatchCopyToClipboard} from '@codeimage/store/effects/onCopyToClipboard';
+import {
+  copyingToClipboard,
+  dispatchCopyToClipboard,
+} from '@codeimage/store/effects/onCopyToClipboard';
 import {toast} from '@codeimage/ui';
 import {altText} from '@core/altText';
 import {getUmami} from '@core/constants/umami';
@@ -171,7 +174,7 @@ export function createExporter(
     choice: ExportChoice,
   ): Promise<ExportOutcome> => {
     if (!ready()) return {status: 'not-ready'};
-    if (busy() || dispatchCopyToClipboard.loading()) return {status: 'busy'};
+    if (busy() || copyingToClipboard()) return {status: 'busy'};
     if (action === 'animation') {
       animation.show();
       return {status: 'started'};
@@ -183,7 +186,7 @@ export function createExporter(
     if (action === 'copy') {
       const element = ref();
       if (!element) return {status: 'not-ready'};
-      dispatchCopyToClipboard({
+      void dispatchCopyToClipboard({
         ref: element,
         renderer: config.get.renderer,
         pixelRatio: choice.pixelRatio,
@@ -236,8 +239,7 @@ export function createExporter(
     choice?: ExportChoice,
   ): Promise<ExportOutcome> => {
     if (!ready()) return {status: 'not-ready'};
-    if (busy() || pending() || dispatchCopyToClipboard.loading())
-      return {status: 'busy'};
+    if (busy() || pending() || copyingToClipboard()) return {status: 'busy'};
     const count = secrets();
     if (count > 0) {
       setPending({action, choice});
@@ -274,7 +276,7 @@ export function createExporter(
     exportAnimation: () => request('animation'),
     startAnimation: () => request('animationStart'),
     ready,
-    busy: () => !ready() || busy() || dispatchCopyToClipboard.loading(),
+    busy: () => !ready() || busy() || copyingToClipboard(),
     tabs: () => editor.state.editors.length,
     image: choice => request('image', choice),
     eachTab: choice => request('eachTab', choice),

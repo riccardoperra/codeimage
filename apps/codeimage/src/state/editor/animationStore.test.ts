@@ -53,7 +53,7 @@ test('tabs always derive steps and timing updates persist independently of selec
   });
   try {
     const saves: unknown[] = [];
-    animation.stateToPersist$.subscribe(value => saves.push(value));
+    animation.onPersistedChange(value => saves.push(value));
     assert.equal(animation.stateToPersist().steps.length, 2);
     animation.actions.setOpen(true);
     flush();

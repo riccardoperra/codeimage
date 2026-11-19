@@ -16,7 +16,6 @@ import {
 } from '@codeimage/store/plugins/unique-id';
 import type {PresetData} from '@codeimage/store/presets/types';
 import type {EditorView} from '@codemirror/view';
-import {from, map, shareReplay} from 'rxjs';
 import {createSignal} from 'solid-js';
 import {defineStore, useStore} from 'statebuilder';
 import {createCommand, withProxyCommands} from 'statebuilder/commands';
@@ -137,20 +136,14 @@ export function createEditorsStore() {
     };
   };
 
-  const stateToPersist$ = from(
-    store.watchCommand([
-      store.commands.setFontId,
-      store.commands.setThemeId,
-      store.commands.setFontWeight,
-      store.commands.setShowLineNumbers,
-      store.commands.setEnableLigatures,
-      editorUpdateCommand,
-    ]),
-  ).pipe(
-    map(() => store.peek()),
-    map(mapToStateToPersistState),
-    shareReplay({refCount: true, bufferSize: 1}),
-  );
+  const persistence = store.watchCommand([
+    store.commands.setFontId,
+    store.commands.setThemeId,
+    store.commands.setFontWeight,
+    store.commands.setShowLineNumbers,
+    store.commands.setEnableLigatures,
+    editorUpdateCommand,
+  ]);
 
   const addEditor = (
     editorState?: Partial<EditorState> | null,
@@ -269,7 +262,12 @@ export function createEditorsStore() {
       const state = store.peek();
       return mapToStateToPersistState(state);
     },
-    stateToPersist$,
+    onPersistedChange(listener: (state: PersistedEditorState) => void) {
+      const subscription = persistence.subscribe(() =>
+        listener(mapToStateToPersistState(store.peek())),
+      );
+      return () => subscription.unsubscribe();
+    },
     activeEditorView,
     activeEditorViewTabId,
     computed: {

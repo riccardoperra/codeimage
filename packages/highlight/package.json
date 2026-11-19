@@ -260,8 +260,7 @@
     "@kobalte/core": "^0.13.11",
     "@kobalte/utils": "^0.9.1",
     "@lezer/highlight": "catalog:next",
-    "@primer/primitives": "^7.17.1",
-    "@solid-primitives/props": "^3.2.3"
+    "@primer/primitives": "^7.17.1"
   },
   "peerDependencies": {
     "@codemirror/language": "catalog:next",

@@ -23,7 +23,7 @@ test('applying a preset emits the updated editor options for persistence', () =>
         return untrack(() => {
           const editor = createEditorsStore();
           const saves: PersistedEditorState[] = [];
-          const subscription = editor.stateToPersist$.subscribe(state =>
+          const unsubscribe = editor.onPersistedChange(state =>
             saves.push(state),
           );
           const options = {
@@ -34,7 +34,7 @@ test('applying a preset emits the updated editor options for persistence', () =>
           editor.actions.setFromPreset(options);
           expect(saves).toHaveLength(1);
           expect(saves[0].options).toEqual(options);
-          subscription.unsubscribe();
+          unsubscribe();
           return null;
         });
       },

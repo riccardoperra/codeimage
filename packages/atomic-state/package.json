@@ -27,7 +27,6 @@
     "dev": "chokidar \"src/**/*.{ts,tsx}\" -c \"pnpm build\""
   },
   "peerDependencies": {
-    "rxjs": "^7.8.0",
     "solid-js": "catalog:solid2"
   },
   "devDependencies": {
@@ -35,7 +34,6 @@
     "oxfmt": "catalog:next",
     "oxlint": "catalog:next",
     "rolldown-plugin-solid": "catalog:next",
-    "rxjs": "^7.8.2",
     "solid-js": "catalog:solid2",
     "tsdown": "catalog:next",
     "vite": "catalog:next",
