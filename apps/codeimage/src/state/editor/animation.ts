@@ -113,7 +113,7 @@ export function createAnimationStore(editor: {
     ReturnType<typeof createEditorsStore>['actions'],
     'setActiveEditorId' | 'addEditor' | 'removeEditor'
   > & {
-    setEditors: (
+    replaceEditors: (
       tabs: ReturnType<typeof createEditorsStore>['state']['editors'],
     ) => void;
   };
@@ -335,7 +335,7 @@ export function createAnimationStore(editor: {
         const [tab] = tabs.splice(index, 1);
         tabs.splice(to, 0, tab);
         edit();
-        editor.actions.setEditors(tabs);
+        editor.actions.replaceEditors(tabs);
       },
       applyToAll(stepId: string) {
         const step = settings().steps.find(step => step.id === stepId);

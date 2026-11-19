@@ -57,16 +57,16 @@ function createEditorSyncAdapter(props: ParentProps<{snippetId?: string}>) {
     setReadonly(!data.isOwner);
     editorStore.actions.setFromWorkspace(data);
     animationStore.actions.setFromPersistedState(data.animation);
-    terminalStore.setState(state => ({
-      ...state,
-      ...data.terminal,
-      surface: data.terminal.surface ?? 'solid',
-    }));
-    frameStore.setStore(state => ({
-      ...state,
-      ...data.frame,
-      signature: parseSignature(data.frame.signature),
-    }));
+    terminalStore.setState(draft => {
+      Object.assign(draft, data.terminal, {
+        surface: data.terminal.surface ?? 'solid',
+      });
+    });
+    frameStore.setStore(draft => {
+      Object.assign(draft, data.frame, {
+        signature: parseSignature(data.frame.signature),
+      });
+    });
   }
 
   createEffect(snippetId, id => {

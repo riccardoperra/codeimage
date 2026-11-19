@@ -1,5 +1,5 @@
 import {getFrameState} from '@codeimage/store/editor/frame';
-import {exposeStorePaths, provideAppState} from '@codeimage/store/index';
+import {provideAppState} from '@codeimage/store/index';
 import {withIndexedDbPlugin} from '@codeimage/store/plugins/withIndexedDbPlugin';
 import {createResizeObserver} from '@solid-primitives/resize-observer';
 import type {Accessor} from 'solid-js';
@@ -71,6 +71,21 @@ export const ExportCanvasStore = defineStore(() => ({
         state.canvasSize = {width, height};
       });
     },
+    setExtension(value: ExportExtension) {
+      store.set(draft => {
+        draft.extension = value;
+      });
+    },
+    setJpegQuality(value: number) {
+      store.set(draft => {
+        draft.jpegQuality = value;
+      });
+    },
+    setDevicePixelRatio(value: number) {
+      store.set(draft => {
+        draft.devicePixelRatio = value;
+      });
+    },
     setShowOnlyActiveTab(value: boolean) {
       store.set(state => {
         state.showOnlyActiveTab = value;
@@ -92,7 +107,7 @@ export const ExportCanvasStore = defineStore(() => ({
   }));
 
 function createExportCanvasStore() {
-  return exposeStorePaths(provideAppState(ExportCanvasStore));
+  return provideAppState(ExportCanvasStore);
 }
 
 let exportCanvasStore: ReturnType<typeof createExportCanvasStore> | undefined;

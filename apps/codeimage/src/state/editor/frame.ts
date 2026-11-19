@@ -1,5 +1,4 @@
 import {getExportTarget} from '@codeimage/config';
-import {createPathSetter} from '@codeimage/atomic-state';
 import {createMemo} from 'solid-js';
 import {parseSignature} from '@codeimage/store/frame/model';
 import type {
@@ -175,7 +174,7 @@ const frameState = defineStore(() => getInitialFrameState())
       },
       exportTarget,
       exportPixelRatio,
-      setStore: createPathSetter(store.set),
+      setStore: store.set,
       onPersistedChange(listener: (state: PersistedFrameState) => void) {
         const subscription = persistence.subscribe(() =>
           listener(mapToStateToPersistState(store.peek())),

@@ -107,7 +107,7 @@ export default function CanvasEditor(props: CanvasEditorProps) {
           restoreDiffImport(transaction, snapshot => {
             const store = getRootEditorStore();
             store.actions.setActiveEditorId(snapshot.activeEditorId);
-            store.actions.setEditors(structuredClone(snapshot.editors));
+            store.actions.replaceEditors(structuredClone(snapshot.editors));
             if (transaction.isUserEvent('undo') && activeToastId)
               toast.dismiss(activeToastId);
           });

@@ -302,13 +302,15 @@ export function createExporter(
       if (!editable()) return;
       getWhatsNew().seen('redact');
       flush(() => {
-        editor.state.editors.forEach((tab, index) => {
+        editor.state.editors.forEach(tab => {
           const redacted = redactTabCode(
             tab.code,
             editor.isActive(tab.id) ? editor.activeEditorView() : undefined,
           );
           if (redacted !== tab.code)
-            editor.actions.setEditors(index, 'code', redacted);
+            editor.actions.updateEditor(tab.id, draft => {
+              draft.code = redacted;
+            });
         });
       });
     },
