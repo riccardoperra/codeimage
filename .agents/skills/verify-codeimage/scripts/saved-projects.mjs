@@ -2,6 +2,20 @@ import assert from 'node:assert/strict';
 import {auditReadOnlyNotice} from './read-only-notice.mjs';
 import {auditSnippets} from './snippets.mjs';
 
+export async function verifyProjectSearch(page, row) {
+  const name = row.getByText('Renamed verification', {exact: true});
+  const search = page.getByPlaceholder('Search', {exact: true});
+  await name.waitFor();
+  await search.fill('zz');
+  await name.waitFor();
+  await search.fill('zzz');
+  await name.waitFor({state: 'hidden'});
+  await search.fill('RENAMED');
+  await name.waitFor();
+  await search.clear();
+  await name.waitFor();
+}
+
 async function auditProjectMenuBridge({page}) {
   const errors = [];
   const captureError = error => errors.push(error.message);

@@ -109,5 +109,13 @@ export async function auditLineMarks({
     assert.match(await editor().innerText(), /const after = 2/);
     await shot('diff-import');
     await page.getByRole('button', {name: 'Undo', exact: true}).last().click();
+    await editor()
+      .locator('[data-mark="added"]')
+      .first()
+      .waitFor({state: 'detached'});
+    const lines = await editor().locator('.cm-line').allTextContents();
+    assert.equal(lines.join('\n').trimEnd(), diff.trimEnd());
+    assert.equal(await editor().locator('[data-mark]').count(), 0);
+    await shot('diff-import-undone');
   });
 }

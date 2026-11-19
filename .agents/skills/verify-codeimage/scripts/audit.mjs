@@ -8,7 +8,7 @@ import {auditLineMarksNews} from './audit-line-marks-news.mjs';
 import {verifyKeyboardScroll} from './keyboard-scroll.mjs';
 import {createMockContext} from './mock-context.mjs';
 import {animationMp4Cases} from './animation-mp4.mjs';
-import {auditSavedProjects} from './saved-projects.mjs';
+import {auditSavedProjects, verifyProjectSearch} from './saved-projects.mjs';
 import {auditSettingsSearch, closeSettingsDialog} from './settings-search.mjs';
 import {auditTabLayouts} from './tab-reorder.mjs';
 import {writeFile, readFile} from 'node:fs/promises';
@@ -493,23 +493,16 @@ export async function audit({page, context, base, out, server}) {
     await closeSettings();
     await settings('experiments');
     const renderer = page.locator('#settings-rendering-engine');
-    if ((await renderer.getAttribute('aria-checked')) !== 'true') {
-      await renderer.focus();
-      await page.keyboard.press('Space');
-    }
-    await page.waitForFunction(
-      () =>
-        document
-          .querySelector('#settings-rendering-engine')
-          ?.getAttribute('aria-checked') === 'true',
-    );
+    if (!(await renderer.isChecked())) await renderer.press('Space');
+    await page.locator('#settings-rendering-engine:checked').waitFor({
+      state: 'attached',
+    });
     await closeSettings();
     PNG.sync.read(await download('takumi.png'));
     page.off('console', observe);
     assert.deepEqual(fallbacks, [], 'Takumi should not fall back');
     await settings('experiments');
-    await page.locator('#settings-rendering-engine').focus();
-    await page.keyboard.press('Space');
+    await renderer.press('Space');
     await closeSettings();
   });
   await feature('secrets', async () => {
@@ -972,9 +965,7 @@ export async function audit({page, context, base, out, server}) {
       ),
     );
     await page.reload();
-    await card(project.id)
-      .getByText('Renamed verification', {exact: true})
-      .waitFor();
+    await verifyProjectSearch(page, card(project.id));
     await card(project.id)
       .getByRole('button', {name: 'Menu', exact: true})
       .click();
