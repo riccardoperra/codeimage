@@ -6,6 +6,7 @@ import {auditPresetCases, auditPresetPersistence} from './presets.mjs';
 import {auditLineMarks} from './audit-line-marks.mjs';
 import * as newsAudits from './audit-line-marks-news.mjs';
 import {verifyExportDialog} from './export-dialog.mjs';
+import {auditEditor} from './editor-responsiveness.mjs';
 import {auditKeyboard} from './shortcut-help.mjs';
 import {createMockContext} from './mock-context.mjs';
 import {animationMp4Cases} from './animation-mp4.mjs';
@@ -223,14 +224,7 @@ export async function audit({page, context, base, out, server}) {
       },
     ),
   );
-  await feature('editor', async () => {
-    await doctor();
-    await editor().fill('const audit = 1;');
-    await editor().press('End');
-    await page.keyboard.type('x');
-    await page.keyboard.press('ControlOrMeta+z');
-    assert.equal(await editor().innerText(), 'const audit = 1;');
-  });
+  await auditEditor({feature, fresh, doctor, editor, page});
   await feature('appearance', async () => {
     await section('themes');
     await page

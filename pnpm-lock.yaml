@@ -611,6 +611,9 @@ importers:
       '@solid-primitives/event-bus':
         specifier: ^3.0.0
         version: 3.0.0(@solidjs/web@2.0.0(solid-js@2.0.0))(solid-js@2.0.0)
+      '@solid-primitives/media':
+        specifier: 4.0.0
+        version: 4.0.0(@solidjs/web@2.0.0(solid-js@2.0.0))(solid-js@2.0.0)
       '@solid-primitives/platform':
         specifier: 1.0.0
         version: 1.0.0(@solidjs/web@2.0.0(solid-js@2.0.0))(solid-js@2.0.0)
@@ -5544,6 +5547,12 @@ packages:
     resolution: {integrity: sha512-LX9fB5WDaK87FMDtUB1qokBOfT2et9Uobv/zZaKLH9caFSz4+P70MBKEIBHcZQy+9MV5M2XvGYLTbLskjkzMjA==}
     peerDependencies:
       solid-js: ^1.6.12
+
+  '@solid-primitives/media@4.0.0':
+    resolution: {integrity: sha512-/HzxuE2UMx4fHCePy79DNaZvuPVKhN3p2njCGHxdjeLsybnVohlj3C6ca6YPnAXZAhAUHWk4tWriUDr5TadJlw==}
+    peerDependencies:
+      '@solidjs/web': ^2.0.0
+      solid-js: ^2.0.0
 
   '@solid-primitives/pagination@0.3.0':
     resolution: {integrity: sha512-B9R2tVAEwGyXGF/533b46d7fXHU//eHUOt4CxwESwV3RhtP0wYScrV882i2eHGQuryZfQH2jbubvjMQyQbTMgA==}
@@ -16619,6 +16628,15 @@ snapshots:
       '@solid-primitives/rootless': 1.5.3(solid-js@2.0.0)
       '@solid-primitives/static-store': 0.1.3(solid-js@2.0.0)
       '@solid-primitives/utils': 6.4.0(solid-js@2.0.0)
+      solid-js: 2.0.0
+
+  '@solid-primitives/media@4.0.0(@solidjs/web@2.0.0(solid-js@2.0.0))(solid-js@2.0.0)':
+    dependencies:
+      '@solid-primitives/event-listener': 3.0.0(@solidjs/web@2.0.0(solid-js@2.0.0))(solid-js@2.0.0)
+      '@solid-primitives/rootless': 2.0.0(@solidjs/web@2.0.0(solid-js@2.0.0))(solid-js@2.0.0)
+      '@solid-primitives/static-store': 1.0.0(@solidjs/web@2.0.0(solid-js@2.0.0))(solid-js@2.0.0)
+      '@solid-primitives/utils': 7.0.0(@solidjs/web@2.0.0(solid-js@2.0.0))(solid-js@2.0.0)
+      '@solidjs/web': 2.0.0(solid-js@2.0.0)
       solid-js: 2.0.0
 
   '@solid-primitives/pagination@0.3.0(solid-js@1.9.12)':

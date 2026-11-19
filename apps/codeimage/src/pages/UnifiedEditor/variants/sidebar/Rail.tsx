@@ -102,13 +102,13 @@ function RailActions() {
 /** The sidebar as a rail of areas, each opening its panel beside the canvas. */
 export function Rail(props: VariantProps) {
   const [t] = useI18n<AppLocaleEntries>();
-  const compactQuery = matchMedia(styles.COMPACT_QUERY);
-  const [isPhone, setIsPhone] = createSignal(compactQuery.matches);
+  const isPhone = () => props.stage.compact();
+  const initiallyPhone = untrack(isPhone);
   const [openId, setOpenId] = createSignal<PanelId | null>(
-    compactQuery.matches ? null : 'themes',
+    initiallyPhone ? null : 'themes',
   );
   const [mounted, setMounted] = createSignal<ReadonlySet<PanelId>>(
-    new Set<PanelId>(compactQuery.matches ? [] : ['themes']),
+    new Set<PanelId>(initiallyPhone ? [] : ['themes']),
   );
   const [stop, setStop] = createSignal<Stop>('short');
   const [available, setAvailable] = createSignal(0);
@@ -288,9 +288,6 @@ export function Rail(props: VariantProps) {
   };
 
   onSettled(() => {
-    const onQuery = (e: MediaQueryListEvent) => setIsPhone(e.matches);
-    compactQuery.addEventListener('change', onQuery);
-
     const measure = () => {
       if (!railEl?.isConnected) return;
       setAvailable(
@@ -303,10 +300,7 @@ export function Rail(props: VariantProps) {
     observer.observe(bodyEl);
     measure();
 
-    return () => {
-      compactQuery.removeEventListener('change', onQuery);
-      observer.disconnect();
-    };
+    return () => observer.disconnect();
   });
 
   return (

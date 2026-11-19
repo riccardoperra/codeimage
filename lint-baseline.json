@@ -27,7 +27,7 @@
   },
   ".agents/skills/verify-codeimage/scripts/audit.mjs": {
     "codeimage(no-comments)": 8,
-    "eslint(max-lines)": 1047,
+    "eslint(max-lines)": 1041,
     "eslint(max-lines-per-function)": 2,
     "eslint(no-param-reassign)": 4
   },
@@ -1024,7 +1024,7 @@
   "apps/codeimage/src/pages/UnifiedEditor/variants/dock/index.tsx": {
     "codeimage(no-comments)": 25,
     "codeimage(no-document-query)": 1,
-    "eslint(max-lines)": 478,
+    "eslint(max-lines)": 474,
     "eslint(max-lines-per-function)": 1
   },
   "apps/codeimage/src/pages/UnifiedEditor/variants/dock/panels.tsx": {
@@ -1033,14 +1033,14 @@
   },
   "apps/codeimage/src/pages/UnifiedEditor/variants/sidebar/Accordion.tsx": {
     "codeimage(no-comments)": 13,
-    "eslint(max-lines)": 407,
+    "eslint(max-lines)": 399,
     "eslint(max-lines-per-function)": 1,
     "eslint(no-nested-ternary)": 2,
     "typescript(no-non-null-assertion)": 1
   },
   "apps/codeimage/src/pages/UnifiedEditor/variants/sidebar/Rail.tsx": {
     "codeimage(no-comments)": 5,
-    "eslint(max-lines)": 446,
+    "eslint(max-lines)": 441,
     "eslint(max-lines-per-function)": 1,
     "typescript(no-non-null-assertion)": 3
   },
@@ -1078,7 +1078,7 @@
   "apps/codeimage/src/pages/UnifiedEditor/variants/sidebar/rail.css.ts": {
     "codeimage(no-comments)": 10,
     "codeimage(no-global-style)": 3,
-    "eslint(max-lines)": 306
+    "eslint(max-lines)": 305
   },
   "apps/codeimage/src/pages/UnifiedEditor/verify-i18n.mjs": {
     "codeimage(no-comments)": 1,

@@ -3,7 +3,8 @@ import {
   readLocalState,
   withLocalStorage,
 } from '@codeimage/store/plugins/local-storage';
-import {createEffect, createMemo, createSignal} from 'solid-js';
+import {createPrefersDark} from '@solid-primitives/media';
+import {createMemo} from 'solid-js';
 import type {Store} from 'statebuilder';
 import {defineStore, createPlugin} from 'statebuilder';
 
@@ -21,22 +22,7 @@ const initialState: GlobalUiState = {
 
 const withUiThemeModeListener = createPlugin.typed<Store<GlobalUiState>>()(
   store => {
-    const query =
-      typeof window === 'undefined'
-        ? undefined
-        : window.matchMedia?.('(prefers-color-scheme: dark)');
-    const [dark, setDark] = createSignal(query?.matches ?? false);
-
-    createEffect(
-      () => store.get.themeMode,
-      theme => {
-        if (theme !== 'system' || !query) return;
-        const update = () => setDark(query.matches);
-        update();
-        query.addEventListener('change', update);
-        return () => query.removeEventListener('change', update);
-      },
-    );
+    const dark = createPrefersDark();
 
     return {
       currentTheme: createMemo<Theme>(() => {
