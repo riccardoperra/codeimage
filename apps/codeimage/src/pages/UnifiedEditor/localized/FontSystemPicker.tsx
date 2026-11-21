@@ -2,9 +2,16 @@ import {useI18n} from '@codeimage/locale';
 import type {AppLocaleEntries} from '../../../i18n';
 import {EditorConfigStore} from '@codeimage/store/editor/config.store';
 import {Box, FieldLabelHint, Link, LoadingCircle, Text} from '@codeimage/ui';
-import {VirtualizedListbox} from '@ui/legacy-listbox';
-import {Button, Checkbox, TextField} from '@ui/legacy-controls';
-import {createSignal, Match, onSettled, Show, Loading, Switch} from 'solid-js';
+import {Button, Checkbox, TextField, VirtualizedListbox} from '@codeui/kit';
+import {
+  createSignal,
+  Match,
+  omit,
+  onSettled,
+  Show,
+  Loading,
+  Switch,
+} from 'solid-js';
 import {snapshot} from 'solid-js';
 import {useStore} from 'statebuilder';
 import {HintIcon} from '../../../components/Icons/Hint';
@@ -56,15 +63,16 @@ export function FontSystemPicker(props: FontSystemPickerProps) {
         <Match when={localFontsApi.state().permissionState === 'granted'}>
           <div class={styles.virtualizedFontListboxToolbar}>
             <TextField
+              aria-label={t('editor.searchFont')}
               placeholder={t('editor.searchFont')}
               value={fontTerm()}
               onChange={setFontTerm}
               size={'xs'}
-              slotClasses={{root: styles.virtualizedFontListboxSearch}}
+              classes={{root: styles.virtualizedFontListboxSearch}}
             />
             <Button
               size={'xs'}
-              theme={'secondary'}
+              variant={'secondary'}
               onClick={localFontsApi.loadFonts}
             >
               {t('editor.reloadFonts')}
@@ -77,10 +85,11 @@ export function FontSystemPicker(props: FontSystemPickerProps) {
           >
             <div class={styles.virtualizedFontListboxWrapper}>
               <VirtualizedListbox
+                aria-label={t('frame.font')}
                 class={styles.virtualizedFontListbox}
-                theme={'primary'}
+                variant={'primary'}
                 bordered
-                {...listboxProps}
+                {...omit(listboxProps, 'optionValue', 'optionTextValue')}
               />
             </div>
           </Show>

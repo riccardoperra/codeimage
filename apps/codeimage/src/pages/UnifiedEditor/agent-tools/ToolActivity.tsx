@@ -1,6 +1,6 @@
 import {useI18n} from '@codeimage/locale';
 import {icons} from '@ui/kit-icons';
-import {IconButton} from '@ui/legacy-controls';
+import {IconButton} from '@codeui/kit';
 import type {Accessor} from 'solid-js';
 import {
   createEffect,
@@ -255,8 +255,8 @@ export function ToolActivity() {
           <IconButton
             class={styles.close}
             size="xs"
-            theme="secondary"
-            variant="ghost"
+            variant="secondary"
+            ghost
             aria-label={t('agentActivity.dismiss')}
             onClick={dismiss}
           >

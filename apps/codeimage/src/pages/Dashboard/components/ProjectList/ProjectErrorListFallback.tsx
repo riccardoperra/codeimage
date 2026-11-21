@@ -1,6 +1,6 @@
 import {useI18n} from '@codeimage/locale';
 import {Box, Text} from '@codeimage/ui';
-import {Button} from '@ui/legacy-controls';
+import {Button} from '@codeui/kit';
 import type {VoidProps} from 'solid-js';
 import {ExclamationAltIcon} from '../../../../components/Icons/Exclamation';
 import type {AppLocaleEntries} from '../../../../i18n';
@@ -24,7 +24,7 @@ export function ProjectErrorListFallback(props: VoidProps<Props>) {
       <Text>{t('dashboard.errorLoadingList.description')}</Text>
       <Box marginTop={5}>
         <Button
-          theme={'primary'}
+          variant={'primary'}
           size={'md'}
           onClick={() => props.onReload?.()}
         >

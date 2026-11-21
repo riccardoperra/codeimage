@@ -4,8 +4,8 @@ type ThemeModeAttr<
   T extends string,
   NS extends string = never,
 > = never extends NS
-  ? `[data-codeimage-theme=${T}] &`
-  : `[data-codeimage-theme=${T}] ${NS}`;
+  ? `[data-cui-theme=${T}] &`
+  : `[data-cui-theme=${T}] ${NS}`;
 
 export type TypedThemeMode<
   T extends NonNullable<StyleRule['selectors']>,
@@ -22,7 +22,7 @@ export function withThemeMode<
 
   return Object.entries(themes).reduce<NonNullable<StyleRule['selectors']>>(
     (acc, [themeKey, themeValue]) => {
-      acc[`[data-codeimage-theme=${themeKey}] ${suffix}`] = themeValue;
+      acc[`[data-cui-theme=${themeKey}] ${suffix}`] = themeValue;
       return acc;
     },
     {},

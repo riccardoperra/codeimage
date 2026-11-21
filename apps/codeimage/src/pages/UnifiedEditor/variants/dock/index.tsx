@@ -4,7 +4,7 @@ import {getEditorStore} from '@codeimage/store/editor';
 import {useI18n} from '@codeimage/locale';
 import {createMediaQuery} from '@solid-primitives/media';
 import {signatureEditor} from '@codeimage/store/frame/signatureEditor';
-import {Button} from '@ui/legacy-controls';
+import {Button} from '@codeui/kit';
 import {Popover} from '@ui/Popover';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 import {
@@ -105,8 +105,8 @@ function DockItem(props: DockItemProps & {host: DockItemHost}) {
   );
   const button = {
     class: styles.item,
-    theme: 'secondary',
-    variant: 'ghost',
+    variant: 'secondary',
+    ghost: true,
     size: 'sm',
     get leftIcon() {
       return props.icon;
@@ -126,7 +126,7 @@ function DockItem(props: DockItemProps & {host: DockItemHost}) {
         <Button
           {...button}
           aria-haspopup="dialog"
-          aria-expanded={isOpen()}
+          aria-expanded={isOpen() ? 'true' : 'false'}
           onClick={(event: MouseEvent) =>
             props.host.onToggle(props.panel, event)
           }
@@ -462,8 +462,8 @@ export default function Dock(props: VariantProps) {
                     <Button
                       {...trigger}
                       class={styles.item}
-                      theme={'secondary'}
-                      variant={'ghost'}
+                      variant={'secondary'}
+                      ghost
                       size={'sm'}
                       leftIcon={<SearchIcon />}
                       aria-label={t('editor.searchOptions')}

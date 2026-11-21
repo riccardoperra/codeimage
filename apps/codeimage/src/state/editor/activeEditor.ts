@@ -1,8 +1,7 @@
 import {SUPPORTED_LANGUAGES} from '@codeimage/config';
 import {useI18n} from '@codeimage/locale';
 import {getRootEditorStore} from '@codeimage/store/editor';
-import {getUiStore} from '@codeimage/store/ui';
-import {toast} from '@codeimage/ui';
+import {editorNotifications} from '@ui/notifications';
 import {appEnvironment} from '@core/configuration';
 import {createEffect, createRoot} from 'solid-js';
 import {createPrettierFormatter} from '../../hooks/createPrettierFormatter';
@@ -108,30 +107,25 @@ const $activeEditorState = () => {
 
             if (result !== currentEditor()?.code) {
               setCode(result);
-              toast.success(
-                () => {
+              editorNotifications.show({
+                tone: 'success',
+                description: () => {
                   const [t] = useI18n<AppLocaleEntries>();
                   return t('canvas.formattedCode');
                 },
-                {
-                  position: 'bottom-center',
-                  theme: getUiStore().invertedThemeMode(),
-                },
-              );
+                duration: 2000,
+              });
             }
             r(true);
           } catch (e) {
             console.warn(e);
-            toast.error(
-              () => {
+            editorNotifications.show({
+              tone: 'danger',
+              description: () => {
                 const [t] = useI18n<AppLocaleEntries>();
                 return t('canvas.errorFormattedCode');
               },
-              {
-                position: 'bottom-center',
-                theme: getUiStore().invertedThemeMode(),
-              },
-            );
+            });
             r(false);
           }
         });

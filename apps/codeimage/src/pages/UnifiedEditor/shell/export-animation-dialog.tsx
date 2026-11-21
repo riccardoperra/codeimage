@@ -2,7 +2,7 @@ import {useI18n} from '@codeimage/locale';
 import {getEditorStore} from '@codeimage/store/editor';
 import {getFrameState} from '@codeimage/store/editor/frame';
 import {useFrameCodeStyle} from '../../../components/Frame/PreviewFrame';
-import {Button, Select, TextField} from '@ui/legacy-controls';
+import {Button, Select, TextField} from '@codeui/kit';
 import {DialogPanelContent, DialogPanelFooter} from '@ui/Dialog';
 import {Dialog} from '@ui/Dialog/parts';
 import {RadioGroup} from '@ui/RadioGroup/RadioGroup';
@@ -371,7 +371,7 @@ export function AnimationExportContent(props: {
               size="sm"
               label={t('animation.export.background')}
               description={t('animation.export.backgroundHint')}
-              slotClasses={{input: styles.videoColor}}
+              classes={{input: styles.videoColor}}
               validationState={exporter().validMatte() ? 'valid' : 'invalid'}
               errorMessage={
                 exporter().validMatte()
@@ -464,13 +464,13 @@ export function AnimationExportContent(props: {
       </DialogPanelContent>
       <DialogPanelFooter>
         <div class={styles.confirmActions}>
-          <Button size="sm" theme="secondary" onClick={close}>
+          <Button size="sm" variant="secondary" onClick={close}>
             {exporter().busy()
               ? t('animation.export.cancel')
               : t('common.close')}
           </Button>
           <Show when={failure()}>
-            <Button size="sm" theme="primary" onClick={retry}>
+            <Button size="sm" variant="primary" onClick={retry}>
               {t('animation.export.retry')}
             </Button>
           </Show>
@@ -479,7 +479,7 @@ export function AnimationExportContent(props: {
             fallback={
               <Button
                 size="sm"
-                theme="primary"
+                variant="primary"
                 hidden={!!failure()}
                 disabled={!canStart()}
                 onClick={props.onStart}
@@ -489,11 +489,11 @@ export function AnimationExportContent(props: {
             }
           >
             <Show when={canShare()}>
-              <Button size="sm" theme="secondary" onClick={share}>
+              <Button size="sm" variant="secondary" onClick={share}>
                 {t('animation.export.share', {format: format().label})}
               </Button>
             </Show>
-            <Button size="sm" theme="primary" onClick={save}>
+            <Button size="sm" variant="primary" onClick={save}>
               {t('animation.export.download', {format: format().label})}
             </Button>
           </Show>
@@ -501,7 +501,7 @@ export function AnimationExportContent(props: {
       </DialogPanelFooter>
       <Show when={props.onImage}>
         <Button
-          theme="secondary"
+          variant="secondary"
           size="sm"
           onClick={props.onImage}
           disabled={exporter().busy()}

@@ -9,7 +9,7 @@ import {
   DropdownMenuPortal,
   DropdownMenuTrigger,
 } from '@ui/DropdownMenu';
-import {IconButton} from '@ui/legacy-controls';
+import {IconButton} from '@codeui/kit';
 import {createControlledDialog} from '@core/hooks/createControlledDialog';
 import {useNavigate} from '@solidjs/router';
 import {Show} from 'solid-js';
@@ -29,7 +29,7 @@ export function ToolbarSettingsButton() {
         as={IconButton}
         pill={true}
         size={'xs'}
-        theme={'secondary'}
+        variant={'secondary'}
         aria-label={'Menu'}
       >
         <MenuAlt2Icon size={'sm'} />

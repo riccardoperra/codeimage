@@ -188,7 +188,7 @@ try {
         await warning.waitFor();
         // Finish the previous menu's focus cleanup before closing this dialog.
         await page
-          .locator('[data-cui=dropdown-menu-content]')
+          .locator('[data-export-action="settings"]')
           .waitFor({state: 'detached'});
         if (label === 'Export button')
           await page.screenshot({path: `${out}/${tag}-secrets.png`});

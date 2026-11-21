@@ -16,7 +16,7 @@ export async function verifyProjectSearch(page, row) {
   await name.waitFor();
 }
 
-async function auditProjectMenuBridge({page}) {
+async function auditProjectMenu({page}) {
   const errors = [];
   const captureError = error => errors.push(error.message);
   page.on('pageerror', captureError);
@@ -40,10 +40,15 @@ async function auditProjectMenuBridge({page}) {
       .getByRole('listitem')
       .filter({has: page.locator(`a[href="/${project.id}"]`)});
     const trigger = row.getByRole('button', {name: 'Menu', exact: true});
-    const menu = page.locator(
-      '[role="menu"][data-cui="dropdown-menu-content"]',
-    );
+    const menu = page.getByRole('menu', {includeHidden: true}).filter({
+      has: page.getByRole('menuitem', {
+        name: 'Rename',
+        exact: true,
+        includeHidden: true,
+      }),
+    });
     const rename = menu.getByRole('menuitem', {name: 'Rename', exact: true});
+    const projectName = 'Renamed verification project';
     const focused = page.locator(':focus');
     await trigger.press('ArrowDown');
     await rename.and(focused).waitFor();
@@ -52,10 +57,11 @@ async function auditProjectMenuBridge({page}) {
     await menu.waitFor({state: 'detached'});
     await trigger.and(focused).waitFor();
 
-    await trigger.click();
-    await rename.click();
+    await trigger.press('ArrowDown');
+    await rename.and(focused).waitFor();
+    await page.keyboard.press('Enter');
     const dialog = page.getByRole('alertdialog', {name: 'Rename project'});
-    await dialog.getByRole('textbox').fill('Renamed through the bridge');
+    await dialog.getByRole('textbox').fill(projectName);
     await menu.waitFor({state: 'detached'});
     const body = page.locator('body');
     assert.equal(
@@ -75,7 +81,7 @@ async function auditProjectMenuBridge({page}) {
       await body.evaluate(element => element.style.pointerEvents),
       'none',
     );
-    await row.getByText('Renamed through the bridge', {exact: true}).waitFor();
+    await row.getByText(projectName, {exact: true}).waitFor();
 
     await trigger.click();
     const cloned = page.waitForResponse(
@@ -93,7 +99,7 @@ async function auditProjectMenuBridge({page}) {
     await page.locator('.cm-content[contenteditable="true"]').first().waitFor();
     await menu.waitFor({state: 'detached'});
     await dashboard.click();
-    await row.getByText('Renamed through the bridge', {exact: true}).waitFor();
+    await row.getByText(projectName, {exact: true}).waitFor();
     await trigger.click();
     await menu.getByRole('menuitem', {name: 'Delete', exact: true}).click();
     const confirm = page.getByRole('alertdialog', {name: 'Delete project'});
@@ -119,7 +125,7 @@ export async function auditSavedProjects(options) {
   );
   for (const [name, audit] of [
     ['read-only-notice', auditReadOnlyNotice],
-    ['solid1-bridge-project-menu', auditProjectMenuBridge],
+    ['project-menu', auditProjectMenu],
   ]) {
     if (!requested?.includes(name)) continue;
     await options.feature(name, () =>

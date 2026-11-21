@@ -1,16 +1,9 @@
 import type {AppLocaleEntries} from '../../../i18n';
 import {useI18n} from '@codeimage/locale';
-import {Button, TextField} from '@ui/legacy-controls';
+import {Button, TextField} from '@codeui/kit';
 import {SegmentedField} from '@ui/SegmentedField/SegmentedField';
 import type {Component} from 'solid-js';
-import {
-  createEffect,
-  createSignal,
-  onCleanup,
-  onSettled,
-  untrack,
-  Show,
-} from 'solid-js';
+import {onCleanup, onSettled, untrack, Show} from 'solid-js';
 import {Dynamic} from '@solidjs/web';
 import type {EditorControlsModel, ThemeEntry} from '../model';
 import type {Stage} from '../stage';
@@ -58,11 +51,6 @@ export interface ThemePickerProps extends ThemePickerSlotProps {
  */
 export function ThemePicker(props: ThemePickerProps) {
   const [t] = useI18n<AppLocaleEntries>();
-  const [searchInput, setSearchInput] = createSignal<HTMLInputElement>();
-  createEffect(
-    () => [searchInput(), t('editor.searchThemes')] as const,
-    ([element, label]) => element?.setAttribute('aria-label', label),
-  );
   // oxlint-disable-next-line solid/reactivity -- one model lives for the whole session
   const browser = createThemeBrowser(props.model, {
     onPick: (theme, byKeyboard) => props.onPick?.(theme, byKeyboard),
@@ -81,7 +69,7 @@ export function ThemePicker(props: ThemePickerProps) {
 
   return (
     <div class={styles.root} data-theme-style={props.style}>
-      <div class={styles.tools}>
+      <div class={styles.tools} data-size={props.size ?? 'sm'}>
         <div
           class={styles.search}
           onKeyDown={(event: KeyboardEvent) => {
@@ -98,12 +86,13 @@ export function ThemePicker(props: ThemePickerProps) {
           <TextField
             size={props.size ?? 'sm'}
             placeholder={t('themeSwitcher.search')}
-            ref={setSearchInput}
+            aria-label={t('editor.searchThemes')}
+            classes={{input: styles.searchInput}}
             value={browser.query()}
             onChange={browser.setQuery}
           />
         </div>
-        <div class={styles.filter} data-size={props.size ?? 'sm'}>
+        <div class={styles.filter}>
           <SegmentedField
             size={props.size ?? 'sm'}
             adapt
@@ -123,7 +112,7 @@ export function ThemePicker(props: ThemePickerProps) {
           fallback={
             <div class={styles.empty}>
               <p>{t('editor.noTheme', {query: browser.query()})}</p>
-              <Button size="sm" theme="secondary" onClick={showAll}>
+              <Button size="sm" variant="secondary" onClick={showAll}>
                 {t('editor.showThemes')}
               </Button>
             </div>

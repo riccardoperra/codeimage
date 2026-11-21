@@ -1,6 +1,6 @@
 import {textFieldStyles, themeVars} from '@codeimage/ui';
-import {responsiveStyle, themeTokens} from '@codeui/kit/foundation';
-import {createVar, style} from '@vanilla-extract/css';
+import {responsiveStyle, themeTokens} from '@codeui/kit/tokens';
+import {style} from '@vanilla-extract/css';
 
 export const input = style([
   textFieldStyles.baseField,
@@ -26,22 +26,17 @@ export const inputIcon = style({
   flexShrink: 0,
 });
 
-export const fontListboxHeight = createVar();
+const listHeight = '350px';
 
 export const fontOption = style({fontSize: '80%'});
 
-export const fontPickerPopover = style([
-  {
-    vars: {
-      [fontListboxHeight]: '350px',
-    },
-  },
+export const fontPickerPopover = style(
   responsiveStyle({
     md: {
       maxWidth: 'initial',
     },
   }),
-]);
+);
 
 export const experimentalFlag = style({
   color: themeVars.dynamicColors.descriptionTextColor,
@@ -50,7 +45,7 @@ export const experimentalFlag = style({
 
 export const centeredContent = style({
   width: '100%',
-  height: fontListboxHeight,
+  height: listHeight,
   display: 'flex',
   flexDirection: 'column',
   gap: '1rem',
@@ -60,11 +55,11 @@ export const centeredContent = style({
 });
 
 export const virtualizedFontListboxWrapper = style({
-  height: fontListboxHeight,
+  height: listHeight,
 });
 
 export const virtualizedFontListbox = style({
-  maxHeight: fontListboxHeight,
+  maxHeight: listHeight,
   overflow: 'auto',
   height: '100%',
 });

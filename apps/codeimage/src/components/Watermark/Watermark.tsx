@@ -228,7 +228,7 @@ function MountedWatermark(props: {darkMode: boolean}) {
     <CodeImageLogoV2
       width={WATERMARK.width}
       withGradient={false}
-      data-theme-mode={props.darkMode ? 'dark' : 'light'}
+      data-codeimage-frame-mode={props.darkMode ? 'dark' : 'light'}
     />
   );
   return (

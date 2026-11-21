@@ -7,7 +7,7 @@ import {getExportCanvasStore} from '@codeimage/store/canvas';
 import {getEditorStore} from '@codeimage/store/editor';
 import {getFrameState} from '@codeimage/store/editor/frame';
 import {getTerminalState} from '@codeimage/store/editor/terminal';
-import {toast} from '@codeimage/ui';
+import {notifications} from '@ui/notifications';
 import type {ParentProps} from 'solid-js';
 import {createEffect, createMemo, createSignal, getOwner, Show} from 'solid-js';
 import type {AppLocaleEntries} from '../../i18n';
@@ -113,7 +113,11 @@ export function AnimationPreview(
     errored => {
       if (!errored) return;
       console.error(measurement.error);
-      toast.error(t('animation.previewFailed'));
+      notifications.show({
+        tone: 'danger',
+        description: t('animation.previewFailed'),
+        theme: 'page',
+      });
       animation.actions.edit();
       setFailures(count => count + 1);
     },

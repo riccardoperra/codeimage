@@ -1,4 +1,4 @@
-import * as styles from '@codeui/kit/dropdown-styles';
+import {dropdownMenuStyles as styles} from '@codeui/kit/dropdown-menu';
 import {Dynamic, type JSX} from '@solidjs/web';
 import {Popover} from '@ui/Popover';
 import clsx from 'clsx';
@@ -54,7 +54,7 @@ export function DropdownMenuContent(props: ContentProps) {
         menu = element;
         if (typeof props.ref === 'function') props.ref(element);
       }}
-      data-cui="dropdown-menu-content"
+      data-cui="dropdownmenu-content"
       role="menu"
       class={clsx(styles.content, props.class)}
       onOpenAutoFocus={event => {
@@ -123,6 +123,7 @@ interface ItemProps extends Omit<
 
 export function DropdownMenuItem(props: ItemProps) {
   const close = useContext(Close);
+  const [highlighted, setHighlighted] = createSignal(false);
   const attrs = omit(
     props,
     'as',
@@ -142,9 +143,12 @@ export function DropdownMenuItem(props: ItemProps) {
       {...attrs}
       role="menuitem"
       tabindex={-1}
-      data-cui="dropdown-menu-item"
+      data-cui="dropdownmenu-item"
       data-disabled={props.disabled ? '' : undefined}
+      data-highlighted={highlighted() ? '' : undefined}
       class={clsx(styles.item, props.class)}
+      onFocus={() => setHighlighted(true)}
+      onBlur={() => setHighlighted(false)}
       onPointerMove={(event: PointerEvent) => {
         if (!props.disabled && event.pointerType !== 'touch')
           (event.currentTarget as HTMLElement).focus({preventScroll: true});

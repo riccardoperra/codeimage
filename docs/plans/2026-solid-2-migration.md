@@ -1,6 +1,6 @@
 # Solid 2 migration
 
-Move the CodeImage app root and first-party browser code to Solid 2 on one migration branch. Keep the current appearance and bridge complete widgets that still require Solid 1. Verify each subsystem as it moves. Port the Node renderer in its own build graph. Give the CodeUI redesign and the marketing site their own upgrades.
+The CodeImage editor and Node renderer run on Solid 2. The editor used a temporary Solid 1 bridge until a Solid 2 CodeUI preview became available. P7 records the native CodeUI cutover. P6 covers the marketing site.
 
 The initial migration baseline is `main` at `b7c2efe1`. The [tab drag-and-drop replacement](https://github.com/riccardoperra/codeimage/pull/798) has landed. `@dnd-kit/dom` has no Solid peer. Keep the `tabs` and `tabs-classic` audit cases in the cutover checks. The prior WebKit run passed the tab journey and reported startup ResizeObserver warnings. Physical iOS Safari remains unverified.
 
@@ -47,7 +47,7 @@ The same `createLegacyMount` and `createSolid1Bridge` factories mount the genera
 
 The reusable workspace package accepts explicit source entries and standalone or compound export rules. The client build registers the editor islands and the dashboard project menu in `apps/codeimage/solid2/islands`. The dashboard still owns mutations and dialogs. The menu dispatches the selected action after the legacy overlay releases the document pointer lock. The Chrome audit on the MSW backend covers Escape and focus return, rename, clone navigation, and delete. The renderer and CLI use their own build graph.
 
-[Workspace plugin](../../packages/vite-plugin-solid1-bridge/README.md) · [Button and Dropdown prototype](./prototypes/solid-2-dropdown-bridge/)
+The bridge plugin and prototype are available in the history of the cutover branch. [Bridge implementation](https://github.com/riccardoperra/codeimage/commit/84e9cd31)
 
 ## P2. Integrate solid-codemirror 3.0
 
@@ -88,9 +88,9 @@ The published `statebuilder@0.9.0-alpha.1` declares `solid-js: ^2.0.0`. A strict
 
 ## P5. Switch the CodeImage app to Solid 2
 
-The cutover branch runs the app, router, locale, statebuilder, CodeMirror and workspace UI on Solid 2. The [legacy build](../../apps/codeimage/solid1/vite.mjs) registers a [set of CodeUI controls](../../apps/codeimage/src/ui/legacy-controls.ts). They share one Solid 1 runtime. Each legacy widget owns its context, trigger, popup and cleanup. The settings dialog, editor overlays and menus that compose app state render in Solid 2. The Dashboard project menu uses this native menu with a bridged CodeUI trigger. Chrome froze when the full legacy menu opened inside the integrated Dashboard. The renderer uses a separate Solid 2 build and creates editor state for each render request.
+The cutover runs the app, router, locale, statebuilder, CodeMirror, and workspace UI on Solid 2. It temporarily loaded CodeUI controls through a separate Solid 1 build. The Dashboard used the app menu with a bridged trigger after Chrome froze with the fully bridged menu. P7 removes the legacy build and the Vite transform.
 
-The widget adapter snapshots field values and passes callbacks. Selected controls also accept DOM slots already rendered by the host. Solid providers and compound component trees stay under their own runtime. Restart Vite after changing registered bridge files or exports.
+The renderer builds separately and creates editor state for each request.
 
 The cutover passed the Node 24 production builds, app typecheck, lint, and the app, bridge, renderer and CLI suites. Chrome verified saved projects, read-only cloning, Settings and preset persistence, tab reordering, keyboard navigation in all three layouts, and real PNG, ZIP, GIF and MP4 downloads. CodeUI redesign adoption and the marketing site upgrade remain in P7 and P6.
 
@@ -166,7 +166,7 @@ VERIFY_AUDIT=1 VERIFY_CASES=tabs,tabs-classic,preset-persistence,settings-persis
 
 The tab journeys use fresh browser contexts and verify tab identity, the active document after closing a tab, and the order and distinct decoded pixels of the ZIP images. Solid 2 additionally exercises selection of filename completions with keyboard and pointer. Local browser runs exercise the MSW boundary. Keep the production asset build, the hosted preview and backend integration as separate gates.
 
-The navigation matrix also covers switching from a local document to a remote snippet and back. Cache the two document types separately, using the identity captured with the edit. The screen export audit currently reports a 0.765% difference in the Inspector with the header hidden on both Solid 1 and Solid 2. Keep the 0.5% threshold while investigating that shared discrepancy.
+The navigation matrix also covers switching from a local document to a remote snippet and back. Cache the two document types separately, using the identity captured with the edit. The screen export audit reports a 0.765% difference in the Inspector with the header hidden on both `a086f73f` and the native CodeUI cutover. The audit keeps its 0.5% threshold.
 
 ## P6. Upgrade the marketing site
 
@@ -177,15 +177,29 @@ The navigation matrix also covers switching from a local document to a remote sn
 
 ## P7. Adopt the new CodeUI design system
 
-CodeImage uses `@codeui/kit@0.1.5` and the older workspace package `@codeimage/ui` side by side. Use both migration guides. The CodeUI census at `b7c2efe1` found 159 files importing `@codeimage/ui`, 87 importing `@codeui/kit`, and 21 importing Kobalte directly. Counts include workspace consumers and can overlap. Rerun the census from the CodeUI checkout after each PR.
+The editor uses the preview of `@codeui/kit` from CodeUI commit `a95b1466f88403701ef2e96f51b8fae95a73ac95`. The kit pulls the same revision of `@codeui/styles` and `@codeui/inkstone`. The app pins Solid and its renderer to 2.0.3, the Vite plugin to 3.0.1, and Kobalte to 2.0.0-alpha.5. [CodeUI pull request and preview artifacts](https://github.com/riccardoperra/codeui/pull/141)
 
-| PR                                    | Files and changes                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        | Pass condition                                                                                                                                                                                       |
-| ------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| P7a. Package, resets, themes          | Update `apps/codeimage/package.json` and the lockfile after the kit, styles, and Inkstone packages are available. Verify the packed consumer and reassess the old `patches/@codeui__kit.patch`. CodeImage already sets `data-cui-theme` in `src/index.tsx`. Keep it on `<html>` for portals. Put the existing reset below the `cui` cascade layer. Keep vanilla-extract for app-authored styles. Use `@codeui/kit/tokens` in Node-evaluated `.css.ts` files such as `Frame.css.ts` and `Alert.css.ts`.                                                   | Production client and render builds collect the CSS. Buttons keep their styles after resets. Light and dark app themes apply to portaled content.                                                    |
-| P7b. Settings, controls, and overlays | Start with `SettingsDialog.tsx`, `controls/fields.tsx`, `FontSystemPicker.tsx`, and `SidebarPopover.tsx`. Keep ready components where they fit and use `/parts` for custom layouts. Use part-specific `classes` keys where supported. For example, use `Select.classes.trigger` for the old input slot and `TextField.classes.input` for the input itself. Keep `slotClasses` where the kit still requires it, such as Checkbox and Tooltip. Review Select's same-value change behavior, Popover's honored gutter, and nested Escape and focus handling. | `settings`, `keyboard-scroll`, and `editor-options` pass. Test a nested picker that can dismiss through Escape and returns focus to its opener. System font selection survives search and scrolling. |
-| P7c. Shared chrome and notifications  | Replace `SnackbarHost` in `src/index.tsx` with a CodeUI `Toaster`. Migrate toast callers in Dashboard, presets, signatures, and `CanvasEditor.tsx`. Check the custom action toast, numeric IDs, dismissal, locale, and positions. Migrate shared layout and loading components in Dashboard and UnifiedEditor. Adopt CodeUI command-menu and sheet parts only after mapping preview rollback and swipe behavior to the existing app flows.                                                                                                               | Save and failure notifications, custom toast actions, command preview and cancellation, and phone sheet drag and scroll all work.                                                                    |
-| P7d. Frame and legacy UI cleanup      | Migrate `TerminalHost`, `Watermark`, and their CSS selectors together to a separate frame mode attribute. Keep viewport UI tokens, frame palette, and renderer CSS distinct. Replace the `solid-headless` ref helper used by `PreviewFrame`. Migrate `packages/highlight/dev` and the remaining shared consumers. Delete the legacy workspace package and its render-mode Vite alias once their census reaches zero.                                                                                                                                     | Dark app with a light frame and light app with a dark frame render correctly. Run `frame-cold-start`, `tabs`, `tabs-classic`, `export-screen-parity`, and CLI fixtures.                              |
+### Install and update the preview
 
-Use the bridge as a transition if the initial design-system packages still target Solid 1. Prefer the Solid 2 release when available. Compare design changes against a fresh Solid 2 baseline from P5 and remove each bridge entry once its native control passes the same checks.
+Use `pnpm install --frozen-lockfile` with Node 24. To change the preview pin, inspect the new kit tarball and its style and Inkstone URLs. Regenerate the lockfile with the following command, then verify a frozen install.
 
-[CodeUI 0.1.x migration](https://codeui-docs.pages.dev/docs/migration/from-0-1) · [Migration from @codeimage/ui](https://codeui-docs.pages.dev/docs/migration/from-codeimage-ui) · [Installation](https://codeui-docs.pages.dev/docs/installation) · [Census tool](https://github.com/riccardoperra/codeui/blob/main/docs/kit-2026/phase-0/tools/census.mjs) · [Editor verification](../../.agents/skills/verify-codeimage/features/README.md)
+```sh
+fnm exec --using=v24.14.0 pnpm --config.block-exotic-subdeps=false install
+fnm exec --using=v24.14.0 pnpm install --frozen-lockfile
+```
+
+The first command lets pnpm resolve the inspected transitive tarball URLs for this run. The workspace keeps its default policy. The two exact Kobalte release-age exceptions cover alpha.5 core and alpha.2 utils while they are fresh. Remove the exceptions when updating those pins. The npm release will let the editor resolve CodeUI from the registry. [pnpm dependency resolution settings](https://pnpm.io/docs/settings#blockexoticsubdeps)
+
+### Editor and renderer integration
+
+- The app imports the native controls from CodeUI. It uses the public variant, field part, segmented control, and styling APIs. The obsolete kit export and Kobalte scroll patches were removed.
+- The HTML entry declares the reset layer before the kit CSS. The workspace UI and the kit read the same `data-cui-theme` attribute on the document. The frame uses `data-codeimage-frame-mode` for the terminal, watermark, and plain-text tab icon.
+- The app uses CodeUI toasts for feedback at the top and bottom of the viewport. Toast actions keep their numeric IDs in the controller that showed them. The exporter calls the controller outside Solid's reactive owner so Kobalte can update its store.
+- The app checks focus outside its overlay after the current microtask. A native Select can focus its portaled listbox before Solid has committed the trigger's `aria-controls`. Waiting for that link preserves the parent overlay and its focus return.
+- The SSR build compiles the app's vanilla-extract source and skips CodeUI's already compiled JavaScript styles. CodeUI supplies those styles as CSS.
+
+### Remaining design system work
+
+The workspace `@codeimage/ui` package runs on Solid 2 and still supplies legacy layout, typography, frame styles, and some controls. The app also owns its overlay stack, command menu, and mobile sheet. Port those against the migration guide while preserving menu positioning, preview cancellation, and sheet gestures. Delete the workspace package and the renderer's source alias once their consumers have moved. The marketing site has its own Solid upgrade in P6.
+
+Run the CodeUI census again after moving the remaining consumers. Use the browser audit to check the panel, export, and saved-project behavior at desktop and phone widths. [CodeUI 0.1.x migration](https://feat-upgrade-solid2-kobalte.codeui-docs.pages.dev/docs/migration/from-0-1) · [Migration from @codeimage/ui](https://feat-upgrade-solid2-kobalte.codeui-docs.pages.dev/docs/migration/from-codeimage-ui) · [Census tool](https://github.com/riccardoperra/codeui/blob/feat/upgrade-solid2-kobalte/docs/kit-2026/phase-0/tools/census.mjs) · [Editor verification](../../.agents/skills/verify-codeimage/features/README.md)

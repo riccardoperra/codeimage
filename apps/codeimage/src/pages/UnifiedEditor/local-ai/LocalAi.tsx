@@ -1,6 +1,6 @@
 import {useI18n} from '@codeimage/locale';
 import {icons} from '@ui/kit-icons';
-import {Button, IconButton, TextArea} from '@ui/legacy-controls';
+import {Button, IconButton, TextArea} from '@codeui/kit';
 import type {Accessor} from 'solid-js';
 import {
   createEffect,
@@ -232,7 +232,7 @@ function Block(props: {exchange: Exchange; earlier: boolean}) {
           <Button
             class={styles.panelAction}
             size="sm"
-            theme="secondary"
+            variant="secondary"
             onClick={() => {
               localAi.close();
               settings.open('experiments');
@@ -334,8 +334,8 @@ export function PromptBar() {
             <div class={styles.header}>
               <Button
                 size="xs"
-                theme="secondary"
-                variant="ghost"
+                variant="secondary"
+                ghost
                 data-local-ai-new-chat
                 onClick={newChat}
               >
@@ -370,12 +370,12 @@ export function PromptBar() {
             onChange={setDraft}
             placeholder={t('localAi.placeholder')}
             options={{autoResize: true, 'aria-label': t('localAi.request')}}
-            slotClasses={{root: styles.field, input: styles.input}}
+            classes={{root: styles.field, input: styles.input}}
           />
           <IconButton
             type="submit"
             size="sm"
-            theme="primary"
+            variant="primary"
             aria-label={t('localAi.send')}
             disabled={busy() || !draft().trim()}
           >
@@ -383,8 +383,8 @@ export function PromptBar() {
           </IconButton>
           <IconButton
             size="sm"
-            theme="secondary"
-            variant="ghost"
+            variant="secondary"
+            ghost
             aria-label={t('common.close')}
             onClick={close}
           >

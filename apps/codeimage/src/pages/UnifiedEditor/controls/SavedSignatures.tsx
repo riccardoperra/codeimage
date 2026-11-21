@@ -12,7 +12,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@ui/DropdownMenu';
-import {TextField} from '@ui/legacy-controls';
+import {TextField} from '@codeui/kit';
 import type {JSX} from '@solidjs/web';
 import {createSignal, For, Match, Show, Switch} from 'solid-js';
 import type {AppLocaleEntries} from '../../../i18n';
@@ -251,7 +251,7 @@ export function SavedSignaturesField(props: {id?: string}) {
             value={name()}
             onChange={setName}
             ref={focusName}
-            slotClasses={{root: styles.namingField}}
+            classes={{root: styles.namingField}}
           />
           <button
             type="submit"

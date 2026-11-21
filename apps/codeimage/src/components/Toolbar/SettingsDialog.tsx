@@ -16,7 +16,7 @@ import {
   VStack,
 } from '@codeimage/ui';
 import {RadioGroup} from '@ui/RadioGroup/RadioGroup';
-import {Button} from '@ui/legacy-controls';
+import {Button} from '@codeui/kit';
 import {Dialog, DialogPanelContent, DialogPanelFooter} from '@ui/Dialog';
 import {appEnvironment} from '@core/configuration';
 import {getUmami} from '@core/constants/umami';
@@ -228,7 +228,7 @@ export function SettingsDialog(props: SettingsDialogProps) {
           <Button
             size={'md'}
             type="button"
-            theme={'secondary'}
+            variant={'secondary'}
             onClick={() => props.onOpenChange(false)}
           >
             {t('common.close')}

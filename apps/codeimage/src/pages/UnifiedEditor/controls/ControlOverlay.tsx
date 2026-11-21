@@ -2,7 +2,7 @@ import {useI18n} from '@codeimage/locale';
 import {getFrameState} from '@codeimage/store/editor/frame';
 import {displayHandle} from '@codeimage/store/frame/signature';
 import {icons} from '@ui/kit-icons';
-import {Button} from '@ui/legacy-controls';
+import {Button} from '@codeui/kit';
 import {Dialog, Content as DialogContent} from '@ui/Dialog/parts';
 import {
   createSignal,
@@ -59,10 +59,10 @@ export function SignatureRow() {
             id="signature-options"
             class={styles.trigger}
             size="sm"
-            theme="secondary"
-            variant="ghost"
+            variant="secondary"
+            ghost
             aria-haspopup="dialog"
-            aria-expanded={target() === 'signature'}
+            aria-expanded={target() === 'signature' ? 'true' : 'false'}
             aria-controls="editor-control-overlay"
             onClick={open}
           >
@@ -84,10 +84,10 @@ export function PickerField(props: {control: Control; id: string}) {
       id={props.id}
       class={styles.trigger}
       size="sm"
-      theme="secondary"
-      variant="ghost"
+      variant="secondary"
+      ghost
       aria-haspopup="dialog"
-      aria-expanded={target() === props.control.id}
+      aria-expanded={target() === props.control.id ? 'true' : 'false'}
       aria-controls="editor-control-overlay"
       onClick={open}
     >

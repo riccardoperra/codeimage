@@ -6,8 +6,7 @@ import {getExportCanvasStore} from '@codeimage/store/canvas';
 import {getFrameState} from '@codeimage/store/editor/frame';
 import {getUiStore} from '@codeimage/store/ui';
 import {RangeField} from '@codeimage/ui';
-import * as buttonStyles from '@codeui/kit/button-styles';
-import {Button} from '@ui/legacy-controls';
+import {Button} from '@codeui/kit';
 import {appEnvironment} from '@core/configuration';
 import {getUmami} from '@core/constants/umami';
 import {RadioGroup} from '@ui/RadioGroup/RadioGroup';
@@ -238,7 +237,7 @@ function ModelControl() {
   const download = (label: string) => (
     <Button
       size="sm"
-      theme="secondary"
+      variant="secondary"
       onClick={() => void languageModel.download()}
     >
       {label}
@@ -255,7 +254,7 @@ function ModelControl() {
       <Match when={languageModel.state().kind === 'unavailable'}>
         <Button
           size="sm"
-          theme="secondary"
+          variant="secondary"
           onClick={() => void languageModel.refresh()}
         >
           {t('localAi.checkAgain')}
@@ -611,8 +610,8 @@ export function createSettingSections(model: EditorControlsModel) {
     action: () => (
       <Button
         size={'sm'}
-        theme={'secondary'}
-        variant={'ghost'}
+        variant={'secondary'}
+        ghost
         disabled={
           !preferences.experimenting() && config.get.renderer === 'dom-export'
         }
@@ -931,7 +930,7 @@ export function createSettingSections(model: EditorControlsModel) {
               <Show when={news.canShowMe(highlight.id)}>
                 <Button
                   size="sm"
-                  theme="secondary"
+                  variant="secondary"
                   onClick={() => news.showMe(highlight.id, 'library')}
                 >
                   {t('whatsNew.showMe')}
@@ -969,9 +968,10 @@ export function createSettingSections(model: EditorControlsModel) {
             title: t(link.label),
             description: () => link.href.replace('https://', ''),
             control: () => (
-              <a
-                class={buttonStyles.button({theme: 'secondary', size: 'sm'})}
-                style={{'text-decoration': 'unset'}}
+              <Button
+                as="a"
+                variant="secondary"
+                size="sm"
                 target="_blank"
                 rel="noreferrer"
                 href={link.href}
@@ -982,7 +982,7 @@ export function createSettingSections(model: EditorControlsModel) {
               >
                 {t('toolbar.openNewTab')}
                 <ExternalIcon size={14} />
-              </a>
+              </Button>
             ),
           })),
         ],
@@ -1005,7 +1005,7 @@ export function createSettingSections(model: EditorControlsModel) {
                   control: () => (
                     <Button
                       size={'sm'}
-                      theme={'secondary'}
+                      variant={'secondary'}
                       onClick={() => {
                         settings.close();
                         void auth.signOut().then(() => navigate('/'));

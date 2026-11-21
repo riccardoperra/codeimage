@@ -1,7 +1,7 @@
 import {useI18n} from '@codeimage/locale';
 import {getRootEditorStore} from '@codeimage/store/editor';
 import {icons} from '@ui/kit-icons';
-import {Button} from '@ui/legacy-controls';
+import {Button} from '@codeui/kit';
 import {Dialog, Content as DialogContent} from '@ui/Dialog/parts';
 import {placePopover} from '@ui/Popover/placement';
 import type {Accessor} from 'solid-js';
@@ -126,12 +126,12 @@ export function ShortcutHelp(props: {
         ref={element => setTrigger(element)}
         style={{visibility: clear() ? undefined : 'hidden'}}
         size="sm"
-        theme="secondary"
-        variant="ghost"
+        variant="secondary"
+        ghost
         aria-label={t('shortcut.buttonAction')}
         title={t('shortcut.buttonAction')}
         aria-haspopup="dialog"
-        aria-expanded={open()}
+        aria-expanded={open() ? 'true' : 'false'}
         onClick={show}
       >
         <Show when={props.canvas} fallback={<HintIcon size="sm" />}>

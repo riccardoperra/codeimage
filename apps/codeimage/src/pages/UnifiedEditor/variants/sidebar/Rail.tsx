@@ -1,6 +1,6 @@
 import {useI18n} from '@codeimage/locale';
 import {signatureEditor} from '@codeimage/store/frame/signatureEditor';
-import {Button, IconButton} from '@ui/legacy-controls';
+import {Button, IconButton} from '@codeui/kit';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 import {
   createMemo,
@@ -395,8 +395,8 @@ export function Rail(props: VariantProps) {
                 </h2>
                 <IconButton
                   size={size()}
-                  theme="secondary"
-                  variant="ghost"
+                  variant="secondary"
+                  ghost
                   aria-label={t('editor.closePanel', {
                     panel: openPanel()
                       ? t(openPanel()!.label)
@@ -451,7 +451,7 @@ export function Rail(props: VariantProps) {
                 <EditingControls state={props.pageState()}>
                   <Button
                     size="xs"
-                    theme="secondary"
+                    variant="secondary"
                     aria-label={t('editor.formatCode')}
                     leftIcon={<SparklesIcon />}
                     disabled={!props.stage.canFormat()}

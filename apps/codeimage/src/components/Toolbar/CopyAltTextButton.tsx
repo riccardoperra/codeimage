@@ -1,7 +1,7 @@
 import {useI18n} from '@codeimage/locale';
 import {getActiveEditorStore} from '@codeimage/store/editor/activeEditor';
-import {toast} from '@codeimage/ui';
-import {Button, Tooltip} from '@ui/legacy-controls';
+import {notifications} from '@ui/notifications';
+import {Button, Tooltip} from '@codeui/kit';
 import {altText} from '@core/altText';
 import type {AppLocaleEntries} from '../../i18n';
 import {getWhatsNew} from '../../state/whats-new';
@@ -26,18 +26,28 @@ export function CopyAltTextButton(props: {
       () => {
         getWhatsNew().seen('alt');
         onCopy?.();
-        toast.success(() => t('altText.copied'));
+        notifications.show({
+          tone: 'success',
+          description: () => t('altText.copied'),
+          theme: 'page',
+          duration: 2000,
+        });
       },
-      () => toast.error(() => t('altText.copyError')),
+      () =>
+        notifications.show({
+          tone: 'danger',
+          description: () => t('altText.copyError'),
+          theme: 'page',
+        }),
     );
   }
 
   return (
-    <Tooltip content={t('altText.hint')} theme={'secondary'}>
+    <Tooltip content={t('altText.hint')} variant={'secondary'}>
       <Button
         size={props.size ?? 'sm'}
-        theme={'tertiary'}
-        variant={'ghost'}
+        variant={'tertiary'}
+        ghost
         class={props.class}
         leftIcon={
           props.icon === false ? undefined : <ClipboardIcon size={'sm'} />

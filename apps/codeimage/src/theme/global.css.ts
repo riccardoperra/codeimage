@@ -30,7 +30,7 @@ globalStyle('body', {
 
 const cssVar = /(--)[^,:)]+/;
 
-globalStyle(`[data-codeimage-theme=dark]`, {
+globalStyle(':root[data-cui-theme=dark]', {
   [cssVar.exec(themeVars.dynamicColors.panel.background)![0]]: '#151516',
   [cssVar.exec(themeVars.dynamicColors.background)![0]]: '#0f0f10',
 });

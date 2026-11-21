@@ -1,5 +1,5 @@
 import {themeVars} from '@codeimage/ui';
-import {responsiveStyle, themeTokens} from '@codeui/kit/foundation';
+import {responsiveStyle, themeTokens} from '@codeui/kit/tokens';
 import {style} from '@vanilla-extract/css';
 
 export const sidebarPopover = style([

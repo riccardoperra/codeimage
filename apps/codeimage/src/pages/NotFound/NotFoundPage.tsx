@@ -1,6 +1,6 @@
 import {useI18n} from '@codeimage/locale';
 import {Box, Text} from '@codeimage/ui';
-import {Button} from '@ui/legacy-controls';
+import {Button} from '@codeui/kit';
 import type {AppLocaleEntries} from '../../i18n';
 import * as styles from './NotFoundPage.css';
 
@@ -14,7 +14,7 @@ export default function NotFoundPage() {
       <Box marginTop={12}>
         <Button
           size={'md'}
-          theme={'primary'}
+          variant={'primary'}
           as="a"
           href={'/'}
           style={{'text-decoration': 'unset'}}

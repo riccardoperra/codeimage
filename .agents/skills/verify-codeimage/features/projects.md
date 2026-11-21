@@ -47,16 +47,16 @@ Ownership and failed-load fixtures use the existing MSW boundary. Navigation use
 
 To isolate a snippet matrix lane, set `VERIFY_SNIPPET_LAYOUT=inspector`, `dock`, or `studio`, and `VERIFY_SNIPPET_WIDTH=1440` or `390`. The default remains all six combinations. Each run writes the lanes actually exercised to `<case>-matrix.json`; a selected lane does not establish full matrix coverage. All scenario assertions remain active. These selectors allow fresh Chrome processes when a long-lived local browser exits during repeated context changes.
 
-## Bridged project actions
+## Project actions from the dashboard
 
-Run the dashboard case on Node 24 to exercise the Solid 2 project menu and its bridged Solid 1 CodeUI trigger.
+Run the dashboard case on Node 24 to exercise the CodeUI project menu.
 
 ```sh
-VERIFY_AUDIT=1 VERIFY_CASES=solid1-bridge-project-menu \
+VERIFY_AUDIT=1 VERIFY_CASES=project-menu \
   VERIFY_BROWSER_CHANNEL=chrome node .agents/skills/verify-codeimage/scripts/verify.mjs
 ```
 
-The case creates a disposable MSW project, opens the menu by keyboard, checks Escape and focus, renames the project through the app dialog, clones it and follows the new URL, then deletes the original through the app dialog. It checks the mutation responses and verifies that the rename dialog blocks background clicks only while open.
+The case creates a disposable project in MSW. It opens the menu with ArrowDown and checks that Escape returns focus to its trigger. It opens Rename with Enter and checks the rename response. Then it clones the project, follows the new URL, and deletes the original. It checks both mutation responses and confirms that the rename dialog blocks background clicks while open.
 
 ## Read-only notice
 

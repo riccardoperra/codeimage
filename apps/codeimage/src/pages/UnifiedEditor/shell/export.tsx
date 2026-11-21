@@ -9,7 +9,7 @@ import {
   copyingToClipboard,
   dispatchCopyToClipboard,
 } from '@codeimage/store/effects/onCopyToClipboard';
-import {toast} from '@codeimage/ui';
+import {editorNotifications, notifications} from '@ui/notifications';
 import {altText} from '@core/altText';
 import {getUmami} from '@core/constants/umami';
 import {loadLanguage} from '@core/snapshot/tokenize';
@@ -163,11 +163,11 @@ export function createExporter(
   };
 
   const showError = () =>
-    runWithOwner(owner, () =>
-      toast.error(() => t('export.genericSaveError'), {
-        position: 'bottom-center',
-      }),
-    );
+    editorNotifications.show({
+      tone: 'danger',
+      description: () => t('export.genericSaveError'),
+      theme: 'page',
+    });
 
   const run = async (
     action: ExportAction,
@@ -220,11 +220,8 @@ export function createExporter(
             }),
           ));
       if (!result) return {status: 'canceled'};
-      if (mode !== ExportMode.newTab) {
-        runWithOwner(owner, () =>
-          showExportSuccessToast('altText.exported', text),
-        );
-      }
+      if (mode !== ExportMode.newTab)
+        showExportSuccessToast('altText.exported', text);
       return {status: 'done'};
     } catch {
       showError();
@@ -265,9 +262,19 @@ export function createExporter(
     navigator.clipboard.writeText(text).then(
       () => {
         getWhatsNew().seen('alt');
-        toast.success(() => t('altText.copied'));
+        notifications.show({
+          tone: 'success',
+          description: () => t('altText.copied'),
+          theme: 'page',
+          duration: 2000,
+        });
       },
-      () => toast.error(() => t('altText.copyError')),
+      () =>
+        notifications.show({
+          tone: 'danger',
+          description: () => t('altText.copyError'),
+          theme: 'page',
+        }),
     );
   };
 

@@ -1,5 +1,5 @@
 import {Box} from '@codeimage/ui';
-import {Pagination} from '@ui/legacy-controls';
+import {Pagination} from '@codeui/kit';
 import {Errored, For, Repeat, Show} from 'solid-js';
 import {getDashboardState} from '../../dashboard.state';
 import {ProjectItem} from '../ProjectItem/ProjectItem';

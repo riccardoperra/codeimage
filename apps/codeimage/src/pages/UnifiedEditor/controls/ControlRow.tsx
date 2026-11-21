@@ -1,7 +1,7 @@
 import {useI18n} from '@codeimage/locale';
 import type {LocaleKeys} from '@codeimage/locale';
 import {RangeField} from '@codeimage/ui';
-import {NumberField} from '@ui/legacy-controls';
+import {NumberField} from '@codeui/kit';
 import {Show, createEffect, createSignal} from 'solid-js';
 import type {JSX} from '@solidjs/web';
 import {Dynamic} from '@solidjs/web';

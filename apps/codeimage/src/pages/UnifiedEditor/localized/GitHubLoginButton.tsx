@@ -3,7 +3,7 @@ import type {AppLocaleEntries} from '../../../i18n';
 import {getAuth0State} from '@codeimage/store/auth/auth0';
 import type {SvgIconProps} from '@codeimage/ui';
 import {Box, SvgIcon} from '@codeimage/ui';
-import {Button} from '@ui/legacy-controls';
+import {Button} from '@codeui/kit';
 import {useModality} from '@core/hooks/isMobile';
 import {Show} from 'solid-js';
 import * as styles from '../../../ui/GitHubLoginButton/GitHubLoginButton.css';

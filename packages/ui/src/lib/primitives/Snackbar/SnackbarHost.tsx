@@ -30,7 +30,7 @@ export function SnackbarHost(props: VoidProps<SnackbarHostProps>): JSX.Element {
             >
               {entry => (
                 <FadeInOutWithScaleTransition show={entry().visible}>
-                  <div data-codeimage-theme={entry().theme}>
+                  <div data-cui-theme={entry().theme}>
                     <div
                       role="status"
                       aria-live="polite"

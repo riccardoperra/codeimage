@@ -1,6 +1,6 @@
 import {useI18n} from '@codeimage/locale';
 import type {AppLocaleEntries} from '../../i18n';
-import {Button} from '@ui/legacy-controls';
+import {Button} from '@codeui/kit';
 import {Popover} from '@ui/Popover';
 import type {JSX} from '@solidjs/web';
 import {
@@ -188,7 +188,7 @@ function Dot(props: {at: Where}) {
                   <span class={styles.steps} />
                   <Button
                     size="sm"
-                    theme="secondary"
+                    variant="secondary"
                     onClick={(event: MouseEvent) => {
                       news.seen(item().id);
                       animateInstantly(fromKeyboard(event));

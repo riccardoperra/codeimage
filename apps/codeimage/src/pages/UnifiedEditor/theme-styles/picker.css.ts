@@ -1,7 +1,8 @@
 import {themeVars, withThemeMode} from '@codeimage/ui';
-import {style} from '@vanilla-extract/css';
+import {createVar, style} from '@vanilla-extract/css';
 
 const strongEaseOut = 'cubic-bezier(0.23, 1, 0.32, 1)';
+const toolHeight = createVar();
 
 export const muted = style({
   color: themeVars.dynamicColors.descriptionTextColor,
@@ -20,26 +21,24 @@ export const root = style({
 
 // Side by side in a wide tray, stacked in a narrow panel.
 export const tools = style({
+  vars: {[toolHeight]: '36px'},
   display: 'flex',
   flexWrap: 'wrap',
   alignItems: 'center',
   gap: themeVars.spacing['3'],
   flex: 'none',
+  selectors: {'&[data-size="md"]': {vars: {[toolHeight]: '40px'}}},
 });
 
 // Both fit one row in a phone panel, 340px; a 320px desktop panel stacks them.
 export const search = style({flex: '1 1 160px', minWidth: 0});
 
-/*
- * SegmentedField's adapt makes the kit control height: 100%, which falls back
- * to its line height under a parent of auto height. The kit's field heights,
- * the search field's too, give that 100% something to resolve against.
- */
+export const searchInput = style({height: toolHeight});
+
 export const filter = style({
   flex: '1 1 168px',
   maxWidth: '320px',
-  height: '36px',
-  selectors: {'&[data-size="md"]': {height: '40px'}},
+  height: toolHeight,
 });
 
 // The padding keeps focus rings and selection rings inside the scroller.

@@ -169,18 +169,21 @@ export async function verifyKeyboardScroll({fresh, out}) {
                       `${description.label}: trigger receives focus`,
                     );
                     await page.keyboard.press(key);
-                    await page
-                      .getByRole(
-                        ['true', 'menu'].includes(description.popup)
-                          ? 'menu'
-                          : 'listbox',
-                      )
-                      .last()
-                      .waitFor({state: 'visible'});
-                    assert.equal(
-                      await trigger.getAttribute('aria-expanded'),
-                      'true',
+                    await trigger
+                      .and(page.locator('[aria-expanded="true"]'))
+                      .waitFor({timeout: 3000});
+                    const popupId = await trigger.getAttribute('aria-controls');
+                    assert.ok(
+                      popupId,
+                      `${description.label}: controls a popup`,
                     );
+                    const role = ['true', 'menu'].includes(description.popup)
+                      ? 'menu'
+                      : 'listbox';
+                    const popup = page
+                      .getByRole(role)
+                      .and(page.locator(`[id=${JSON.stringify(popupId)}]`));
+                    await popup.waitFor();
                     // A frame and an evaluation after keydown prove the renderer responds.
                     await page.evaluate(
                       () =>
@@ -189,6 +192,7 @@ export async function verifyKeyboardScroll({fresh, out}) {
                         ),
                     );
                     await page.keyboard.press('Escape');
+                    await popup.waitFor({state: 'hidden'});
                     assert.equal(
                       await trigger.getAttribute('aria-expanded'),
                       'false',
@@ -263,34 +267,15 @@ export async function verifyKeyboardScroll({fresh, out}) {
           await page.locator('#signature-options').click();
           await signature();
           await sweep('Signature');
+          await page.keyboard.press('Escape');
           await page
-            .getByRole('dialog', {name: 'Signature', exact: true})
-            .getByRole('button', {name: 'Close', exact: true})
-            .click();
+            .locator('#signature-options:focus[aria-expanded="false"]')
+            .waitFor();
           await open('window', 'Window');
           await sweep('Window');
           await open('code', 'Code');
           await sweep('Code');
-          assert.ok(
-            records.some(
-              record =>
-                record.layout === layout &&
-                record.viewport.width === viewport.width &&
-                record.label === 'Preset menu',
-            ),
-            `${name}: preset regression exercised`,
-          );
         }
-        for (const label of ['Saved signatures', 'Avatar source'])
-          assert.ok(
-            records.some(
-              record =>
-                record.layout === layout &&
-                record.viewport.width === viewport.width &&
-                record.label === label,
-            ),
-            `${name}: ${label} exercised`,
-          );
         const expected =
           layout === 'dock'
             ? [

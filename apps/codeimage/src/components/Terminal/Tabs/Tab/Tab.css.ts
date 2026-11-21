@@ -86,12 +86,12 @@ export const tab = recipe({
           backdropFilter: 'blur(20px) saturate(180%)',
           ['webkitBackdropFilter' as string]: 'blur(20px) saturate(180%)',
         },
-        '[data-theme-mode=dark] &': {
+        '[data-codeimage-frame-mode=dark] &': {
           vars: {
             [tabVars.tabSecondaryHoverBg]: '255, 255, 255',
           },
         },
-        '[data-theme-mode=light] &': {
+        '[data-codeimage-frame-mode=light] &': {
           vars: {
             [tabVars.tabSecondaryHoverBg]: '0, 0, 0',
           },
@@ -244,10 +244,10 @@ export const tabCloseIcon = style({
   width: '14px',
   minWidth: '14px',
   selectors: {
-    '[data-theme-mode=dark] &': {
+    '[data-codeimage-frame-mode=dark] &': {
       color: themeVars.backgroundColor.white,
     },
-    '[data-theme-mode=light] &': {
+    '[data-codeimage-frame-mode=light] &': {
       color: themeVars.backgroundColor.black,
     },
   },

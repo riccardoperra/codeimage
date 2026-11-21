@@ -1,24 +1,23 @@
-import {createI18nContext, I18nContext} from '@codeimage/locale';
+import './assets/styles/app.scss';
+import {createI18nContext, I18nContext, useI18n} from '@codeimage/locale';
 import {getAuth0State} from '@codeimage/store/auth/auth0';
 import {getRootEditorStore} from '@codeimage/store/editor';
 import {getUiStore} from '@codeimage/store/ui';
 import type {ThemeProviderProps} from '@codeimage/ui';
-import {
-  backgroundColorVar,
-  CodeImageThemeProvider,
-  SnackbarHost,
-} from '@codeimage/ui';
+import {backgroundColorVar, CodeImageThemeProvider} from '@codeimage/ui';
 import '@codeimage/ui/themes/lightTheme';
+import {Toaster} from '@codeui/kit/toast';
 import {appEnvironment} from '@core/configuration';
 import {createRouter, intentPreload, useNavigate} from '@solidjs/router';
 import {render} from '@solidjs/web';
-import {snackbarHostAppStyleCss} from '@ui/snackbarHostAppStyle.css';
+import {editorNotifications, notifications} from '@ui/notifications';
+import * as notificationStyles from '@ui/notifications.css';
 import {setElementVars} from '@vanilla-extract/dynamic';
 import type {Component, ParentProps} from 'solid-js';
 import {createEffect, lazy, Loading, onSettled, Show} from 'solid-js';
 import {StoreProvider} from 'statebuilder';
-import './assets/styles/app.scss';
 import {Scaffold} from './components/Scaffold/Scaffold';
+import type {AppLocaleEntries} from './i18n';
 import {locale} from './i18n';
 import './theme/global.css';
 
@@ -103,6 +102,7 @@ const Router = createRouter({
 });
 
 export function Bootstrap(props: ParentProps) {
+  const [t] = useI18n<AppLocaleEntries>();
   getRootEditorStore();
   const uiStore = getUiStore();
   const mode = () => uiStore.currentTheme();
@@ -112,13 +112,23 @@ export function Bootstrap(props: ParentProps) {
     const color = theme === 'dark' ? '#151516' : '#FFFFFF';
     scheme?.setAttribute('content', color);
     setElementVars(document.documentElement, {[backgroundColorVar]: color});
-    document.documentElement.setAttribute('data-cui-theme', theme);
   });
 
   return (
     <Scaffold>
       <CodeImageThemeProvider tokens={tokens} theme={mode()}>
-        <SnackbarHost containerClassName={snackbarHostAppStyleCss} />
+        <Toaster
+          toaster={notifications}
+          position="top-center"
+          closeLabel={t('common.closeNotification')}
+          class={notificationStyles.top}
+        />
+        <Toaster
+          toaster={editorNotifications}
+          position="bottom-center"
+          closeLabel={t('common.closeNotification')}
+          class={notificationStyles.region}
+        />
         <Loading>{props.children}</Loading>
       </CodeImageThemeProvider>
     </Scaffold>

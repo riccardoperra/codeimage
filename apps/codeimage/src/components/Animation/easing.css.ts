@@ -27,7 +27,7 @@ export const popoverBackdrop = style({
 });
 export const popoverTitle = style({fontWeight: 600});
 globalStyle(`${content} > p`, {display: 'grid', gap: 12});
-globalStyle(`${content} [data-cui="segmentedControl"]`, {
+globalStyle(`${content} [data-cui="segmentedcontrol"]`, {
   height: 28,
   '@media': {'(max-width: 768px)': {height: 40}},
 });

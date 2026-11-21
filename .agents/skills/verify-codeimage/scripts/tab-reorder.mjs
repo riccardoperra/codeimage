@@ -146,6 +146,37 @@ export async function auditTabLayouts({feature, fresh, ...options}) {
       ),
     );
   }
+  await feature('plain-text-tab-icon', () =>
+    fresh(
+      {name: 'plain-text-tab-icon', layout: 'inspector'},
+      async ({doctor, page}) => {
+        await doctor();
+        await completeTabExtension(
+          page,
+          page.getByRole('combobox', {name: 'Tab name', exact: true}),
+          {prefix: 'plain.tx', extension: '.txt', method: 'keyboard'},
+        );
+        const icon = page.locator('main [data-active=true] svg path.path');
+        await icon.waitFor();
+        assert.equal(
+          await icon.evaluate(path => getComputedStyle(path).fill),
+          'rgb(255, 255, 255)',
+        );
+        await page
+          .getByRole('textbox', {name: 'Search themes'})
+          .fill('XCode Light');
+        await page.getByRole('option', {name: /XCode Light/i}).click();
+        await page
+          .locator('main [data-codeimage-frame-mode=light]')
+          .filter({has: page.locator('[data-active=true] svg path.path')})
+          .waitFor();
+        assert.equal(
+          await icon.evaluate(path => getComputedStyle(path).fill),
+          'rgb(60, 60, 60)',
+        );
+      },
+    ),
+  );
 }
 
 async function auditTabs(

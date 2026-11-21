@@ -5,7 +5,8 @@ import {getTerminalState} from '@codeimage/store/editor/terminal';
 import {getPresetsStore} from '@codeimage/store/presets/presets';
 import type {PresetData} from '@codeimage/store/presets/types';
 import {getUiStore} from '@codeimage/store/ui';
-import {Box, Text, toast} from '@codeimage/ui';
+import {Box, Text} from '@codeimage/ui';
+import {editorNotifications} from '@ui/notifications';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,7 +14,7 @@ import {
   DropdownMenuPortal,
   DropdownMenuTrigger,
 } from '@ui/DropdownMenu';
-import {Button, IconButton, Tooltip} from '@ui/legacy-controls';
+import {Button, IconButton, Tooltip} from '@codeui/kit';
 import {getUmami} from '@core/constants/umami';
 import {formatDistanceToNow} from '@core/helpers/date';
 import {createControlledDialog} from '@core/hooks/createControlledDialog';
@@ -72,7 +73,7 @@ export const PresetSwitcher: ParentComponent<ThemeSwitcherVariant> = props => {
           >
             <Button
               size={'xs'}
-              theme={'primary'}
+              variant={'primary'}
               onClick={() => {
                 openDialog(RenameContentDialog, {
                   title: t('presets.addPreset.confirmTitle'),
@@ -104,13 +105,6 @@ export const PresetSwitcher: ParentComponent<ThemeSwitcherVariant> = props => {
             fallback={<EmptyPresetFallback />}
           >
             {theme => {
-              const canSyncPreset = () =>
-                presetsStore.bridge.canSyncPreset(theme);
-
-              const lastUpdateDate = () => {
-                return formatDistanceToNow(locale(), theme.updatedAt as string);
-              };
-
               function openUpdateDialog() {
                 openDialog(PresetUpdateDialog, {
                   currentPreset: theme.data,
@@ -151,7 +145,11 @@ export const PresetSwitcher: ParentComponent<ThemeSwitcherVariant> = props => {
                           <Text weight={'semibold'}>{theme.name}</Text>
                           <Box marginTop={2}>
                             <Text size={'xs'}>
-                              {t('dashboard.updated')} {lastUpdateDate()}
+                              {t('dashboard.updated')}{' '}
+                              {formatDistanceToNow(
+                                locale(),
+                                theme.updatedAt as string,
+                              )}
                             </Text>
                           </Box>
                         </div>
@@ -160,7 +158,7 @@ export const PresetSwitcher: ParentComponent<ThemeSwitcherVariant> = props => {
                             <DropdownMenuTrigger
                               as={IconButton}
                               aria-label={t('editor.presetMenu')}
-                              theme={'secondary'}
+                              variant={'secondary'}
                               size={'xs'}
                             >
                               <DotHorizontalIcon size={'md'} />
@@ -196,8 +194,11 @@ export const PresetSwitcher: ParentComponent<ThemeSwitcherVariant> = props => {
                                 <DropdownMenuItem
                                   onClick={() => {
                                     presetsStore.actions.copyLink(theme);
-                                    toast.success(t('presets.share.confirm'), {
-                                      position: 'bottom-center',
+                                    editorNotifications.show({
+                                      tone: 'success',
+                                      description: t('presets.share.confirm'),
+                                      theme: 'page',
+                                      duration: 2000,
                                     });
                                   }}
                                 >
@@ -229,14 +230,14 @@ export const PresetSwitcher: ParentComponent<ThemeSwitcherVariant> = props => {
                           </DropdownMenu>
                         </div>
                       </Box>
-                      <Show when={canSyncPreset()}>
+                      <Show when={presetsStore.bridge.canSyncPreset(theme)}>
                         <Box
                           display={'flex'}
                           justifyContent={'flexEnd'}
                           paddingTop={3}
                         >
                           <Button
-                            theme={'secondary'}
+                            variant={'secondary'}
                             block
                             size={'sm'}
                             leftIcon={<CloudIcon />}

@@ -1,5 +1,5 @@
 import {useI18n} from '@codeimage/locale';
-import {Button} from '@ui/legacy-controls';
+import {Button} from '@codeui/kit';
 import {Show} from 'solid-js';
 import type {AppLocaleEntries} from '../../../i18n';
 import {PromptIcon} from '../shell/icons';
@@ -12,8 +12,8 @@ export function AskAiButton(props: {class?: string}) {
       <Button
         class={props.class}
         size="sm"
-        theme="secondary"
-        variant="ghost"
+        variant="secondary"
+        ghost
         leftIcon={<PromptIcon size={18} />}
         data-ask-ai
         onClick={() => localAi.open()}

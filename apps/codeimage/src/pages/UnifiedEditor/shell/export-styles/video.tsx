@@ -1,6 +1,6 @@
 import {useI18n} from '@codeimage/locale';
 import {icons} from '@ui/kit-icons';
-import {Button, IconButton} from '@ui/legacy-controls';
+import {Button, IconButton} from '@codeui/kit';
 import {onCleanup} from 'solid-js';
 import {Popover} from '@ui/Popover';
 import type {AppLocaleEntries} from '../../../../i18n';
@@ -33,7 +33,7 @@ export function VideoExport(props: ExportControlProps & {onImage: () => void}) {
     >
       <Button
         class={styles.main}
-        theme="primary"
+        variant="primary"
         size={props.size}
         leftIcon={<DownloadIcon />}
         disabled={disabled()}
@@ -51,7 +51,7 @@ export function VideoExport(props: ExportControlProps & {onImage: () => void}) {
         <Popover.Trigger
           as={IconButton}
           class={styles.more}
-          theme="primary"
+          variant="primary"
           size={props.size}
           aria-label={t('editor.moreExport')}
           disabled={disabled()}

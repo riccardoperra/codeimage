@@ -1,8 +1,0 @@
-{
-  "extends": "./tsconfig.json",
-  "compilerOptions": {
-    "paths": {"solid-js": ["./node_modules/solid-js-v2/types/index.d.ts"]}
-  },
-  "include": ["src/runtime.ts"],
-  "exclude": []
-}

@@ -1,7 +1,7 @@
 import {useI18n} from '@codeimage/locale';
 import {isAssetUrl} from '@codeimage/store/assets/assets';
 import {FlexField, VStack} from '@codeimage/ui';
-import {TextField} from '@ui/legacy-controls';
+import {TextField} from '@codeui/kit';
 import type {SegmentedFieldItem} from '@ui/SegmentedField/SegmentedField';
 import {SegmentedField} from '@ui/SegmentedField/SegmentedField';
 import type {Accessor, VoidProps} from 'solid-js';

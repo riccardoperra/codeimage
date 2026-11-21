@@ -1,7 +1,7 @@
 import {useI18n} from '@codeimage/locale';
 import {HStack, Text} from '@codeimage/ui';
 import {Dialog, DialogPanelContent, DialogPanelFooter} from '@ui/Dialog';
-import {Button} from '@ui/legacy-controls';
+import {Button} from '@codeui/kit';
 import type {ControlledDialogProps} from '@core/hooks/createControlledDialog';
 import type {Element as JSXElement, VoidProps} from 'solid-js';
 import {merge} from 'solid-js';
@@ -35,7 +35,7 @@ export function ConfirmDialog(
             block
             size={'md'}
             type="button"
-            theme={'secondary'}
+            variant={'secondary'}
             onClick={() => props.onOpenChange?.(false)}
           >
             {t('common.close')}
@@ -45,8 +45,8 @@ export function ConfirmDialog(
             block
             size={'md'}
             type="submit"
-            theme={
-              propsWithDefault.actionType === 'primary' ? 'primary' : 'negative'
+            variant={
+              propsWithDefault.actionType === 'danger' ? 'negative' : 'primary'
             }
             onClick={() => {
               propsWithDefault.onConfirm();

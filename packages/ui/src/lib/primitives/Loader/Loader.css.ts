@@ -3,10 +3,10 @@ import {style} from '@vanilla-extract/css';
 
 export const loader = style({
   selectors: {
-    ['[data-theme-mode=dark] &']: {
+    ['[data-cui-theme=dark] &']: {
       stroke: themeVars.backgroundColor.white,
     },
-    ['[data-theme-mode=light] &']: {
+    ['[data-cui-theme=light] &']: {
       stroke: themeVars.backgroundColor.black,
     },
   },

@@ -1,6 +1,6 @@
 import {useI18n} from '@codeimage/locale';
 import {icons} from '@ui/kit-icons';
-import {Button, IconButton} from '@ui/legacy-controls';
+import {Button, IconButton} from '@codeui/kit';
 import {Popover} from '@ui/Popover';
 import {createSignal, For, Show} from 'solid-js';
 import {DownloadIcon} from '../../../../components/Icons/Download';
@@ -65,7 +65,7 @@ export function PanelExport(props: ExportControlProps) {
     >
       <Button
         class={shared.main}
-        theme={'primary'}
+        variant={'primary'}
         size={props.size}
         loading={props.exporter.busy()}
         leftIcon={<DownloadIcon />}
@@ -86,7 +86,7 @@ export function PanelExport(props: ExportControlProps) {
           <Popover.Trigger
             as={IconButton}
             class={shared.more}
-            theme={'primary'}
+            variant={'primary'}
             size={props.size}
             aria-label={t('editor.moreExport')}
             data-export-menu
@@ -123,7 +123,7 @@ export function PanelExport(props: ExportControlProps) {
               <div class={styles.commit}>
                 <Button
                   class={styles.download}
-                  theme={'primary'}
+                  variant={'primary'}
                   size={'md'}
                   leftIcon={<DownloadIcon />}
                   disabled={props.exporter.busy()}

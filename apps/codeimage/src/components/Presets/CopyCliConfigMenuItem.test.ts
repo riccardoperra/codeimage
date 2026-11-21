@@ -8,14 +8,13 @@ import {toCliConfig} from './cliConfig';
 
 const menu = vi.hoisted(() => ({
   click: async () => {},
-  success: vi.fn(),
-  error: vi.fn(),
+  show: vi.fn(),
 }));
 vi.mock('@codeimage/locale', () => ({
   useI18n: () => [(key: string) => key],
 }));
-vi.mock('@codeimage/ui', () => ({
-  toast: {success: menu.success, error: menu.error},
+vi.mock('@ui/notifications', () => ({
+  editorNotifications: {show: menu.show},
 }));
 vi.mock('@ui/DropdownMenu', () => ({
   DropdownMenuItem: (props: {
@@ -74,10 +73,12 @@ it('copies exactly toCliConfig output from the menu action shared by both editor
   expect(html).toContain('cliConfig.copy');
   await menu.click();
   expect(writeText).toHaveBeenCalledExactlyOnceWith(toCliConfig(data));
-  expect(menu.success).toHaveBeenCalledExactlyOnceWith('cliConfig.copied', {
-    position: 'bottom-center',
+  expect(menu.show).toHaveBeenCalledExactlyOnceWith({
+    description: 'cliConfig.copied',
+    tone: 'success',
+    duration: 2000,
+    theme: 'page',
   });
-  expect(menu.error).not.toHaveBeenCalled();
 });
 
 it('reports a clipboard failure without success feedback', async () => {
@@ -86,8 +87,9 @@ it('reports a clipboard failure without success feedback', async () => {
   });
   renderToString(() => createComponent(CopyCliConfigMenuItem, {data}));
   await menu.click();
-  expect(menu.error).toHaveBeenCalledExactlyOnceWith('cliConfig.copyError', {
-    position: 'bottom-center',
+  expect(menu.show).toHaveBeenCalledExactlyOnceWith({
+    description: 'cliConfig.copyError',
+    tone: 'danger',
+    theme: 'page',
   });
-  expect(menu.success).not.toHaveBeenCalled();
 });

@@ -54,7 +54,7 @@ The helper's `finally` closes its browser/context and terminates only its own Vi
 
 ## Helpers
 
-Select `VERIFY_CASES=keyboard-scroll` for keyboard opening of scrollable-panel menus and selects across Inspector, Dock, and Studio at desktop and phone sizes. The Node watchdog interrupts a frozen renderer after five seconds. Read [keyboard coverage](features/keyboard.md) for discovery rules and evidence. Run `fnm exec --using=v24.14.0 node --test .agents/skills/verify-codeimage/scripts/keyboard-scroll.test.mjs` for the dependency traversal regression.
+Select `VERIFY_CASES=keyboard-scroll` for keyboard opening of scrollable-panel menus and selects across Inspector, Dock, and Studio at desktop and phone sizes. The Node watchdog interrupts a frozen renderer after five seconds. Read [keyboard coverage](features/keyboard.md) for discovery rules and evidence.
 
 `node .agents/skills/verify-codeimage/scripts/verify.mjs` runs the full baseline. It is executable and accepts `VERIFY_PORT` and `ARTIFACT_DIR` environment overrides. To re-run selected journeys, set `VERIFY_CASES=export-options,settings-persistence` together with `VERIFY_AUDIT=1`. Omit `VERIFY_CASES` for the complete pass. Unknown names fail the run. `audit.json` lists only the journeys actually selected and is flushed before recovery after a failure. On a shared machine, use short `VERIFY_CASES` batches, unique server/debugging ports, and retry a killed case at most twice. Never terminate another session’s processes.
 

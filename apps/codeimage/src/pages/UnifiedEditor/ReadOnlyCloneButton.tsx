@@ -1,5 +1,5 @@
 import {LoadingCircle} from '@codeimage/ui';
-import {Button} from '@ui/legacy-controls';
+import {Button} from '@codeui/kit';
 
 export function ReadOnlyCloneButton(props: {
   label: string;
@@ -11,7 +11,7 @@ export function ReadOnlyCloneButton(props: {
     <Button
       class={props.buttonClass}
       size="sm"
-      theme="primary"
+      variant="primary"
       disabled={props.pending}
       leftIcon={props.pending ? <LoadingCircle /> : undefined}
       onClick={props.onClick}

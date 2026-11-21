@@ -1,7 +1,7 @@
 import {provideAppState} from '@codeimage/store/index';
 import {withEntityPlugin} from '@codeimage/store/plugins/withEntityPlugin';
 import {withIndexedDbPlugin} from '@codeimage/store/plugins/withIndexedDbPlugin';
-import {toast} from '@codeimage/ui';
+import {editorNotifications, notifications} from '@ui/notifications';
 import {createEffect, untrack} from 'solid-js';
 import {withAsyncAction} from 'statebuilder/asyncAction';
 import * as api from '../../data-access/preset';
@@ -71,13 +71,18 @@ const PresetStoreDefinition = experimental__defineResource(fetchInitialState, {
                   window.history.replaceState(undefined, '', url);
                 })
                 .then(() =>
-                  toast.success('Preset imported successfully', {
-                    position: 'bottom-center',
+                  editorNotifications.show({
+                    tone: 'success',
+                    description: 'Preset imported successfully',
+                    theme: 'page',
+                    duration: 2000,
                   }),
                 );
             } catch {
-              toast.error('Invalid preset', {
-                position: 'bottom-center',
+              editorNotifications.show({
+                tone: 'danger',
+                description: 'Invalid preset',
+                theme: 'page',
               });
             }
           }
@@ -104,14 +109,19 @@ const PresetStoreDefinition = experimental__defineResource(fetchInitialState, {
               .addNewPreset(payload.name)
               .then(preset => store.set(_ => [preset, ...(_ ?? [])]))
               .then(() =>
-                toast.success('Preset has been created', {
-                  position: 'top-center',
+                notifications.show({
+                  tone: 'success',
+                  description: 'Preset has been created',
+                  theme: 'page',
+                  duration: 2000,
                 }),
               )
               .catch(() => {
                 store.set(currentState);
-                toast.error('Error while creating preset', {
-                  position: 'top-center',
+                notifications.show({
+                  tone: 'danger',
+                  description: 'Error while creating preset',
+                  theme: 'page',
                 });
               });
           });
@@ -127,14 +137,19 @@ const PresetStoreDefinition = experimental__defineResource(fetchInitialState, {
             return store.bridge
               .deletePreset(payload)
               .then(() =>
-                toast.success('Preset has been deleted', {
-                  position: 'top-center',
+                notifications.show({
+                  tone: 'success',
+                  description: 'Preset has been deleted',
+                  theme: 'page',
+                  duration: 2000,
                 }),
               )
               .catch(() => {
                 store.set(currentState);
-                toast.error('Error while deleting preset', {
-                  position: 'top-center',
+                notifications.show({
+                  tone: 'danger',
+                  description: 'Error while deleting preset',
+                  theme: 'page',
                 });
               });
           });
@@ -156,14 +171,19 @@ const PresetStoreDefinition = experimental__defineResource(fetchInitialState, {
                 ),
               )
               .then(() =>
-                toast.success('Local preset has been synchronized', {
-                  position: 'top-center',
+                notifications.show({
+                  tone: 'success',
+                  description: 'Local preset has been synchronized',
+                  theme: 'page',
+                  duration: 2000,
                 }),
               )
               .catch(() => {
                 store.set(currentState);
-                toast.error('Error while synchronizing preset', {
-                  position: 'top-center',
+                notifications.show({
+                  tone: 'danger',
+                  description: 'Error while synchronizing preset',
+                  theme: 'page',
                 });
               });
           });
@@ -197,14 +217,19 @@ const PresetStoreDefinition = experimental__defineResource(fetchInitialState, {
                   );
                 })
                 .then(() =>
-                  toast.success('Preset has been updated', {
-                    position: 'top-center',
+                  notifications.show({
+                    tone: 'success',
+                    description: 'Preset has been updated',
+                    theme: 'page',
+                    duration: 2000,
                   }),
                 )
                 .catch(() => {
                   store.set(currentState);
-                  toast.error('Error while updating preset', {
-                    position: 'top-center',
+                  notifications.show({
+                    tone: 'danger',
+                    description: 'Error while updating preset',
+                    theme: 'page',
                   });
                 });
             });
@@ -238,14 +263,19 @@ const PresetStoreDefinition = experimental__defineResource(fetchInitialState, {
                   );
                 })
                 .then(() =>
-                  toast.success('Preset has been updated', {
-                    position: 'top-center',
+                  notifications.show({
+                    tone: 'success',
+                    description: 'Preset has been updated',
+                    theme: 'page',
+                    duration: 2000,
                   }),
                 )
                 .catch(() => {
                   store.set(currentState);
-                  toast.error('Error while updating preset', {
-                    position: 'top-center',
+                  notifications.show({
+                    tone: 'danger',
+                    description: 'Error while updating preset',
+                    theme: 'page',
                   });
                 });
             });
