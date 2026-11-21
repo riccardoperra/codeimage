@@ -40,13 +40,13 @@ export const wrapper = style([
           [terminalVars.headerHeight]: terminalVars.headerHeightLite,
         },
       },
-      '&[data-theme-mode=light]': {
+      '&[data-codeimage-frame-mode=light]': {
         vars: {
           [terminalVars.headerColor]: `255, 255, 255`,
           [glassBorderVar]: glassBorderLight,
         },
       },
-      '&[data-theme-mode=dark]': {
+      '&[data-codeimage-frame-mode=dark]': {
         vars: {
           [glassBorderVar]: glassBorderDark,
           [terminalVars.headerColor]: `0, 0, 0`,
@@ -107,13 +107,13 @@ export const header = style({
   transition: 'background-color .2s ease-in-out',
 
   selectors: {
-    '[data-theme-mode=light] &[data-accent-visible=true]': {
+    '[data-codeimage-frame-mode=light] &[data-accent-visible=true]': {
       backgroundColor: fallbackVar(
         terminalVars.headerBackgroundColor,
         `rgba(0, 0, 0, .06)`,
       ),
     },
-    '[data-theme-mode=dark] &[data-accent-visible=true]': {
+    '[data-codeimage-frame-mode=dark] &[data-accent-visible=true]': {
       backgroundColor: fallbackVar(
         terminalVars.headerBackgroundColor,
         `rgba(255, 255, 255, .06)`,

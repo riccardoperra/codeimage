@@ -6,20 +6,31 @@ import solidPlugin from '@solidjs/vite-plugin';
 import tsconfigPaths from 'vite-tsconfig-paths';
 import {withStaticVercelPreview} from '../../scripts/vercel-output-build';
 
-const config: UserConfigExport = defineConfig(async ({mode}) => ({
+function appStyles(mode: string): Plugin[] {
+  if (mode !== 'render')
+    return vanillaExtractPlugin({unstable_mode: 'transform'});
+
+  return vanillaExtractPlugin({
+    unstable_mode: 'emitCss',
+    unstable_pluginFilter: ({name}) =>
+      name === 'solid' || name === 'vite-tsconfig-paths',
+  }).map(plugin => {
+    if (typeof plugin.transform !== 'function') return plugin;
+    return {
+      ...plugin,
+      transform: {
+        filter: {
+          id: {exclude: /\/node_modules\/@codeui\/(kit|styles)\/dist\//},
+        },
+        handler: plugin.transform,
+      },
+    };
+  });
+}
+
+const config: UserConfigExport = defineConfig(({mode}) => ({
   plugins: [
-    ...(mode !== 'render'
-      ? [(await import('./solid1/vite.mjs')).legacyWidgets()]
-      : []),
-    vanillaExtractPlugin(
-      mode === 'render'
-        ? {
-            unstable_mode: 'emitCss',
-            unstable_pluginFilter: ({name}) =>
-              name === 'solid' || name === 'vite-tsconfig-paths',
-          }
-        : {unstable_mode: 'transform'},
-    ),
+    appStyles(mode),
     solidPlugin({
       ssr: mode === 'render',
       solid: mode === 'render' ? {hydratable: false} : undefined,
@@ -115,7 +126,9 @@ const config: UserConfigExport = defineConfig(async ({mode}) => ({
             },
           ],
         }
-      : undefined,
+      : {
+          dedupe: ['solid-js', '@solidjs/web', '@kobalte/core'],
+        },
   ssr: mode === 'render' ? {noExternal: true} : undefined,
   optimizeDeps: {
     include: ['@codemirror/state', '@codemirror/view', '@codemirror/language'],

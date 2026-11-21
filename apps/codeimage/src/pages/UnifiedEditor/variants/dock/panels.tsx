@@ -1,7 +1,6 @@
 import {useI18n} from '@codeimage/locale';
 import type {LocaleKeys} from '@codeimage/locale';
-import {Listbox} from '@ui/legacy-listbox';
-import {Button} from '@ui/legacy-controls';
+import {Button, Listbox} from '@codeui/kit';
 import {SegmentedField} from '@ui/SegmentedField/SegmentedField';
 import {createSignal, For, Match, Show, Switch} from 'solid-js';
 import type {Component} from 'solid-js';
@@ -239,7 +238,7 @@ function PhoneActions() {
           <Button
             {...trigger}
             size={'sm'}
-            theme={'secondary'}
+            variant={'secondary'}
             leftIcon={<SearchIcon />}
           >
             {t('editor.searchAllOptions')}
@@ -248,7 +247,7 @@ function PhoneActions() {
       </CommandMenuButton>
       <Button
         size={'sm'}
-        theme={'secondary'}
+        variant={'secondary'}
         leftIcon={<SparklesIcon />}
         disabled={!dock.stage.canFormat()}
         onClick={() => void dock.stage.format()}

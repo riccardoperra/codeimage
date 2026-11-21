@@ -1,5 +1,5 @@
 import {useI18n} from '@codeimage/locale';
-import {Button} from '@ui/legacy-controls';
+import {Button} from '@codeui/kit';
 import {createSignal, createTrackedEffect, Show} from 'solid-js';
 import type {AppLocaleEntries} from '../../../i18n';
 import * as styles from './local-ai.css';
@@ -30,9 +30,9 @@ export function Answer(props: {text: string}) {
         <Button
           class={styles.panelAction}
           size="xs"
-          theme="secondary"
-          variant="ghost"
-          aria-expanded={expanded()}
+          variant="secondary"
+          ghost
+          aria-expanded={expanded() ? 'true' : 'false'}
           data-local-ai-show-all
           onClick={() => setExpanded(open => !open)}
         >

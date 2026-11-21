@@ -1,6 +1,6 @@
 import {useI18n} from '@codeimage/locale';
 import type {PresetData} from '@codeimage/store/presets/types';
-import {toast} from '@codeimage/ui';
+import {editorNotifications} from '@ui/notifications';
 import {DropdownMenuItem} from '@ui/DropdownMenu';
 import type {AppLocaleEntries} from '../../i18n';
 import {toCliConfig} from './cliConfig';
@@ -12,10 +12,19 @@ export function CopyCliConfigMenuItem(props: {data: PresetData}) {
     try {
       await navigator.clipboard.writeText(toCliConfig(props.data));
     } catch {
-      toast.error(t('cliConfig.copyError'), {position: 'bottom-center'});
+      editorNotifications.show({
+        tone: 'danger',
+        description: t('cliConfig.copyError'),
+        theme: 'page',
+      });
       return;
     }
-    toast.success(t('cliConfig.copied'), {position: 'bottom-center'});
+    editorNotifications.show({
+      tone: 'success',
+      description: t('cliConfig.copied'),
+      theme: 'page',
+      duration: 2000,
+    });
   }
 
   return (

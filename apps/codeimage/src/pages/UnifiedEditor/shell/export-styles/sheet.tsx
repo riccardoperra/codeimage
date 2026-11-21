@@ -1,7 +1,7 @@
 import {useI18n} from '@codeimage/locale';
 import {EditorConfigStore} from '@codeimage/store/editor/config.store';
 import {icons} from '@ui/kit-icons';
-import {Button, Checkbox} from '@ui/legacy-controls';
+import {Button, Checkbox} from '@codeui/kit';
 import {Dialog} from '@ui/Dialog/parts';
 import {createEffect, createSignal, For, Show} from 'solid-js';
 import {useStore} from 'statebuilder';
@@ -103,7 +103,7 @@ export function SheetExport(props: ExportControlProps) {
     <div class={shared.group} data-export>
       <NewDot at="export" filled>
         <Button
-          theme={'primary'}
+          variant={'primary'}
           size={props.size}
           leftIcon={<DownloadIcon />}
           loading={props.exporter.busy()}
@@ -173,7 +173,7 @@ export function SheetExport(props: ExportControlProps) {
                   {action => (
                     <Show when={action.visible()}>
                       <Button
-                        theme={'secondary'}
+                        variant={'secondary'}
                         size={'md'}
                         leftIcon={<action.icon size={18} />}
                         disabled={action.disabled()}
@@ -187,7 +187,7 @@ export function SheetExport(props: ExportControlProps) {
                 </For>
                 <Button
                   class={styles.download}
-                  theme={'primary'}
+                  variant={'primary'}
                   size={'md'}
                   leftIcon={<DownloadIcon />}
                   disabled={byId('image').disabled()}

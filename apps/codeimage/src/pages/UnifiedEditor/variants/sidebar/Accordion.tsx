@@ -1,7 +1,7 @@
 import {getEditorStore} from '@codeimage/store/editor';
 import {useI18n} from '@codeimage/locale';
 import {signatureEditor} from '@codeimage/store/frame/signatureEditor';
-import {Button} from '@ui/legacy-controls';
+import {Button} from '@codeui/kit';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 import {
   For,
@@ -267,8 +267,8 @@ export function Accordion(props: VariantProps) {
             <Button
               class={styles.sheetHandle}
               size="sm"
-              theme="secondary"
-              variant="ghost"
+              variant="secondary"
+              ghost
               aria-label={
                 sheet() === 'short'
                   ? t('editor.expandInspector')
@@ -339,33 +339,33 @@ export function Accordion(props: VariantProps) {
                 <ShortcutHelp editable={props.pageState().editable} />
               </Show>
               <Button
-                theme="secondary"
+                variant="secondary"
                 size="sm"
-                variant="ghost"
+                ghost
                 onClick={() => openQuickControl('themes')}
               >
                 {t('frame.theme')}
               </Button>
               <Button
-                theme="secondary"
+                variant="secondary"
                 size="sm"
-                variant="ghost"
+                ghost
                 onClick={() => openQuickControl('frame', 'frame.background')}
               >
                 {t('frame.background')}
               </Button>
               <Button
-                theme="secondary"
+                variant="secondary"
                 size="sm"
-                variant="ghost"
+                ghost
                 onClick={() => openQuickControl('frame', 'frame.padding')}
               >
                 {t('frame.padding')}
               </Button>
               <Button
-                theme="secondary"
+                variant="secondary"
                 size="sm"
-                variant="ghost"
+                ghost
                 onClick={() => openQuickControl('code', 'editor.language')}
               >
                 {t('frame.language')}

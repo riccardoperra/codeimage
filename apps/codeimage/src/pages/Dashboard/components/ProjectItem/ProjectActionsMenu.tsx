@@ -5,7 +5,7 @@ import {
   DropdownMenuPortal,
   DropdownMenuTrigger,
 } from '@ui/DropdownMenu';
-import {IconButton} from '@ui/legacy-controls';
+import {IconButton} from '@codeui/kit';
 
 export interface ProjectActionsMenuProps {
   renameLabel: string;
@@ -21,7 +21,7 @@ export function ProjectActionsMenu(props: ProjectActionsMenuProps) {
     <DropdownMenu>
       <DropdownMenuTrigger
         as={IconButton}
-        theme="secondary"
+        variant="secondary"
         size="xs"
         aria-label="Menu"
       >

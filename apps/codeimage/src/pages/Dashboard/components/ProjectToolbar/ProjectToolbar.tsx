@@ -1,6 +1,6 @@
 import {useI18n} from '@codeimage/locale';
 import {Box, FlexField} from '@codeimage/ui';
-import {TextField} from '@ui/legacy-controls';
+import {TextField} from '@codeui/kit';
 import {Show} from 'solid-js';
 import type {AppLocaleEntries} from '../../../../i18n';
 import {getDashboardState} from '../../dashboard.state';
@@ -27,7 +27,7 @@ export function ProjectToolbar() {
               value={dashboard.search()}
               onChange={value => dashboard.setSearch(value)}
               placeholder={'Search'}
-              theme={'inline'}
+              variant={'inline'}
             />
           </FlexField>
         </Show>

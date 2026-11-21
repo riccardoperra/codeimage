@@ -162,7 +162,7 @@ globalStyle(`${root} ${panel} button`, {
   transition: 'none',
 });
 
-globalStyle(`${root} ${panel} [data-cui='segmentedControlIndicator']`, {
+globalStyle(`${root} ${panel} [data-cui='segmentedcontrol-indicator']`, {
   animation: 'none',
   transition: 'none',
 });
@@ -171,7 +171,7 @@ globalStyle(`${root} ${panel} [data-cui='segmentedControlIndicator']`, {
 // the kit's 40px, as in the other layouts.
 globalStyle(
   [
-    `${root} ${panel} button:not([data-theme-style] [data-cui='segmentedControlItem'])`,
+    `${root} ${panel} button:not([data-theme-style] [data-cui='segmentedcontrol-item'])`,
     `${root} ${panel} [role='tab']:not([data-theme-style] *)`,
     `${root} ${panel} [role='radio']`,
     `${root} ${panel} [role='option']`,

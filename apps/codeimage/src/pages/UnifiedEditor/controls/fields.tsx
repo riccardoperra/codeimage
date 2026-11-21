@@ -1,10 +1,14 @@
 import {getWhatsNew} from '../../../state/whats-new';
 import {getFrameState} from '@codeimage/store/editor/frame';
-import {createSelectOptions} from '@codeui/kit/select-options';
-import {Select} from '@ui/legacy-controls';
+import {Select} from '@codeui/kit';
 import {SegmentedField} from '@ui/SegmentedField/SegmentedField';
 import {AspectRatioPicker} from '../localized/AspectRatioPicker';
-import type {ControlId, SegmentedControl, SelectControl} from '../model';
+import type {
+  ChoiceOption,
+  ControlId,
+  SegmentedControl,
+  SelectControl,
+} from '../model';
 import * as styles from './controls.css';
 
 export type FieldSize = 'sm' | 'md';
@@ -81,40 +85,26 @@ export function SelectChoice(props: {
   /** Added to the list's popover as it opens, for a layout's own motion rules. */
   listClass?: string;
 }) {
-  const options = createSelectOptions(
-    () =>
-      props.control
-        .options()
-        .map(option => ({label: option.label, value: option.key})),
-    {key: 'label', valueKey: 'value'},
-  );
   return (
-    // @ts-expect-error The kit's Select types reject the props its own helper returns.
-    <Select
+    <Select<ChoiceOption>
       disallowEmptySelection
-      {...options.props()}
-      {...options.controlled(
-        () => props.control.value(),
-        key => {
-          // Kobalte also reports the selection it already holds whenever
-          // its options are rebuilt, as the formatters are when a preview
-          // restores the active tab. Saving that would end the preview.
-          if (key !== undefined && key !== props.control.value())
-            props.control.set(key);
-        },
-      )}
-      options={options.options()}
+      options={[...props.control.options()]}
+      optionValue="key"
+      optionTextValue="label"
+      itemLabel={option => option.label}
+      valueComponent={option => option().label}
+      value={
+        props.control
+          .options()
+          .find(option => option.key === props.control.value()) ?? null
+      }
+      onChange={option => {
+        if (option && option.key !== props.control.value())
+          props.control.set(option.key);
+      }}
       disabled={props.control.disabled()}
       gutter={props.gutter}
-      onOpenChange={(open: boolean) => {
-        const listClass = props.listClass;
-        if (!open || !listClass) return;
-        queueMicrotask(() =>
-          document
-            .getElementById(`${props.id}-listbox`)
-            ?.parentElement?.classList.add(listClass),
-        );
-      }}
+      classes={{content: props.listClass}}
       aria-label={props.control.label()}
       id={props.id}
       size={props.size ?? 'sm'}

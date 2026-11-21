@@ -1,5 +1,5 @@
 import {useI18n} from '@codeimage/locale';
-import {IconButton} from '@ui/legacy-controls';
+import {IconButton} from '@codeui/kit';
 import type {AppLocaleEntries} from '../../../../i18n';
 import {SettingsIcon} from '../../shell/icons';
 import {settings} from '../../shell/settings-state';
@@ -12,13 +12,13 @@ export function BarSettings() {
   return (
     <IconButton
       class={styles.item}
-      theme={'secondary'}
-      variant={'ghost'}
+      variant={'secondary'}
+      ghost
       size={'sm'}
       aria-label={t('editor.settings')}
       title={t('editor.settings')}
       aria-haspopup="dialog"
-      aria-expanded={settings.isOpen()}
+      aria-expanded={settings.isOpen() ? 'true' : 'false'}
       data-settings-trigger
       onClick={() => settings.open()}
     >

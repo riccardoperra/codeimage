@@ -11,6 +11,7 @@ export default defineConfig({
   resolve: {
     alias: {
       '@core': fileURLToPath(new URL('./src/core', import.meta.url)),
+      '@ui': fileURLToPath(new URL('./src/ui', import.meta.url)),
       '@codeimage/store': fileURLToPath(
         new URL('./src/state', import.meta.url),
       ),

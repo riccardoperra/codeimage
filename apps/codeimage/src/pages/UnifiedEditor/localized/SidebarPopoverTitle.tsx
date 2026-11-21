@@ -1,7 +1,7 @@
 import type {AppLocaleEntries} from '../../../i18n';
 import {useI18n} from '@codeimage/locale';
 import {Box, HStack, Text} from '@codeimage/ui';
-import {IconButton} from '@ui/legacy-controls';
+import {IconButton} from '@codeui/kit';
 import {
   ExperimentalFeatureTooltip,
   ExperimentalIcon,
@@ -47,7 +47,7 @@ export function SidebarPopoverTitle(
       <IconButton
         size={'xs'}
         aria-label={t('common.close')}
-        theme={'secondary'}
+        variant={'secondary'}
         onClick={() => props.onClose()}
       >
         <CloseIcon />

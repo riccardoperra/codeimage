@@ -20,20 +20,16 @@ allowBuilds:
   workerd: false
 
 patchedDependencies:
-  '@codeui/kit': patches/@codeui__kit.patch
-  '@kobalte/utils@0.9.1': patches/@kobalte__utils@0.9.1.patch
-  '@motionone/solid': patches/@motionone__solid.patch
-  solid-headless: patches/solid-headless.patch
   tinykeys: patches/tinykeys.patch
 
 catalogs:
   solid2:
-    '@solidjs/compiler': 2.0.0
-    '@solidjs/router': 2.0.0
-    '@solidjs/vite-plugin': 3.0.0
-    '@solidjs/web': 2.0.0
+    '@solidjs/compiler': 2.0.2
+    '@solidjs/router': 2.0.1
+    '@solidjs/vite-plugin': 3.0.1
+    '@solidjs/web': 2.0.3
     solid-codemirror: 3.0.0
-    solid-js: 2.0.0
+    solid-js: 2.0.3
     statebuilder: 0.9.0-alpha.1
   next:
     '@codemirror/autocomplete': '^6.20.1'
@@ -78,6 +74,8 @@ overrides:
 minimumReleaseAge: 1440
 minimumReleaseAgeExclude:
   - '@fastify/swagger-ui@6.1.4'
+  - '@kobalte/core@2.0.0-alpha.5'
+  - '@kobalte/utils@2.0.0-alpha.2'
   - fast-json-stringify@7.3.6
   - postcss@8.5.33
   - solid-codemirror@3.0.0

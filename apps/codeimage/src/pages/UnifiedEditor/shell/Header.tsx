@@ -2,8 +2,7 @@ import type {AppLocaleEntries} from '../../../i18n';
 import {useI18n} from '@codeimage/locale';
 import {getAuth0State} from '@codeimage/store/auth/auth0';
 import {getEditorSyncAdapter} from '@codeimage/store/editor/createEditorSync';
-import * as buttonStyles from '@codeui/kit/button-styles';
-import {Button, IconButton, Link} from '@ui/legacy-controls';
+import {Button, IconButton} from '@codeui/kit';
 import {useModality} from '@core/hooks/isMobile';
 import {createSignal, Show, untrack, createTrackedEffect} from 'solid-js';
 import {CodeImageLogoV2} from '../../../components/Icons/CodeImageLogoV2';
@@ -52,18 +51,16 @@ export function Header(props: {stage: Stage}) {
         <CodeImageLogoV2 height={28} withGradient={true} />
       </div>
       <Show when={loggedIn() && modality === 'full'}>
-        <Link
+        <Button
           as="a"
           href="/"
-          class={buttonStyles.button({
-            theme: 'secondary',
-            variant: 'ghost',
-            size: 'sm',
-          })}
+          variant="secondary"
+          ghost
+          size="sm"
+          leftIcon={<CollectionIcon />}
         >
-          <CollectionIcon />
           {t('editor.dashboard')}
-        </Link>
+        </Button>
       </Show>
 
       <Show when={modality === 'full' && isRemote()}>
@@ -82,8 +79,8 @@ export function Header(props: {stage: Stage}) {
                 {...trigger}
                 class={styles.search}
                 size={'sm'}
-                theme={'secondary'}
-                variant={'ghost'}
+                variant={'secondary'}
+                ghost
                 leftIcon={<SearchIcon size={16} />}
               >
                 {t('editor.commands')}
@@ -96,8 +93,8 @@ export function Header(props: {stage: Stage}) {
           <IconButton
             class={styles.extraButton}
             size="sm"
-            theme="secondary"
-            variant="ghost"
+            variant="secondary"
+            ghost
             aria-label={t('editor.experiments')}
             title={t('editor.experiments')}
             aria-haspopup="dialog"
@@ -111,8 +108,8 @@ export function Header(props: {stage: Stage}) {
         <Show when={headerHosts('settings')}>
           <IconButton
             size={'sm'}
-            theme={'secondary'}
-            variant={'ghost'}
+            variant={'secondary'}
+            ghost
             aria-label={t('editor.settings')}
             title={t('editor.settings')}
             aria-haspopup="dialog"
@@ -190,8 +187,8 @@ function WhatsNewButton() {
         ref={button}
         class={styles.extraButton}
         size="sm"
-        theme="secondary"
-        variant="ghost"
+        variant="secondary"
+        ghost
         aria-controls="whats-new-nudge"
         inert={!news.headerEntry() || undefined}
         data-whats-new-trigger

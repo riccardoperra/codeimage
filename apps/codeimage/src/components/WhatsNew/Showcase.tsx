@@ -1,6 +1,6 @@
 import {useI18n} from '@codeimage/locale';
 import type {AppLocaleEntries} from '../../i18n';
-import {Button, IconButton, Tooltip} from '@ui/legacy-controls';
+import {Button, IconButton, Tooltip} from '@codeui/kit';
 import {icons} from '@ui/kit-icons';
 import {Dialog, DialogTitle} from '@ui/Dialog';
 import {For, onCleanup, Show, untrack, createTrackedEffect} from 'solid-js';
@@ -153,7 +153,7 @@ export function Showcase(props: {
           <Tooltip content={t('whatsNew.minimize')}>
             <IconButton
               size="xs"
-              theme="secondary"
+              variant="secondary"
               aria-label={t('whatsNew.minimize')}
               onClick={minimize}
             >
@@ -177,7 +177,7 @@ export function Showcase(props: {
             onClick={(event: MouseEvent) => close(fromKeyboard(event))}
             aria-label={t('common.close')}
             size="xs"
-            theme="secondary"
+            variant="secondary"
           >
             <icons.CloseIcon />
           </IconButton>
@@ -234,7 +234,7 @@ export function Showcase(props: {
                         <div class={styles.actions}>
                           <Button
                             size="sm"
-                            theme="secondary"
+                            variant="secondary"
                             onClick={(event: MouseEvent) =>
                               close(fromKeyboard(event), () =>
                                 news.showMe(located().id, 'showcase'),
@@ -263,7 +263,7 @@ export function Showcase(props: {
           style={at(showcaseAt.footer)}
         >
           <Button
-            theme="primary"
+            variant="primary"
             onClick={(event: MouseEvent) => close(fromKeyboard(event))}
           >
             {t('whatsNew.start')}

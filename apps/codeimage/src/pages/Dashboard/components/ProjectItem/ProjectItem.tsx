@@ -3,7 +3,8 @@ import type {LanguageDefinition} from '@codeimage/config';
 import {SUPPORTED_LANGUAGES} from '@codeimage/config';
 import {useI18n} from '@codeimage/locale';
 import {getUiStore} from '@codeimage/store/ui';
-import {backgroundColorVar, Box, HStack, Text, toast} from '@codeimage/ui';
+import {backgroundColorVar, Box, HStack, Text} from '@codeimage/ui';
+import {editorNotifications, notifications} from '@ui/notifications';
 import {createHighlight} from '@core/directives/highlight';
 import {formatDistanceToNow} from '@core/helpers/date';
 import {createControlledDialog} from '@core/hooks/createControlledDialog';
@@ -58,15 +59,21 @@ export function ProjectItem(props: VoidProps<ProjectItemProps>) {
     try {
       const result = await dashboard.cloneProject(props.item);
       if (!result) throw new Error('Error');
-      toast.success(
-        t('dashboard.projectCloneSuccess', {name: props.item.name}),
-        {
-          position: 'bottom-center',
-        },
-      );
+      editorNotifications.show({
+        tone: 'success',
+        description: t('dashboard.projectCloneSuccess', {
+          name: props.item.name,
+        }),
+        theme: 'page',
+        duration: 2000,
+      });
       navigate(`/${result.id}`);
     } catch {
-      toast.error(t('dashboard.errorCreatingProject'));
+      notifications.show({
+        tone: 'danger',
+        description: t('dashboard.errorCreatingProject'),
+        theme: 'page',
+      });
     }
   }
 
@@ -74,14 +81,20 @@ export function ProjectItem(props: VoidProps<ProjectItemProps>) {
     const oldData = dashboard.data.latest ?? [];
     try {
       await dashboard?.deleteProject(props.item.id);
-      toast.success(
-        t('dashboard.projectDeleteSuccess', {name: props.item.name}),
-        {
-          position: 'bottom-center',
-        },
-      );
+      editorNotifications.show({
+        tone: 'success',
+        description: t('dashboard.projectDeleteSuccess', {
+          name: props.item.name,
+        }),
+        theme: 'page',
+        duration: 2000,
+      });
     } catch {
-      toast.error(t('dashboard.projectDeleteError'));
+      notifications.show({
+        tone: 'danger',
+        description: t('dashboard.projectDeleteError'),
+        theme: 'page',
+      });
       dashboard.mutateData(oldData);
     }
   }

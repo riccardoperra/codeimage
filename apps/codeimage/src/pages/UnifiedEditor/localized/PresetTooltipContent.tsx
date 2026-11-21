@@ -1,7 +1,7 @@
 import {useI18n} from '@codeimage/locale';
 import {getAuth0State} from '@codeimage/store/auth/auth0';
 import {Box} from '@codeimage/ui';
-import {Link} from '@ui/legacy-controls';
+import {Link} from '@codeui/kit';
 import type {AppLocaleEntries} from '../../../i18n';
 
 export function PresetTooltipContent() {
@@ -15,14 +15,7 @@ export function PresetTooltipContent() {
         <Box>
           <p>{t('presets.limit.guest.label')}</p>
           <p>
-            <Link
-              as="button"
-              onClick={login}
-              size={'sm'}
-              underline
-              weight={'medium'}
-              style={{cursor: 'pointer'}}
-            >
+            <Link as="button" onClick={login} variant="underline">
               {t('editor.signIn')}
             </Link>{' '}
             {t('presets.limit.guest.actionLabel')}

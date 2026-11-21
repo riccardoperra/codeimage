@@ -89,7 +89,7 @@ export const TerminalHost: FlowComponent<TerminalHostProps> = props => {
       class={clsx(styles.wrapper, props.themeClass)}
       data-lite={props.lite === undefined ? undefined : String(props.lite)}
       data-preview={props.preview ? 'true' : ''}
-      data-theme-mode={darkMode() ? 'dark' : 'light'}
+      data-codeimage-frame-mode={darkMode() ? 'dark' : 'light'}
       data-header-visible={String(props.showHeader)}
       data-accent-header={String(
         props.accentVisible && !props.alternativeTheme,

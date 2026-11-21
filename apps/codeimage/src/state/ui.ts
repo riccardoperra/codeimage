@@ -55,9 +55,6 @@ export const $uiStore = defineStore(() =>
         state.themeMode = state.themeMode === 'light' ? 'dark' : 'light';
       });
     },
-    invertedThemeMode() {
-      return store.currentTheme() === 'light' ? 'dark' : 'light';
-    },
   }));
 
 function createUiStore() {

@@ -6,7 +6,7 @@ export function createGlobalCodeImageTheme(
   theme: string,
   tokens: MapLeafNodes<typeof themeColors, string>,
 ) {
-  createGlobalTheme(`[data-codeimage-theme=${theme}]`, themeColors, tokens);
+  createGlobalTheme(`[data-cui-theme=${theme}]`, themeColors, tokens);
 }
 
 export function createCodeImageTheme(

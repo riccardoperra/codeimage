@@ -2,7 +2,7 @@ import {getFrameState} from '@codeimage/store/editor/frame';
 import {provideAppState} from '@codeimage/store/index';
 import {withEntityPlugin} from '@codeimage/store/plugins/withEntityPlugin';
 import {withIndexedDbPlugin} from '@codeimage/store/plugins/withIndexedDbPlugin';
-import {toast} from '@codeimage/ui';
+import {notifications} from '@ui/notifications';
 import {untrack} from 'solid-js';
 import {withAsyncAction} from 'statebuilder/asyncAction';
 import * as api from '../../data-access/signature';
@@ -33,8 +33,6 @@ async function fetchInitialState(): Promise<SavedSignaturesArray> {
   return request.then(readable).catch(() => []);
 }
 
-const toastPosition = {position: 'top-center'} as const;
-
 const SignatureStoreDefinition = experimental__defineResource(
   fetchInitialState,
   {initialValue: []},
@@ -64,7 +62,11 @@ const SignatureStoreDefinition = experimental__defineResource(
         const previous = store();
         return write().catch(() => {
           store.set(previous);
-          toast.error(failure, toastPosition);
+          notifications.show({
+            tone: 'danger',
+            description: failure,
+            theme: 'page',
+          });
           return undefined;
         });
       });

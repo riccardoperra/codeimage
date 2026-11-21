@@ -1,7 +1,7 @@
 import {createCanvasBar, type CanvasBarMode} from './canvas-bar';
 import {useI18n} from '@codeimage/locale';
 import {getEditorStore} from '@codeimage/store/editor';
-import {Button, IconButton, Tooltip} from '@ui/legacy-controls';
+import {Button, IconButton, Tooltip} from '@codeui/kit';
 import {createAsyncAction} from '@core/hooks/async-action';
 import {Show} from 'solid-js';
 import {HeaderField} from '../../../components/Animation/HeaderField';
@@ -54,8 +54,8 @@ export function CanvasToolbar(props: {stage: Stage}) {
           <Button
             class={styles.button}
             size={'sm'}
-            theme={'secondary'}
-            variant={'ghost'}
+            variant={'secondary'}
+            ghost
             loading={formatAction.loading}
             leftIcon={<SparklesIcon size={18} />}
             disabled={!props.stage.canFormat()}
@@ -66,8 +66,8 @@ export function CanvasToolbar(props: {stage: Stage}) {
           <Button
             class={styles.button}
             size={'sm'}
-            theme={'secondary'}
-            variant={'ghost'}
+            variant={'secondary'}
+            ghost
             leftIcon={<CopyIcon size={18} />}
             disabled={!exporter().canCopy() || exporter().busy()}
             onClick={() => exporter().copy()}
@@ -89,8 +89,8 @@ export function CanvasToolbar(props: {stage: Stage}) {
               <IconButton
                 class={styles.button}
                 size="sm"
-                theme="secondary"
-                variant="ghost"
+                variant="secondary"
+                ghost
                 aria-label={t('editor.copyImage')}
                 disabled={!exporter().canCopy() || exporter().busy()}
                 onClick={() => exporter().copy()}

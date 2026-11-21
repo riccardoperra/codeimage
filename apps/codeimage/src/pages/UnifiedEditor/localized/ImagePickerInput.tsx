@@ -6,7 +6,7 @@ import type {
 } from '@codeimage/store/assets/assets';
 import {getAssetsStore} from '@codeimage/store/assets/assets';
 import {Box, Text, themeVars} from '@codeimage/ui';
-import {Button, Link, TextField} from '@ui/legacy-controls';
+import {Button, Link, TextField} from '@codeui/kit';
 import {createSignal} from 'solid-js';
 import * as styles from '../../../components/PropertyEditor/controls/ImagePicker/ImagePicker.css';
 
@@ -29,7 +29,7 @@ export function ImagePickerInput(props: ImagePickerInputProps) {
         justifyContent={'spaceBetween'}
       >
         <TextField
-          slotClasses={{
+          classes={{
             root: styles.textFieldImageUrl,
             input: styles.textFieldImageInput,
           }}
@@ -43,7 +43,7 @@ export function ImagePickerInput(props: ImagePickerInputProps) {
           class={styles.confirmButton}
           size={'sm'}
           aria-label={t('common.confirm')}
-          theme={'primary'}
+          variant={'primary'}
           onClick={() =>
             assetsStore.addLink(value(), props.scope).then(props.onUpload)
           }

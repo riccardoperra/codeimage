@@ -5,7 +5,7 @@ import type {ProjectEditorPersistedState} from '@codeimage/store/editor/model';
 import {parseSignature} from '@codeimage/store/frame/model';
 import {createResource} from '@codeimage/store/plugins/create-resource';
 import {loadDefaultSignature} from '@codeimage/store/signatures/signatures';
-import {toast} from '@codeimage/ui';
+import {notifications} from '@ui/notifications';
 import {appEnvironment} from '@core/configuration';
 import {useNavigate} from '@solidjs/router';
 import type {ParentProps} from 'solid-js';
@@ -173,7 +173,11 @@ function createEditorSyncAdapter(props: ParentProps<{snippetId?: string}>) {
         params: {id},
       });
     } catch {
-      toast.error('An error occurred while saving');
+      notifications.show({
+        tone: 'danger',
+        description: 'An error occurred while saving',
+        theme: 'page',
+      });
     }
   }
 

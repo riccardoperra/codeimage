@@ -1,7 +1,7 @@
 import {createId} from '@core/helpers/create-id';
 import {useI18n} from '@codeimage/locale';
 import type {AppLocaleEntries} from '../../i18n';
-import {Button, IconButton} from '@ui/legacy-controls';
+import {Button, IconButton} from '@codeui/kit';
 import {icons} from '@ui/kit-icons';
 import {
   createMemo,
@@ -156,7 +156,7 @@ export function Nudge(props: {
                 if (initiallyMinimized) focusWhenConnected(element);
               }}
               size="sm"
-              theme="primary"
+              variant="primary"
               onClick={(event: MouseEvent) => {
                 barHeight = bar?.offsetHeight ?? 0;
                 setInstant(fromKeyboard(event));
@@ -167,8 +167,8 @@ export function Nudge(props: {
             </Button>
             <IconButton
               size="sm"
-              theme="secondary"
-              variant="ghost"
+              variant="secondary"
+              ghost
               aria-label={t('whatsNew.dismiss')}
               onClick={(event: MouseEvent) => close(fromKeyboard(event))}
             >
@@ -213,7 +213,7 @@ export function Nudge(props: {
                           <Button
                             class={styles.reveal}
                             size="xs"
-                            theme="secondary"
+                            variant="secondary"
                             onClick={() => news.showMe(target().id, 'nudge')}
                           >
                             {t('whatsNew.showMe')}
@@ -247,7 +247,7 @@ export function Nudge(props: {
             <Button
               ref={focusWhenConnected}
               size="sm"
-              theme="primary"
+              variant="primary"
               aria-describedby={copyId}
               onClick={next}
             >
@@ -258,8 +258,8 @@ export function Nudge(props: {
           <IconButton
             class={`${styles.nudgeClose} ${styles.revealed}`}
             size="xs"
-            theme="secondary"
-            variant="ghost"
+            variant="secondary"
+            ghost
             aria-label={t('whatsNew.dismiss')}
             onClick={(event: MouseEvent) => close(fromKeyboard(event))}
           >

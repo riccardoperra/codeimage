@@ -34,7 +34,7 @@ async function noEnglish(page, locale, surface) {
     const visible = element =>
       element.checkVisibility() &&
       !element.closest(
-        '[inert], [aria-hidden=true], [data-frame-content], [data-theme-mode], .cm-editor, [class*=previewPortal]',
+        '[inert], [aria-hidden=true], [data-frame-content], [data-codeimage-frame-mode], .cm-editor, [class*=previewPortal]',
       );
     for (const element of document.querySelectorAll('body *')) {
       if (!visible(element)) continue;
@@ -276,7 +276,7 @@ try {
         await noEnglish(page, locale, `${layout}/${width} export menu`);
         await page.keyboard.press('Escape');
         await page
-          .locator('[data-cui=dropdown-menu-content]')
+          .locator('[data-export-action="settings"]')
           .waitFor({state: 'detached'});
         await page.keyboard.press('Meta+k');
         await page.locator('[data-command-menu]').waitFor();

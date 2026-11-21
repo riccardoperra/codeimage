@@ -1,6 +1,6 @@
 import {useI18n} from '@codeimage/locale';
 import {SvgIcon} from '@codeimage/ui';
-import {Button, IconButton} from '@ui/legacy-controls';
+import {Button, IconButton} from '@codeui/kit';
 import {useModality} from '@core/hooks/isMobile';
 import {useWebshare} from '@core/hooks/use-webshare';
 import type {Component} from 'solid-js';
@@ -49,7 +49,7 @@ export const ShareButton: Component<ShareButtonProps> = props => {
         fallback={
           <IconButton
             size={modality === 'full' ? 'sm' : 'xs'}
-            theme={'secondary'}
+            variant={'secondary'}
             aria-label={t('toolbar.share')}
             onClick={onShare}
           >
@@ -60,7 +60,7 @@ export const ShareButton: Component<ShareButtonProps> = props => {
       >
         <Button
           aria-label={t('toolbar.share')}
-          theme={'secondary'}
+          variant={'secondary'}
           onClick={onShare}
           size={modality === 'full' ? 'sm' : 'xs'}
           leftIcon={

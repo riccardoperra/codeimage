@@ -1,5 +1,5 @@
 import {useI18n} from '@codeimage/locale';
-import {Button} from '@ui/legacy-controls';
+import {Button} from '@codeui/kit';
 import {DialogPanelContent, DialogPanelFooter} from '@ui/Dialog';
 import {Dialog} from '@ui/Dialog/parts';
 import type {Accessor} from 'solid-js';
@@ -107,7 +107,7 @@ export function ExportControl(props: ExportControlProps) {
                       <p class={styles.hint}>{t('secrets.destructiveHint')}</p>
                       <Button
                         size="sm"
-                        theme="secondary"
+                        variant="secondary"
                         onClick={redactSecrets}
                       >
                         {t('secrets.redactAll')}
@@ -121,10 +121,10 @@ export function ExportControl(props: ExportControlProps) {
               </DialogPanelContent>
               <DialogPanelFooter>
                 <div class={styles.confirmActions}>
-                  <Button size="sm" theme="secondary" onClick={cancel}>
+                  <Button size="sm" variant="secondary" onClick={cancel}>
                     {t('common.close')}
                   </Button>
-                  <Button size="sm" theme="primary" onClick={confirm}>
+                  <Button size="sm" variant="primary" onClick={confirm}>
                     {exporter().secrets() > 0
                       ? t('secrets.exportAnyway')
                       : t('common.confirm')}

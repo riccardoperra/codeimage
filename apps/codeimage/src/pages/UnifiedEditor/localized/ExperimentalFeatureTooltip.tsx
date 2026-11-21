@@ -1,7 +1,7 @@
 import type {AppLocaleEntries} from '../../../i18n';
 import {useI18n} from '@codeimage/locale';
 import {Box, Link} from '@codeimage/ui';
-import {Tooltip} from '@ui/legacy-controls';
+import {Tooltip} from '@codeui/kit';
 import * as styles from '../../../ui/ExperimentalFeatureTooltip/ExperimentalFeatureTooltip.css';
 import type {FlowProps} from 'solid-js';
 

@@ -20,11 +20,11 @@ export const content = style({
   zIndex: '100',
 
   selectors: {
-    '[data-theme-mode=light] &': {
+    '[data-codeimage-frame-mode=light] &': {
       background:
         'linear-gradient(rgba(100,100,100, .035) 35%, rgba(0,0,0,0%) 100%)',
     },
-    '[data-theme-mode=dark] &': {
+    '[data-codeimage-frame-mode=dark] &': {
       background:
         'linear-gradient(rgba(255,255,255, .035) 35%, rgba(255,255,255,0%) 100%)',
     },

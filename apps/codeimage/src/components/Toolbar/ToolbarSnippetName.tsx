@@ -1,7 +1,7 @@
 import {getAuth0State} from '@codeimage/store/auth/auth0';
 import {getEditorSyncAdapter} from '@codeimage/store/editor/createEditorSync';
 import {Box, FlexField, HStack, LoadingCircle, Text} from '@codeimage/ui';
-import {TextField} from '@ui/legacy-controls';
+import {TextField} from '@codeui/kit';
 import clickOutside from '@core/directives/clickOutside';
 import {SkeletonLine} from '@ui/Skeleton/Skeleton';
 import {createEffect, createSignal, Show, untrack} from 'solid-js';
@@ -105,8 +105,8 @@ export function ToolbarSnippetName() {
             >
               <FlexField size="md">
                 <TextField
-                  theme="inline"
-                  slotClasses={{input: styles.toolbarSnippetNameInput}}
+                  variant="inline"
+                  classes={{input: styles.toolbarSnippetNameInput}}
                   ref={setInput}
                   size="sm"
                   value={value()}

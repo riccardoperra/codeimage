@@ -1,7 +1,7 @@
 import {useI18n} from '@codeimage/locale';
 import {getActiveEditorStore} from '@codeimage/store/editor/activeEditor';
 import {HStack} from '@codeimage/ui';
-import {Button} from '@ui/legacy-controls';
+import {Button} from '@codeui/kit';
 import type {AppLocaleEntries} from '../../i18n';
 import {SparklesIcon} from '../Icons/SparklesIcon';
 
@@ -13,7 +13,7 @@ export function FormatPasteToast(props: {onFormat: () => void}) {
       <span>{t('canvas.pastedCode')}</span>
       <Button
         size="xs"
-        theme="primary"
+        variant="primary"
         leftIcon={<SparklesIcon size="xs" />}
         disabled={!activeEditor.canFormat()}
         onClick={() => props.onFormat()}

@@ -1,7 +1,7 @@
 import {useI18n} from '@codeimage/locale';
 import type {Preset} from '@codeimage/store/presets/types';
 import {Box, HStack, SvgIcon, Text} from '@codeimage/ui';
-import {Button} from '@ui/legacy-controls';
+import {Button} from '@codeui/kit';
 import {Dialog, DialogPanelContent, DialogPanelFooter} from '@ui/Dialog';
 import type {ControlledDialogProps} from '@core/hooks/createControlledDialog';
 import type {Element as JSXElement, VoidProps} from 'solid-js';
@@ -75,7 +75,7 @@ export function PresetUpdateDialog(
             block
             size={'sm'}
             type="button"
-            theme={'secondary'}
+            variant={'secondary'}
             onClick={() => propsWithDefault.onOpenChange(false)}
           >
             {t('common.close')}
@@ -85,7 +85,7 @@ export function PresetUpdateDialog(
             block
             size={'sm'}
             type="submit"
-            theme={propsWithDefault.actionType}
+            variant={propsWithDefault.actionType}
             onClick={() => {
               propsWithDefault.onConfirm();
               propsWithDefault.onOpenChange(false);

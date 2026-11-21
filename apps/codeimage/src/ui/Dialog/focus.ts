@@ -178,16 +178,20 @@ export function activateDialog(layer: Layer) {
     doc.addEventListener(
       'focusin',
       event => {
-        if (
-          layers.at(-1) !== layer ||
-          !(event.target instanceof Element) ||
-          containsFocus(layer, event.target)
-        )
-          return;
-        const outside = outsideEvent(event);
-        layer.onFocusOutside?.(outside);
-        layer.onInteractOutside?.(outside);
-        if (!outside.defaultPrevented) layer.close();
+        const target = event.target;
+        if (layers.at(-1) !== layer || !(target instanceof Element)) return;
+        queueMicrotask(() => {
+          if (
+            layers.at(-1) !== layer ||
+            doc.activeElement !== target ||
+            containsFocus(layer, target)
+          )
+            return;
+          const outside = outsideEvent(event);
+          layer.onFocusOutside?.(outside);
+          layer.onInteractOutside?.(outside);
+          if (!outside.defaultPrevented) layer.close();
+        });
       },
       {signal: events.signal},
     );

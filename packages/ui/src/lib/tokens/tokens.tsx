@@ -33,7 +33,7 @@ export function CodeImageThemeProvider(props: ParentProps<ThemeProviderProps>) {
   const theme = () => props.theme ?? 'dark';
 
   createEffect(theme, theme => {
-    document.documentElement.setAttribute('data-codeimage-theme', theme);
+    document.documentElement.setAttribute('data-cui-theme', theme);
   });
 
   return (

@@ -22,6 +22,7 @@ export const locale = {
     ...secrets.it,
     common: {
       close: 'Chiudi',
+      closeNotification: 'Chiudi notifica',
       confirm: 'Conferma',
       reload: 'Ricarica',
       clone: 'Clona',
@@ -119,6 +120,7 @@ export const locale = {
     },
     common: {
       close: 'Close',
+      closeNotification: 'Close notification',
       confirm: 'Confirm',
       reload: 'Reload',
       clone: 'Clone',
@@ -201,6 +203,7 @@ export const locale = {
     ...secrets.de,
     common: {
       close: 'Schließen',
+      closeNotification: 'Benachrichtigung schließen',
       confirm: 'Bestätigen',
       reload: 'Neu laden',
       clone: 'Klonen',
@@ -291,6 +294,7 @@ export const locale = {
     ...secrets.es,
     common: {
       close: 'Cerrar',
+      closeNotification: 'Cerrar notificación',
       confirm: 'Confirmar',
       reload: 'Recargar',
       clone: 'Clonar',

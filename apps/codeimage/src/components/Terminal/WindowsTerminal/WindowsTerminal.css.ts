@@ -22,12 +22,12 @@ export const headerIconRow = style({
       columnGap: themeVars.spacing['3'],
     },
 
-    [`[data-theme-mode=light] &`]: {
+    [`[data-codeimage-frame-mode=light] &`]: {
       vars: {
         [vars.iconFill]: themeVars.backgroundColor.black,
       },
     },
-    [`[data-theme-mode=dark] &`]: {
+    [`[data-codeimage-frame-mode=dark] &`]: {
       vars: {
         [vars.iconFill]: themeVars.backgroundColor.white,
       },

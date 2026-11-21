@@ -2,7 +2,7 @@ import {useI18n} from '@codeimage/locale';
 import {getRootEditorStore} from '@codeimage/store/editor';
 import {getActiveEditorStore} from '@codeimage/store/editor/activeEditor';
 import {icons} from '@ui/kit-icons';
-import {Button} from '@ui/legacy-controls';
+import {Button} from '@codeui/kit';
 import {createSignal, Show} from 'solid-js';
 import {createPrettierFormatter} from '../../../hooks/createPrettierFormatter';
 import type {AppLocaleEntries} from '../../../i18n';
@@ -61,8 +61,8 @@ export function FormatTabButton(props: {tabId: string}) {
       <Button
         class={styles.formatButton}
         size="xs"
-        theme="secondary"
-        variant="ghost"
+        variant="secondary"
+        ghost
         loading={state() === 'running'}
         disabled={!!blocked()}
         title={blocked() ?? t('agentActivity.formatTab', {name: name()})}

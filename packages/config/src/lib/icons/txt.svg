@@ -1,7 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
   <style>
     .path { fill: #fff; }
-    [data-theme-mode=light] .path {
+    [data-codeimage-frame-mode=light] .path {
       fill: #3c3c3c;
     };
   </style>

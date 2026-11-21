@@ -3,7 +3,7 @@ import {useI18n} from '@codeimage/locale';
 import type {PersistedAsset} from '@codeimage/store/assets/assets';
 import {AssetsImage} from '@codeimage/store/assets/AssetsImage';
 import {Box, HStack} from '@codeimage/ui';
-import {Button} from '@ui/legacy-controls';
+import {Button} from '@codeui/kit';
 import {SkeletonLine} from '@ui/Skeleton/Skeleton';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 import {createSignal, For, Show, Loading} from 'solid-js';
@@ -112,7 +112,7 @@ function ImagePickerDeleteButton(props: ImagePickerDeleteButtonProps) {
           block
           size={'xs'}
           aria-label={t('presets.deletePreset.label')}
-          theme={'secondary'}
+          variant={'secondary'}
           onClick={() => setDeleting(true)}
         >
           {t('presets.deletePreset.label')}
@@ -125,7 +125,7 @@ function ImagePickerDeleteButton(props: ImagePickerDeleteButtonProps) {
           block
           size={'xs'}
           aria-label={t('presets.deletePreset.label')}
-          theme={'secondary'}
+          variant={'secondary'}
           onClick={() => setDeleting(false)}
         >
           {t('lineMarks.undo')}
@@ -134,7 +134,7 @@ function ImagePickerDeleteButton(props: ImagePickerDeleteButtonProps) {
           block
           size={'xs'}
           aria-label={t('presets.deletePreset.label')}
-          theme={'negative'}
+          variant={'negative'}
           onClick={(e: MouseEvent) => {
             props.onDelete();
             e.preventDefault();

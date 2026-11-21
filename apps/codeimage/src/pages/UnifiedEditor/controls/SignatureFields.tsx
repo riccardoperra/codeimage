@@ -19,7 +19,7 @@ import {
   readProfile,
   writeProfile,
 } from '@codeimage/store/frame/signature';
-import {TextField, Select} from '@ui/legacy-controls';
+import {TextField, Select} from '@codeui/kit';
 import {SegmentedField} from '@ui/SegmentedField/SegmentedField';
 import type {JSX} from '@solidjs/web';
 import {createSignal, Show} from 'solid-js';
@@ -267,7 +267,7 @@ export function SignatureProfileField(props: {id?: string}) {
           itemLabel={source => PLATFORM_NAMES[source]}
           valueComponent={() => PROFILE_PREFIX[platform()]}
           disallowEmptySelection
-          slotClasses={{root: styles.prefix}}
+          classes={{root: styles.prefix}}
         />
         <TextField
           id={props.id}
@@ -276,7 +276,7 @@ export function SignatureProfileField(props: {id?: string}) {
           placeholder={t('signature.profilePlaceholder')}
           value={stored()?.account ?? ''}
           onChange={write}
-          slotClasses={{root: styles.prefixedRoot, input: styles.prefixedInput}}
+          classes={{root: styles.prefixedRoot, input: styles.prefixedInput}}
         />
       </div>
       <span

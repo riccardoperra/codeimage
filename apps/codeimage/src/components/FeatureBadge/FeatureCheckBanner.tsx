@@ -1,5 +1,5 @@
 import {icons} from '@ui/kit-icons';
-import {Link} from '@ui/legacy-controls';
+import {Link} from '@codeui/kit';
 import {browser} from '@core/hooks/createPlatformProps';
 import {Alert} from '@ui/Alert/Alert';
 import {createResource} from '@codeimage/store/plugins/create-resource';

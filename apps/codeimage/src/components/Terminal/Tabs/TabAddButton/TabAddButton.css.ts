@@ -24,13 +24,13 @@ export const button = style({
     backgroundColor: `rgba(${tabVars.tabSecondaryHoverBg}, .05)`,
   },
   selectors: {
-    '[data-theme-mode=dark] &': {
+    '[data-codeimage-frame-mode=dark] &': {
       color: themeVars.backgroundColor.white,
       vars: {
         [tabVars.tabSecondaryHoverBg]: '255, 255, 255',
       },
     },
-    '[data-theme-mode=light] &': {
+    '[data-codeimage-frame-mode=light] &': {
       color: themeVars.backgroundColor.black,
       vars: {
         [tabVars.tabSecondaryHoverBg]: '0, 0, 0',

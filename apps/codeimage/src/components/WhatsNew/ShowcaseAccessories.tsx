@@ -1,5 +1,5 @@
 import {useI18n} from '@codeimage/locale';
-import {Button} from '@ui/legacy-controls';
+import {Button} from '@codeui/kit';
 import {Dynamic} from '@solidjs/web';
 import {For, Show} from 'solid-js';
 import type {AppLocaleEntries} from '../../i18n';
@@ -49,7 +49,7 @@ export function ShowcaseAccessories(props: {
                   <Button
                     class={styles.accessoryAction}
                     size="sm"
-                    theme="secondary"
+                    variant="secondary"
                     onClick={(event: MouseEvent) =>
                       props.reveal(located().id, event)
                     }

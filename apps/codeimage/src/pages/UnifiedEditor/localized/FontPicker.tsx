@@ -2,7 +2,7 @@ import type {AppLocaleEntries} from '../../../i18n';
 import {useI18n} from '@codeimage/locale';
 import {EditorConfigStore} from '@codeimage/store/editor/config.store';
 import {FlexField, VStack} from '@codeimage/ui';
-import {Listbox} from '@ui/legacy-listbox';
+import {Listbox} from '@codeui/kit';
 import {icons} from '@ui/kit-icons';
 import {DynamicSizedContainer} from '@ui/DynamicSizedContainer/DynamicSizedContainer';
 import {SegmentedField} from '@ui/SegmentedField/SegmentedField';

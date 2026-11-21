@@ -5,13 +5,17 @@ import assert from 'node:assert/strict';
 import {auditPresetCases, auditPresetPersistence} from './presets.mjs';
 import {auditLineMarks} from './audit-line-marks.mjs';
 import * as newsAudits from './audit-line-marks-news.mjs';
-import {verifyExportDialog} from './export-dialog.mjs';
+import {
+  verifyExportDialog,
+  verifyExportNotification,
+} from './export-dialog.mjs';
 import {auditEditor} from './editor-responsiveness.mjs';
 import {auditKeyboard} from './shortcut-help.mjs';
 import {createMockContext} from './mock-context.mjs';
 import {animationMp4Cases} from './animation-mp4.mjs';
 import {auditSavedProjects, verifyProjectSearch} from './saved-projects.mjs';
 import {auditSettingsSearch, closeSettingsDialog} from './settings-search.mjs';
+import {auditSignatures} from './signatures.mjs';
 import {auditTabLayouts} from './tab-reorder.mjs';
 import {writeFile, readFile} from 'node:fs/promises';
 import {resolve} from 'node:path';
@@ -323,48 +327,9 @@ export async function audit({page, context, base, out, server}) {
     download,
     shot,
   });
-  await feature('signatures', async () => {
-    await section('frame');
-    await page.locator('#signature-options').click();
-    await writeFile(
-      resolve(out, 'signature-open.aria.txt'),
-      await page.locator('body').ariaSnapshot(),
-    );
-    await page
-      .getByPlaceholder('@handle or profile link', {exact: true})
-      .fill('@verification');
-    await page
-      .getByRole('button', {name: 'Saved signatures', exact: true})
-      .click();
-    await page
-      .getByRole('menuitem', {name: 'Save as new', exact: true})
-      .click();
-    await page
-      .getByRole('group', {name: 'Signature name', exact: true})
-      .getByRole('textbox')
-      .fill('Verification signature');
-    await page.getByRole('button', {name: 'Save', exact: true}).click();
-    await page.keyboard.press('Escape');
-    assert.match(
-      await page.locator('[data-frame-signature]').first().innerText(),
-      /@verification/,
-    );
-    PNG.sync.read(await download('signature.png'));
-    await page.reload();
-    await editor().waitFor();
-    await section('frame');
-    await page.locator('#signature-options').click();
-    await page
-      .getByRole('button', {name: 'Saved signatures', exact: true})
-      .click();
-    await page.getByRole('menuitem', {name: /Verification signature/}).click();
-    assert.equal(
-      await page
-        .getByPlaceholder('@handle or profile link', {exact: true})
-        .inputValue(),
-      '@verification',
-    );
-  });
+  await feature('signatures', () =>
+    auditSignatures({page, editor, section, download, out}),
+  );
   await feature('whats-new', async () => {
     await settings('whats-new');
     assert.ok((await page.locator('[data-setting^="news-"]').count()) > 0);
@@ -542,6 +507,9 @@ export async function audit({page, context, base, out, server}) {
       verifyExportDialog(fixture, out),
     ),
   );
+  await feature('export-notification', () =>
+    verifyExportNotification({page, editor, download}),
+  );
   await feature('export-options', async () => {
     try {
       await editor().fill('const exportOptions = true;');
@@ -694,8 +662,7 @@ export async function audit({page, context, base, out, server}) {
       .getByRole('menuitem', {name: 'Save as new', exact: true})
       .click();
     await page
-      .getByRole('group', {name: 'Signature name', exact: true})
-      .getByRole('textbox')
+      .getByRole('textbox', {name: 'Signature name', exact: true})
       .fill('Management signature');
     await page.getByRole('button', {name: 'Save', exact: true}).click();
 
@@ -704,8 +671,7 @@ export async function audit({page, context, base, out, server}) {
       .click();
     await page.getByRole('menuitem', {name: 'Rename', exact: true}).click();
     await page
-      .getByRole('group', {name: 'Signature name', exact: true})
-      .getByRole('textbox')
+      .getByRole('textbox', {name: 'Signature name', exact: true})
       .fill('Renamed signature');
     await page.getByRole('button', {name: 'Save', exact: true}).click();
     await page

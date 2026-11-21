@@ -2,6 +2,20 @@ import assert from 'node:assert/strict';
 import {resolve} from 'node:path';
 import {readFile} from 'node:fs/promises';
 
+export async function verifyExportNotification({page, editor, download}) {
+  await editor().fill('const exportNotification = true;');
+  await download('notification.png');
+  const toast = page.getByRole('status').filter({hasText: 'Image exported'});
+  await toast.getByRole('button', {name: 'Close notification'}).waitFor();
+  await toast.getByRole('button', {name: 'Copy alt text', exact: true}).click();
+  await toast.waitFor({state: 'hidden'});
+  await page.getByRole('status').filter({hasText: 'Alt text copied'}).waitFor();
+  assert.match(
+    await page.evaluate(() => navigator.clipboard.readText()),
+    /exportNotification/,
+  );
+}
+
 export async function verifyExportDialog(
   {page, doctor, editor, settings, closeSettings},
   out,

@@ -1,4 +1,4 @@
-import {themeTokens, themeVars} from '@codeui/kit/foundation';
+import {themeTokens, themeVars} from '@codeui/kit/tokens';
 import {style} from '@vanilla-extract/css';
 import type {RecipeVariants} from '@vanilla-extract/recipes';
 import {recipe} from '@vanilla-extract/recipes';
